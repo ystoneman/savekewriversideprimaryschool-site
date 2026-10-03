@@ -12,7 +12,7 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_REPOSITORY = "ystoneman/kew-riverside-website"
-CANDIDATE_BRANCH = "codex/new-domain-candidate"
+CANDIDATE_BRANCH = "codex/primaryschool-domain-candidate"
 REQUIRED_JOBS = {
     "validate", "browser-tests",
     *(f"browser-shards ({project})" for project in (
