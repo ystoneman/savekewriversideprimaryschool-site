@@ -9,7 +9,7 @@
 (() => {
   'use strict';
   const ENDPOINT = 'https://cloud.umami.is/api/send';
-  const HOST = 'savekewriverside.org';
+  const HOST = 'savekewriversideprimaryschool.org';
   const ROOT = '/';
   const KEY = 'kew-analytics-choice-v1';
   const DAY = 24 * 60 * 60 * 1000;

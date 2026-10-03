@@ -1,18 +1,21 @@
 # Save Kew Riverside deployment
 
-This repository serves `savekewriverside.org`. The authoritative source is
+This repository serves `savekewriversideprimaryschool.org`. The authoritative source is
 [ystoneman/kew-riverside-website](https://github.com/ystoneman/kew-riverside-website).
 Edit and test the website there. This repository contains a promoted copy of its
 public assets; it is not a second place to edit website content.
 
 The original repository continues to serve
-`https://ystoneman.github.io/kew-riverside-website/`. After the user-authorized
-30 September cutover, ordinary HTML forwards in the browser to the matching
-new-domain page. Complete manual/no-script fallback, old-origin Letters/Sent
-recovery, public downloads/JSON and the school visit handoff remain available.
-**Never attach the new custom
-domain to the original repository.** Only this deployment repository may have
-`savekewriverside.org` configured in its Pages settings.
+`https://ystoneman.github.io/kew-riverside-website/`. Its ordinary HTML forwards
+in the browser to `https://savekewriverside.org/`, with complete manual/no-script
+fallback and old-origin Letters/Sent recovery. The previous custom domain stays
+independent and serving during preparation of this Primary School address.
+A permanent old-domain redirect has not been enabled by this release. Keep its
+DNS and recovery routes intact until target and redirect TLS and journeys pass.
+
+**Never attach this custom domain to either earlier repository.** Only this
+deployment repository may have `savekewriversideprimaryschool.org` configured
+in its Pages settings.
 
 ## Contents and deployment gate
 
@@ -37,7 +40,7 @@ no cross-repository write token or credential to maintain.
 
 ## Promote a tested source release
 
-1. Update `codex/new-domain-candidate` from current authoritative `main`, preserving
+1. Update `codex/primaryschool-domain-candidate` from current authoritative `main`, preserving
    the candidate's new-domain form endpoint, analytics host gate and URLs. Record
    the full `main` SHA included in the candidate. During the overlap, `main`
    retains the original site's configuration and **cannot be promoted directly**.

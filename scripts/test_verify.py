@@ -152,6 +152,11 @@ class SourceEvidenceGuards(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Only a tested new-domain candidate"):
             self.evidence()
 
+    def test_previous_domain_candidate_cannot_replace_primaryschool_bindings(self):
+        self.run.update(head_branch="codex/new-domain-candidate", event="workflow_dispatch")
+        with self.assertRaisesRegex(ValueError, "Only a tested new-domain candidate"):
+            self.evidence()
+
     def test_stale_candidate_cannot_omit_new_main_corrections(self):
         self.main["object"]["sha"] = "2" * 40
         with self.assertRaisesRegex(ValueError, "Source main advanced"):
