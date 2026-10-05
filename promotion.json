@@ -71,7 +71,7 @@
     "orientation.css": "3de68b301b8433dadfdeb774b4c0ec3203a336821ab0b45a6328311793194945",
     "parent-plan.css": "d778d8d6875e1887be06745b561078260fcb10e266e6320f02c22d14b273aa69",
     "participation.css": "90ee3b707fa1e7d117b60287002af8e2346c791763f00b70932ba5090d5a5496",
-    "privacy.html": "6b0b926d44bbef003cc62d383736a8c0253383d2ecf515f936b3895bf4206263",
+    "privacy.html": "8e3ffdbe661b8bd9e77d14594ab8980b791440c4da557cf7eb9eb34cd73d07d4",
     "private-form.js": "ca5cc086b05848ac7ceb84e9815e251c70f4bdfff23337edcfa478710cf61852",
     "proposal.css": "4453d03656aa2ac4b971fbf98b66b8906d22a423c32e03669fe7216befe79ee2",
     "proposal.html": "420cced6925c36e9f770e80f426918ccc73adeed359918177b11ad44995a1448",
@@ -113,12 +113,12 @@
     "voice.css": "a0dc4c9e34ee89ccf1301b7b31b0102fbd3b902ba2751e8c01e36fb6f69225fc",
     "voice.js": "f64c4364192032e3e4565edcca221ef36f9560cade3ef9d08e7e03b1559b9123"
   },
-  "promoted_at_utc": "2026-10-03T10:02:00.461039+00:00",
+  "promoted_at_utc": "2026-10-05T15:28:53.713522+00:00",
   "schema_version": 2,
   "source": {
-    "base_main_commit": "51e9938994badeab9c94f0124386267b483c0bc0",
+    "base_main_commit": "7529d314b520d10dab75a51991f8143e0c1aca4a",
     "branch": "codex/primaryschool-domain-candidate",
-    "commit": "b69d6eb50bc0a1036779470e2ab25574a0451150",
+    "commit": "716a95c65b163aa68a4d88b08d586bc17db6ccf7",
     "event": "workflow_dispatch",
     "repository": "ystoneman/kew-riverside-website",
     "required_jobs": {
@@ -130,9 +130,9 @@
       "browser-tests": "success",
       "validate": "success"
     },
-    "run_attempt": 1,
-    "run_id": 37114304213,
-    "run_url": "https://github.com/ystoneman/kew-riverside-website/actions/runs/37114304213",
+    "run_attempt": 2,
+    "run_id": 37329528419,
+    "run_url": "https://github.com/ystoneman/kew-riverside-website/actions/runs/37329528419",
     "workflow_path": ".github/workflows/pages.yml"
   },
   "validator_sha256": "a9a195d258364028c354c1718626c5a27926fceff69a1365b7d97e3e88618d8a"
