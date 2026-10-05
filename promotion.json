@@ -55,7 +55,7 @@
     "lessons.js": "d3d9355bcae3bd455684b7edfd4774500e0708e06256a25978e65b1fcc29625f",
     "letters.html": "3c3d4a285f2475bc5f7848a7f2966ade0129cbbee8c00f9c2b3d7f8283360e0d",
     "letters.js": "0c142eba99168a69d34aae3af5a244b64a6414ce65eac434df8e4cdbd6a87d0d",
-    "letters.json": "93740d85770ea4eaa51c85ca7f239c61c9e689f9cdbfe8dd698b3db3e2b89379",
+    "letters.json": "77057f3638196302d90617013638e51fe21d2140d8681cf71c4087c55c1420a0",
     "meeting.css": "5ac603edfb08764dba004d97236c32231860977c9ec796ec0679f21bfb7a16df",
     "meeting.js": "6aa3abe789678e8676689e321f37ca877eeb8c575ec32ce4df3bc0bd0e0a3666",
     "navigation.js": "867a744a16cc6c77ace722552e82e2aa8828fb1e2ade88d6a9793944997fc0bc",
@@ -113,12 +113,12 @@
     "voice.css": "a0dc4c9e34ee89ccf1301b7b31b0102fbd3b902ba2751e8c01e36fb6f69225fc",
     "voice.js": "f64c4364192032e3e4565edcca221ef36f9560cade3ef9d08e7e03b1559b9123"
   },
-  "promoted_at_utc": "2026-10-05T15:28:53.713522+00:00",
+  "promoted_at_utc": "2026-10-05T23:33:10.437245+00:00",
   "schema_version": 2,
   "source": {
-    "base_main_commit": "7529d314b520d10dab75a51991f8143e0c1aca4a",
+    "base_main_commit": "595ee759654dcc5e1a992bb57f1e059b1e9a1ab5",
     "branch": "codex/primaryschool-domain-candidate",
-    "commit": "716a95c65b163aa68a4d88b08d586bc17db6ccf7",
+    "commit": "a3489cbd913a7c29cfb72d6cd2a8cd598c26e22c",
     "event": "workflow_dispatch",
     "repository": "ystoneman/kew-riverside-website",
     "required_jobs": {
@@ -130,9 +130,9 @@
       "browser-tests": "success",
       "validate": "success"
     },
-    "run_attempt": 2,
-    "run_id": 37329528419,
-    "run_url": "https://github.com/ystoneman/kew-riverside-website/actions/runs/37329528419",
+    "run_attempt": 1,
+    "run_id": 37387990965,
+    "run_url": "https://github.com/ystoneman/kew-riverside-website/actions/runs/37387990965",
     "workflow_path": ".github/workflows/pages.yml"
   },
   "validator_sha256": "a9a195d258364028c354c1718626c5a27926fceff69a1365b7d97e3e88618d8a"
