@@ -1,8 +1,8 @@
 {
   "title": "Kew Riverside Primary School — Parent-led evidence and action, maintained by Yann Stoneman",
-  "researchChecked": "2026-09-23",
+  "researchChecked": "2026-10-05",
   "scope": "Curated public-record index; not exhaustive. Original documents remain with their publishers.",
-  "currentClosureStatus": "Pre-statutory consultation on closure effective 1 September 2027. Council-linked form states response deadline 16 October 2026. Later committee and statutory stages are planned and conditional; no final closure decision verified. Checked 21 September 2026.",
+  "currentClosureStatus": "Pre-statutory consultation on closure effective 1 September 2027. Council-linked form states response deadline 16 October 2026. Later committee and statutory stages are planned and conditional; no final closure decision verified. Checked 5 October 2026.",
   "coverageDefinitions": {
     "Reviewed": "The public document or webpage was retrieved and reviewed for the stated summary; this is not validation of all its claims.",
     "Index only": "A reviewed official index lists the item; its individual document was not reviewed.",
@@ -509,7 +509,7 @@
       "topic": "Decision process",
       "status": "Reviewed",
       "url": "https://www.richmond.gov.uk/media/fxhbilws/kew_riverside_consultation_leaflet.pdf",
-      "summary": "The Kew-specific proposal gives financial and pupil-number forecasts, an explanation of alternatives, a conditional timetable and ways to respond. It says a replacement amalgamation must be a free school. That statement should be checked against the September 2026 new-school rules and the existing-school alteration route. Legal availability alone does not prove that a route is feasible at Kew. The council-linked response form gives 16 October 2026 as the deadline.",
+      "summary": "The Kew-specific proposal gives financial and pupil-number forecasts, an explanation of alternatives, a conditional timetable and ways to respond. It says a replacement amalgamation must be a free school. That categorical rationale is superseded by the September 2026 new-school rules; a current route-specific appraisal is needed. The leaflet’s March 2027 reserve-exhaustion claim conflicts with the later Kew FAQ Q5 forecast. Legal availability alone does not prove that a route is feasible at Kew. The council-linked response form gives 16 October 2026 as the deadline.",
       "locator": "8 PDF pages. PDF pages 3–6: finance, forecasting, pupil series and alternatives; page 7: timetable; page 8: event and response routes. Publication date not stated; first retrieved 21 September and rechecked 23 September 2026.",
       "accessChecked": "2026-09-23"
     },
@@ -677,7 +677,7 @@
       "topic": "Funding & buildings",
       "status": "Reviewed",
       "url": "https://cabnet.richmond.gov.uk/documents/s500020983/Item%206%20Appendix%20A.pdf",
-      "summary": "The council records Kew Riverside Primary School's revenue balance at £231,685.09 on 31 March 2026, down £75,103.70 from a year earlier. Capital balances are separate. This dated actual does not show cash available today or the missing forecast bridge.",
+      "summary": "The council records Kew Riverside Primary School's revenue balance at £231,685.09 on 31 March 2026, down £75,103.70 from a year earlier. Capital balances are separate. This dated actual does not show cash available today or the approved budget and ledger. The later Kew FAQ publishes a separate indicative forecast.",
       "locator": "Appendix A associated with the 25 June 2026 Schools Forum, page 1, Kew Riverside Primary School row; revenue and capital columns. Document publication date not stated.",
       "accessChecked": "2026-09-23"
     },
@@ -733,9 +733,9 @@
       "topic": "Decision process",
       "status": "Reviewed",
       "url": "https://cabnet.richmond.gov.uk/documents/s500020722/11.%20School%20Organisation%20LBR%20EINA.pdf",
-      "summary": "This borough-wide assessment says detailed school-specific assessments for pupils and staff should follow as proposals move forward. We did not find a separate Kew assessment in the public material we reviewed. That does not prove that none exists, or that the equality duty was breached.",
-      "locator": "June 2026 committee appendix; approved 14 May 2026. PDF pages 1–2 describe scope; page 15 lists school-specific assessment action. Document publication date not stated.",
-      "accessChecked": "2026-09-23"
+      "summary": "Borough-wide assessment approved on 14 May 2026. It promises further school-specific pupil and staff assessment; it does not settle the funded effects of the Kew proposal. No Kew-specific assessment was found in the public pack reviewed.",
+      "locator": "PDF pages 1–2: scope and approval; page 15: school-specific actions. Approved 14 May 2026; linked to the 11 June committee papers.",
+      "accessChecked": "2026-10-05"
     },
     {
       "id": "prescribed-alterations-2025",
@@ -806,6 +806,34 @@
       "summary": "Reported school revenue balances for financial years ending March 2022–2026. The March 2026 figure is rounded in this service; the council balance appendix separately gives £231,685.09. A revenue reserve is not the same as an annual result.",
       "locator": "FBIT public balance-history response; school 133343, Actuals, rows year 2022–2026. Publication date not stated.",
       "accessChecked": "2026-09-23"
+    },
+    {
+      "id": "consultation-kew-faq",
+      "date": "",
+      "year": "Undated",
+      "title": "Kew Riverside Primary School: specific consultation FAQ",
+      "publisher": "London Borough of Richmond upon Thames",
+      "type": "Consultation",
+      "topic": "Decision process",
+      "status": "Reviewed",
+      "url": "https://www.richmond.gov.uk/media/3pderpuw/school_organisation_kew_riverside_faq.pdf",
+      "summary": "Q5 publishes annual budget gaps and projected balances, including £19,268 remaining at March 2027. Q6’s exhaustion wording conflicts. Q4’s categorical free-school rationale needs a current-law appraisal. Q9–10 do not supply net closure savings or the governing site/PFI instruments.",
+      "locator": "PDF page 4, Q5–6: indicative budget; pages 3–4, Q4: amalgamation; page 7, Q9–10: funding and site. Publication date not stated; checked 5 October 2026.",
+      "accessChecked": "2026-10-05"
+    },
+    {
+      "id": "richmond-accounts-2024-25",
+      "date": "2026-02-20",
+      "year": "2026",
+      "title": "Richmond audited accounts 2024/25: primary-school PFI",
+      "publisher": "London Borough of Richmond upon Thames",
+      "type": "Committee record",
+      "topic": "Funding & buildings",
+      "status": "Reviewed",
+      "url": "https://www.richmond.gov.uk/media/o4wcfkeu/statement_of_accounts_2024_25.pdf",
+      "summary": "Note 41 reports £42.937 million remaining payments across six primary schools at 31 March 2025, excluding future inflation and performance adjustments. This portfolio total is not Kew’s allocation, an avoidable closure saving or evidence of a land motive.",
+      "locator": "Note 41, printed pages 79–82 (PDF pages 80–83). Audited 20 February 2026. £5.266m capital + £1.987m interest + £35.684m services = £42.937m.",
+      "accessChecked": "2026-10-05"
     }
   ],
   "charts": {

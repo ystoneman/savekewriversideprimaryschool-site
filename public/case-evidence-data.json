@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "checkedOn": {
-    "finance": "2026-09-23",
+    "finance": "2026-10-05",
     "forecasts": "2026-09-23"
   },
   "sources": [
@@ -44,14 +44,59 @@
       "id": "school-organisation-june-2026",
       "url": "https://cabnet.richmond.gov.uk/documents/s500020721/11.%20School%20Organisation%20Report%20-%2011%20June%202026-%20Part%20A.pdf",
       "locator": "PDF page 4, Area 7: Kew, 2031/32 projection"
+    },
+    {
+      "id": "consultation-kew-faq",
+      "url": "https://www.richmond.gov.uk/media/3pderpuw/school_organisation_kew_riverside_faq.pdf",
+      "locator": "Kew-specific FAQ Q5, PDF page 4; indicative annual gaps and year-end positions"
     }
   ],
   "financeHistory": [
-    {"financialYear": "2021/22", "yearEnd": "2022-03-31", "incomePence": 107778600, "expenditurePence": 113142900, "inYearResultPence": -5364300, "revenueReservePence": 16701200, "sourcePrecision": "whole pound"},
-    {"financialYear": "2022/23", "yearEnd": "2023-03-31", "incomePence": 115246612, "expenditurePence": 107913419, "inYearResultPence": 7333193, "revenueReservePence": 24034348, "sourcePrecision": "penny"},
-    {"financialYear": "2023/24", "yearEnd": "2024-03-31", "incomePence": 108689400, "expenditurePence": 106658900, "inYearResultPence": 2030500, "revenueReservePence": 26064800, "sourcePrecision": "whole pound"},
-    {"financialYear": "2024/25", "yearEnd": "2025-03-31", "incomePence": 107868300, "expenditurePence": 103254200, "inYearResultPence": 4614100, "revenueReservePence": 30678900, "sourcePrecision": "whole pound"},
-    {"financialYear": "2025/26", "yearEnd": "2026-03-31", "incomePence": 101509800, "expenditurePence": 109020100, "inYearResultPence": -7510300, "revenueReservePence": 23168500, "sourcePrecision": "whole pound"}
+    {
+      "financialYear": "2021/22",
+      "yearEnd": "2022-03-31",
+      "incomePence": 107778600,
+      "expenditurePence": 113142900,
+      "inYearResultPence": -5364300,
+      "revenueReservePence": 16701200,
+      "sourcePrecision": "whole pound"
+    },
+    {
+      "financialYear": "2022/23",
+      "yearEnd": "2023-03-31",
+      "incomePence": 115246612,
+      "expenditurePence": 107913419,
+      "inYearResultPence": 7333193,
+      "revenueReservePence": 24034348,
+      "sourcePrecision": "penny"
+    },
+    {
+      "financialYear": "2023/24",
+      "yearEnd": "2024-03-31",
+      "incomePence": 108689400,
+      "expenditurePence": 106658900,
+      "inYearResultPence": 2030500,
+      "revenueReservePence": 26064800,
+      "sourcePrecision": "whole pound"
+    },
+    {
+      "financialYear": "2024/25",
+      "yearEnd": "2025-03-31",
+      "incomePence": 107868300,
+      "expenditurePence": 103254200,
+      "inYearResultPence": 4614100,
+      "revenueReservePence": 30678900,
+      "sourcePrecision": "whole pound"
+    },
+    {
+      "financialYear": "2025/26",
+      "yearEnd": "2026-03-31",
+      "incomePence": 101509800,
+      "expenditurePence": 109020100,
+      "inYearResultPence": -7510300,
+      "revenueReservePence": 23168500,
+      "sourcePrecision": "whole pound"
+    }
   ],
   "councilRevenueBalance": {
     "schoolUrn": "133343",
@@ -69,7 +114,7 @@
       "measure": "revenue reserve",
       "comparison": "exhausted by year end",
       "valuePence": null,
-      "reportedWording": "financial reserves will be fully used by the end of the 2026/27 financial year",
+      "reportedWording": "financial reserves will be fully used by the end of the 2026/27 financial year; earlier leaflet wording conflicts with later Kew FAQ Q5, which projects £19,268 remaining at March 2027",
       "sourceId": "consultation-leaflet"
     },
     {
@@ -82,9 +127,24 @@
     }
   ],
   "unavailableBudgetBridge": [
-    {"financialYear": "2026/27", "incomePence": null, "expenditurePence": null, "closingRevenueReservePence": null},
-    {"financialYear": "2027/28", "incomePence": null, "expenditurePence": null, "closingRevenueReservePence": null},
-    {"financialYear": "2028/29", "incomePence": null, "expenditurePence": null, "closingRevenueReservePence": null}
+    {
+      "financialYear": "2026/27",
+      "incomePence": null,
+      "expenditurePence": null,
+      "closingRevenueReservePence": null
+    },
+    {
+      "financialYear": "2027/28",
+      "incomePence": null,
+      "expenditurePence": null,
+      "closingRevenueReservePence": null
+    },
+    {
+      "financialYear": "2028/29",
+      "incomePence": null,
+      "expenditurePence": null,
+      "closingRevenueReservePence": null
+    }
   ],
   "pfiSchoolCharge": {
     "financialYear": "2025/26",
@@ -98,14 +158,26 @@
     "targetAcademicYear": "2025/26",
     "geography": "Kew planning area",
     "planningAreaCode": "3180007",
-    "schoolUrns": ["133343", "102884", "102921"],
+    "schoolUrns": [
+      "133343",
+      "102884",
+      "102921"
+    ],
     "nurseryExcluded": true,
     "actualMeasurementDate": "2026-01",
     "forecastSourceId": "kew-area-forecast-2025",
     "actualSourceId": "school-census-jan-2026",
     "observations": [
-      {"measure": "Reception–Year 6", "forecastPupils": 651, "actualPupils": 654},
-      {"measure": "Reception", "forecastPupils": 88, "actualPupils": 97}
+      {
+        "measure": "Reception–Year 6",
+        "forecastPupils": 651,
+        "actualPupils": 654
+      },
+      {
+        "measure": "Reception",
+        "forecastPupils": 88,
+        "actualPupils": 97
+      }
     ]
   },
   "forecastRevision": {
@@ -118,5 +190,28 @@
     "laterPublication": "Kew consultation leaflet",
     "laterPupils": 597,
     "laterSourceId": "consultation-leaflet"
-  }
+  },
+  "indicativeBudgetForecast": [
+    {
+      "financialYear": "2026/27",
+      "annualGapPence": 21241700,
+      "reportedClosingPence": 1926800,
+      "calculatedClosingPence": 1926800,
+      "sourceId": "consultation-kew-faq"
+    },
+    {
+      "financialYear": "2027/28",
+      "annualGapPence": 21517700,
+      "reportedClosingPence": -19590900,
+      "calculatedClosingPence": -19590900,
+      "sourceId": "consultation-kew-faq"
+    },
+    {
+      "financialYear": "2028/29",
+      "annualGapPence": 26179200,
+      "reportedClosingPence": -45770200,
+      "calculatedClosingPence": -45770100,
+      "sourceId": "consultation-kew-faq"
+    }
+  ]
 }
