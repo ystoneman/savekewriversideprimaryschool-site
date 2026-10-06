@@ -1,10 +1,10 @@
 # Kew Riverside Primary School: evidence checklist for a consultation response
 
-Prepared by Yann Stoneman, a Kew Riverside Primary School parent seeking to keep the school open. Research checked 23 September 2026; deadline and government guidance rechecked 26 September 2026. This is not an official consultation form or legal advice.
+Prepared by Yann Stoneman, a Kew Riverside Primary School parent seeking to keep the school open. Research checked 5 October 2026; deadline rechecked 5 October; closing-school guidance checked 26 September 2026. This is not an official consultation form or legal advice.
 
 ## Before submitting
 
-- Respond by 16 October 2026, the date on the council-linked form when checked on 26 September. No closing time is stated; check for updates.
+- Respond by 16 October 2026, the date on the council-linked form when checked on 5 October. No closing time is stated; check for updates.
 - This is pre-statutory consultation. A later statutory notice would have a separate representation period.
 - Read the council's proposal and supporting evidence. Choose the questions that matter to you; personal experience matters too.
 - State the outcome you seek: retention of the current school, teaching on the site, or another specific arrangement.
@@ -19,7 +19,7 @@ The form gives 16 October. The leaflet and general FAQ describe different initia
 ## Build a concise case
 
 ### 1. The budget bridge
-The council recorded a £231,685.09 revenue reserve at 31 March 2026, then forecast exhaustion by March 2027 and a deficit above £400,000 by 2028/29. Ask for each year's income, spending, balance and pupil assumptions. [Budget explanation](understand.html#budget).
+FAQ Q5 now projects a £212,417 annual gap in 2026/27, leaving £19,268 at March 2027, and an accumulated £457,702 deficit by 2028/29. Ask for the approved budget, ledger and assumptions; other exhaustion wording conflicts. [Budget explanation](understand.html#budget).
 
 ### 2. A deliverable alternative
 Which costed arrangements could retain education at Kew? Ask about the delivery body, premises, three-year budget and reasons for rejecting each option. A possible legal route alone is not a viable plan. [Alternatives](options.html#option-recovery-plan).
@@ -60,4 +60,4 @@ A petition does not replace a formal consultation response or establish a veto.
 
 Record each source's publisher, exact title, date, public URL and relevant page or paragraph. Label forecasts, claims by a publisher and your own analysis separately. Avoid sharing identifiable information about children.
 
-This is a research snapshot, checked 23 September 2026. Check current official material before acting.
+This is a research snapshot, updated 5 October 2026. Check current official material before acting.
