@@ -2,12 +2,12 @@
 
 ## Source consolidation — 7 October 2026
 
-- The 112 canonical public assets remain byte-for-byte equivalent to the latest verified final-domain promotion. All 64 Python privacy, packaging and release-gate tests pass. The compatibility asset manifest retains actual download and board files; live GitHub Pages CSV, calendar and Markdown MIME types were checked.
+- The 112 canonical public assets remain byte-for-byte equivalent to the latest verified final-domain promotion. All 66 Python privacy, packaging and release-gate tests pass. The compatibility asset manifest retains actual download and board files; live GitHub Pages CSV, calendar and Markdown MIME types were checked.
 - Focused compatibility coverage: 222 browser checks passed with 78 intentional no-script skips across Chromium, iPhone WebKit and no-JavaScript; eight final Copy/Clear visibility checks passed across Chromium/WebKit on both legacy origins. Recovery fixtures are fictional and external requests are intercepted.
 - Independent rendered UX review covered 320/390/1440px, both legacy origins, differing copies, storage/clipboard failures and fallback links. Findings about non-letter returns and visible Copy/Clear failure feedback were fixed and rechecked at `791230f`; no remaining actionable findings in that recheck.
 - Native iPhone 17 / iOS 26.5 Safari Simulator displayed separate fictional copies, copied with adjacent feedback, cleared both, continued to an isolated destination, and returned through Back without reviving words. Production storage and submission providers were untouched.
 - An earlier full local run finished with 2,192 passes, 87 skips and 11 failures: four stale no-script assertions fixed by the static storage-help paragraph, and seven artifact-file failures caused by overlapping local runners sharing the output directory. Do not count that run as a complete pass. Exact final-revision hosted gates are required before cutover. The proposed private helper routing and publication-link changes pass 96 isolated tests.
-- GitHub App installation, canonical merge, compatibility dispatch and live cutover remain pending. Draft source PR migration preserves unfinished branches and does not publish them. No live deployment or removal completion is claimed here.
+- The Actions-only GitHub App is installed on the two legacy repositories and its secrets are configured. Canonical merge, compatibility dispatch and live cutover remain pending. Draft source PR migration preserves unfinished branches and does not publish them. No live deployment or removal completion is claimed here.
 
 ## Shorter research reading layer — 6 October 2026
 
