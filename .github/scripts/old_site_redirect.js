@@ -46,12 +46,14 @@
   current.words.forEach((word, i) => {
    const section = document.createElement('section'), label = document.createElement('label'), text = document.createElement('textarea');
    text.id = 'recovered-' + i; text.readOnly = true; text.value = word.text;
-   label.htmlFor = text.id; label.textContent = word.label; section.append(label, text);
+   label.htmlFor = text.id; label.textContent = word.label;
+   const feedback = document.createElement('p'); feedback.id = 'copy-result-' + i; feedback.setAttribute('role', 'status');
+   section.append(label, feedback, text);
    if (word.name) { const name = document.createElement('p'); name.textContent = 'Saved display name: ' + word.name; section.append(name); }
    const button = document.createElement('button'); button.type = 'button'; button.textContent = 'Copy ' + (i ? 'pending words' : 'saved words');
    button.addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(word.text); status.textContent = 'Words copied. Paste them on the current website.'; }
-    catch { text.focus(); text.select(); status.textContent = 'Copy was unavailable. Your words are selected; use your device’s Copy command.'; }
+    try { await navigator.clipboard.writeText(word.text); feedback.textContent = 'Words copied. Paste them on the current website.'; feedback.scrollIntoView({ block: 'nearest' }); }
+    catch { text.focus(); text.select(); feedback.textContent = 'Copy was unavailable. Your words are selected; use your device’s Copy command.'; feedback.scrollIntoView({ block: 'nearest' }); }
    });
    section.append(button); container.append(section);
   });

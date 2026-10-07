@@ -148,7 +148,7 @@ for (const value of ['{broken', JSON.stringify({ v: 1, text: 'Expired fictional 
 }
 test('different draft and pending copies stay separate, copy failure is recoverable', async ({ browser }, info) => {
  test.skip(info.project.name === 'iphone-no-javascript', 'Storage recovery requires JavaScript');
- const { context, page, forbidden } = await setup(browser);
+ const { context, page, forbidden } = await setup(browser,{viewport:{width:320,height:568}});
  await context.addInitScript(origin => {
   if (location.origin !== origin || sessionStorage.getItem('seeded')) return;
   sessionStorage.setItem('seeded','yes');
@@ -161,7 +161,8 @@ test('different draft and pending copies stay separate, copy failure is recovera
   await expect(page.locator('#recovered-0')).toHaveValue('Fictional draft version');
   await expect(page.locator('#recovered-1')).toHaveValue('Different fictional pending version');
   await page.getByRole('button',{name:'Copy pending words'}).click();
-  await expect(page.locator('#recovery-status')).toContainText('selected');
+  await expect(page.locator('#copy-result-1')).toContainText('selected');
+  await expect(page.locator('#copy-result-1')).toBeInViewport();
   await expect(page.locator('#recovered-1')).toBeFocused();
   await page.getByRole('link',{name:'Continue on the current website'}).click();
   await page.goBack();
