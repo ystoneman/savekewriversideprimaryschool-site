@@ -48,7 +48,7 @@ class ReleaseTests(unittest.TestCase):
  def test_retry_follows_new_dispatch_ids_and_reports_partial_failure(self):
   from contextlib import ExitStack
   for ids,conclusion in [((20,21),'failure'),((30,31),'success')]:
-   responses=[{'workflow_run_id':ids[0]},{'workflow_run_id':ids[1]},self.child_run(),self.child_run(conclusion)]
+   responses=[{'workflow_run_id':ids[0]},self.child_run(),{'workflow_run_id':ids[1]},self.child_run(conclusion)]
    with ExitStack() as stack:
     mocks=[stack.enter_context(p) for p in self.synchronize_fixture(responses)]
     if conclusion=='failure':
@@ -66,8 +66,39 @@ class ReleaseTests(unittest.TestCase):
    mocks[4].assert_not_called()
  def test_wrong_dispatched_revision_cannot_claim_success(self):
   from contextlib import ExitStack
-  responses=[{'workflow_run_id':20},{'workflow_run_id':21},self.child_run(sha='b'*40)]
+  responses=[{'workflow_run_id':20},self.child_run(sha='b'*40)]
   with ExitStack() as stack:
    mocks=[stack.enter_context(p) for p in self.synchronize_fixture(responses)]
    with self.assertRaisesRegex(ValueError,'does not match'):release.synchronize(self.sha,10)
    mocks[4].assert_not_called()
+
+ def test_first_origin_failure_prevents_second_dispatch(self):
+  from contextlib import ExitStack
+  responses=[{'workflow_run_id':20},self.child_run('failure')]
+  with ExitStack() as stack:
+   mocks=[stack.enter_context(p) for p in self.synchronize_fixture(responses)]
+   with self.assertRaisesRegex(ValueError,'deployment failed'):release.synchronize(self.sha,10)
+   dispatches=[call for call in mocks[3].call_args_list if '/dispatches' in call.args[0]]
+   self.assertEqual(len(dispatches),1);mocks[4].assert_not_called()
+ def test_first_origin_is_verified_before_second_dispatch(self):
+  from contextlib import ExitStack
+  events=[]
+  responses=iter([{'workflow_run_id':20},self.child_run(),{'workflow_run_id':21},self.child_run()])
+  with ExitStack() as stack:
+   mocks=[stack.enter_context(p) for p in self.synchronize_fixture([])]
+   def request(url,*args,**kwargs):
+    if '/dispatches' in url:events.append('dispatch')
+    return next(responses)
+   mocks[3].side_effect=request;mocks[4].side_effect=lambda *args:events.append('verify')
+   release.synchronize(self.sha,10)
+   self.assertEqual(events[:4],['dispatch','verify','dispatch','verify'])
+
+ def test_queued_dispatch_waits_for_input_based_title_before_verification(self):
+  from contextlib import ExitStack
+  queued=dict(self.child_run(),status='queued',display_title='Validate and deploy compatibility site')
+  responses=[{'workflow_run_id':20},queued,self.child_run(),{'workflow_run_id':21},self.child_run()]
+  with ExitStack() as stack:
+   mocks=[stack.enter_context(p) for p in self.synchronize_fixture(responses)]
+   sleep=stack.enter_context(patch.object(release.time,'sleep'))
+   release.synchronize(self.sha,10)
+   sleep.assert_called_once_with(15);self.assertEqual(mocks[4].call_count,4)

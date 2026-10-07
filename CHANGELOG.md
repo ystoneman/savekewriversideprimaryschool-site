@@ -2,7 +2,14 @@
 
 ## Unreleased
 
-- Consolidate the maintained source and direct publishing into the final-domain repository. Generate minimal legacy redirects, saved-word recovery and automatically synchronized compatibility assets. Source history is preserved. Local checks and the completed independent rendered review are recorded in TESTING.md. Exact-revision hosted gates and live cutover remain pending.
+- Wait for a dispatched legacy run to complete before checking its input-based metadata, which GitHub may initially return before initialization. Keep exact dispatch IDs, prerequisite checks and stale-release rejection; never claim completion from a queued or mismatched run. The queued-metadata regression passes with all 67 Python checks.
+
+## 7 October 2026 — consolidated source and verified compatibility release
+
+- Complete source, tests and direct allowlist publishing now live in `savekewriversideprimaryschool-site`; both legacy repositories contain only deployment configuration. Source and destination histories are preserved. All 112 canonical public assets remain identical to the verified final-domain promotion.
+- Generate minimal legacy redirects and origin-specific Copy/Clear/Continue recovery, with actual downloads and matching public data. Old forms and analytics are removed; printed school-visit handoffs remain separate. Independent rendered UX review, affected-finding recheck, native Safari Simulator evidence and completed checks are recorded in TESTING.md.
+- PR #6 passed current validation and all five browser projects, then merged as `e1a33ac`. Production `37697015198` passed validation, browser tests and direct deployment; legacy `37698478894` and `37698724452` verified their own 72-file bundles. Canonical attempt 3 reverified both copies and completed successfully. Earlier attempts stopped on initializing run metadata without bypassing any check. All 112 canonical live bytes and MIME types matched source. The metadata follow-up above remains unreleased until its own checks and deployment pass.
+
 ### Earlier final-domain redirects
 
 - Forward ordinary HTML on both previous addresses directly to `savekewriversideprimaryschool.org`, preserving query strings and fragments. Saved-letter recovery, old-origin forms, downloads and the school visit handoff remain available. Legacy artifacts omit analytics initialization.

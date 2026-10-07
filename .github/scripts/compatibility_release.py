@@ -96,28 +96,27 @@ def synchronize(sha,run_id):
  guard(sha,run_id)
  with tempfile.TemporaryDirectory() as temporary:
   record=prepare(Path(temporary)/'bundle',sha,run_id)
- pending=[]
+ deadline=time.monotonic()+1500
  for repository,origin in TARGETS.items():
+  guard(sha,run_id)
   current=remote_record(origin)
   if current and current.get('digest')==record['digest']:
    verify(origin,record);print('Already current:',repository,flush=True);continue
   base='https://api.github.com/repos/'+repository
   result=request(base+'/actions/workflows/pages.yml/dispatches','POST',{'ref':'main','inputs':{'source_sha':sha,'source_run':str(run_id)}},True)
   require(isinstance(result,dict) and isinstance(result.get('workflow_run_id'),int),'Dispatch did not return an exact workflow run ID; completion remains unverified.')
-  pending.append((base,repository,origin,result['workflow_run_id']))
- deadline=time.monotonic()+1500
- while pending and time.monotonic()<deadline:
-  remaining=[]
-  for base,repository,origin,child in pending:
+  child=result['workflow_run_id'];completed=False
+  # Replace and verify one origin before starting the next; keep failures retryable.
+  while time.monotonic()<deadline:
    run=request(base+'/actions/runs/'+str(child),authenticated=True)
-   require(run.get('display_title')=='Compatibility '+sha and run.get('event')=='workflow_dispatch' and run.get('head_branch')=='main' and run.get('path')=='.github/workflows/pages.yml','Dispatched workflow does not match this compatibility release.')
-   if run and run['status']=='completed':
+   # GitHub can return the queued run before its input-based metadata is initialized.
+   # The exact dispatch ID stays authoritative; require provenance before completion.
+   if run['status']=='completed':
+    require(run.get('display_title')=='Compatibility '+sha and run.get('event')=='workflow_dispatch' and run.get('head_branch')=='main' and run.get('path')=='.github/workflows/pages.yml','Dispatched workflow does not match this compatibility release.')
     require(run['conclusion']=='success','Compatibility deployment failed: '+repository+'; rerun the canonical compatibility job after correcting it.')
-    verify(origin,record);print('Verified:',repository,flush=True)
-   else:remaining.append((base,repository,origin,child))
-  pending=remaining
-  if pending:time.sleep(15)
- require(not pending,'Compatibility deployment timed out; completion remains unverified.')
+    verify(origin,record);print('Verified:',repository,flush=True);completed=True;break
+   time.sleep(15)
+  require(completed,'Compatibility deployment timed out; completion remains unverified.')
  # Read every retained copy once more, including removals, after both deployments.
  for origin in TARGETS.values():verify(origin,record)
  print('All compatibility assets verified for',sha,flush=True)
