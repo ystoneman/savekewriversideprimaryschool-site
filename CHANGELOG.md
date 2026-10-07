@@ -2,8 +2,8 @@
 
 ## Unreleased
 
-- Consolidate the maintained source and direct publishing into the final-domain repository. Generate minimal legacy redirects, saved-word recovery and automatically synchronized compatibility assets. Source history is preserved. Validation and deployment results will be recorded after execution; no live cutover is claimed here.
- — final domain redirects
+- Consolidate the maintained source and direct publishing into the final-domain repository. Generate minimal legacy redirects, saved-word recovery and automatically synchronized compatibility assets. Source history is preserved. Local checks and the completed independent rendered review are recorded in TESTING.md. Exact-revision hosted gates and live cutover remain pending.
+### Earlier final-domain redirects
 
 - Forward ordinary HTML on both previous addresses directly to `savekewriversideprimaryschool.org`, preserving query strings and fragments. Saved-letter recovery, old-origin forms, downloads and the school visit handoff remain available. Legacy artifacts omit analytics initialization.
 - Browser redirects use replace navigation with a manual no-script link; no DNS migration is needed. Verification is recorded in TESTING.md.

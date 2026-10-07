@@ -12,7 +12,7 @@ This section supersedes the historical handoff below. The current source of trut
 
 ## Follow-ups
 
-1. **Formspree redirect:** `sent.html` is ready, but a custom redirect requires a paid plan. If the owner upgrades, configure the form redirect to `https://ystoneman.github.io/kew-riverside-website/sent.html`. Until then, the letters page carries the official step. Do not buy a plan or change provider settings without the owner.
+1. **Formspree redirect:** `sent.html` is ready, but a custom redirect requires a paid plan. If the owner upgrades, configure the form redirect to `https://savekewriversideprimaryschool.org/sent.html`. Until then, the letters page carries the official step. Do not buy a plan or change provider settings without the owner.
 2. **Dated content after the 29 September meeting (content update on 30 September).** The Share ideas card is already date-neutral without scripts, and scripts retitle it at 3.30pm; `meeting.js` hides the homepage invitation from 30 September. Nothing retires the rest:
    - `proposal.html#parent-plan`: steps 2–3 (PTA sessions on 25 and 28 September; "Tuesday 29 September · 3.30pm") and the timetable's "NEXT" entry at `#school-meeting`;
    - the homepage's Parent action plan box ("What to do now, PTA prep times…"), its no-JavaScript meeting invitation, the Share ideas shortcut ("…or a question for the meeting") and "What can we do together now?… attend the meeting";
@@ -81,7 +81,7 @@ Use Node 24. On this Mac its executable is `/Users/yannstoneman/.cache/codex-run
 2. Fetch current remote state before changes/pushes. PR #2 (`codex/site-theme`) is concurrent work; preserve it. This handoff was prepared on `codex/video-consent-handoff`; the implementation is already on main. The handoff commit is documentation-only and does not publish anything. No active Codex work should be assumed after this handoff.
 3. Use normal reviewed/validated publication. Main has required checks/review; the documented owner exception permits owner-authored work because the sole owner cannot self-approve. Do not change protection settings. PR #3 was merged only after its checks passed. Pages gates deploy on both validation and browser checks.
 4. Confirm a successful main deployment. A convenience script `/tmp/verify-kew-video-release.py` compares the six changed public files over HTTPS against commit `1cb3f52`; adjust the expected revision if fixes or concurrent work produce a newer deployed commit. Do not mistake a merged commit for a live release.
-5. Verify the live video page, private-contact route, privacy notice and preserved form links, ideally including native Safari. Update delivery notes with actual successful run/revision and give the user a concise completion report. Current public URL: https://ystoneman.github.io/kew-riverside-website/videos.html .
+5. Verify the live video page, private-contact route, privacy notice and preserved form links, ideally including native Safari. Update delivery notes with actual successful run/revision and give the user a concise completion report. Current public URL: https://savekewriversideprimaryschool.org/videos.html .
 
 The earlier sections below are historical context, not a second active task. Do not resume WhatsApp archiving, Alice correspondence, council-question planning, letter moderation or other unrelated work as part of this handoff. Private WhatsApp content must remain outside all Git repositories and website assets.
 
