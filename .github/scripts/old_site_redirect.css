@@ -1,0 +1,13 @@
+:root { color-scheme: light dark; font: 18px/1.6 system-ui, sans-serif; }
+body { margin: 0; background: Canvas; color: CanvasText; }
+main { max-width: 44rem; margin: auto; padding: 1.5rem; overflow-wrap: anywhere; }
+h1, h2 { line-height: 1.25; }
+a { color: LinkText; }
+button, textarea { font: inherit; }
+button, .cutover-link { min-height: 44px; padding: .6rem .8rem; }
+.cutover-link { display: inline-block; }
+textarea { box-sizing: border-box; width: 100%; min-height: 10rem; padding: .6rem; }
+section { margin-block: 1.5rem; }
+button { cursor: pointer; margin-block: .5rem; }
+:focus-visible { outline: 3px solid Highlight; outline-offset: 3px; }
+[hidden] { display: none !important; }
