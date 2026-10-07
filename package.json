@@ -1,0 +1,13 @@
+{
+  "name": "kew-riverside-website-checks",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:browser": "playwright test",
+    "test:iphone": "playwright test --project=iphone-webkit",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}
