@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add an explicitly consented community letter with the AI screened label, preserving the submitted text and chosen public name. Publication and notification remain subject to deployment verification.
+
 - Consolidate the maintained source and direct publishing into the final-domain repository. Generate minimal legacy redirects, saved-word recovery and automatically synchronized compatibility assets. Source history is preserved. Validation and deployment results will be recorded after execution; no live cutover is claimed here.
  — final domain redirects
 
