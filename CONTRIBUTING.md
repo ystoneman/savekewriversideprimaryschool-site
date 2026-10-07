@@ -8,7 +8,7 @@ Developers in the school community are welcome to suggest fixes and improvements
 2. Fork this repository into your own GitHub account, clone your fork and create a descriptive branch from the latest upstream `main`.
 3. Make one focused change. Read [AGENTS.md](AGENTS.md), the [protected visitor journeys](UX-DESIGN-DECISIONS.md#protected-visitor-journeys) and the relevant maintenance notes in [README.md](README.md). Follow the relevant review criteria; contributors do not need access to Codex or private services to propose a PR. The maintainer coordinates any additional specialist review.
 4. Run the relevant checks below, inspect your diff for private information, then push your branch to your fork.
-5. Open a pull request targeting `ystoneman/kew-riverside-website:main`. Describe the problem, resulting behaviour and checks actually run. A draft PR is welcome if you want early feedback. State any checks you could not run.
+5. Open a pull request targeting `ystoneman/savekewriversideprimaryschool-site:main`. Describe the problem, resulting behaviour and checks actually run. A draft PR is welcome if you want early feedback. State any checks you could not run.
 
 Useful first contributions include accessibility fixes, reproducible bug fixes, test improvements and sourced corrections. Discuss major redesigns, new dependencies, trackers, hosting changes or changes to contribution permissions first. Contribute code and assets you have the right to share; retain attribution and do not assume a publicly accessible image or document is licensed for reuse.
 

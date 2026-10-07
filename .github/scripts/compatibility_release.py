@@ -26,7 +26,7 @@ def files_in(folder):
  require(not any(p.is_symlink() for p in folder.rglob('*')),'Bundle contains a symlink.')
  return {p.relative_to(folder).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(folder.rglob('*')) if p.is_file() and p.name!=RECORD}
 def request(url,method='GET',data=None,authenticated=False):
- headers={'Accept':'application/vnd.github+json','User-Agent':'Kew-compatibility-release','Cache-Control':'no-cache'}
+ headers={'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2026-03-10','User-Agent':'Kew-compatibility-release','Cache-Control':'no-cache'}
  if authenticated:
   token=os.environ.get('GH_TOKEN');require(bool(token),'Missing scoped GitHub App token.')
   headers['Authorization']='Bearer '+token
@@ -88,7 +88,7 @@ def verify(origin,record):
    content_type=response.headers.get_content_type()
   require(actual==expected,'Compatibility bytes differ: '+origin+name)
   ext=Path(name).suffix
-  types={'.json':{'application/json'},'.pdf':{'application/pdf'},'.csv':{'text/csv','application/octet-stream','text/plain'},'.html':{'text/html'},'.js':{'application/javascript','text/javascript'},'.css':{'text/css'},'.png':{'image/png'},'.svg':{'image/svg+xml'},'.ics':{'text/calendar'}}
+  types={'.json':{'application/json'},'.pdf':{'application/pdf'},'.csv':{'text/csv'},'.md':{'text/markdown'},'.html':{'text/html'},'.js':{'application/javascript','text/javascript'},'.css':{'text/css'},'.png':{'image/png'},'.svg':{'image/svg+xml'},'.ics':{'text/calendar'}}
   if ext in types:require(content_type in types[ext],'Unexpected MIME: '+name+' '+content_type)
  return True
 
@@ -103,16 +103,14 @@ def synchronize(sha,run_id):
    verify(origin,record);print('Already current:',repository,flush=True);continue
   base='https://api.github.com/repos/'+repository
   result=request(base+'/actions/workflows/pages.yml/dispatches','POST',{'ref':'main','inputs':{'source_sha':sha,'source_run':str(run_id)}},True)
-  pending.append((base,repository,origin,result.get('workflow_run_id') if result else None))
+  require(isinstance(result,dict) and isinstance(result.get('workflow_run_id'),int),'Dispatch did not return an exact workflow run ID; completion remains unverified.')
+  pending.append((base,repository,origin,result['workflow_run_id']))
  deadline=time.monotonic()+1500
  while pending and time.monotonic()<deadline:
   remaining=[]
   for base,repository,origin,child in pending:
-   if child:
-    run=request(base+'/actions/runs/'+str(child),authenticated=True)
-   else:
-    runs=request(base+'/actions/runs?event=workflow_dispatch&per_page=30',authenticated=True)['workflow_runs']
-    run=next((r for r in runs if r.get('display_title')=='Compatibility '+sha),None)
+   run=request(base+'/actions/runs/'+str(child),authenticated=True)
+   require(run.get('display_title')=='Compatibility '+sha and run.get('event')=='workflow_dispatch' and run.get('head_branch')=='main' and run.get('path')=='.github/workflows/pages.yml','Dispatched workflow does not match this compatibility release.')
    if run and run['status']=='completed':
     require(run['conclusion']=='success','Compatibility deployment failed: '+repository+'; rerun the canonical compatibility job after correcting it.')
     verify(origin,record);print('Verified:',repository,flush=True)
