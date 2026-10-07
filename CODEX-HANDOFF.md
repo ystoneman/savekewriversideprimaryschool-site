@@ -1,4 +1,16 @@
-# Current handoff — 23 September 2026
+# Current handoff — 7 October 2026
+
+Maintain the complete source in `ystoneman/savekewriversideprimaryschool-site`, local checkout `savekewriverside-primaryschool-deployment/`. Normal changes use one canonical reviewed pull request and direct allowlist deployment. Both legacy repositories generate small compatibility bundles from exact checked canonical revisions; do not create domain candidates or manually promote complete copies. Current hosting and domain assignments remain unchanged.
+
+Consolidation PR #6 is deployed as `e1a33ac`. Production run `37697015198`, attempt 3, verified the canonical deployment and both compatibility copies; TESTING.md and CHANGELOG.md record the checks and the initializing-metadata retry. A follow-up hardens polling of newly dispatched runs without changing public bundle bytes. Publication or removal is complete only after canonical deployment, the entire compatibility job and matching complete letters, suggestions and supporters on all three origins. Preserve current withdrawals and corrections during retries or rollback.
+
+Unfinished source PRs #7, #9, #10 and #11 are preserved as drafts against canonical main. They are outside the consolidation release and require their own current-source checks and review before publication. Private intake, screening/permission records, notification receipts, runtime and workflow sources remain separate; no submission or notification was sent as part of this consolidation.
+
+The older handoff below is historical. Use the protected journey register for current priorities and dated release evidence for completed work; do not treat historical pending migrations or promotion steps as the operational workflow.
+
+---
+
+# Historical handoff — 23 September 2026
 
 This section supersedes the historical handoff below. The current source of truth for visitor priorities is the protected-journey register in `UX-DESIGN-DECISIONS.md`; completed releases and verification are in `CHANGELOG.md` and `TESTING.md`.
 

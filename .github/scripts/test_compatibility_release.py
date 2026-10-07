@@ -92,3 +92,13 @@ class ReleaseTests(unittest.TestCase):
    mocks[3].side_effect=request;mocks[4].side_effect=lambda *args:events.append('verify')
    release.synchronize(self.sha,10)
    self.assertEqual(events[:4],['dispatch','verify','dispatch','verify'])
+
+ def test_queued_dispatch_waits_for_input_based_title_before_verification(self):
+  from contextlib import ExitStack
+  queued=dict(self.child_run(),status='queued',display_title='Validate and deploy compatibility site')
+  responses=[{'workflow_run_id':20},queued,self.child_run(),{'workflow_run_id':21},self.child_run()]
+  with ExitStack() as stack:
+   mocks=[stack.enter_context(p) for p in self.synchronize_fixture(responses)]
+   sleep=stack.enter_context(patch.object(release.time,'sleep'))
+   release.synchronize(self.sha,10)
+   sleep.assert_called_once_with(15);self.assertEqual(mocks[4].call_count,4)
