@@ -67,6 +67,7 @@
   try { const word = before.words[0]; if (word && !failed) sessionStorage.setItem('kr-letter-cleared', JSON.stringify({ id: fingerprint(word.text), at: Date.now() })); }
   catch { failed = true; }
   render(); status.textContent = failed ? 'Some saved words could not be cleared. They may remain in browser storage; use your browser’s site-data controls if needed.' : 'Saved words cleared from this browser.';
+  if (failed) { status.tabIndex = -1; status.focus(); status.scrollIntoView({ block: 'center' }); }
  });
  const initial = render();
  let explicit = new URLSearchParams(location.search).get('recover') === 'draft';

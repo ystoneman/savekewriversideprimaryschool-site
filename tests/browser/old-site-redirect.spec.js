@@ -175,10 +175,11 @@ test('different draft and pending copies stay separate, copy failure is recovera
 });
 test('partial storage clear failure remains honest and keeps recoverable words', async ({ browser }, info) => {
  test.skip(info.project.name === 'iphone-no-javascript', 'Storage recovery requires JavaScript');
- const {context,page}=await setup(browser);
+ const {context,page}=await setup(browser,{viewport:{width:320,height:568}});
  await context.addInitScript(origin=>{
   if(location.origin!==origin)return;
   localStorage.setItem('kr-letter-draft',JSON.stringify({v:1,text:'Fictional retained words',saved:Date.now()}));
+  sessionStorage.setItem('kr-sent-letter',JSON.stringify({text:'Different pending words',at:Date.now()}));
   const original=Storage.prototype.removeItem;
   Storage.prototype.removeItem=function(key){if(this===localStorage && key==='kr-letter-draft')throw new DOMException('Blocked','SecurityError');return original.call(this,key);};
  },new URL(OLD).origin);
@@ -186,6 +187,8 @@ test('partial storage clear failure remains honest and keeps recoverable words',
   await page.goto(OLD+'letters.html?recover=draft');
   await page.getByRole('button',{name:'Clear saved words'}).click();
   await expect(page.locator('#recovery-status')).toContainText('could not be cleared');
+  await expect(page.locator('#recovery-status')).toBeFocused();
+  await expect(page.locator('#recovery-status')).toBeInViewport();
   await expect(page.locator('#recovered-0')).toHaveValue('Fictional retained words');
  }finally{await context.close();}
 });
