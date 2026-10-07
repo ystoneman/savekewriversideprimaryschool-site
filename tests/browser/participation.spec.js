@@ -3,7 +3,7 @@ const { readFileSync } = require('node:fs');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '../..');
-const SITE = 'https://ystoneman.github.io/kew-riverside-website/';
+const SITE = 'https://savekewriversideprimaryschool.org/';
 const LETTER = 'A fictional community letter used only in this test.';
 // A fixed moment in London time, so dated copy is tested at its real boundaries.
 const london = moment => new Date(moment + '+01:00');
@@ -241,7 +241,7 @@ test('Letters: coming back after Send asks whether it arrived, in view, and keep
   const submissions = await captureSubmissions(page);
   await sendFictionalLetter(page);
   await expect.poll(() => submissions.length).toBe(1);
-  await expect(page).toHaveURL('https://formspree.io/f/mwlpollw');
+  await expect(page).toHaveURL('https://formspree.io/f/xnpnenzy');
   await page.goBack();
   await expect(page).toHaveURL(/\/letters\.html$/);
   // This tab (on this site) remembers only that a letter was sent, for the thank-you page.
@@ -287,7 +287,7 @@ test('Letters: explicit removal on next-steps page clears both copies and a rest
   await expect.poll(() => submissions.length).toBe(1);
   // Recording the intercepted POST does not mean its document committed yet.
   // Establish the provider history entry before simulating the next-steps visit.
-  await page.waitForURL('https://formspree.io/f/mwlpollw', { waitUntil: 'load' });
+  await page.waitForURL('https://formspree.io/f/xnpnenzy', { waitUntil: 'load' });
   const reference = submissions[0].get('reference');
   await page.goto('/sent.html');
   await page.getByRole('button', { name: 'clear both copies now' }).click();
@@ -325,7 +325,7 @@ for (const file of ['about.html', 'corrections.html', 'supporters.html']) {
       await page.locator('input[name="supporter_consent"]').check();
       await page.locator('#allow-supporter').check();
     }
-    await page.locator('form[action="https://formspree.io/f/mwlpollw"] button[type="submit"]').click();
+    await page.locator('form[action="https://formspree.io/f/xnpnenzy"] button[type="submit"]').click();
     await expect.poll(() => submissions.length).toBe(1);
     await page.goto('/sent.html');
     await expect(page.locator('#sent-title')).toHaveText('Thank you.');
@@ -601,6 +601,7 @@ test('Thank-you page after a letter: make it official first, copy the words, the
   await expect(page.locator('#share-page')).toBeVisible({ visible: canShare });
   await expect(page.locator('#share-whatsapp')).toBeVisible({ visible: !canShare });
   expect(await page.locator('#share-whatsapp').getAttribute('href')).not.toContain('fictional');
+  expect(decodeURIComponent(await page.locator('#share-whatsapp').getAttribute('href'))).toContain(SITE);
   await page.getByRole('button', { name: 'clear both copies now' }).click();
   await expect(page.locator('#copy-step')).toBeHidden();
   await expect(page.locator('#open-step-number')).toHaveText('1');

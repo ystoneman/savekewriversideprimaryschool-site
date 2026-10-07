@@ -1,7 +1,7 @@
 /* First-party collector. Only fixed, reviewed labels leave the page.
  * Protocol: https://docs.umami.is/docs/api/sending-stats
  * No provider JavaScript, DOM recording, form listeners or visitor identity API.
- * Two tiers, both on unless the visitor or their browser objects: a basic page
+ * Two tiers, both off on the new domain until the visitor chooses: a basic page
  * view, and detailed usage (sections, active time, named actions). A visitor can
  * keep page views only ("Basic counts only") or turn both off.
  * No cookie is set and nothing is written to storage unless a choice is made.
@@ -9,12 +9,12 @@
 (() => {
   'use strict';
   const ENDPOINT = 'https://cloud.umami.is/api/send';
-  const HOST = 'ystoneman.github.io';
-  const ROOT = '/kew-riverside-website/';
+  const HOST = 'savekewriversideprimaryschool.org';
+  const ROOT = '/';
   const KEY = 'kew-analytics-choice-v1';
   const DAY = 24 * 60 * 60 * 1000;
-  // An explicit allow matches the default and lapses after 180 days. An objection
-  // or a basic-only choice is kept for five years before the default applies again.
+  // An explicit allow lapses after 180 days. An objection or a basic-only choice
+  // is kept for five years before the off-by-default state applies again.
   const LIFETIME = { allow: 180 * DAY, basic: 5 * 365 * DAY, deny: 5 * 365 * DAY };
   const PAGES = {
     'index.html': 'Home & evidence', 'proposal.html': 'Proposal & action plan',
@@ -55,6 +55,7 @@
   const file = location.pathname.split('/').pop() || 'index.html';
   if (!Object.hasOwn(PAGES, file)) return;
   const canonical = name => ROOT + (name === 'index.html' ? '' : name);
+  const sitePath = pathname => pathname === ROOT || /^\/[^/]+$/.test(pathname);
   const PRIVATE_PAGES = new Set(['corrections.html', 'feedback.html']);
   const privateRoute = PRIVATE_PAGES.has(file);
   let config, choice = null, storageOK = true, collecting = false;
@@ -79,19 +80,19 @@
         Number.isFinite(saved.until) && saved.until > Date.now() ? saved.choice : null;
     } catch (_) { storageOK = false; choice = null; }
   }
-  // Page views: on by default, off after an objection, a browser privacy signal,
-  // unreadable storage (an objection could not be honoured) or a private route.
+  // Page views require an explicit saved choice on this new origin. Earlier
+  // objections on the GitHub Pages origin cannot be read or migrated here.
   function counting() {
-    return config?.enabled === true && storageOK && choice !== 'deny' && !browserObjects() &&
-      location.hostname === HOST && location.pathname.startsWith(ROOT) && !privateRoute;
+    return config?.enabled === true && storageOK && ['allow', 'basic'].includes(choice) && !browserObjects() &&
+      location.hostname === HOST && sitePath(location.pathname) && !privateRoute;
   }
-  // Detailed usage: also on by default, unless the visitor kept basic counts only.
-  function detailed() { return counting() && choice !== 'basic'; }
+  // Detailed usage requires the visitor's explicit allow choice.
+  function detailed() { return counting() && choice === 'allow'; }
   function referrer() {
     // Fixed source buckets only. No external hostname, private path or campaign ID.
     try {
       const url = new URL(document.referrer);
-      if (url.hostname === HOST && url.pathname.startsWith(ROOT)) {
+      if (url.hostname === HOST && sitePath(url.pathname)) {
         const name = url.pathname.split('/').pop() || 'index.html';
         return Object.hasOwn(PAGES, name) && !PRIVATE_PAGES.has(name) ? canonical(name) : '';
       }
@@ -180,7 +181,7 @@
   function update() {
     const ready = config?.enabled === true;
     const locked = !ready || !storageOK || browserObjects();
-    const current = choice || 'allow';
+    const current = choice || 'deny';
     for (const [value, el] of Object.entries(buttons)) {
       el.disabled = locked;
       el.setAttribute('aria-pressed', String(!locked && !privateRoute && value === current));
@@ -189,8 +190,8 @@
       !storageOK ? 'Your browser could not save a choice, so analytics stays off.' :
       browserObjects() ? 'Your browser’s privacy signal is keeping all analytics off.' :
       privateRoute ? 'Analytics is off on this ' + (file === 'feedback.html' ? 'Share ideas' : 'private request') + ' page.' :
-      current === 'allow' ? 'Current setting: basic page counts and detailed usage' + (choice ? '.' : ' (the default).') :
-      current === 'deny' ? 'Current setting: analytics off.' : 'Current setting: basic page counts only.';
+      current === 'allow' ? 'Current setting: basic page counts and detailed usage.' :
+      current === 'deny' ? 'Current setting: analytics off' + (choice ? '.' : ' (the default on this domain).') : 'Current setting: basic page counts only.';
   }
   function close() { panel.hidden = true; update(); if (opener?.isConnected && !opener.closest('[hidden]')) opener.focus({ preventScroll: true }); }
   function open(from) { if (!panel.isConnected) document.body.append(panel); opener = from; panel.hidden = false; update(); panel.querySelector('h2').focus({ preventScroll: true }); }
@@ -201,8 +202,8 @@
     const title = node('h2', 'Analytics choices'); title.id = 'analytics-title'; title.tabIndex = -1;
     const dismiss = button('×', close); dismiss.className = 'analytics-close'; dismiss.setAttribute('aria-label', 'Close analytics choices');
     panel.append(title, dismiss,
-      node('p', 'Basic page counts are on by default. Umami records which page opened, which search engine or page of this site led you here (or a broad category), and the device, browser and approximate location it works out from your connection. No cookies are set.'),
-      node('p', 'Detailed usage is on by default too: which broad sections you view, active viewing time, and which key links or downloads you open. Choose Basic counts only to stop it, or Turn analytics off to stop everything.'));
+      node('p', 'Analytics is off on this new domain until you choose a level. Basic counts only records page opens and broad sources. Umami infers device, browser and approximate location. No cookies are set.'),
+      node('p', 'Include detailed usage also counts broad sections, active time and key link opens. Turn analytics off stops both levels.'));
     // The choices come before the longer explanation so they fit a small phone screen.
     status = node('p'); status.setAttribute('role', 'status'); panel.append(status);
     const actions = node('div', '', 'analytics-actions');
@@ -228,7 +229,7 @@
     let label = Object.hasOwn(ACTIONS, a.href) ? ACTIONS[a.href] : undefined;
     let url;
     try { url = new URL(a.href); } catch (_) { return; }
-    if (url.origin === location.origin && url.pathname.startsWith(ROOT)) {
+    if (url.origin === location.origin && sitePath(url.pathname)) {
       const name = url.pathname.split('/').pop() || 'index.html';
       // A jump within this page (menus, Back to top) is not opening a page.
       if (PRIVATE_PAGES.has(name) || name === file) return;

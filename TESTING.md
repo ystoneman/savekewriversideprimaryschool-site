@@ -46,6 +46,10 @@
 
 ## Simple parent testimonials — 1 October 2026
 
+Release follow-up: source PR #57 passed validation and all five browser projects at `9281259` (run `36876649899`, attempt 2). A stalled dependency installation was restarted; no check was bypassed. Native iPhone 17 / iOS 26.5 Safari then opened Help and the live permission form by tapping, and Back returned to the styled page with Help open. No response or upload was submitted. These later checks supersede the initial native-interaction uncertainty below. The unfamiliar-person real-phone trial remains unperformed.
+
+The new-domain candidate includes source main `ff4bc7ad9a87173413f1ad6cfd8ae1ca04e6d30f`. All 19 source changes match after normalizing only the pre-existing host/provider bindings. Its public allowlist contains 109 files; 54 Python checks pass. The candidate preserves the new-domain form endpoint, default-off analytics, canonical/share URLs, existing QR/PDF destinations and draft/privacy recovery. Current candidate dispatch and deployment are still pending.
+
 - Extend video journeys for plain-page and `#upload` arrival, three adult/purpose/duration rules, keyboard Help, direct/repeated older anchors, saved private-only permissions, withdrawal and provider handoffs. Static Help stays open without scripts; broad navigation/mobile/privacy checks remain enabled.
 - Update contextual-link assertions for the approved wording. The Back regression now uses a deep older-upload link and retains exact reading-position, viewport, history-length and unrelated-state assertions. Its fictional state is merged with application state; replacing all state had incorrectly erased the new disclosure state. It also asserts Help stays open on return.
 - Local Python suite: 54 passed. Public allowlist: 105 files. Focused desktop Chromium video suite: 24 passed. Complete five-project run: 1,896 passed, 48 skipped, two Safari Back fixture failures; after preserving the disclosure state in the fixture, both Back cases passed. Final exact-revision hosted all-project checks are required before merging.
@@ -55,6 +59,7 @@
 - The owner approved the mockup and requested build/deploy. An unfamiliar person's real-phone attempt remains unperformed; simulator/emulation and specialist review are not that test. Deployment and live verification are recorded separately.
 
 The suite covers the site's main visitor journeys across Chromium and WebKit, with touch, keyboard and JavaScript-disabled cases. It does not establish that every possible device, browser, assistive technology or third-party service works. Xcode Simulator Safari is checked separately for mobile interaction changes.
+
 
 ## Legacy forwarding checks — 30 September 2026
 
@@ -77,7 +82,11 @@ Hosted iPhone WebKit trace for run 36682831347 shows a native focus call returni
 
 ## Calendar-independent invitation checks — 30 September 2026
 
-Three existing invitation and motion tests now fix only the browser date to 28 September, before the meeting invitation expires. Every assertion remains. Separate calendar-boundary coverage still checks expiry through 30 September and the London evening boundary, including no-JavaScript fallback. This is test setup only; it changes no public asset.
+The new-domain release rerun exposed three existing tests that expected the meeting invitation after its 29 September expiry. Those invitation and motion scenarios now fix only the browser date to 28 September; every existing assertion remains. The separate calendar-boundary test still checks the transition through 30 September and the London evening boundary, including no-JavaScript fallback. This changes test setup only, with no public asset change. Fresh local and hosted results are recorded in the deployment release evidence.
+
+## Independent new-domain candidate — 28 September 2026
+
+The candidate starts from authoritative source `d9d059e` and reuses PR #47’s public domain assets. Both PDFs and all four new QR images match their previously checked PR #47 bytes exactly; the original QR files and public boards match authoritative `main`. The original GitHub Pages site remains independent; nothing in local candidate testing establishes the new domain’s TLS certificate or live asset delivery. All five form actions and private-form state clearing use the separate endpoint `xjykjyrk`; the validator and intercepted browser fixture require that exact endpoint. All 52 Python checks, 108-public-file validation, generated research freshness, JavaScript syntax and whitespace checks passed. The new draft-recovery link regression passed all four scripted browser projects. Full browser validation, rendered candidate review and live HTTPS verification are pending. Tests intercept external form and analytics requests and use fictional inputs; provider inbox receipt is a separate release check.
 
 ## Video route for families choosing a school — 28 September 2026
 

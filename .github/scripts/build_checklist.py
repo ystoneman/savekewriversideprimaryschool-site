@@ -18,7 +18,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 SITE = Path(__file__).resolve().parents[2]
 source = (SITE / 'response-checklist.md').read_text()
-PUBLIC_BASE = 'https://ystoneman.github.io/kew-riverside-website/'
+PUBLIC_BASE = 'https://savekewriverside.org/'
 INK = colors.HexColor('#183733')
 TEAL = colors.HexColor('#0e6470')
 MUTED = colors.HexColor('#4b625c')

@@ -536,8 +536,8 @@ test('Parent plan: flyer makers can download the permanent homepage and visit QR
   await activate(more.locator('summary'), hasTouch);
   // Pin each filename to its own paragraph and link name so the two QR purposes cannot be swapped.
   for (const [id, label, base, caveat, svgTitle] of [
-    ['share-qr', 'Homepage', 'kew-riverside-website-qr', 'in your own name', 'QR code for the Kew Riverside Primary School website'],
-    ['visit-qr', 'Visit', 'kew-riverside-visit-qr', 'agree its wording with them', 'QR code for Kew Riverside Primary School visit enquiries'],
+    ['share-qr', 'Homepage', 'savekewriverside-home-qr', 'in your own name', 'QR code for the Kew Riverside Primary School website'],
+    ['visit-qr', 'Visit', 'savekewriverside-visit-qr', 'agree its wording with them', 'QR code for Kew Riverside Primary School visit enquiries'],
   ]) {
     const share = more.locator('#' + id);
     await expect(share).toBeVisible();

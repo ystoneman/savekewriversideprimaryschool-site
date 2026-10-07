@@ -84,5 +84,5 @@ test('Rally: calendar download uses London evening time and retains pending arra
   expect(body).toContain('DTEND:20261006T174500Z');
   expect(body).toContain('STATUS:TENTATIVE');
   expect(body).toContain('access arrangements awaiting confirmation');
-  expect(body).toContain('URL:https://savekewriverside.org/rally.html');
+  expect(body).toContain('URL:https://savekewriversideprimaryschool.org/rally.html');
 });

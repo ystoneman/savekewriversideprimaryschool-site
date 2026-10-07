@@ -205,7 +205,7 @@ class SiteStructureTests(unittest.TestCase):
         self.assertNotIn('fundraising-checklist.html', PUBLIC_FILES)
 
     def test_brief_previews_have_distinct_public_images_and_proposal_context(self):
-        base = 'https://ystoneman.github.io/kew-riverside-website/'
+        base = 'https://savekewriversideprimaryschool.org/'
         images = set()
         for role in ('trustees', 'admin'):
             name = f'fundraising-{role}.html'

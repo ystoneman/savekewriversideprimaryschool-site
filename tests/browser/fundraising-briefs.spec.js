@@ -21,7 +21,7 @@ for (const [file, title] of [
     expect(response.status()).toBe(200);
     const html = await response.text();
     const imageUrl = html.match(/<meta property="og:image" content="([^"]+)"/)[1];
-    expect(imageUrl).toMatch(/^https:\/\/ystoneman\.github\.io\/kew-riverside-website\/og-fundraising-/);
+    expect(imageUrl).toMatch(/^https:\/\/savekewriversideprimaryschool\.org\/og-fundraising-/);
     // Fetch the same project-prefixed path locally; never contact a sharing service.
     const image = await request.get(new URL(imageUrl).pathname);
     expect(image.status()).toBe(200);

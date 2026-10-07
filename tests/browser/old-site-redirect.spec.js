@@ -71,13 +71,12 @@ for (const text of ['abc', 'A fictional saved letter about our neighbourhood sch
     await context.addInitScript(({ draft, origin }) => { if (location.origin === origin && !sessionStorage.getItem('seeded')) { localStorage.setItem('kr-letter-draft', JSON.stringify(draft)); sessionStorage.setItem('seeded', 'yes'); } }, { draft, origin: new URL(OLD).origin });
     try {
       await page.goto(OLD + 'letters.html#letter-form');
-      await expect(page.locator('#message')).toHaveValue(text);
-      await expect(page.locator('#letter-form .cutover-notice')).toBeVisible();
-      await expect(page.locator('#allow-public')).not.toBeChecked();
-      await expect(page.locator('#email')).toHaveValue('');
+      await expect(page.locator('#recovered-0')).toHaveValue(text);
+      await expect(page.locator('#letter-form')).toBeVisible();
+      await expect(page.locator('form')).toHaveCount(0);
       expect(await page.evaluate(() => JSON.parse(localStorage.getItem('kr-letter-draft')))).toEqual(draft);
-      await page.getByRole('button', { name: 'Clear draft', exact: true }).click();
-      await expect(page.locator('#message')).toHaveValue('');
+      await page.getByRole('button', { name: 'Clear saved words', exact: true }).click();
+      await expect(page.locator('textarea')).toHaveCount(0);
       await page.reload();
       await expect(page).toHaveURL(NEW + 'letters.html#letter-form');
       expect(forbidden).toEqual([]);
@@ -91,10 +90,9 @@ for (const area of ['localStorage', 'sessionStorage']) {
     await context.addInitScript(area => { Object.defineProperty(window, area, { get() { throw new DOMException('Blocked', 'SecurityError'); } }); }, area);
     try {
       await page.goto(OLD + 'letters.html#letter-form');
-      await expect(page.locator('#to-choices')).toBeVisible();
-      await page.locator('#message').fill('Fictional words without browser storage.');
-      await page.locator('#to-choices').click();
-      await expect(page.locator('#step-choose')).toBeVisible();
+      await expect(page.locator('#recovery-status')).toContainText('storage is unavailable');
+      await expect(page.locator('.cutover-link')).toBeVisible();
+      await expect(page.locator('form')).toHaveCount(0);
       await expect(page).toHaveURL(OLD + 'letters.html#letter-form');
     } finally { await context.close(); }
   });
@@ -104,7 +102,7 @@ test('explicit recovery and current new-site recovery link stay on old origin', 
   const { context, page } = await setup(browser);
   try {
     await page.goto(OLD + 'letters.html?recover=draft#letter-form');
-    await expect(page.locator('#letter-form .cutover-link')).toBeVisible();
+    await expect(page.locator('.cutover-link')).toBeVisible();
     await expect(page).toHaveURL(OLD + 'letters.html?recover=draft#letter-form');
     await page.goto(NEW);
     await page.getByRole('link', { name: 'Recover old draft' }).click();
@@ -127,11 +125,11 @@ for (const relative of ['letters.html', 'sent.html']) {
     try {
       await page.goto(OLD + relative);
       await expect(page).toHaveURL(OLD + relative);
-      await expect(page.getByRole('button', { name: /Copy my letter/ })).toBeVisible();
-      await expect(page.getByRole('button', { name: /clear this draft|clear both copies now/i })).toBeVisible();
-      await page.getByRole('button', { name: /Copy my letter/ }).click();
+      await expect(page.getByRole('button', { name: /Copy saved words/ })).toBeVisible();
+      await expect(page.getByRole('button', { name: /Clear saved words/ })).toBeVisible();
+      await page.getByRole('button', { name: /Copy saved words/ }).click();
       await expect.poll(() => page.evaluate(() => window.__copied)).toBe('Fictional pending letter, not a receipt.');
-      await page.getByRole('button', { name: /clear this draft|clear both copies now/i }).click();
+      await page.getByRole('button', { name: /Clear saved words/ }).click();
       expect(await page.evaluate(() => localStorage.getItem('kr-letter-draft'))).toBeNull();
       expect(await page.evaluate(() => sessionStorage.getItem('kr-sent-letter'))).toBeNull();
       await page.reload();
@@ -148,15 +146,83 @@ for (const value of ['{broken', JSON.stringify({ v: 1, text: 'Expired fictional 
     finally { await context.close(); }
   });
 }
+test('different draft and pending copies stay separate, copy failure is recoverable', async ({ browser }, info) => {
+ test.skip(info.project.name === 'iphone-no-javascript', 'Storage recovery requires JavaScript');
+ const { context, page, forbidden } = await setup(browser,{viewport:{width:320,height:568}});
+ await context.addInitScript(origin => {
+  if (location.origin !== origin || sessionStorage.getItem('seeded')) return;
+  sessionStorage.setItem('seeded','yes');
+  localStorage.setItem('kr-letter-draft', JSON.stringify({v:1,text:'Fictional draft version',name:'Example',saved:Date.now()}));
+  sessionStorage.setItem('kr-sent-letter',JSON.stringify({text:'Different fictional pending version',at:Date.now()}));
+  Object.defineProperty(navigator,'clipboard',{value:{writeText:async()=>{throw new Error('Unavailable');}}});
+ },new URL(OLD).origin);
+ try {
+  await page.goto(OLD+'letters.html?recover=draft#letter-form');
+  await expect(page.locator('#recovered-0')).toHaveValue('Fictional draft version');
+  await expect(page.locator('#recovered-1')).toHaveValue('Different fictional pending version');
+  await page.getByRole('button',{name:'Copy pending words'}).click();
+  await expect(page.locator('#copy-result-1')).toContainText('selected');
+  await expect(page.locator('#copy-result-1')).toBeInViewport();
+  await expect(page.locator('#recovered-1')).toBeFocused();
+  await page.getByRole('link',{name:'Continue on the current website'}).click();
+  await page.goBack();
+  await expect(page.locator('#recovered-1')).toHaveValue('Different fictional pending version');
+  await page.getByRole('button',{name:'Clear saved words'}).click();
+  await expect(page.locator('textarea')).toHaveCount(0);
+  await page.reload();
+  await expect(page.locator('textarea')).toHaveCount(0);
+  expect(forbidden).toEqual([]);
+ } finally { await context.close(); }
+});
+test('partial storage clear failure remains honest and keeps recoverable words', async ({ browser }, info) => {
+ test.skip(info.project.name === 'iphone-no-javascript', 'Storage recovery requires JavaScript');
+ const {context,page}=await setup(browser,{viewport:{width:320,height:568}});
+ await context.addInitScript(origin=>{
+  if(location.origin!==origin)return;
+  localStorage.setItem('kr-letter-draft',JSON.stringify({v:1,text:'Fictional retained words',saved:Date.now()}));
+  sessionStorage.setItem('kr-sent-letter',JSON.stringify({text:'Different pending words',at:Date.now()}));
+  const original=Storage.prototype.removeItem;
+  Storage.prototype.removeItem=function(key){if(this===localStorage && key==='kr-letter-draft')throw new DOMException('Blocked','SecurityError');return original.call(this,key);};
+ },new URL(OLD).origin);
+ try {
+  await page.goto(OLD+'letters.html?recover=draft');
+  await page.getByRole('button',{name:'Clear saved words'}).click();
+  await expect(page.locator('#recovery-status')).toContainText('could not be cleared');
+  await expect(page.locator('#recovery-status')).toBeFocused();
+  await expect(page.locator('#recovery-status')).toBeInViewport();
+  await expect(page.locator('#recovered-0')).toHaveValue('Fictional retained words');
+ }finally{await context.close();}
+});
+for(const relative of ['evidence.html?search=schools#source-search','feedback.html?kind=privacy#feedback-form','videos.html#upload','index.html#records']) {
+ test('failed redirect script has a useful manual destination: '+relative,async({browser})=>{
+  const {context,page}=await setup(browser,{javaScriptEnabled:false});
+  try{
+   await page.goto(OLD+relative);
+   await expect(page.locator('.cutover-link')).toBeVisible();
+   await expect(page.locator('.cutover-link')).toHaveAttribute('href',NEW+relative.split(/[?#]/)[0].replace('index.html',''));
+   await expect(page.locator('form')).toHaveCount(0);
+  }finally{await context.close();}
+ });
+}
+for (const kind of ['suggestion','correction','contact']) {
+ test('non-letter pending return keeps its canonical next-steps destination: '+kind,async({browser},info)=>{
+  test.skip(info.project.name==='iphone-no-javascript','Session state requires scripts');
+  const {context,page}=await setup(browser);
+  await context.addInitScript(({origin,kind})=>{
+   if(location.origin===origin)sessionStorage.setItem('kr-sent-kind',JSON.stringify({kind,at:Date.now()}));
+  },{origin:new URL(OLD).origin,kind});
+  try {await page.goto(OLD+'sent.html');await expect(page).toHaveURL(NEW+'sent.html');}
+  finally {await context.close();}
+ });
+}
 test('no JavaScript retains useful old page and manual new-address link', async ({ browser }) => {
   const { context, page, forbidden } = await setup(browser, { javaScriptEnabled: false, viewport: { width: 320, height: 568 } });
   try {
     await page.goto(OLD + 'letters.html?recover=draft#letter-form');
     await expect(page.locator('.cutover-link')).toBeVisible();
-    await expect(page.locator('#message')).toBeVisible();
-    const endpoint = fs.readFileSync('letters.html', 'utf8').includes('xjykjyrk') ? 'xjykjyrk' : 'mwlpollw';
-    await expect(page.locator('#letter-form')).toHaveAttribute('action', 'https://formspree.io/f/' + endpoint);
-    await expect(page.locator('#allow-public')).not.toBeChecked();
+    await expect(page.locator('form')).toHaveCount(0);
+    await expect(page.locator('#storage-help')).toBeVisible();
+    await expect(page.locator('#storage-help')).toContainText('JavaScript is required');
     await page.locator('.cutover-link').click();
     await expect(page).toHaveURL(NEW + 'letters.html');
     expect(forbidden).toEqual([]);

@@ -67,3 +67,13 @@ test('QR: nested server paths expose only public files', async ({ request }) => 
     expect((await request.get(name)).status()).toBe(404);
   }
 });
+
+test('QR: earlier downloaded homepage and visit images remain public after the domain change', async ({ request }) => {
+  for (const base of ['kew-riverside-website-qr', 'kew-riverside-visit-qr']) {
+    for (const extension of ['png', 'svg']) {
+      const response = await request.get(`/qr/${base}.${extension}`);
+      expect(response.status()).toBe(200);
+      expect(response.headers()['content-type']).toContain(extension === 'png' ? 'image/png' : 'image/svg+xml');
+    }
+  }
+});

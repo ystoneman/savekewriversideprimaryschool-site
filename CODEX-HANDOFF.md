@@ -38,11 +38,11 @@ The user asked to hand this task to Claude Code because of their remaining Codex
 
 ### Current state
 
-- Implementation is committed, pushed and merged into `main`: `1cb3f5234d1730af8b01de1055848e29971b8217`, via PR https://github.com/ystoneman/kew-riverside-website/pull/3. Original reviewed branch commit: `cd13be342c55bebcb270112f661fad14de235dd3`.
+- Implementation is committed, pushed and merged into `main`: `1cb3f5234d1730af8b01de1055848e29971b8217`, via PR https://github.com/ystoneman/savekewriversideprimaryschool-site/pull/3. Original reviewed branch commit: `cd13be342c55bebcb270112f661fad14de235dd3`.
 - Both live Google forms and the Dropbox file request have already been updated and verified through their ordinary browser UIs. Do not recreate them or repeat edits unnecessarily.
 - **Website deployment is NOT complete.** PR run `35780002723` passed all 671 browser tests, 40 Python tests and validation of 69 public assets. The subsequent main deployment run `35781407831` failed one browser test; `validate` passed, `deploy` was skipped, and 670 browser tests passed.
 - Failure: `[desktop-webkit] tests/browser/lessons.spec.js:21`, “Research: all eight graphics expand with readable data, sources and working downloads”. At line 26, after clicking the summary, `#exhibit-1` lacked the `open` attribute. This research-page code was unchanged by this task. Do not assume the cause or dismiss it as flaky without inspecting the trace.
-- Run: https://github.com/ystoneman/kew-riverside-website/actions/runs/35781407831 . Download `browser-test-failures` to a temporary directory with `gh run download 35781407831 -n browser-test-failures -D /tmp/kew-video-deploy-artifacts`. Failure screenshot, error context and trace are under `test-results/lessons-Research-all-eight-e7413-urces-and-working-downloads-desktop-webkit/` in that artifact.
+- Run: https://github.com/ystoneman/savekewriversideprimaryschool-site/actions/runs/35781407831 . Download `browser-test-failures` to a temporary directory with `gh run download 35781407831 -n browser-test-failures -D /tmp/kew-video-deploy-artifacts`. Failure screenshot, error context and trace are under `test-results/lessons-Research-all-eight-e7413-urces-and-working-downloads-desktop-webkit/` in that artifact.
 - The full failed job log is already at `/tmp/kew-video-deploy-failure.log` on this Mac. Local successful full-suite log: `/tmp/kew-video-tests.log`; focused successful log: `/tmp/kew-video-fixed.log`; Python log: `/tmp/kew-video-python.log`.
 
 ### Claude Code continuation — 22 September 2026

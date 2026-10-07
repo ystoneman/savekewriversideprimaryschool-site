@@ -541,6 +541,13 @@ Verification: independent campaign/evidence reviews of the actual text; independ
 
 Recipients need to recognise why they were sent a trustee or account-setup brief before opening the link (J1/J9). Add distinct role-first titles and descriptions, plus small original green/cream preview cards. Both cards carry proposed-fund and donations-closed wording; essential status is not left only to a description that a messaging client may truncate. Use centrally placed text so square crops preserve role and status. Absolute canonical and image URLs support script-free crawlers; preserve noindex and add no incoming navigation. Visible page bodies and all existing journeys are unchanged. Actual client cropping and cached previews remain under the sharing service's control; metadata validation does not certify WhatsApp rendering.
 
+
+### Independent new-domain verification — 28 September 2026
+
+After the failed custom-domain cutover, visitors need the original GitHub Pages address to stay functional while the new domain is verified independently. Prepare the same protected J1–J9 journeys as a separate deployment, with no redirect from the original repository. New-domain shares and downloads use its own address; existing printed QR links continue to use the original site. The original site’s Formspree project and browser choices remain usable; the candidate uses a separate new-domain form endpoint. Analytics on the new origin starts off until explicitly chosen, and its draft notice links to the original Letters page for recovery in the same browser.
+
+The alternative of setting the original repository’s custom domain again would redirect existing visitors before the destination is proven. It is excluded during verification. Every source update, especially a correction or removal, needs promotion to both deployments during overlap. Independent campaign/UX planning review identified provider intake integration and live styled HTTPS checks as release conditions. Independent campaign/UX source review of the candidate diff found no additional code blocker after the draft-recovery wording was clarified. The new endpoint is pinned in all five forms and in the private-state handler and validation/tests. Full browser, rendered and live checks remain pending; this record is not a claim of successful publication.
+
 ## Legacy address forwarding — 30 September 2026 (J1–J9)
 
 The user authorized forwarding the old GitHub website after verified HTTPS launch
@@ -564,6 +571,19 @@ the new host's provider and analytics settings. Generated old HTML omits analyti
 without changing saved choices. Planning campaign and UX review accepted these
 conditions; implementation, hosted gates and live verification are still pending.
 
+
+## Primary School address migration — preparation, 3 October 2026
+
+The owner requests a permanent redirect only after trusted TLS and complete site readiness. The new address is prepared as a separate deployment, with a restricted form project and the latest authoritative content. Existing printed QR images and PDF links retain their previous addresses during preparation; the eventual redirect must preserve their paths and anchors. All J1–J9 routes remain available.
+
+Saved Letters drafts and unfinished provider returns belong to the origin that stored them. The new form therefore links to both `savekewriverside.org` and the earlier GitHub Letters page in the same browser. The old Letters and Sent routes must retain origin-local recovery and working restricted form endpoints. A blanket server redirect would bypass this recovery, so those routes require explicit exceptions or a tested storage-aware gateway. Privacy choices start independently on the new origin.
+
+Independent UX planning review identified these recovery and readiness requirements. Source and rendered review, complete browser tests, provider intake integration and old-domain redirect edge certificate verification remain release conditions. No redirect is enabled by this source candidate.
 ## Final domain redirect — 5 October 2026
 
 J1–J9: direct both previous website addresses to the matching Primary School domain page while preserving old shared links and J4 saved-letter recovery. Reuse the browser artifact transformation with replace navigation and query/fragment retention. Complete recovery and no-script pages retain their origin-specific form endpoints; downloads, JSON boards and the school visit handoff remain unchanged. Legacy artifacts omit analytics initialization. DNS migration is unnecessary for this browser redirect. Independent UX planning review requires dual-origin recovery, history and narrow-layout checks; implementation results are recorded in TESTING.md.
+
+
+## Legacy compatibility consolidation — 7 October 2026
+
+J4/J5 and incoming routes across J1–J9: maintain one full website. Legacy addresses use small forwarding pages and origin-bound Copy/Clear/Continue recovery instead of duplicate forms. Preserve distinct draft/pending copies, unconfirmed receipt wording, blocked-storage recovery, expiry and Back. Without JavaScript, offer corresponding current-page and protected-section links; storage recovery requires scripts. Direct downloads and JSON remain real automatically generated files. Removal is not complete until every retained copy is verified. Independent planning UX concerns were incorporated; rendered implementation review and release checks remain pending.

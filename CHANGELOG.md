@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased — final domain redirects
+## Unreleased
+
+- Consolidate the maintained source and direct publishing into the final-domain repository. Generate minimal legacy redirects, saved-word recovery and automatically synchronized compatibility assets. Source history is preserved. Validation and deployment results will be recorded after execution; no live cutover is claimed here.
+ — final domain redirects
 
 - Forward ordinary HTML on both previous addresses directly to `savekewriversideprimaryschool.org`, preserving query strings and fragments. Saved-letter recovery, old-origin forms, downloads and the school visit handoff remain available. Legacy artifacts omit analytics initialization.
 - Browser redirects use replace navigation with a manual no-script link; no DNS migration is needed. Verification is recorded in TESTING.md.
@@ -12,6 +15,12 @@ Visitor-facing changes and significant maintenance changes, newest first. The hi
 - Add one newly consented community letter through the existing AI screening workflow, preserving the submitted wording and chosen display name. Three-host deployment and live verification are pending.
 
 - Add one consented community letter with the existing AI-screened label, preserving the submitted wording and chosen display name. Three-host deployment and live verification are pending.
+
+### Primary School domain migration preparation
+
+- Prepare the separate `savekewriversideprimaryschool.org` deployment with its own restricted form endpoint, new-origin analytics gate and share URLs, retaining the latest authoritative content and all routes (J1–J9).
+- Keep explicit saved-letter recovery links for both the previous custom domain and the earlier GitHub address. No browser data transfers automatically; old origins must remain usable for draft and pending-return recovery (J4).
+- Independent UX planning review completed; actual-diff review and browser checks remain pending. Local privacy/security validation: 54 Python checks and 112 public assets passed. This candidate does not enable any old-domain redirect.
 
 - Add one newly consented community letter through the existing automatic screening workflow, preserving its submitted wording and Anonymous byline. Publication and three-host live verification are pending.
 
@@ -55,12 +64,20 @@ Verification and deployment pending.
 
 ### Simple parent testimonials — 1 October 2026
 
+Source PR #57 merged as `ff4bc7a` after exact-head validation and all five browser projects passed (run `36876649899`, attempt 2; stalled dependency setup retried). Later native iPhone 17 / iOS 26.5 taps opened Help and the live permission form; Back returned correctly. No response/upload was submitted. The synchronized new-domain candidate retains its existing host/provider bindings and passed 54 Python checks plus 109-file validation. Source-main deployment, candidate hosted checks, guarded promotion and final live verification are pending.
+
 - Put “Share your parent testimonial” before the instructions, fully visible on plain-page and shared `#upload` arrivals at 320 × 568. Three custom icons explain: film only yourself, 30 seconds–3 minutes, and do not discuss the council consultation. The purpose is helping new families discover the school (J8/J9).
 - Remove the private-praise invitation and the background-audio exclusion. Keep children off camera and retain the exclusions for identifying/private details. Keep the short consent cue beside the button, all existing permission scopes, saved private-only choices and separate council/letter routes.
 - Put prompts, recording help, permissions and older-upload recovery in one optional Help disclosure. Preserve old section links and native no-script access; retain Help state on browser Back without changing shared navigation.
 - Update both live Google Forms and the Dropbox request to match the adult-only filming guidance, duration and purpose. Publication/storage/media/ads wording, answer markers, required/optional settings and provider URLs remain unchanged; the adult attestation now says “in the picture”. Original records retain their original wording and scope.
 - Independent campaign and UX planning and implementation reviews; rendered Chromium/WebKit mobile and desktop evidence. Local Python/privacy/security checks: 54 passed; public allowlist: 105 files. Full local browser run: 1,896 passed, 48 skipped, two Back tests failed because the fixture overwrote the disclosure state. Preserve unrelated history state in that fixture; both Safari cases then passed with every scroll/history assertion retained. Current-revision hosted checks and both-site deployment remain pending.
 - Native iPhone 17 / iOS 26.5 Safari: styled local arrival and complete first-screen button visually verified. An unfamiliar person's real-phone attempt has not occurred; this is an owner-directed release of the approved mockup, not a user-study result. Native interaction and hosted provider receipt are recorded separately in TESTING.md.
+
+### Full school name: priority identity update
+
+- Use Kew Riverside Primary School in the shared brand, homepage appeal, page titles, sharing metadata and footer (J1–J9). Split the brand across two lines and allow text reflow to retain the existing participation tiles.
+- Owner requested the priority release before local browser checks; a wider naming/content/download sweep and rendered review follow publication. Required hosted deployment gates remain applicable.
+- Lead validation: 54 Python tests, 104-public-file validation, generated navigation/research/comparison freshness and whitespace checks passed. Independent UX source review flagged the longer hero; shortened its introduction to “Keep” while retaining the full name. A two-case iPhone WebKit arrival check caught the 375×667 response button below the screen; reduced mobile header/hero spacing without shrinking text, then both 375×667 and 390×844 passed. Hosted and live results remain pending.
 
 ### Forward the original address after verified new-domain launch
 
@@ -69,6 +86,12 @@ Verification and deployment pending.
 - Handle inaccessible browser storage getters inside the Letters form's existing error guard, so recovery remains usable with blocked site data. Form fields, permissions, retention and provider bindings are unchanged.
 - Add artifact boundary and fictional browser regression coverage. Planning campaign/UX review accepted the refined design. Release checks, implementation review and production forwarding verification are pending.
 
+
+### Independent new-domain candidate
+
+- Prepare `savekewriverside.org` as a separate deployment candidate from authoritative source `d9d059e`. The original GitHub Pages address remains independent and receives no redirect. Share/preview/PDF addresses and new QR downloads use the new domain; the four earlier QR files remain unchanged (J1–J9).
+- Reuse the previously validated PR #47 domain assets without regenerating the PDFs or QR images. New-origin analytics starts off until a visitor explicitly chooses, because original-origin objections and drafts cannot transfer. The letter draft notice links to the still-working original Letters page for recovery in the same browser.
+- Use the separate Formspree endpoint `xjykjyrk` for all five new-domain forms and preserve private-submission state clearing, exact validation and intercepted tests. The original site keeps its working project. All 52 Python checks, 108-public-file validation, generated research freshness, script syntax and whitespace checks passed. The draft-recovery regression passed all four scripted browser projects. Independent campaign/UX source review found no additional code blocker; full browser, rendered and live verification remain pending. This entry does not claim publication, HTTPS availability or provider receipt.
 
 ### Video route for families choosing a school
 

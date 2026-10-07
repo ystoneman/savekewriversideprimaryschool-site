@@ -34,7 +34,7 @@ Issues, PRs, branches, comments, screenshots, logs and commit history are public
 
 The Pages artifact contains only the explicit `PUBLIC_FILES` allowlist in `.github/scripts/check_site.py`. Add repository-only documentation and tools to `MAINTENANCE_FILES`, not the deployed asset list. Excluding a file from Pages does not make it private: a committed file is still public on GitHub.
 
-For a vulnerability or suspected private-data exposure, use the [private contact form](https://ystoneman.github.io/kew-riverside-website/about.html#contact) with a brief description and reply address. Do not post exploit details, secrets or personal records in a public issue or upload them through the contact form. For removal or correction of personal content, use the [private correction route](https://ystoneman.github.io/kew-riverside-website/corrections.html).
+For a vulnerability or suspected private-data exposure, use the [private contact form](https://savekewriverside.org/about.html#contact) with a brief description and reply address. Do not post exploit details, secrets or personal records in a public issue or upload them through the contact form. For removal or correction of personal content, use the [private correction route](https://savekewriverside.org/corrections.html).
 
 ## Review and merging
 

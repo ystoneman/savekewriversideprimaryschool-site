@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_FILES = frozenset('''
 rally.html rally.css rally-6-october.ics
 fundraising-trustees.html fundraising-admin.html fundraising-briefs.css
-visit/index.html qr/kew-riverside-website-qr.png qr/kew-riverside-website-qr.svg qr/kew-riverside-visit-qr.png qr/kew-riverside-visit-qr.svg
+visit/index.html qr/kew-riverside-website-qr.png qr/kew-riverside-website-qr.svg qr/kew-riverside-visit-qr.png qr/kew-riverside-visit-qr.svg qr/savekewriverside-home-qr.png qr/savekewriverside-home-qr.svg qr/savekewriverside-visit-qr.png qr/savekewriverside-visit-qr.svg
 theme.css theme.js
 analytics.js analytics.css analytics-config.json
 videos.html videos.css videos.js evidence.html options.html options.css options.js homepage.css homepage.js
@@ -30,6 +30,7 @@ og-home.png og-letters.png og-ideas.png og-videos.png
 og-fundraising-trustees-v1.png og-fundraising-admin-v1.png
 '''.split())
 MAINTENANCE_FILES = frozenset('''
+.github/scripts/compatibility-assets.json .github/scripts/compatibility_release.py .github/scripts/test_compatibility_release.py CONSOLIDATION.md
 tests/review-evidence/research-update-mobile.png tests/review-evidence/research-update-desktop.png
 tests/browser/research-update.spec.js
 .github/scripts/build_old_site_redirect.py .github/scripts/old_site_redirect.js .github/scripts/old_site_redirect.css .github/scripts/test_old_site_redirect.py tests/browser/old-site-redirect.spec.js
@@ -115,7 +116,7 @@ class Page(HTMLParser):
             url = urlsplit(a.get('href', ''))
             require(url.scheme in {'', 'https', 'mailto'}, 'Unsafe link scheme.')
         if tag == 'form' and a.get('id') != 'record-filters':
-            require(a.get('action') == 'https://formspree.io/f/mwlpollw' and a.get('method', '').lower() == 'post', 'Unexpected form destination or method.')
+            require(a.get('action') == 'https://formspree.io/f/xnpnenzy' and a.get('method', '').lower() == 'post', 'Unexpected form destination or method.')
         if tag == 'input':
             self.inputs[a.get('id', '')] = a
             if a.get('name'):

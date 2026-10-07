@@ -8,15 +8,15 @@ School-community developers are welcome to contribute through fork-based pull re
 
 ## Publishing on GitHub Pages
 
-This directory is deployed from `main` at https://github.com/ystoneman/kew-riverside-website to https://ystoneman.github.io/kew-riverside-website/ using GitHub Pages and the validated `.github/workflows/pages.yml` workflow. Only the explicitly listed public assets are deployed; repository notes, workflow code and private working files are excluded from the website artifact.
+This repository maintains and directly deploys the complete source to https://savekewriversideprimaryschool.org/. Main publishes only after privacy/security validation and every browser project passes. See [CONSOLIDATION.md](CONSOLIDATION.md) for automatic legacy compatibility updates, verification and recovery.
 
-The evidence pages need no build or API keys. Feedback and community letters use the private Formspree inbox behind the public form endpoint. Secrets and private submissions must never enter this repository. Relative asset paths support the repository subpath.
+Edit content here. Domain-candidate branches, hand-copied public directories and manual promotion manifests are no longer part of publishing. Existing legacy addresses retain small redirect/recovery sites and automatically generated download/data compatibility files.
 
 ## Permanent flyer QR link
 
-Ready-made QR images are linked from the Parent action plan: `qr/kew-riverside-visit-qr.png` and `.svg` encode exactly the `/visit/` address below (with its trailing slash) for open-day and visit flyers; `qr/kew-riverside-website-qr.png` and `.svg` encode the homepage. Keep all four paths permanent. Changing the `/visit/` destination never requires new QR images.
+Ready-made QR images linked from the Parent action plan use the new domain: `qr/savekewriverside-visit-qr.png` and `.svg` encode the `/visit/` address below (with its trailing slash) for open-day and visit flyers; `qr/savekewriverside-home-qr.png` and `.svg` encode the homepage. The earlier `qr/kew-riverside-visit-qr.*` and `qr/kew-riverside-website-qr.*` files encode the old GitHub Pages address and stay published for existing flyers. Keep all eight paths permanent. Changing the `/visit/` destination never requires new QR images.
 
-Print or encode **https://ystoneman.github.io/kew-riverside-website/visit/**. Keep that address and `visit/index.html` in place for the lifetime of the flyers. The current destination is the [school contact page](https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us), verified on 24 September 2026. The redirect works without JavaScript and includes a normal link if automatic refresh is disabled. It adds no tracking or subscription.
+After the new domain has passed its HTTPS and visitor-journey checks, new flyers can print or encode **https://savekewriverside.org/visit/**. Existing QR images encode **https://ystoneman.github.io/kew-riverside-website/visit/**; keep that old GitHub Pages address working for the lifetime of those flyers. Keep `visit/index.html` in place. The current destination is the [school contact page](https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us), verified on 24 September 2026. The redirect works without JavaScript and includes a normal link if automatic refresh is disabled. It adds no tracking or subscription.
 
 To point existing flyers to a future, verified school registration page:
 
@@ -87,7 +87,7 @@ Recheck the proposal, deadline, current public roles and meeting records before 
 
 When updating charts, retain the complete data table and specify geography, measure, units and date. Do not silently turn a projection into an actual observation.
 
-Page counts and detailed usage use a local Umami collector, on by default with a footer choice to reduce or turn them off (see `ANALYTICS.md`); there are no advertising scripts or remote fonts. Forms post to Formspree, which runs a hosted security check; see `privacy.html`. The letters and suggestions boards render approved data as text, never visitor HTML. Council sharing requires separate, recorded consent and an operator check of the official receiving requirements; it is not an official consultation submission service. Outgoing links open the publisher's site. Search parameters remain in the page URL so a filtered view can be shared.
+Page counts and detailed usage use a local Umami collector and stay off on the new domain until a visitor chooses a level in the footer’s Analytics choices panel (see `ANALYTICS.md`); there are no advertising scripts or remote fonts. Forms post to Formspree, which runs a hosted security check; see `privacy.html`. The letters and suggestions boards render approved data as text, never visitor HTML. Council sharing requires separate, recorded consent and an operator check of the official receiving requirements; it is not an official consultation submission service. Outgoing links open the publisher's site. Search parameters remain in the page URL so a filtered view can be shared.
 
 ## Verification in this environment
 
@@ -113,9 +113,9 @@ Option 02 (`index.html#option-crowdfunding`) is linked to the costed recovery pl
 
 Run `python3 .github/scripts/check_site.py` **before committing** and `python3 -m unittest discover -s .github/scripts -p 'test_*.py'` after changing security or public-data handling. A public Git commit already exposes its contents; a later deployment check cannot undo that. Stage named files and inspect the staged diff. Never add inbox exports, private ledgers, confirmation correspondence, council drafts, credentials or fixtures derived from private submissions. Committed browser fixtures must contain only fictional test data. Ignore rules are only a convenience, not a confidentiality boundary.
 
-Every push and pull request runs privacy/schema checks, JavaScript syntax checks, asset validation and browser regression tests. Only a passing `main` build can deploy. GitHub Actions are pinned to exact commits, checkout credentials are not retained, and the separate deployment job has only Pages and deployment-identity permissions. The workflow packages an explicit asset list and excludes repository maintenance files. New intended assets must be deliberately added to the list in `.github/scripts/check_site.py`.
+Every push and pull request runs privacy/schema checks, JavaScript syntax checks, asset validation and browser regression tests. The source repository’s workflow deploys only a passing `main` build to the original address. A separate deployment must use the validated public artifact from an explicitly recorded source revision; this candidate branch must not be merged into the original `main` merely to test the new domain. GitHub Actions are pinned to exact commits, checkout credentials are not retained, and the separate deployment job has only Pages and deployment-identity permissions. The workflow packages an explicit asset list and excludes repository maintenance files. New intended assets must be deliberately added to the list in `.github/scripts/check_site.py`.
 
-All eight HTML pages declare a restrictive Content Security Policy before resources: local scripts/styles/data only, no inline scripts or handlers, no embedded frames/plugins or base-URL changes, and form submissions restricted to this origin and Formspree. External source links still work. Formspree remains responsible for CAPTCHA, spam filtering, intake validation and private storage. Its project is restricted to `ystoneman.github.io`; localhost and file previews should not submit to the live inbox. Keep `strict-origin-when-cross-origin` so the domain check works without sending page query strings.
+All HTML pages declare a restrictive Content Security Policy before resources: local scripts/styles/data only, no inline scripts or handlers, no embedded frames/plugins or base-URL changes, and form submissions restricted to this origin and Formspree. External source links still work. Formspree remains responsible for CAPTCHA, spam filtering, intake validation and private storage. The new-domain deployment uses the separate Formspree endpoint `https://formspree.io/f/xjykjyrk` in a project restricted to `savekewriverside.org`; the original site keeps its existing project restricted to `ystoneman.github.io`. Check the receiving inbox, permissions, success/error recovery and private intake workflow for both projects before announcing the new domain. Localhost and file previews should not submit to the live inbox. Keep `strict-origin-when-cross-origin` so the domain check works without sending page query strings.
 
 Public boards have exact field allowlists, bounds, valid dates and unique IDs checked **before deployment**; browser validation also fails closed and renders only text. These checks do not establish real identity, consent or the suitability of free text. Private moderation and each category's human-review requirements remain in force. Council identity inputs are disabled in the initial HTML and require an explicit council-sharing choice and working JavaScript to be enabled.
 
@@ -179,26 +179,6 @@ The homepage retains each former fragment as a `.legacy-route` with an explicit 
 
 New Parent Voices submissions require explicit YouTube publication permission and offer separate optional unchecked news-media permission. Receipt/storage/personal review remains a separate required consent. Earlier saved permissions, including delayed uploads, keep their original scope. Use [the permission-version rules](VIDEO-PERMISSIONS.md) before manual publication or media disclosure; store actual records privately outside this repository. Both Google form routes and the Dropbox request retain their existing public URLs.
 
-## Legacy address forwarding — 30 September 2026
+## Legacy address compatibility
 
-The new website is `https://savekewriverside.org/`, served by the separate
-`ystoneman/savekewriverside-site` deployment repository. Keep the original
-repository's Pages custom-domain field empty. Its main workflow first validates
-and stages the ordinary public allowlist, then builds the legacy artifact with
-`.github/scripts/build_old_site_redirect.py`. Only this final artifact is
-uploaded from original main. Separate-domain promotion still stages the ordinary
-source assets, so it never inherits the legacy forwarding script.
-
-Legacy HTML uses a local early script and `location.replace` to preserve page,
-query and fragment. This is browser forwarding, not an HTTP 301. Without scripts,
-the full original page and a manual new-site link remain. Old Letters and Sent
-pages stay available for recoverable drafts, pending returns, inaccessible
-storage or `?recover=draft`; they retain the original provider and consent
-controls. Letters arrivals referred from the exact new-domain origin also stay
-for old-draft recovery. No browser data is transferred or consent rewritten.
-Analytics is omitted from the generated legacy HTML. Public downloads, JSON and
-the approved `/visit/` school handoff remain unchanged.
-
-After every source release, synchronize and promote the new-domain candidate
-using the separate repository's documented gates. Check both public boards and
-the new-domain destination before calling publication or removal complete.
+See [CONSOLIDATION.md](CONSOLIDATION.md). Both previous addresses forward ordinary HTML to this site, retain browser-origin saved-word recovery and preserve direct download/data files. Legacy pages have no submission forms or analytics. Printed `/visit/` addresses still hand off directly to the school.

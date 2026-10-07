@@ -74,7 +74,7 @@
   });
 
   // Count-free, first-person share text that matches the Parent action plan's ask.
-  const url = 'https://ystoneman.github.io/kew-riverside-website/';
+  const url = 'https://savekewriversideprimaryschool.org/';
   const message = 'I’ve written a few lines about what Kew Riverside Primary School means to us. If you’d like to read or add a community letter, it’s here:';
   if (navigator.share) {
     // The phone's share sheet already offers WhatsApp and Copy, so show one button.

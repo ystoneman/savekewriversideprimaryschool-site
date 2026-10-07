@@ -131,7 +131,7 @@ async function captureSubmissions(page) {
   const submissions = [];
   await page.route('https://formspree.io/**', async route => {
     const request = route.request();
-    expect(request.url()).toBe('https://formspree.io/f/mwlpollw');
+    expect(request.url()).toBe('https://formspree.io/f/xnpnenzy');
     expect(request.method()).toBe('POST');
     submissions.push(new URLSearchParams(request.postData() || ''));
     await route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>Test capture only</title><p>Submission intercepted locally. Nothing was sent.</p>' });
