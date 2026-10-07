@@ -109,8 +109,10 @@ def synchronize(sha,run_id):
   # Replace and verify one origin before starting the next; keep failures retryable.
   while time.monotonic()<deadline:
    run=request(base+'/actions/runs/'+str(child),authenticated=True)
-   require(run.get('display_title')=='Compatibility '+sha and run.get('event')=='workflow_dispatch' and run.get('head_branch')=='main' and run.get('path')=='.github/workflows/pages.yml','Dispatched workflow does not match this compatibility release.')
+   # GitHub can return the queued run before its input-based metadata is initialized.
+   # The exact dispatch ID stays authoritative; require provenance before completion.
    if run['status']=='completed':
+    require(run.get('display_title')=='Compatibility '+sha and run.get('event')=='workflow_dispatch' and run.get('head_branch')=='main' and run.get('path')=='.github/workflows/pages.yml','Dispatched workflow does not match this compatibility release.')
     require(run['conclusion']=='success','Compatibility deployment failed: '+repository+'; rerun the canonical compatibility job after correcting it.')
     verify(origin,record);print('Verified:',repository,flush=True);completed=True;break
    time.sleep(15)
