@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Show community letters newest first by publication date, with later additions first on the same day. Keep existing letter links, full-text controls and public records intact. Release checks and live verification are recorded with the associated pull request.
+
 - Add one author-approved community letter using the existing human-reviewed publication route. Preserve the approved wording and display name; independent campaign review found no actionable J4 concerns. Deployment and live verification are pending.
 
 - Wait for a dispatched legacy run to complete before checking its input-based metadata, which GitHub may initially return before initialization. Keep exact dispatch IDs, prerequisite checks and stale-release rejection; never claim completion from a queued or mismatched run. The queued-metadata regression passes with all 67 Python checks.

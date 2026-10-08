@@ -80,6 +80,22 @@ test('Letters show the actual assessment for mixed human-reviewed and AI-screene
   await expect(page.locator('textarea')).toHaveValue(/letter-abcdef012345/);
 });
 
+test('Letters put the newest publication first, including later additions on the same day', async ({ page }) => {
+  const board = boards.find(item => item.resource === 'letters');
+  const older = { ...entry(board), displayName: 'Earlier fictional writer' };
+  const sameDayFirst = { ...entry(board), id: 'letter-111111111111', date: '2026-10-07', displayName: 'First fictional writer today' };
+  const newest = { ...entry(board), id: 'letter-222222222222', date: '2026-10-08', displayName: 'Newest fictional writer' };
+  const sameDayLast = { ...entry(board), id: 'letter-333333333333', date: '2026-10-07', displayName: 'Later fictional writer today' };
+  // Deliberately mixed dates: reversing source order alone is not chronological.
+  await page.route('**/letters.json', route => route.fulfill({ json: boardData(board, [sameDayFirst, older, newest, sameDayLast]) }));
+  await page.goto('/letters.html');
+  await page.locator('main a[href="#letters"]').click();
+  await expect(page.locator('#letters-list .public-author')).toHaveText([
+    newest.displayName, sameDayLast.displayName, sameDayFirst.displayName, older.displayName,
+  ]);
+  await expect(page.locator('#' + newest.id + ' .public-author')).toBeInViewport();
+});
+
 for (const review of ['AI reviewed', 'ai screened', 'Human reviewed ', 'Approved', '', null]) {
   test(`Letters reject unsupported review label ${JSON.stringify(review)}`, async ({ page }) => {
     const board = boards.find(item => item.resource === 'letters');
@@ -202,7 +218,7 @@ test('A 30000-character letter treats markup in the excerpt and full story as pl
 test('Long letter links open the complete story on arrival, hash changes and Back', async ({ page }) => {
   const board = boards.find(item => item.resource === 'letters');
   const first = { ...entry(board), body: longLetterBody() };
-  const second = { ...entry(board), id: 'letter-abcdef012345', body: longLetterBody(), review: 'AI screened', displayName: 'Another fictional contributor' };
+  const second = { ...entry(board), id: 'letter-abcdef012345', date: '2026-10-08', body: longLetterBody(), review: 'AI screened', displayName: 'Another fictional contributor' };
   await page.route('**/letters.json', route => route.fulfill({ json: boardData(board, [first, second]) }));
   await page.goto('/letters.html#' + first.id);
   const firstArticle = page.locator('#' + first.id);
