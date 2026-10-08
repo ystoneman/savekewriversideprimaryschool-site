@@ -33,7 +33,7 @@ test('Parent plan: writing link opens the composer and Back returns to current a
   const write = page.locator('#plan-share a[href="letters.html#letter-form"]');
   if (hasTouch) await write.tap(); else await write.click();
   await expect(page).toHaveURL(/letters\.html#letter-form$/);
-  await expect(page.locator('#letter-form h2')).toBeInViewport();
+  await expect(page.locator('#letter-form-title')).toBeInViewport();
   await expect(page.locator('#message')).toBeInViewport();
   await page.goBack();
   await expect(page).toHaveURL(/proposal\.html#parent-plan$/);

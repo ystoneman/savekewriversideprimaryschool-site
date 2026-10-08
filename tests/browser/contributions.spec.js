@@ -10,13 +10,14 @@ async function openPublicationOptions(page, hasTouch) {
 test('Share ideas offers distinct routes for letters, named support and private contact', async ({ page }) => {
   for (const [name, destination, form] of [
     ['Add my name as a supporter', /supporters.html$/, '#supporter-form'],
-    ['Write a community letter', /letters.html$/, '#letter-form'],
+    ['Write a community letter', /letters.html#letter-form$/, '#letter-form'],
     ['Send a private message', /about.html#contact$/, '#contact form'],
   ]) {
     await page.goto('/feedback.html');
     await page.getByRole('link', { name: new RegExp(name, 'i') }).click();
     await expect(page).toHaveURL(destination);
     await expect(page.locator(form)).toBeVisible();
+    if (form === '#letter-form') await expect(page.locator('#message')).toBeInViewport();
   }
 });
 
