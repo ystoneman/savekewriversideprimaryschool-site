@@ -214,6 +214,7 @@ class CaseEvidenceTests(unittest.TestCase):
         hero = html.split('id="top"', 1)[1].split('</section>', 1)[0]
         self.assertIn('received final budget summary', hero)
         self.assertIn('current monitoring are still needed', hero)
+        self.assertIn('finance updated 8 October', hero)
         self.assertNotIn('approved budget, ledger and assumptions remain missing', html)
 
     def test_generated_outputs_are_current(self):
