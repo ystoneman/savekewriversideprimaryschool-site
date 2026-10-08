@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Research freshness and received budget — 8 October 2026
+
+- Replace stale case-research masthead dates with scoped update labels. Keep historical source access dates and the separate other-schools report date. Add regressions for current labels and the received-budget status on the Numbers page's arrival.
+- Record receipt of the final three-year budget summary, retain its indicative future-year status, and narrow the remaining financial requests to the ledger, current monitoring, commitments and assumptions. Publish a one-page copy with the handwritten signature removed, with the original financial figures and approval date retained. Show the source's penny values in the existing optional table and explain the earlier whole-pound rounding difference.
+- Add the separate DfE borough forecast check: 221 pupils / 1.48% and 504 / 3.37% overestimates for one target year. Preserve the Kew-area comparison, scope qualifications and unanswered repeated school/year-group checks. Update the source register, data downloads and consultation checklist.
+- Independent evidence and UX planning and actual-implementation reviews completed. Resolve stale date/status wording and retain All types as the no-script filter default. Privacy/security/data checks, rendered source/PDF review and native Safari disclosure/Back checks are recorded in TESTING.md. Hosted gates and verified deployment are recorded with [PR #17](https://github.com/ystoneman/savekewriversideprimaryschool-site/pull/17).
+
 ### Analytics collection and first-visit choices
 
 - Update the first-party collector, all page CSPs and fixture/asset validators to Umami Cloud’s documented gateway endpoint. Retain the existing website ID, fixed labels, omitted credentials/referrers and all privacy exclusions.

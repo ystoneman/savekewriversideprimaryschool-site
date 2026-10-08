@@ -18,7 +18,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 SITE = Path(__file__).resolve().parents[2]
 source = (SITE / 'response-checklist.md').read_text()
-PUBLIC_BASE = 'https://savekewriverside.org/'
+PUBLIC_BASE = 'https://savekewriversideprimaryschool.org/'
 INK = colors.HexColor('#183733')
 TEAL = colors.HexColor('#0e6470')
 MUTED = colors.HexColor('#4b625c')
@@ -42,7 +42,7 @@ FONT_SANS = 'KewSans' if FONT_DIR else 'Helvetica'
 FONT_BOLD = 'KewSans-Bold' if FONT_DIR else 'Helvetica-Bold'
 FONT_SERIF = 'KewSerif' if FONT_DIR else 'Times-Roman'
 
-date_match = re.search(r'(?:Research checked|Checked)\s+(\d{1,2}\s+[A-Za-z]+\s+\d{4})', source)
+date_match = re.search(r'(?:Research checked|Budget and forecast update checked|Checked)\s+(\d{1,2}\s+[A-Za-z]+\s+\d{4})', source)
 if not date_match:
     raise ValueError('Checklist source needs a visible checked date.')
 CHECKED_DATE = date_match.group(1)

@@ -15,7 +15,7 @@ base=(ROOT/'proposal.html').read_text()
 header=re.sub(r'<link rel="stylesheet" href="lessons\.css\?v=\d+">','',base[:base.index('<main')].replace(' aria-current="page"',''))
 footer=base[base.index('<footer'):]
 def page(title,body):
- h=re.sub(r'(Timetable|Proposal) checked [^<]+', 'Research checked 22 September 2026', header)
+ h=re.sub(r'(?:Timetable checked|Proposal checked|Evidence updates:) [^<]+', 'Research checked 22 September 2026', header)
  h=re.sub(r'<title>.*?</title>','<title>'+esc(title)+' | Kew Riverside Primary School</title>',h)
  h=re.sub(r'<meta name="description" content="[^"]*">','<meta name="description" content="Selected school closure reprieves and comparisons, with eight graphics, a full case catalogue and complete citations. Evidence and limits for Kew Riverside Primary School families.">',h)
  h=h.replace('</head>','<link rel="stylesheet" href="lessons.css?v=2026092401"><script src="lessons.js" defer></script></head>')

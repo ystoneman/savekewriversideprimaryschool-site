@@ -160,7 +160,7 @@ test('No JavaScript: homepage and Evidence expose the full report and web resear
   await page.goto('/evidence.html?q=impossible-report-search&type=Inspection#source-lessons-report');
   await expect(report).toBeVisible();
   await expect(report).toBeInViewport();
-  await expect(page.locator('.source-card:visible')).toHaveCount(59);
+  await expect(page.locator('.source-card:visible')).toHaveCount(61);
 });
 
 test('No JavaScript: budget and forecast answers, sources and optional data remain readable', async ({ page }) => {
@@ -170,9 +170,9 @@ test('No JavaScript: budget and forecast answers, sources and optional data rema
   await expect(page.locator('#budget')).toContainText('£231,685');
   await expect(page.locator('#forecast-checks')).toContainText(/Kew planning area/i);
   const source = page.locator('#budget a[href="evidence.html#source-school-balances-mar-2026"]');
-  await expect(source).toBeVisible();
   const detail = page.locator('#budget-actuals');
   await detail.locator('summary').tap();
+  await expect(source).toBeVisible();
   await expect(detail.locator('table').last()).toBeVisible();
   await source.tap();
   await expect(page.locator('#source-school-balances-mar-2026')).toBeInViewport();
@@ -533,7 +533,7 @@ test('No JavaScript: old source links and council charts remain exposed after si
   await page.goto('/evidence.html#source-inspection-2026');
   await expect(page.locator('#source-library')).toHaveAttribute('open', '');
   await expect(page.locator('#source-inspection-2026')).toBeInViewport();
-  await expect(page.locator('#source-grid .source-card:visible')).toHaveCount(59);
+  await expect(page.locator('#source-grid .source-card:visible')).toHaveCount(61);
   await expect(page.locator('.school-roll-chart .source-card')).toHaveCount(0);
   await page.goto('/evidence.html#school-roll-title');
   await expect(page.locator('#school-roll-title')).toBeInViewport();
@@ -553,7 +553,7 @@ test('No JavaScript: Current Kew findings retain access to London cases and sour
   await expect(findings.locator('details')).toHaveCount(0);
   await findings.locator('a[href="#source-search"]').tap();
   await expect(page.locator('#record-search')).toBeInViewport();
-  await expect(page.locator('.source-card:visible')).toHaveCount(59);
+  await expect(page.locator('.source-card:visible')).toHaveCount(61);
   await page.goBack();
   await expect(page.locator('#london-findings-title')).toBeInViewport();
   await findings.locator('a[href="lessons.html#case-st-john"]').tap();
@@ -585,6 +585,19 @@ test('No JavaScript: researched demand and cost details open natively and retain
   // Without scripts, all categories and permission choices remain native.
 });
 
+test('No JavaScript: received budget source and HTML figures remain reachable', async ({ page }) => {
+  await page.goto('/evidence.html#source-search');
+  await expect(page.locator('#type-filter')).toHaveValue('');
+  await page.goto('/evidence.html#obtained-budget');
+  await page.locator('#obtained-budget a[href="understand.html#budget-forecast"]').tap();
+  const forecast = page.locator('#budget-forecast');
+  if (await forecast.getAttribute('open') === null) await forecast.locator('summary').tap();
+  await expect(forecast.locator('table')).toBeVisible();
+  await expect(page.locator('a[href="kew-budget-summary-2026.pdf"]')).toBeVisible();
+  await page.goBack();
+  await expect(page).toHaveURL(/evidence\.html#obtained-budget$/);
+});
+
 test('No JavaScript: full budget forecast has a native opening route from the FAQ', async ({ page }) => {
   await page.goto('/faq.html#deficit-meaning');
   const answer = page.locator('#deficit-meaning');
@@ -596,7 +609,7 @@ test('No JavaScript: full budget forecast has a native opening route from the FA
   if (await forecast.getAttribute('open') === null) await forecast.locator('summary').tap();
   await expect(forecast.locator('table')).toBeVisible();
   await expect(forecast).toContainText('£212,417');
-  await expect(forecast).toContainText('differs by £1');
+  await expect(forecast).toContainText('explains the earlier £1 difference');
   await page.goBack();
   await expect(page).toHaveURL(/faq\.html#deficit-meaning$/);
 });

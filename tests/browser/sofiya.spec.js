@@ -204,8 +204,8 @@ test('Learning: narrow arrival protects action routes and the chart stays inside
 
 test('Inspection: original-source counts, search and the resolved gap agree', async ({ page, hasTouch }) => {
   await page.goto('/evidence.html#records');
-  await expect(page.locator('.source-card')).toHaveCount(59);
-  for (const [status, count] of [['Reviewed', 55], ['Index only', 2], ['Not retrieved', 2]]) {
+  await expect(page.locator('.source-card')).toHaveCount(61);
+  for (const [status, count] of [['Reviewed', 57], ['Index only', 2], ['Not retrieved', 2]]) {
     await expect(page.locator(`.source-card[data-status="${status}"]`)).toHaveCount(count);
   }
   const inspection = page.locator('#source-inspection-2026');
@@ -218,7 +218,7 @@ test('Inspection: original-source counts, search and the resolved gap agree', as
   await expect(inspection).toHaveAttribute('data-status', 'Reviewed');
   await expect(inspection.locator('h3 a')).toHaveAttribute('href', 'https://www.kewriverside.richmond.sch.uk/attachments/download.asp?file=3619&type=pdf');
   await page.getByRole('button', { name: 'Clear filters' }).click();
-  await expect(page.locator('.source-card:visible')).toHaveCount(59);
+  await expect(page.locator('.source-card:visible')).toHaveCount(61);
   const gap = page.locator('#evidence-found');
   await expect(gap).toContainText(/resolved/i);
   await activate(gap.locator('summary'), hasTouch);

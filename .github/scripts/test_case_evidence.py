@@ -60,12 +60,13 @@ class CaseEvidenceTests(unittest.TestCase):
         data = self.data
         build_case_evidence.validate(data)
         self.assertEqual(set(data), build_case_evidence.EXPECTED_KEYS)
-        self.assertEqual(data['checkedOn'], {'finance': '2026-10-05', 'forecasts': '2026-09-23'})
+        self.assertEqual(data['checkedOn'], {'finance': '2026-10-08', 'forecasts': '2026-09-23', 'boroughForecasts': '2026-10-08'})
         self.assertEqual({s['id'] for s in data['sources']}, {
             'school-balances-mar-2026', 'kew-finance-income-history',
             'kew-finance-expenditure-history', 'kew-finance-balance-history',
             'consultation-leaflet', 'consultation-kew-faq', 'kew-area-forecast-2025',
             'school-census-jan-2026', 'school-organisation-june-2026',
+            'kew-budget-summary-2026', 'richmond-forecast-accuracy-2025',
         })
         self.assertTrue(all(set(s) == {'id', 'url', 'locator'} for s in data['sources']))
         self.assertNotIn('FS-Case', json.dumps(data))
@@ -102,10 +103,14 @@ class CaseEvidenceTests(unittest.TestCase):
         self.assertEqual(data['forecastStatements'][1]['targetFinancialYear'], '2028/29')
         self.assertEqual(data['forecastStatements'][1]['valuePence'], 40000000)
         self.assertEqual(data['forecastStatements'][1]['comparison'], 'greater than')
-        self.assertEqual([row['financialYear'] for row in data['unavailableBudgetBridge']],
-                         ['2026/27', '2027/28', '2028/29'])
-        self.assertTrue(all(value is None for row in data['unavailableBudgetBridge']
-                            for key, value in row.items() if key != 'financialYear'))
+        plan = data['receivedBudgetPlan']
+        self.assertEqual((plan['approvalDate'], plan['receivedOn']), ('2026-05-20', '2026-10-07'))
+        self.assertEqual([(r['incomePence'], r['expenditurePence'], r['annualGapPence'], r['reportedClosingPence']) for r in plan['rows']],
+                         [(93365538, 114607276, 21241738, 1926770),
+                          (97188536, 118706282, 21517746, -19590975),
+                          (96788726, 122967950, 26179224, -45770200)])
+        self.assertEqual(council['closingPence'] - sum(r['annualGapPence'] for r in plan['rows']), -45770199)
+        self.assertNotIn('unavailableBudgetBridge', data)
 
     def test_forecast_scope_and_two_distinct_comparisons(self):
         check = self.data['forecastCheck']
@@ -134,8 +139,8 @@ class CaseEvidenceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             build_case_evidence.validate(altered)
         budget = build_case_evidence.render_budget(self.data)
-        self.assertIn('indicative forecasts, not the approved budget or cash available today', budget)
-        self.assertIn('£1 from the FAQ', budget)
+        self.assertIn('future-year columns remain labelled “Indicative”', budget)
+        self.assertIn('explains the earlier £1 difference', budget)
         csv_rows = {r['Observation ID']: r for r in csv.DictReader(io.StringIO(build_case_evidence.csv_text(self.data).lstrip('\ufeff')))}
         self.assertEqual(csv_rows['faq-2026/27-annualGapPence']['Value'], '212417.00')
         self.assertEqual(csv_rows['faq-2028/29-reportedClosingPence']['Value'], '-457702.00')
@@ -143,7 +148,7 @@ class CaseEvidenceTests(unittest.TestCase):
 
     def test_unknown_values_and_lower_bound_cannot_turn_into_exact_figures(self):
         for edit in (
-            lambda d: d['unavailableBudgetBridge'][1].update(incomePence=0),
+            lambda d: d['receivedBudgetPlan']['rows'][1].update(incomePence=0),
             lambda d: d['forecastStatements'][0].update(valuePence=0),
             lambda d: d['forecastStatements'][1].update(comparison='equal to'),
             lambda d: d['forecastCheck'].update(planningAreaCode='other area'),
@@ -176,10 +181,41 @@ class CaseEvidenceTests(unittest.TestCase):
         self.assertEqual(by_id['council-forecast-2028/29']['Comparator'], 'greater than')
         self.assertEqual(by_id['council-forecast-2028/29']['Value'], '400000.00')
         self.assertEqual(by_id['council-forecast-2026/27']['Value'], '')
-        self.assertEqual(by_id['unavailable-2027/28-incomePence']['Value'], '')
-        self.assertIn('blank is not zero', by_id['unavailable-2027/28-incomePence']['Qualification'])
+        self.assertEqual(by_id['budget-2027/28-incomePence']['Value'], '971885.36')
+        self.assertIn('Ledger, assumptions and current monitoring remain outstanding', by_id['budget-2027/28-incomePence']['Qualification'])
         self.assertEqual(by_id['forecast-check-total-difference']['Value'], '3')
         self.assertEqual(by_id['forecast-revision-difference']['Value'], '83')
+
+    def test_borough_check_retains_scope_and_independent_source_counts(self):
+        check = self.data['boroughForecastCheck']
+        self.assertEqual((check['localAuthorityCode'], check['phase'], check['targetAcademicYear'], check['actualPupils']),
+                         ('318', 'Primary', '2025/26', 14964))
+        self.assertEqual([(r['vintage'], r['horizonYears'], r['forecastPupils']) for r in check['forecasts']],
+                         [('SCAP25', 1, 15185), ('SCAP23', 3, 15468)])
+        html = build_case_evidence.render_forecast(self.data)
+        self.assertIn('+1.48%', html)
+        self.assertIn('+3.37%', html)
+        self.assertIn('not Kew-area or individual-school errors', html)
+        for change in [lambda d: d['boroughForecastCheck'].update(localAuthorityCode='3180007'),
+                       lambda d: d['boroughForecastCheck']['forecasts'][0].update(horizonYears=3)]:
+            altered = copy.deepcopy(self.data); change(altered)
+            with self.assertRaises(ValueError): build_case_evidence.validate(altered)
+
+    def test_current_evidence_headers_follow_collection_update(self):
+        from datetime import date
+        checked = date.fromisoformat(json.loads((ROOT / 'sources.json').read_text())['researchChecked'])
+        label = f'{checked.day} {checked:%B %Y}'
+        for name, prefix in [('index.html', 'Kew evidence updated'), ('understand.html', 'Kew evidence updated'),
+                             ('evidence.html', 'Source library updated'), ('faq.html', 'Selected answers updated')]:
+            self.assertIn(f'<span>{prefix} {label}</span>', (ROOT / name).read_text(), name)
+
+    def test_received_budget_is_not_still_described_as_missing_on_arrival(self):
+        html = (ROOT / 'understand.html').read_text()
+        hero = html.split('id="top"', 1)[1].split('</section>', 1)[0]
+        self.assertIn('received final budget summary', hero)
+        self.assertIn('current monitoring are still needed', hero)
+        self.assertIn('finance updated 8 October', hero)
+        self.assertNotIn('approved budget, ledger and assumptions remain missing', html)
 
     def test_generated_outputs_are_current(self):
         result = subprocess.run([sys.executable, '.github/scripts/build_understand.py', '--check'],

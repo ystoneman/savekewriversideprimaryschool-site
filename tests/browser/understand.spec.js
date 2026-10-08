@@ -80,7 +80,8 @@ test('Understand: homepage numbers route reaches dated finances and forecast che
   await expect(page.locator('#budget')).toContainText('31 March 2026');
   await expect(page.locator('#budget')).toContainText('£231,685');
   await expect(page.locator('#budget')).toContainText(/forecast|project/i);
-  await expect(page.locator('#budget a[href="evidence.html#source-school-balances-mar-2026"]')).toBeVisible();
+  await expect(page.locator('#budget a[href="evidence.html#source-kew-budget-summary-2026"]')).toBeVisible();
+  await page.locator("#budget-forecast > summary").click();
   await expect(page.locator('#budget a[href="evidence.html#source-consultation-kew-faq"]')).toBeVisible();
   await activate(forecastLink, hasTouch);
   await expect(page.locator('#forecast-checks')).toBeInViewport();
@@ -94,7 +95,7 @@ test('Understand: financial actuals, council projection and forecast error keep 
   const budget = page.locator('#budget');
   await expect(budget).toContainText('£231,685');
   await expect(budget).toContainText(/£400,000/);
-  await expect(budget).toContainText('indicative forecasts, not the approved budget or cash available today');
+  await expect(budget).toContainText('future-year columns remain labelled “Indicative”');
   await expect(page.locator('#closure-costs')).toBeVisible();
   await expect(page.locator('#closure-costs')).toContainText('£69,640');
   await expect(page.locator('#closure-costs')).toContainText(/not (the|a) (saving|council)|does not (establish|show|equal)/i);
@@ -434,7 +435,7 @@ test('Understand: arrival explains three dated findings before asking readers to
   for (const value of ['36.6%', '5.5%', '45 primary-phase schools', 'May 2022', 'May 2025', 'excluding nursery', 'not its cause']) {
     await expect(pupils).toContainText(value);
   }
-  for (const value of ['£231,685.09', '31 March 2026', 'more than £400,000', 'accumulated deficit', '2028/29', 'approved budget, ledger and assumptions remain missing', 'long-term viability']) {
+  for (const value of ['£231,685.09', '31 March 2026', 'more than £400,000', 'accumulated deficit', '2028/29', 'received final budget summary', 'ledger, detailed assumptions and current monitoring are still needed', 'long-term viability']) {
     await expect(finances).toContainText(value);
   }
   for (const value of ['2025/26', 'January 2026', '651', '654', '88 forecast, 97 counted', 'one period across three schools', 'excluding nursery', 'not a forecast for Kew Riverside Primary School alone or a long-term accuracy test']) {
