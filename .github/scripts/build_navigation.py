@@ -5,7 +5,7 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026100802'
+VERSION = '2026100803'
 PAGES = {
     # Page identity labels only. The Menu and footer come from MENU_GROUPS and
     # FOOTER_LINKS, so registering a page never adds a Menu row by itself.

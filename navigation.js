@@ -135,10 +135,12 @@
   }
   window.addEventListener('pageshow', event => {
     const position = history.state?.kewReadingPosition;
-    const returned = event.persisted || performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+    const reloadedBack = !event.persisted && performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+    const returned = event.persisted || reloadedBack;
     if (returned && position?.url === location.href && Number.isFinite(position.x) && Number.isFinite(position.y) && position.y > 0 && history.scrollRestoration !== 'manual') {
-      // WebKit can reset to zero just after pageshow on an external handoff.
-      // Give native restoration its frame, preserving it whenever it succeeds.
+      // WebKit can reset to zero or the original fragment on a reloaded Back.
+      // Let native restoration run first; keep the saved reading position when
+      // a fresh anchored document would otherwise jump to its initial heading.
       const interactions = ['pointerdown', 'keydown', 'click', 'input', 'change'];
       const cancel = () => { cancelAnimationFrame(frame); cleanup(); forgetPosition(position); };
       const cleanup = () => {
@@ -148,7 +150,7 @@
       const frame = requestAnimationFrame(() => {
         cleanup();
         const currentPosition = history.state?.kewReadingPosition;
-        if (location.href === position.url && currentPosition?.url === position.url && currentPosition.x === position.x && currentPosition.y === position.y && history.scrollRestoration !== 'manual' && scrollY === 0) {
+        if (location.href === position.url && currentPosition?.url === position.url && currentPosition.x === position.x && currentPosition.y === position.y && history.scrollRestoration !== 'manual' && (scrollY === 0 || (reloadedBack && location.hash))) {
           window.scrollTo({left:position.x,top:position.y,behavior:'instant'});
         }
         // One return only: toolbar navigation must not revive an older departure.
