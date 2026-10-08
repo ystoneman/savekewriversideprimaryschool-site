@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Analytics collection and first-visit choices
+
+- Update the first-party collector, all page CSPs and fixture/asset validators to Umami Cloud’s documented gateway endpoint. Retain the existing website ID, fixed labels, omitted credentials/referrers and all privacy exclusions.
+- Make analytics choices discoverable with a compact first-visit prompt. Both tiers stay off until selected; Keep off saves refusal. No automatic focus or overlay: the compact notice sits after the protected arrival action/information, is inserted before the configuration fetch resolves, and restores stable focus when dismissed. Cache versions are bumped together.
+- Populate the operator’s previously empty Umami dashboard with traffic metrics and a chart; its configured hostname matches the current site. Independent UX planning review informed overlap protection. Local/hosted verification and live receipt remain pending.
+
+
 - Add two face-free photographs from the school website, with local responsive images, source credit and alternative text. Refine shared header decoration/spacing and homepage action emphasis while protecting urgent phone entry points and the six task routes.
 - Put the newest-first community letters feed before the open writing form, with visible writing anchors and retained drafts, permissions, individual links and recovery. Update the J4 decision and directional copy.
 - Focus the Parent action plan and related homepage/options entries on current actions. Move September event details outside the active plan, retain older links, and mark the 6 October rally page as archived advertised information.

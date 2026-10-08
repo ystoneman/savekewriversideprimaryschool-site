@@ -6,7 +6,7 @@ const root = path.resolve(__dirname, '../..');
 const origin = 'https://savekewriversideprimaryschool.org';
 const prefix = '/';
 const site = origin + prefix;
-const endpoint = 'https://cloud.umami.is/api/send';
+const endpoint = 'https://gateway.umami.is/api/send';
 const choiceKey = 'kew-analytics-choice-v1';
 const fakeConfig = { enabled: true, websiteId: '01234567-89ab-4cde-8123-456789abcdef' };
 const officialForm = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform';
@@ -49,6 +49,7 @@ async function virtualProduction(context, options = {}) {
     expect(localAssets.has(name), 'Only an existing local static asset can be served: ' + name).toBe(true);
     if (name === 'analytics-config.json') {
       configReads.push(request.url());
+      if (options.configBarrier) await options.configBarrier;
       if (options.configFailure) {
         await route.fulfill({ status: 503, body: 'Intentional local config outage', headers: { 'X-Test-Fixture': 'intentional-error' } });
       } else {
@@ -145,6 +146,16 @@ test('First visit to the new domain sends no analytics until a level is chosen',
   await freezeAfterLoad(page);
   expect(configReads).toHaveLength(1);
   expect(sent).toEqual([]);
+  const invitation = page.locator('.analytics-invitation');
+  await expect(invitation).toBeVisible();
+  await expect(invitation.getByRole('button', { name: 'Keep off', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.activeElement.closest('.analytics-invitation'))).toBeNull();
+  expect(await page.evaluate(key => localStorage.getItem(key), choiceKey)).toBeNull();
+  await invitation.getByRole('button', { name: 'Choose analytics', exact: true }).click();
+  await expect(page.locator('#analytics-panel')).toBeVisible();
+  expect(sent).toEqual([]);
+  await page.locator('#analytics-panel').getByRole('button', { name: 'Close analytics choices' }).click();
+  await expect(invitation.getByRole('button', { name: 'Choose analytics', exact: true })).toBeFocused();
   const panel = await choices(page);
   await expect(panel.getByRole('status')).toContainText('analytics off (the default on this domain)');
   await expect(panel.getByRole('button', { name: OFF, exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -152,6 +163,89 @@ test('First visit to the new domain sends no analytics until a level is chosen',
   await expect.poll(() => pageViews(sent).length).toBe(1);
   expect(events(sent, 'Section reached')).toEqual([]);
 });
+
+test('Keeping first-visit analytics off persists across pages and can be changed through the footer', async ({ page, context }) => {
+  const { sent } = await virtualProduction(context);
+  await page.goto(site);
+  await page.locator('.analytics-invitation').getByRole('button', { name: 'Keep off', exact: true }).click();
+  await expect(page.locator('.analytics-invitation')).toBeHidden();
+  expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).choice, choiceKey)).toBe('deny');
+  await page.goto(site + 'faq.html');
+  await expect(page.locator('.analytics-invitation')).toBeHidden();
+  expect(sent).toEqual([]);
+  const panel = await choices(page);
+  await panel.getByRole('button', { name: BASIC, exact: true }).click();
+  await expect.poll(() => pageViews(sent).length).toBe(1);
+});
+
+test('Slow configuration does not move a focused field or turn first-visit collection on', async ({ page, context }) => {
+  let release;
+  const configBarrier = new Promise(resolve => { release = resolve; });
+  const { sent } = await virtualProduction(context, { configBarrier });
+  await page.goto(site + 'letters.html');
+  const invitation = page.locator('.analytics-invitation');
+  await expect(invitation).toBeVisible();
+  await expect(invitation.getByRole('button', { name: 'Choose analytics' })).toBeDisabled();
+  await page.locator('#message').fill('Fictional letter typed before configuration loads');
+  const before = await page.locator('#message').boundingBox();
+  release();
+  await expect(invitation.getByRole('button', { name: 'Choose analytics' })).toBeEnabled();
+  await expect(page.locator('#message')).toBeFocused();
+  expect(await page.locator('#message').boundingBox()).toEqual(before);
+  expect(sent).toEqual([]);
+});
+
+for (const [setting, label] of [['allow', ALLOW], ['basic', BASIC], ['deny', OFF]]) {
+  test(`First-visit prompt offers the ${setting} choice without enabling analytics on open`, async ({ page, context }) => {
+    const { sent } = await virtualProduction(context);
+    await page.goto(site);
+    await page.locator('.analytics-invitation').getByRole('button', { name: 'Choose analytics' }).click();
+    expect(sent).toEqual([]);
+    const panel = page.locator('#analytics-panel');
+    await panel.getByRole('button', { name: label, exact: true }).click();
+    await expect(panel).toBeHidden();
+    await expect(page.locator('.analytics-invitation')).toBeHidden();
+    expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).choice, choiceKey)).toBe(setting);
+    if (setting === 'deny') expect(sent).toEqual([]);
+    else await expect.poll(() => pageViews(sent).length).toBe(1);
+  });
+}
+
+for (const width of [320, 390, 1440]) {
+  test(`First-visit invitation preserves primary actions and typing at ${width}px`, async ({ page, context }) => {
+    const { sent } = await virtualProduction(context);
+    await page.setViewportSize({ width, height: width === 320 ? 568 : width === 390 ? 844 : 1000 });
+    for (const appearance of ['light', 'dark']) {
+      await page.emulateMedia({ colorScheme: appearance });
+      for (const target of ['', 'videos.html', 'videos.html#upload', 'letters.html']) {
+        await page.goto(site + target);
+        await expect.poll(() => page.evaluate(() => Boolean(document.querySelector('.analytics-invitation')))).toBe(true);
+        const overlap = await page.evaluate(() => {
+          const invite = document.querySelector('.analytics-invitation');
+          if (invite.hidden) return false;
+          const r = invite.getBoundingClientRect();
+          return [...document.querySelectorAll('.button.primary, .parent-plan-spotlight a')].some(el => {
+            if (!el.getClientRects().length) return false;
+            const b = el.getBoundingClientRect();
+            return b.bottom > r.top && b.top < r.bottom && b.right > r.left && b.left < r.right;
+          });
+        });
+        expect(overlap, target + ' ' + appearance).toBe(false);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      }
+      const field = page.locator('#message');
+      await field.fill('Fictional letter for invitation focus check');
+      await expect(field).toBeFocused();
+      await expect(page.locator('.analytics-invitation')).toBeVisible();
+      await expect(field).toHaveValue('Fictional letter for invitation focus check');
+      await page.goto(site);
+      const shortcut = page.locator('.parent-plan-spotlight a');
+      const box = await shortcut.boundingBox();
+      expect(box.y + box.height).toBeLessThan(width === 320 ? 568 : width === 390 ? 844 : 1000);
+    }
+    expect(sent).toEqual([]);
+  });
+}
 
 test('An old-origin objection and unfinished draft cannot transfer, so the new origin starts private', async ({ page, context }) => {
   await page.route('https://ystoneman.github.io/**', route => route.fulfill({
@@ -215,7 +309,7 @@ test('An explicit detailed choice sends fixed events without a cookie', async ({
   await savedChoice(page);
   await page.goto(site);
   await freezeAfterLoad(page);
-  await expect(page.locator('.analytics-invitation')).toHaveCount(0);
+  await expect(page.locator('.analytics-invitation')).toBeHidden();
   await expect(page.locator('#analytics-panel')).toBeHidden();
   await expect.poll(() => sent.length).toBe(1);
   expect(configReads).toHaveLength(1);
@@ -345,6 +439,7 @@ for (const signal of ['globalPrivacyControl', 'doNotTrack']) {
     await page.goto(site);
     const panel = await choices(page);
     await expect(panel.getByRole('status')).toContainText('privacy signal');
+    await expect(page.locator('.analytics-invitation')).toBeHidden();
     await expect(panel.getByRole('button', { name: ALLOW, exact: true })).toBeDisabled();
     expect(sent).toEqual([]);
   });
@@ -397,6 +492,7 @@ for (const state of ['disabled', 'invalid-id', 'unavailable']) {
     await page.goto(site);
     const panel = await choices(page);
     await expect(panel.getByRole('status')).toContainText('not connected');
+    await expect(page.locator('.analytics-invitation')).toBeHidden();
     await expect(panel.getByRole('button', { name: ALLOW, exact: true })).toBeDisabled();
     expect(sent).toEqual([]);
   });
@@ -460,6 +556,7 @@ for (const file of ['feedback.html?kind=privacy', 'corrections.html']) {
       if (saved) await savedChoice(page, saved);
       await page.goto(site + file);
       await freezeAfterLoad(page);
+      await expect(page.locator('.analytics-invitation')).toBeHidden();
       await page.locator('#message').fill('Fictional private request ' + sentinel);
       await page.clock.runFor(30_000);
       expect(sent).toEqual([]);
