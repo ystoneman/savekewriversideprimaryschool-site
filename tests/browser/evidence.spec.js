@@ -67,7 +67,7 @@ test('Report discovery: remembered terms find the research and preserve its prov
   await expect(report).toContainText(/four closure comparisons/i);
   await expect(report).toContainText(/not an official record or a representative dataset/i);
   await expect(report).not.toHaveClass(/\bsource-card\b/);
-  await expect(page.locator('.source-card')).toHaveCount(59);
+  await expect(page.locator('.source-card')).toHaveCount(61);
   await page.reload();
   await expect(page.getByLabel('Search source records and research reports')).toHaveValue('44 page PDF');
   await expect(report).toBeVisible();
@@ -76,12 +76,12 @@ test('Report discovery: remembered terms find the research and preserve its prov
 test('Report discovery: research filters, separate counts, empty state and reset agree', async ({ page }) => {
   await page.goto('/evidence.html#records');
   const report = page.locator('#source-lessons-report');
-  await expect(page.locator('#result-count')).toHaveText('59 of 59 records');
+  await expect(page.locator('#result-count')).toHaveText('61 of 61 records');
   await expect(page.locator('#research-count')).toHaveText('1 of 1 site research reports');
   await refine(page, 'Record type', 'Site research');
   await expect(report).toBeVisible();
   await expect(page.locator('.source-card:visible')).toHaveCount(0);
-  await expect(page.locator('#result-count')).toHaveText('0 of 59 records');
+  await expect(page.locator('#result-count')).toHaveText('0 of 61 records');
   await expect(page.locator('#no-results')).toBeHidden();
   await refine(page, 'Coverage', 'Synthesis');
   await expect(report).toBeVisible();
@@ -91,8 +91,8 @@ test('Report discovery: research filters, separate counts, empty state and reset
   await expect(page.locator('#no-results')).toBeVisible();
   await page.getByRole('button', { name: 'Clear filters' }).click();
   await expect(report).toBeVisible();
-  await expect(page.locator('.source-card:visible')).toHaveCount(59);
-  await expect(page.locator('#result-count')).toHaveText('59 of 59 records');
+  await expect(page.locator('.source-card:visible')).toHaveCount(61);
+  await expect(page.locator('#result-count')).toHaveText('61 of 61 records');
   await expect(page.locator('#research-count')).toHaveText('1 of 1 site research reports');
   await expect(page.locator('#no-results')).toBeHidden();
   await expect(page.getByLabel('Search source records and research reports')).toBeFocused();
@@ -170,7 +170,7 @@ test('New source terms find the appropriate reviewed records without counting ex
   await expect(page.locator('.evidence-answer-links a').first()).toBeVisible();
   await page.locator('#no-results a[href="evidence.html#records"]').click();
   await expect(search).toHaveValue('');
-  await expect(page.locator('#result-count')).toHaveText('59 of 59 records');
+  await expect(page.locator('#result-count')).toHaveText('61 of 61 records');
   await expect(page.locator('#no-results')).toBeHidden();
 });
 
@@ -350,7 +350,7 @@ test('Evidence starts with explanations and optional detail, then opens the comp
   const summary = library.locator(':scope > summary');
   if (hasTouch) await summary.tap();
   else { await summary.focus(); await page.keyboard.press('Enter'); }
-  await expect(page.locator('#source-grid .source-card:visible')).toHaveCount(59);
+  await expect(page.locator('#source-grid .source-card:visible')).toHaveCount(61);
   await expect(page.locator('.school-roll-chart .source-card')).toHaveCount(0);
   if (hasTouch) await summary.tap(); else await page.keyboard.press('Space');
   await expect(library).not.toHaveAttribute('open', '');

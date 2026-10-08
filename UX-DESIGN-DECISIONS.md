@@ -1,5 +1,9 @@
 # UX design decisions
 
+## Current research and received budget — 8 October 2026
+
+Visitor needs (J1/J6): identify what has actually changed and distinguish received evidence from requests still outstanding. Use scoped freshness labels on the existing pages, retaining historical source dates. Keep the short financial explanation on arrival and the received summary's penny-level table in the existing optional disclosure. Add a source-library record and one-page signature-removed copy beside the HTML figures; record receipt in the existing answered/evidence-obtained section. The new borough forecast comparison stays inside the existing forecast detail with explicit geographic and time-horizon limits. This retains existing navigation, action priorities and incoming routes. A new research landing page or reproduction of the private dossier would add unnecessary reading depth. Independent evidence and rendered UX review and verification limits are recorded in TESTING.md.
+
 ## School photography, current actions and reading letters first — 8 October 2026
 
 Visitor needs (J1–J9): the owner asked for real school photographs without children’s faces, a less crowded shared header, clearer action emphasis, a Parent action plan focused on what parents can do now, and a letters page that starts with reading.

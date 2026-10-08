@@ -22,7 +22,7 @@ lessons.html lessons-sources.html lessons-data.json lessons.css lessons.js lesso
 meeting.css meeting.js faq.html discovery.css discovery.js research-discovery.css about.html app.js applications.csv community.css corrections.html
 corrections.js favicon.svg feedback.css feedback.html feedback.js index.html insights.css orientation.css navigation.js participation.css parent-plan.css button-motion.css enrolment.css
 letters.html letters.js letters.json privacy.html proposal.css proposal.html
-response-checklist.md response-checklist.pdf sources.csv sources.json styles.css
+kew-budget-summary-2026.pdf response-checklist.md response-checklist.pdf sources.csv sources.json styles.css
 suggestions.json supporters.html supporters.js supporters.json
 attainment-data.json attainment.csv case-evidence-data.json case-evidence.csv
 understand.html understand.css understand.js understand-data.json richmond-schools.csv

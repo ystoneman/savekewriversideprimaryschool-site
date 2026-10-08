@@ -1,8 +1,8 @@
 {
   "title": "Kew Riverside Primary School — Parent-led evidence and action, maintained by Yann Stoneman",
-  "researchChecked": "2026-10-05",
-  "scope": "Curated public-record index; not exhaustive. Original documents remain with their publishers.",
-  "currentClosureStatus": "Pre-statutory consultation on closure effective 1 September 2027. Council-linked form states response deadline 16 October 2026. Later committee and statutory stages are planned and conditional; no final closure decision verified. Checked 5 October 2026.",
+  "researchChecked": "2026-10-08",
+  "scope": "Curated public-record index; not exhaustive. Original documents remain with their publishers unless a clearly labelled disclosure copy is hosted here. Record-level dates identify each review.",
+  "currentClosureStatus": "Pre-statutory consultation on closure effective 1 September 2027. Council-linked form states response deadline 16 October 2026. Later committee and statutory stages are planned and conditional; no final closure decision verified. Consultation page and response deadline checked 8 October 2026; other process records retain their own review dates.",
   "coverageDefinitions": {
     "Reviewed": "The public document or webpage was retrieved and reviewed for the stated summary; this is not validation of all its claims.",
     "Index only": "A reviewed official index lists the item; its individual document was not reviewed.",
@@ -539,7 +539,7 @@
       "url": "https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform",
       "summary": "Council-linked response form states that responses must be submitted by 16 October 2026. It asks respondent capacity, view and reasons, with optional alternatives and comments. As checked, it does not ask for a name or postcode. No response was submitted during verification.",
       "locator": "Opening description supplies deadline without a closing time. Respondent form linked from the council page; checked 21 September 2026. The initial council /edit link redirects to a readable form; this is its public respondent URL.",
-      "accessChecked": "2026-09-21"
+      "accessChecked": "2026-10-08"
     },
     {
       "id": "committee-remit",
@@ -677,7 +677,7 @@
       "topic": "Funding & buildings",
       "status": "Reviewed",
       "url": "https://cabnet.richmond.gov.uk/documents/s500020983/Item%206%20Appendix%20A.pdf",
-      "summary": "The council records Kew Riverside Primary School's revenue balance at £231,685.09 on 31 March 2026, down £75,103.70 from a year earlier. Capital balances are separate. This dated actual does not show cash available today or the approved budget and ledger. The later Kew FAQ publishes a separate indicative forecast.",
+      "summary": "The council records Kew Riverside Primary School's revenue balance at £231,685.09 on 31 March 2026, down £75,103.70 from a year earlier. Capital balances are separate. This dated actual does not show cash available today; the separately received final budget summary contains indicative later forecasts.",
       "locator": "Appendix A associated with the 25 June 2026 Schools Forum, page 1, Kew Riverside Primary School row; revenue and capital columns. Document publication date not stated.",
       "accessChecked": "2026-09-23"
     },
@@ -834,6 +834,34 @@
       "summary": "Note 41 reports £42.937 million remaining payments across six primary schools at 31 March 2025, excluding future inflation and performance adjustments. This portfolio total is not Kew’s allocation, an avoidable closure saving or evidence of a land motive.",
       "locator": "Note 41, printed pages 79–82 (PDF pages 80–83). Audited 20 February 2026. £5.266m capital + £1.987m interest + £35.684m services = £42.937m.",
       "accessChecked": "2026-10-05"
+    },
+    {
+      "id": "kew-budget-summary-2026",
+      "date": "2026-05-20",
+      "year": "2026",
+      "title": "Kew Riverside: final three-year budget summary (signature removed)",
+      "publisher": "Kew Riverside Primary School; supplied by Achieving for Children",
+      "type": "School budget",
+      "topic": "Funding & buildings",
+      "status": "Reviewed",
+      "url": "https://savekewriversideprimaryschool.org/kew-budget-summary-2026.pdf",
+      "summary": "The FINAL summary records governing-body approval on 20 May 2026. Its 2026/27–2028/29 columns are labelled Indicative: annual gaps calculated from income and expenditure are £212,417.38, £215,177.46 and £261,792.24; published closing balances are £19,267.70, −£195,909.75 and −£457,702.00. The summary is received; detailed assumptions, ledger and current monitoring remain outstanding. These forecasts are not current cash or net closure savings.",
+      "locator": "Page 1: revenue table and FINAL approval block, dated 20 May 2026; supplied in the 7 October response. Signature removed from this public copy.",
+      "accessChecked": "2026-10-08"
+    },
+    {
+      "id": "richmond-forecast-accuracy-2025",
+      "date": "2026-06-25",
+      "year": "2026",
+      "title": "Richmond borough: primary pupil forecast accuracy for 2025/26",
+      "publisher": "Department for Education",
+      "type": "Official dataset",
+      "topic": "Demand & housing",
+      "status": "Reviewed",
+      "url": "https://explore-education-statistics.service.gov.uk/data-catalogue/data-set/7b949e21-60c6-4376-ba7f-d451ebff90d4",
+      "summary": "The borough-level Primary row reports 14,964 actual pupils, versus 15,185 in the one-year SCAP25 forecast and 15,468 in the three-year SCAP23 forecast: overestimates of 221 (1.48%) and 504 (3.37%). This does not measure Kew-area or individual-school accuracy and does not show forecasts always overpredict.",
+      "locator": "Richmond upon Thames, Primary, old_la_code 318; actual 2025/26 and SCAP25/SCAP23 forecast columns.",
+      "accessChecked": "2026-10-08"
     }
   ],
   "charts": {

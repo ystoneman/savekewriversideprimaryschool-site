@@ -1,8 +1,9 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "checkedOn": {
-    "finance": "2026-10-05",
-    "forecasts": "2026-09-23"
+    "finance": "2026-10-08",
+    "forecasts": "2026-09-23",
+    "boroughForecasts": "2026-10-08"
   },
   "sources": [
     {
@@ -49,6 +50,16 @@
       "id": "consultation-kew-faq",
       "url": "https://www.richmond.gov.uk/media/3pderpuw/school_organisation_kew_riverside_faq.pdf",
       "locator": "Kew-specific FAQ Q5, PDF page 4; indicative annual gaps and year-end positions"
+    },
+    {
+      "id": "kew-budget-summary-2026",
+      "url": "https://savekewriversideprimaryschool.org/kew-budget-summary-2026.pdf",
+      "locator": "Page 1: revenue table and FINAL approval block, dated 20 May 2026; supplied in the 7 October response. Signature removed from this public copy."
+    },
+    {
+      "id": "richmond-forecast-accuracy-2025",
+      "url": "https://explore-education-statistics.service.gov.uk/data-catalogue/data-set/7b949e21-60c6-4376-ba7f-d451ebff90d4",
+      "locator": "Richmond upon Thames, Primary, old_la_code 318; actual 2025/26 and SCAP25/SCAP23 forecast columns."
     }
   ],
   "financeHistory": [
@@ -126,26 +137,6 @@
       "sourceId": "consultation-leaflet"
     }
   ],
-  "unavailableBudgetBridge": [
-    {
-      "financialYear": "2026/27",
-      "incomePence": null,
-      "expenditurePence": null,
-      "closingRevenueReservePence": null
-    },
-    {
-      "financialYear": "2027/28",
-      "incomePence": null,
-      "expenditurePence": null,
-      "closingRevenueReservePence": null
-    },
-    {
-      "financialYear": "2028/29",
-      "incomePence": null,
-      "expenditurePence": null,
-      "closingRevenueReservePence": null
-    }
-  ],
   "pfiSchoolCharge": {
     "financialYear": "2025/26",
     "amountPence": 6964000,
@@ -213,5 +204,56 @@
       "calculatedClosingPence": -45770100,
       "sourceId": "consultation-kew-faq"
     }
-  ]
+  ],
+  "receivedBudgetPlan": {
+    "approvalDate": "2026-05-20",
+    "receivedOn": "2026-10-07",
+    "sourceId": "kew-budget-summary-2026",
+    "rows": [
+      {
+        "financialYear": "2026/27",
+        "openingPence": 23168509,
+        "incomePence": 93365538,
+        "expenditurePence": 114607276,
+        "annualGapPence": 21241738,
+        "reportedClosingPence": 1926770
+      },
+      {
+        "financialYear": "2027/28",
+        "openingPence": 1926770,
+        "incomePence": 97188536,
+        "expenditurePence": 118706282,
+        "annualGapPence": 21517746,
+        "reportedClosingPence": -19590975
+      },
+      {
+        "financialYear": "2028/29",
+        "openingPence": -19590975,
+        "incomePence": 96788726,
+        "expenditurePence": 122967950,
+        "annualGapPence": 26179224,
+        "reportedClosingPence": -45770200
+      }
+    ]
+  },
+  "boroughForecastCheck": {
+    "geography": "Richmond upon Thames",
+    "localAuthorityCode": "318",
+    "phase": "Primary",
+    "targetAcademicYear": "2025/26",
+    "actualPupils": 14964,
+    "sourceId": "richmond-forecast-accuracy-2025",
+    "forecasts": [
+      {
+        "vintage": "SCAP25",
+        "horizonYears": 1,
+        "forecastPupils": 15185
+      },
+      {
+        "vintage": "SCAP23",
+        "horizonYears": 3,
+        "forecastPupils": 15468
+      }
+    ]
+  }
 }
