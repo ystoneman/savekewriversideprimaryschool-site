@@ -34,6 +34,10 @@ Independent campaign and UX reviews covered the plan and actual implementation. 
 
 Recorded: 22 September 2026. Status: implementation in progress; final verification and publication are recorded separately in [CHANGELOG.md](CHANGELOG.md). This is a design rationale, not a report of a user study or a claim that every visitor will complete these tasks successfully.
 
+## Anchored Back recovery — 8 October 2026 (J2/J4)
+
+Visitors returning from the direct letter composer should resume at the current-action link they chose. The retained hosted iPhone WebKit trace shows a correct departure restoration followed by the original fragment being reapplied after the first frame. Delay the bounded correction until the next frame, retaining matching-entry, manual-restoration, user-input and single-return safeguards. Prefer this observed lifecycle correction to repeated timers or broader scroll overrides. The original viewport/<5px regression remains; a deterministic late-fragment regression fails with the prior script. Local browser and native Safari Simulator evidence is recorded in TESTING.md; exact-head hosted release checks and live verification are tracked with PR #15.
+
 ## Purpose and constraints
 
 Help people understand the proposal, check its evidence and take useful action in support of Kew Riverside. Visitors should quickly distinguish a proposed outcome from a decision, an official council response from a contribution to this independent website, and verified figures from forecasts or unanswered questions.
