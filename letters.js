@@ -311,7 +311,9 @@
         seen.add(item.id);
       });
       const fragment = document.createDocumentFragment();
-      data.letters.forEach(item => {
+      // Dates have day precision; later appended entries lead same-day ties.
+      const newestFirst = [...data.letters].reverse().sort((a, b) => b.date.localeCompare(a.date));
+      newestFirst.forEach(item => {
         const article = document.createElement('article');
         article.className = 'suggestion-card letter-card';
         article.id = item.id;

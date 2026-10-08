@@ -1,5 +1,9 @@
 # UX design decisions
 
+## Newest community letters first — 8 October 2026
+
+Visitor need (J4): readers should find newly published letters at the top, as the owner requested after recent additions were hard to find below older entries. Render validated letters by descending publication date; because dates have day precision, later additions in the source list lead same-day ties. Sort a copy of the data, preserving stored records, letter IDs, full text, assessment labels and individual links. The reading/writing entries and form stay in place. Regression coverage uses mixed-date fictional entries and day ties; existing incoming-link, expansion and Back checks continue to cover older letters after sorting. Implementation and release verification are recorded with the associated pull request.
+
 ## Full school name on the site — 1 October 2026
 
 Visitor need (J1–J9): the shared brand and appeal must identify Kew Riverside Primary School clearly, including when a page or image is shared without surrounding context. The owner's phone screenshot showed the shorter name in the header and opening appeal.
