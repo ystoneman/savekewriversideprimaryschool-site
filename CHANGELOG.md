@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Add two face-free photographs from the school website, with local responsive images, source credit and alternative text. Refine shared header decoration/spacing and homepage action emphasis while protecting urgent phone entry points and the six task routes.
+- Put the newest-first community letters feed before the open writing form, with visible writing anchors and retained drafts, permissions, individual links and recovery. Update the J4 decision and directional copy.
+- Focus the Parent action plan and related homepage/options entries on current actions. Move September event details outside the active plan, retain older links, and mark the 6 October rally page as archived advertised information.
+- Initial independent UX, campaign and evidence/date reviews informed the change. All 67 local Python privacy/security checks pass; affected browser checks, final implementation reviews and deployment are recorded separately when complete.
+
 - Show community letters newest first by publication date, with later additions first on the same day. Keep existing letter links, full-text controls and public records intact. Release checks and live verification are recorded with the associated pull request.
 
 - Add one author-approved community letter using the existing human-reviewed publication route. Preserve the approved wording and display name; independent campaign review found no actionable J4 concerns. Deployment and live verification are pending.

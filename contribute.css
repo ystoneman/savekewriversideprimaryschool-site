@@ -1,4 +1,4 @@
-/* Letters, Share ideas and thank-you pages: write first, choose, then send.
+/* Letters, Share ideas and thank-you pages: clear reading and contribution routes.
    Loaded only on those pages, before voice.css. Colour tokens are defined in voice.css. */
 /* ---------- Shared hero for the two destinations ---------- */
 .invite-hero{max-width:760px;margin-bottom:22px}
@@ -26,17 +26,34 @@
 @media (max-width:430px){.format-line{gap:0 16px}.format-line svg{display:none}.format-line a{min-height:40px}}
 .format-line svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 
-/* Layout: invitation and a real voice on the left, the writing box on the right from arrival.
-   Phones: invitation, then straight into writing; the quote and guidelines follow. */
+/* Below the letter feed: open writing form with guidelines alongside on desktop.
+   Phones: writing form followed by guidelines. */
 .letters-invite{max-width:1180px}
-.invite-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:auto auto 1fr;
-  grid-template-areas:"hero form" "quote form" "aside form";gap:22px 48px;align-items:start}
+.invite-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);grid-template-rows:auto;
+  grid-template-areas:"form aside";gap:22px 36px;align-items:start;margin-top:48px;padding-top:32px;border-top:1px solid var(--line)}
 .invite-layout>.invite-hero{grid-area:hero;margin:0;padding-top:8px}
 .invite-layout>.feedback-form{grid-area:form}
 .invite-layout>.voice-quote{grid-area:quote}
 .invite-layout>.review-note{grid-area:aside}
 @media (max-width:900px){
-  .invite-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-template-areas:"hero" "form" "quote" "aside";gap:22px}
+  .invite-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-template-areas:"form" "aside";gap:22px}
+}
+.letters-invite>.invite-hero{max-width:900px;margin-bottom:24px}
+.letters-invite .invite-lead{max-width:65ch}
+.letters-invite #letters{margin-top:0;padding-top:24px}
+.letters-board-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.letters-board-heading h2{margin:0;font:700 22px/1.3 Arial,Helvetica,sans-serif;letter-spacing:0}
+.letters-invite .letters-board-heading{flex-direction:row;align-items:center}
+.letters-invite #letters-list{max-width:850px}
+.letters-invite #letters>.eyebrow{display:none}
+.letters-invite #letters-message{font-size:14px;color:var(--muted);margin-bottom:12px}
+.letter-write-link{border:1px solid var(--line);padding:8px 14px;min-height:44px}
+@media(max-width:700px){
+  .letters-invite>.invite-hero{margin-bottom:14px}
+  .letters-invite .invite-kicker{display:none}
+  .letters-invite .invite-title{margin-bottom:8px}
+  .letters-invite .invite-lead{font-size:17px!important;margin-bottom:10px}
+  .letters-invite #letters{padding-top:18px}
 }
 /* Smallest phones: keep the official-response line on the first screen (J3 before J4). */
 @media (max-width:360px){

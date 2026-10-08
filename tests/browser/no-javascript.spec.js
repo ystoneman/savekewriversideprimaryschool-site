@@ -382,22 +382,23 @@ test('No JavaScript: all FAQ answers retain native disclosure and official route
   }
 });
 
-test('No JavaScript: the meeting invitation shows its fixed date and usable details link', async ({ page }) => {
+test('No JavaScript: past meeting is absent on arrival and old links provide a reference route', async ({ page }) => {
   await page.goto('/index.html');
-  const invitation = page.locator('#meeting-invitation');
-  await expect(invitation).toBeVisible();
-  await expect(page.locator('#meeting-relative')).toHaveText('School meeting');
-  expect((await invitation.locator('time').innerText()).replace(/\s+/g, ' ')).toContain('Tuesday 29 September 2026');
-  await expect(invitation).toContainText(/3[.:]30\s*p\.?m\.?/i);
-  await invitation.locator('a[href="proposal.html#school-meeting"]').tap();
+  await expect(page.locator('#meeting-invitation')).toBeHidden();
+  await page.goto('/index.html#meeting-invitation');
+  await expect(page.locator('#meeting-invitation')).toBeVisible();
+  await expect(page.locator('#meeting-invitation')).toContainText('date has passed');
+  await page.locator('#meeting-invitation a[href="proposal.html#school-meeting"]').tap();
   await expect(page).toHaveURL(/proposal\.html#school-meeting$/);
   await expect(page.locator('#school-meeting')).toBeInViewport();
 });
 
 test('No JavaScript: the parent plan, session dates and additional actions are available', async ({ page }) => {
   await page.goto('/index.html');
-  await page.locator('#meeting-invitation a[href="proposal.html#parent-plan"]').tap();
+  await page.locator('.parent-plan-spotlight a').tap();
   await expect(page.locator('#parent-plan-title')).toBeInViewport();
+  await expect(page.locator('#parent-plan #prep-sessions, #parent-plan #plan-attend')).toHaveCount(0);
+  await page.locator('#prep-sessions > summary').tap();
   await expect(page.locator('#prep-sessions')).toContainText('Friday 25 September');
   await expect(page.locator('#prep-sessions')).toContainText('Monday 28 September');
   await expect(page.locator('#plan-respond')).toContainText('16 October');
@@ -633,3 +634,18 @@ for (const id of ['prompt-title','process-title','recording-tips','video-choices
     await expect(page.locator('#'+id)).toBeInViewport();
   });
 }
+test('No JavaScript: letters reading comes first and writing remains an ordinary anchor', async ({ page }) => {
+  await page.goto('/letters.html');
+  await expect(page.locator('#letters')).toBeVisible();
+  await expect(page.locator('#letters noscript a')).toHaveAttribute('href', 'letters.json');
+  const write = page.locator('.invite-hero a[href="#letter-form"]');
+  await write.tap();
+  await expect(page).toHaveURL(/letters\.html#letter-form$/);
+  await expect(page.locator('#message')).toBeInViewport();
+  await expect(page.locator('#step-choose')).toBeVisible();
+  await page.goto('/proposal.html#parent-plan');
+  await page.locator('#plan-share a[href="letters.html#letter-form"]').tap();
+  await expect(page.locator('#message')).toBeInViewport();
+  await page.goBack();
+  await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
+});

@@ -1,5 +1,12 @@
 # Testing the website
 
+## Photos, current parent actions and reading-first letters — 8 October 2026
+
+- Add regression coverage for responsive local school photos, feed-before-form arrival and direct writing/Back routes. Retire obsolete event-invitation expectations deliberately; retain historical fragment, no-script archive and download coverage. Fixtures contain fictional letters and intercept external requests; public board records and form/provider permissions are unchanged.
+- All 67 Python privacy/security/artifact checks pass; generated navigation, comparison and source freshness, JavaScript syntax and whitespace checks pass. The public allowlist accepts 116 assets, including four optimized school-photo variants.
+- Before/after rendered Chromium captures cover Home, Letters and Parent plan at 320×568, 390×844 and 1440×1000, light/dark. The compact header retains exposed participation labels. Photos contain no faces. Desktop/mobile implementation reviews inspect these captures and the actual diff. The first letter now precedes the open composer; writer-only links go directly to the composer.
+- Local Chromium regression results and exact-revision hosted gates are recorded with the release PR. WebKit system libraries and native iOS Simulator are unavailable in this Linux workspace; use hosted WebKit and no-script projects before release. No unfamiliar-user trial, measured engagement improvement, assistive-technology audit or real submission is claimed. Publication and live verification remain pending.
+
 ## Source consolidation — 7 October 2026
 
 - The 112 canonical public assets remain byte-for-byte equivalent to the latest verified final-domain promotion. The initial release passed 66 Python privacy, packaging and release-gate tests; the queued-run metadata regression brings the local suite to 67. The compatibility asset manifest retains actual download and board files; live GitHub Pages CSV, calendar and Markdown MIME types were checked.

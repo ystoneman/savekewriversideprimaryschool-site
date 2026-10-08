@@ -3,14 +3,14 @@ const { test, expect, expectStillArrival } = require('./fixtures');
 test('Rally: map handoff selects the York House building rather than an address search', async ({ page, hasTouch }) => {
   // Richmond Council's York House directions identify this venue feature and
   // building coordinates. An address-only search can select Richmond Road.
-  await page.goto('/rally.html#when-and-where');
-  const map = page.getByRole('link', { name: 'Find York House on a map' });
+  await page.goto('/rally.html#schedule');
+  const map = page.getByRole('link', { name: 'Venue map (past event)' });
   const destination = new URL(await map.getAttribute('href'));
   expect(destination.hostname).toBe('www.google.co.uk');
   expect(destination.pathname).toContain('/maps/place/York+House,');
   expect(destination.pathname).toContain('!1s0x48760c616adfa4c9:0x7c8748dc6e8c58b6');
   expect(destination.pathname).toContain('!3d51.447698!4d-0.324216');
-  await expect(page.locator('#when-and-where')).toContainText('not a confirmed assembly point');
+  await expect(page.locator('#schedule')).toContainText('not a confirmed assembly point');
   const requests = [];
   await page.route('https://www.google.co.uk/maps/**', async route => {
     requests.push(route.request().url());
@@ -22,19 +22,21 @@ test('Rally: map handoff selects the York House building rather than an address 
 });
 
 test('Rally: Parent plan entry leads to the schedule and returns without losing the plan', async ({ page, hasTouch }) => {
-  await page.goto('/proposal.html#parent-plan');
-  const link = page.locator('#parent-plan a[href="rally.html"]');
-  await expect(link).toContainText('6–6.45pm');
+  await page.goto('/proposal.html#past-parent-events');
+  await expect(page.locator('#parent-plan a[href="rally.html"]')).toHaveCount(0);
+  const link = page.locator('#past-parent-events a[href="rally.html"]');
+  await expect(link).toContainText('6 October');
   if (hasTouch) await link.tap(); else await link.click();
   await expect(page).toHaveURL(/rally\.html$/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Rally at York House');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('6 October rally: archived details');
   await expect(page.locator('.rally-date')).toContainText('Tuesday 6 October 2026');
-  await expect(page.locator('.rally-intro')).toContainText('awaiting confirmation');
+  await expect(page.locator('.rally-intro')).toContainText('advertised date has passed');
   await page.goBack();
-  await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
+  await expect(page).toHaveURL(/proposal\.html#past-parent-events$/);
   await expect(page.locator('#parent-plan')).toContainText('Respond to the council by 16 October 2026');
   await expect(page.locator('#prep-sessions')).toContainText('Past event');
   await expect(page.locator('#plan-attend')).toContainText('Follow up the 29 September meeting.');
+  await page.locator('#plan-attend > summary').click();
   await page.locator('#plan-attend a[href="#school-meeting"]').click();
   await expect(page.locator('#school-meeting')).toContainText('PAST · 29 September');
   await expect(page.locator('#school-meeting')).toContainText('The advertised meeting date has passed.');
@@ -74,7 +76,7 @@ test('Rally: shared photo arrival preserves choice and formal response at narrow
 test('Rally: calendar download uses London evening time and retains pending arrangements', async ({ page, request }) => {
   await page.goto('/rally.html');
   const downloadEvent = page.waitForEvent('download');
-  await page.getByRole('link', { name: 'Add the planned rally to your calendar' }).click();
+  await page.getByRole('link', { name: 'Original calendar file (past event)' }).click();
   const download = await downloadEvent;
   expect(download.suggestedFilename()).toBe('kew-riverside-primary-school-rally.ics');
   const response = await request.get('/rally-6-october.ics');

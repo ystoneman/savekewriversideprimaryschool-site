@@ -115,54 +115,26 @@ test('Options ranking links to the council’s published alternatives rather tha
   );
 });
 
-test('Homepage: the retained meeting block marks the past date and leads to follow-up, source and details', async ({ page, hasTouch }) => {
-  await page.clock.setFixedTime(new Date('2026-09-22T12:00:00Z'));
+test('Homepage: past meeting links remain usable without promoting an expired event', async ({ page }) => {
   await page.goto('/index.html');
-  const invitation = page.locator('main #meeting-invitation');
-  await expect(invitation).toBeVisible();
-  await expect(invitation.getByRole('heading', { name: 'Follow up the September meeting.', exact: true })).toBeVisible();
-  expect((await invitation.locator('time').innerText()).replace(/\s+/g, ' ')).toContain('Tuesday 29 September 2026');
-  await expect(invitation).toContainText(/3[.:]30\s*p\.?m\.?/i);
-  await expect(invitation).toContainText('Kew Riverside Primary School');
-  await expect(invitation).toContainText('29 September date has passed');
-  await expect(invitation).toContainText('outstanding questions in your consultation response');
-  await expect(invitation.locator('a[href="proposal.html#parent-plan"]')).toBeVisible();
-  await expect(invitation.locator('blockquote, .meeting-attribution')).toHaveCount(0);
-  const position = await invitation.boundingBox();
-  const hero = await page.locator('#top').boundingBox();
-  const chooser = await page.locator('#find-your-way').boundingBox();
-  expect(hero.y + hero.height).toBeLessThanOrEqual(position.y + 1);
-  expect(position.y + position.height).toBeLessThanOrEqual(chooser.y + 1);
-  await expect(invitation.locator('a[href="https://www.richmond.gov.uk/media/fxhbilws/kew_riverside_consultation_leaflet.pdf#page=8"]')).toBeVisible();
-  await activate(invitation.locator('a[href="proposal.html#school-meeting"]'), hasTouch);
+  await expect(page.locator('#meeting-invitation')).toBeHidden();
+  await expect(page.locator('.parent-plan-spotlight')).not.toContainText('PTA prep');
+  await page.goto('/index.html#meeting-invitation');
   await expect(page).toHaveURL(/proposal\.html#school-meeting$/);
   await expect(page.locator('#school-meeting')).toBeInViewport();
+  await expect(page.locator('#school-meeting')).toContainText('advertised meeting date has passed');
 });
 
-test.describe('Meeting invitation uses the London calendar date', () => {
-  // A visitor outside the UK must still see the label for the school's day.
+test.describe('Past meeting stays retired independently of a visitor’s calendar', () => {
   test.use({ timezoneId: 'America/Los_Angeles' });
-  for (const [date, label] of [
-    ['2026-09-22T12:00:00Z', 'Next week’s meeting'],
-    ['2026-09-28T12:00:00Z', 'Tomorrow’s meeting'],
-    ['2026-09-29T12:00:00Z', 'Today’s meeting'],
-    ['2026-09-30T12:00:00Z', null],
-    ['2026-09-29T23:30:00Z', null],
-  ]) {
-    test(`${date}: ${label || 'invitation is over'}`, async ({ page }) => {
+  for (const date of ['2026-09-22T12:00:00Z', '2026-09-28T12:00:00Z', '2026-09-29T12:00:00Z', '2026-09-30T12:00:00Z', '2026-10-08T12:00:00Z']) {
+    test(date + ': archived source remains available without an invitation', async ({ page }) => {
       await page.clock.setFixedTime(new Date(date));
       await page.goto('/index.html');
-      const invitation = page.locator('#meeting-invitation');
-      await expect(invitation).toHaveCount(1);
-      if (label) {
-        await expect(invitation).toBeVisible();
-        await expect(page.locator('#meeting-relative')).toHaveText(label);
-      } else {
-        await expect(invitation).toBeHidden();
-        await page.goto('/proposal.html#school-meeting');
-        await expect(page.locator('#school-meeting')).toBeVisible();
-        await expect(page.locator('#school-meeting')).toContainText(/29\s+September\s+2026/);
-      }
+      await expect(page.locator('#meeting-invitation')).toBeHidden();
+      await page.goto('/proposal.html#school-meeting');
+      await expect(page.locator('#school-meeting')).toBeInViewport();
+      await expect(page.locator('#school-meeting')).toContainText(/29\s+September\s+2026/);
     });
   }
 });
@@ -186,27 +158,18 @@ test('Homepage: six clear entry routes lead to answers, dates, evidence and part
   }
 });
 
-test('Homepage: compact dates lead to the school meeting and official response route', async ({ page, hasTouch }) => {
-  // Exercise this invitation before the meeting; the calendar-boundary test covers expiry.
-  await page.clock.setFixedTime(new Date('2026-09-28T12:00:00Z'));
+test('Homepage: current response and historical meeting source lead to useful actions', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
-  const notice = page.locator('#meeting-invitation');
-  await expect(notice).toBeVisible();
-  await expect(notice).toContainText(/29\s+Sep(?:tember)?/i);
-  await expect(notice).toContainText(/3[.:]30\s*p\.?m\.?/i);
+  await expect(page.locator('#meeting-invitation')).toBeHidden();
   await expect(page.locator('#top')).toContainText(/16\s+Oct(?:ober)?/i);
   await expect(page.locator('#top')).toContainText(/propos/i);
-  const official = page.locator('#top a[href^="https://docs.google.com/forms/"]');
-  await expect(official).toHaveCount(1);
-  await expect(official).toHaveAttribute('href', 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform');
-  await activate(notice.locator('a[href="proposal.html#school-meeting"]'), hasTouch);
-  await expect(page).toHaveURL(/proposal\.html#school-meeting$/);
+  await expect(page.locator('#top a[href^="https://docs.google.com/forms/"]')).toHaveAttribute('href', 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform');
+  await page.goto('/proposal.html#school-meeting');
   await expect(page.locator('#school-meeting')).toBeInViewport();
   await expect(page.locator('#school-meeting')).toContainText(/29\s+September/i);
   await activate(page.locator('#school-meeting a[href="feedback.html?kind=meeting#feedback-form"]'), hasTouch);
   await expect(page).toHaveURL(/feedback\.html\?kind=meeting#feedback-form$/);
   await expect(page.locator('input[name="kind"][value="meeting"]')).toBeChecked();
-  await expect(page.locator('#meeting-context')).toBeVisible();
   await expect(page.locator('#meeting-context')).toContainText('does not put it on a meeting agenda or send it to the council');
   await expect(page.locator('#allow-public')).not.toBeChecked();
 });
@@ -344,17 +307,15 @@ test('Proposal: the future timeline separates current participation from conditi
   await expect(page.locator('#future-timeline [data-stage="decision"]')).toContainText('could still be rejected');
 });
 
-test('Parent plan: homepage invitation and meeting details both lead to preparation', async ({ page, hasTouch }) => {
-  await page.clock.setFixedTime(new Date('2026-09-22T12:00:00Z'));
+test('Parent plan: homepage shortcut and historical meeting details lead to current actions', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
-  const invitation = page.locator('#meeting-invitation');
-  // The short invitation delegates preparation details to the named plan.
+  const invitation = page.locator('.parent-plan-spotlight');
   await expect(invitation.getByRole('link', { name: 'Parent action plan', exact: true })).toBeVisible();
   await activate(invitation.getByRole('link', { name: 'Parent action plan', exact: true }), hasTouch);
   await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
   await expect(page.locator('#parent-plan-title')).toBeInViewport();
   await expect(page.locator('#parent-plan')).toContainText('Closure is proposed, not decided.');
-  for (const [name, id] of [['Past PTA sessions', 'prep-sessions'], ['Letters', 'plan-share'], ['Past council meeting', 'plan-attend'], ['Your response', 'plan-respond'], ['More ways to help', 'plan-keep-going']]) {
+  for (const [name, id] of [['Letters', 'plan-share'], ['Your response', 'plan-respond'], ['More ways to help', 'plan-keep-going']]) {
     await activate(page.getByRole('navigation', { name: 'Choose a parent action' }).getByRole('link', { name, exact: true }), hasTouch);
     await expect(page).toHaveURL(new RegExp('#' + id + '$'));
     await expect(page.locator('#' + id)).toBeInViewport();
@@ -367,6 +328,7 @@ test('Parent plan: homepage invitation and meeting details both lead to preparat
 test('Parent plan: correct PTA dates, the video route for new families and official deadline stay distinct', async ({ page, hasTouch, baseURL }) => {
   await page.goto('/proposal.html#parent-plan');
   const prep = page.locator('#prep-sessions');
+  await expect(page.locator('#parent-plan #prep-sessions, #parent-plan #plan-attend, #parent-plan a[href="rally.html"]')).toHaveCount(0);
   await expect(prep).toContainText('school grounds');
   const sessions = prep.locator('.prep-session-dates > li');
   await expect(sessions).toHaveCount(3);
@@ -495,7 +457,7 @@ test('Action motion: the brief invitation keeps the link target still and usable
   await arrow.evaluate(element => element.getAnimations().forEach(animation => animation.finish()));
   await expect(arrow).toHaveCSS('transform', 'none');
   if (!hasTouch) {
-    const button = page.locator('.meeting-links a[href="proposal.html#parent-plan"]');
+    const button = page.locator('#top .button.primary');
     await button.scrollIntoViewIfNeeded();
     const restingBox = await button.boundingBox();
     await button.hover();
@@ -512,7 +474,7 @@ test('Action motion: reduced-motion links stay still and support keyboard activa
   await page.clock.setFixedTime(new Date('2026-09-28T12:00:00Z'));
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/index.html');
-  for (const selector of ['.parent-plan-spotlight a', '.meeting-links a[href="proposal.html#parent-plan"]']) {
+  for (const selector of ['.parent-plan-spotlight a']) {
     const link = page.locator(selector);
     const arrow = link.locator('span');
     await link.focus();

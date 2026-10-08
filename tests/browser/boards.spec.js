@@ -6,6 +6,40 @@ const boards = [
   { file: 'supporters.html', resource: 'supporters', list: '#supporter-list', status: '#supporter-message', prefix: 'supporter', review: 'Confirmed with contributor; human reviewed' },
 ];
 
+for (const [width, height] of [[390, 844], [1440, 1000]]) {
+  test(`Letters: ${width}px arrival leads with reading and provides a direct writing route`, async ({ page, hasTouch }) => {
+    await page.setViewportSize({ width, height });
+    const sample = { id: 'letter-aaaaaaaaaaaa', date: '2026-10-08', review: 'Human reviewed', displayName: 'Fictional local parent', body: 'This is a fictional letter for browser checks. We value the everyday discoveries, creativity and friendships that make a school a community.' };
+    await page.route('**/letters.json', route => route.fulfill({ json: { version: 1, letters: [sample] } }));
+    await page.goto('/index.html');
+    await page.locator('.participation-nav .nav-letters').click();
+    await expect(page.locator('#letters-list .public-author')).toBeInViewport();
+    expect(await page.locator('#letters').evaluate(el => Boolean(el.compareDocumentPosition(document.getElementById('letter-form')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+    const write = page.locator('.invite-hero a[href="#letter-form"]');
+    await expect(write).toBeInViewport();
+    if (hasTouch) await write.tap(); else await write.click();
+    await expect(page).toHaveURL(/letters\.html#letter-form$/);
+    await expect(page.locator('#message')).toBeInViewport();
+    await expect(page.locator('#allow-public')).not.toBeChecked();
+    await expect(page.locator('#allow-council')).not.toBeChecked();
+    await page.goBack();
+    await expect(page).toHaveURL(/letters\.html$/);
+    await expect(page.locator('#letters-list .public-author')).toBeVisible();
+  });
+}
+
+test('Parent plan: writing link opens the composer and Back returns to current actions', async ({ page, hasTouch }) => {
+  await page.goto('/proposal.html#parent-plan');
+  const write = page.locator('#plan-share a[href="letters.html#letter-form"]');
+  if (hasTouch) await write.tap(); else await write.click();
+  await expect(page).toHaveURL(/letters\.html#letter-form$/);
+  await expect(page.locator('#letter-form h2')).toBeInViewport();
+  await expect(page.locator('#message')).toBeInViewport();
+  await page.goBack();
+  await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
+  await expect(page.locator('#parent-plan-title')).toBeInViewport();
+});
+
 function boardData(board, entries) {
   const data = { version: 1, [board.resource]: entries };
   if (board.resource === 'supporters') Object.assign(data, { statementVersion: 'keep-open-2026-09-21', statement: 'We support keeping Kew Riverside Primary School open.' });
