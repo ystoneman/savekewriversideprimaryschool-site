@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add one author-approved community letter using the existing human-reviewed publication route. Preserve the approved wording and display name; independent campaign review found no actionable J4 concerns. Deployment and live verification are pending.
+
 - Wait for a dispatched legacy run to complete before checking its input-based metadata, which GitHub may initially return before initialization. Keep exact dispatch IDs, prerequisite checks and stale-release rejection; never claim completion from a queued or mismatched run. The queued-metadata regression passes with all 67 Python checks.
 
 ## 7 October 2026 — consolidated source and verified compatibility release
