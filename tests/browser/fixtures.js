@@ -22,7 +22,7 @@ function headerLinks(file, selector) {
 
 // The analytics collector is the only other origin a page's policy allows. analytics.js
 // contacts it only from the production host (analytics.spec.js), never from this server.
-const productionOnly = { 'connect-src': ['https://cloud.umami.is/api/send'] };
+const productionOnly = { 'connect-src': ['https://gateway.umami.is/api/send'] };
 
 // True when the page's policy, including the default that other fetch directives fall
 // back to, lets it reach no other origin when served by this test harness.

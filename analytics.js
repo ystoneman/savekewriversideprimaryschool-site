@@ -8,7 +8,7 @@
  */
 (() => {
   'use strict';
-  const ENDPOINT = 'https://cloud.umami.is/api/send';
+  const ENDPOINT = 'https://gateway.umami.is/api/send';
   const HOST = 'savekewriversideprimaryschool.org';
   const ROOT = '/';
   const KEY = 'kew-analytics-choice-v1';
@@ -60,7 +60,8 @@
   const privateRoute = PRIVATE_PAGES.has(file);
   let config, choice = null, storageOK = true, collecting = false;
   let timer, previousTick = 0, lastActivity = 0, seconds = 0, pageSent = false;
-  let opener, panel, status, buttons;
+  let opener, panel, status, buttons, invitation;
+  let configLoaded = false;
   const sectionElement = id => {
     const element = document.getElementById(id);
     return element && /^H[1-6]$/.test(element.tagName) ? element.closest('section') : element;
@@ -192,11 +193,25 @@
       privateRoute ? 'Analytics is off on this ' + (file === 'feedback.html' ? 'Share ideas' : 'private request') + ' page.' :
       current === 'allow' ? 'Current setting: basic page counts and detailed usage.' :
       current === 'deny' ? 'Current setting: analytics off' + (choice ? '.' : ' (the default on this domain).') : 'Current setting: basic page counts only.';
+    updateInvitation();
   }
-  function close() { panel.hidden = true; update(); if (opener?.isConnected && !opener.closest('[hidden]')) opener.focus({ preventScroll: true }); }
+  function updateInvitation() {
+    if (!invitation) return;
+    invitation.hidden = (configLoaded && config?.enabled !== true) || !storageOK || browserObjects() || Boolean(choice);
+    for (const el of invitation.querySelectorAll('button')) el.disabled = config?.enabled !== true;
+  }
+  function restoreFocus() {
+    let target = opener;
+    if (!target?.isConnected || target.closest('[hidden]')) {
+      target = invitation?.nextElementSibling || invitation?.parentElement.nextElementSibling || document.querySelector('main h1');
+      if (target && !target.hasAttribute('tabindex')) target.tabIndex = -1;
+    }
+    target?.focus({ preventScroll: true });
+  }
+  function close() { panel.hidden = true; update(); restoreFocus(); }
   function open(from) { if (!panel.isConnected) document.body.append(panel); opener = from; panel.hidden = false; update(); panel.querySelector('h2').focus({ preventScroll: true }); }
   function buildChoices() {
-    // No banner: the panel opens only from the footer or privacy-page links.
+    // The full explanation opens only after an explicit request.
     panel = node('section', '', 'analytics-panel'); panel.hidden = true; panel.id = 'analytics-panel';
     panel.setAttribute('aria-labelledby', 'analytics-title');
     const title = node('h2', 'Analytics choices'); title.id = 'analytics-title'; title.tabIndex = -1;
@@ -222,6 +237,31 @@
     panel.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
     update();
   }
+  function buildInvitation() {
+    invitation = node('section', '', 'analytics-invitation');
+    invitation.setAttribute('aria-labelledby', 'analytics-invitation-title');
+    const title = node('p', 'Analytics is off. Help improve this website?');
+    title.id = 'analytics-invitation-title';
+    const actions = node('div', '', 'analytics-actions');
+    const review = button('Choose analytics', () => { open(review); });
+    const refuse = button('Keep off', () => { opener = refuse; persist('deny'); restoreFocus(); });
+    actions.append(review, refuse); invitation.append(title, actions);
+    // Insert synchronously after the arrival content, before config resolves.
+    // No automatic focus, overlay, or delayed insertion above a focused control.
+    const main = document.querySelector('main');
+    let after = main?.querySelector('.hero .hero-note, #upload-step-two');
+    const letterIntro = main?.querySelector('.invite-hero');
+    if (letterIntro) {
+      letterIntro.append(invitation); return;
+    }
+    if (!after) {
+      after = main?.querySelector('h1');
+      if (after?.nextElementSibling?.tagName === 'P') after = after.nextElementSibling;
+    }
+    if (after) after.after(invitation);
+    else main?.append(invitation);
+
+  }
   function action(event) {
     if (!detailed()) return;
     const a = event.target.closest?.('a[href]');
@@ -239,11 +279,14 @@
     if (label && !actionsSent.has(label)) { actionsSent.add(label); send('Action opened', { action: label }); }
   }
   readChoice(); buildChoices();
+  if (storageOK && !choice && !browserObjects() && !privateRoute && location.hostname === HOST && sitePath(location.pathname)) {
+    buildInvitation(); updateInvitation();
+  }
   // Only this local config is fetched first. No external script is loaded.
   fetch('analytics-config.json', { credentials: 'omit' }).then(r => r.ok ? r.json() : null).then(value => {
     if (value && value.enabled === true && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.websiteId)) config = value;
-    update(); start();
-  }).catch(() => { update(); });
+    configLoaded = true; update(); start();
+  }).catch(() => { configLoaded = true; update(); });
   for (const event of ['pointerdown', 'keydown', 'scroll']) {
     window.addEventListener(event, () => { if (collecting) lastActivity = performance.now(); }, { passive: true });
   }

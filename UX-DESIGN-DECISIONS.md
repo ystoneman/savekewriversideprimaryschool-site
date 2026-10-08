@@ -1,5 +1,12 @@
 # UX design decisions
 
+## First-visit analytics choice — 8 October 2026
+
+Visitor need (J1–J9): the owner could not see new traffic after the domain move, and asked for a visible first-visit choice while keeping both tiers off until chosen. A compact nonmodal **Choose analytics / Keep off** prompt makes the existing controls discoverable; choosing analytics opens the three equal settings and sends nothing. Keep off remembers a refusal. The existing footer route, saved choices, browser privacy signals and private-page exclusions remain.
+
+A full automatic settings panel would occupy most of a small phone screen and move focus away from the visitor’s task. The compact notice adds about 100 pixels in document flow after the homepage response button and deadline qualification, after the video permission button and its upload-process explanation, and within the letter introduction after its reading/official shortcuts. Other measured pages place it after the title and introductory paragraph. It never overlays controls or moves initial focus. Independent UX planning and prototype review found that a fixed prompt covered the short-phone video CTA, homepage headline or task chooser; that approach was replaced. Synchronous insertion before the configuration fetch avoids a delayed banner pushing a focused field. The notice may need a short scroll on narrow screens; protected arrival actions stay above it. Choosing or keeping off removes the notice and restores focus to nearby content. Tests and actual-diff review/deployment evidence are recorded in TESTING.md and CHANGELOG.md. Journey priorities are unchanged.
+
+
 ## School photography, current actions and reading letters first — 8 October 2026
 
 Visitor needs (J1–J9): the owner asked for real school photographs without children’s faces, a less crowded shared header, clearer action emphasis, a Parent action plan focused on what parents can do now, and a letters page that starts with reading.
