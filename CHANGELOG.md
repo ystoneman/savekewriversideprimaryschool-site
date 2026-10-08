@@ -19,6 +19,8 @@ Visitor-facing changes and significant maintenance changes, newest first. The hi
 
 ## Unreleased
 
+- Add one newly consented community letter through the existing AI screening workflow, preserving the submitted wording and chosen display name. Three-host deployment and live verification are pending.
+
 - Add one consented community letter with the existing AI-screened label, preserving the submitted wording and chosen display name. Three-host deployment and live verification are pending.
 
 ### Primary School domain migration preparation
