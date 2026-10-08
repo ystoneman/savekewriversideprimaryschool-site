@@ -11,3 +11,10 @@
 
 /* The official response is one tap from wherever the plan opens. */
 .parent-plan-respond{margin:0 0 18px}
+.parent-history{border-top:1px solid var(--line);padding:12px 0}
+.parent-history>summary{font-size:16px;min-height:44px;display:flex;align-items:center;gap:12px}
+.parent-history>summary::before{content:"+";font-size:22px;font-weight:400}
+.parent-history[open]>summary::before{content:"−"}
+.parent-history>div{padding:12px 0;max-width:75ch}
+.parent-history .plan-when{font-size:14px}
+.parent-history .prep-session-dates{padding-left:22px}

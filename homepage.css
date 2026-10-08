@@ -23,6 +23,10 @@
 .home-page .quick-answers { margin-top: 0; padding: 24px; }
 .home-page .visit-school { margin-block: 26px; padding: 24px; }
 .home-end { margin-block: 24px 38px; font-size: 14px; }
+.home-page .hero .button-row{gap:12px 24px;align-items:center}
+.home-page .hero .text-link{padding-block:10px;min-height:44px;display:inline-flex;align-items:center}
+.home-page .route-card{border-radius:10px}
+.home-page .discovery-heading>p{max-width:34ch}
 .directory-intro { padding-block: 38px 22px; }
 .directory-intro h1 { font-size: clamp(38px, 4.5vw, 58px); margin-bottom: 18px; }
 .directory-intro p:not(.eyebrow) { max-width: 820px; }
@@ -62,3 +66,13 @@ html:has(.directory-page), html:has(.legacy-route:target) { scroll-behavior: aut
 
 /* Preserve the phone response arrival while using the full school name. */
 @media(max-width:700px){.home-page .hero{padding-top:0}}
+
+/* Real school life beside the desktop appeal, with the phone action routes first. */
+.school-photo{margin:0;min-width:0}
+.school-photo img{display:block;width:100%;height:auto;border-radius:10px}
+.school-photo figcaption{margin-top:10px;font-size:12px;line-height:1.5;color:var(--muted)}
+.home-page .hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:40px}
+.hero-school-photo img{aspect-ratio:3/2;object-fit:cover;object-position:50% 50%}
+.school-project-photo{grid-column:1/-1;max-width:600px}
+.school-project-photo img{aspect-ratio:3/1;object-fit:cover;object-position:50% 50%}
+@media(max-width:700px){.home-page .hero{display:block}.hero-school-photo{display:none}.school-project-photo{margin-top:8px}}

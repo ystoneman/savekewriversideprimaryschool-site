@@ -16,7 +16,7 @@ const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'kew-browser-test-'));
 const key = path.join(temporary, 'localhost.key');
 const certificate = path.join(temporary, 'localhost.crt');
 execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', key, '-out', certificate, '-days', '1', '-subj', '/CN=127.0.0.1'], { stdio: 'ignore' });
-const types = { '.png': 'image/png', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.csv': 'text/csv; charset=utf-8', '.pdf': 'application/pdf', '.md': 'text/markdown; charset=utf-8', '.ics': 'text/calendar; charset=utf-8' };
+const types = { '.jpg': 'image/jpeg', '.png': 'image/png', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.csv': 'text/csv; charset=utf-8', '.pdf': 'application/pdf', '.md': 'text/markdown; charset=utf-8', '.ics': 'text/calendar; charset=utf-8' };
 const server = http2.createSecureServer({ key: fs.readFileSync(key), cert: fs.readFileSync(certificate), allowHTTP1: true }, (request, response) => {
   let name, url;
   try {

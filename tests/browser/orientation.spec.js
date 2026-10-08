@@ -122,30 +122,62 @@ test('Orientation: Back preserves a later reading position and a subsequent depa
   await expectScrollSettled(page, 'Back after departing from the top');
 });
 
+test('Orientation: reloaded Back restores reading after a late native fragment jump', async ({ page }) => {
+  await page.goto('/proposal.html#parent-plan');
+  const write = page.locator('#plan-share a[href="letters.html#letter-form"]');
+  await write.scrollIntoViewIfNeeded();
+  const departureY = await page.evaluate(() => scrollY);
+  await page.evaluate(async y => {
+    history.replaceState({ ...history.state, existingVisitorState: 'keep', kewReadingPosition: { url: location.href, x: 0, y } }, '');
+    const getEntries = performance.getEntriesByType;
+    performance.getEntriesByType = type => type === 'navigation' ? [{ type: 'back_forward' }] : getEntries.call(performance, type);
+    try {
+      // Hosted WebKit first returns to the departure, then reapplies the original
+      // fragment after pageshow's first frame. Replay that observed ordering.
+      window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: false }));
+      await new Promise(resolve => requestAnimationFrame(() => {
+        document.getElementById('parent-plan').scrollIntoView({ block: 'start', behavior: 'instant' });
+        resolve();
+      }));
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    } finally { performance.getEntriesByType = getEntries; }
+  }, departureY);
+  await expect(write).toBeInViewport();
+  expect(Math.abs(await page.evaluate(() => scrollY) - departureY)).toBeLessThan(5);
+  expect(await page.evaluate(() => history.state.existingVisitorState)).toBe('keep');
+  expect(await page.evaluate(() => history.state.kewReadingPosition)).toBeUndefined();
+  await expectScrollSettled(page, 'Back after a late native fragment jump');
+});
+
 test('Orientation: pending Back recovery yields to a new destination, manual recovery or user input', async ({ page }) => {
   await page.goto('/videos.html');
   await page.locator('#upload-help summary').click();
-  for (const change of ['destination', 'cleared-state', 'manual', 'pointer', 'keyboard', 'click', 'input', 'change', 'wheel', 'native-restored']) {
-    const result = await page.evaluate(async change => {
+  for (const phase of ['immediate', 'after-first-frame']) for (const change of ['destination', 'cleared-state', 'manual', 'pointer', 'keyboard', 'click', 'input', 'change', 'wheel', 'native-restored']) {
+    const result = await page.evaluate(async ({ change, phase }) => {
       history.scrollRestoration = 'auto';
+      history.replaceState(history.state, '', '/videos.html');
       history.replaceState({ kewReadingPosition: { url: location.href, x: 0, y: 900 } }, '');
       scrollTo({ top: 0, behavior: 'instant' });
       document.activeElement.blur();
       const historyLength = history.length;
       // Reproduce the narrow pageshow-to-frame window without contacting a provider.
       window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
-      if (change === 'destination') history.replaceState(history.state, '', '#process-title');
-      if (change === 'cleared-state') history.replaceState(null, '');
-      if (change === 'manual') history.scrollRestoration = 'manual';
-      if (change === 'pointer') document.dispatchEvent(new PointerEvent('pointerdown'));
-      if (change === 'keyboard') document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home' }));
-      if (['click', 'input', 'change'].includes(change)) document.body.dispatchEvent(new Event(change, { bubbles: true }));
-      if (change === 'wheel') window.dispatchEvent(new WheelEvent('wheel'));
-      if (change === 'native-restored') scrollTo({ top: 450, behavior: 'instant' });
+      const changeReturn = () => {
+        if (change === 'destination') history.replaceState(history.state, '', '#process-title');
+        if (change === 'cleared-state') history.replaceState(null, '');
+        if (change === 'manual') history.scrollRestoration = 'manual';
+        if (change === 'pointer') document.dispatchEvent(new PointerEvent('pointerdown'));
+        if (change === 'keyboard') document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home' }));
+        if (['click', 'input', 'change'].includes(change)) document.body.dispatchEvent(new Event(change, { bubbles: true }));
+        if (change === 'wheel') window.dispatchEvent(new WheelEvent('wheel'));
+        if (change === 'native-restored') scrollTo({ top: 450, behavior: 'instant' });
+      };
+      if (phase === 'after-first-frame') await new Promise(resolve => requestAnimationFrame(() => { changeReturn(); resolve(); }));
+      else changeReturn();
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       return { y: scrollY, sameHistory: history.length === historyLength, focused: document.activeElement.tagName, saved: Boolean(history.state?.kewReadingPosition) };
-    }, change);
-    expect(result, change).toEqual({ y: change === 'native-restored' ? 450 : 0, sameHistory: true, focused: 'BODY', saved: false });
+    }, { change, phase });
+    expect(result, `${phase}: ${change}`).toEqual({ y: change === 'native-restored' ? 450 : 0, sameHistory: true, focused: 'BODY', saved: false });
   }
 });
 

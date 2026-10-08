@@ -19,6 +19,9 @@ const types = {
   '.ico': 'image/x-icon',
 };
 const localAssets = new Set(readdirSync(root).filter(name => types[path.extname(name)]));
+for (const name of ['school-discovery-480.jpg', 'school-discovery-960.jpg', 'school-project-480.jpg', 'school-project-960.jpg']) {
+  localAssets.add('images/' + name);
+}
 const emptyBoards = {
   'letters.json': { version: 1, letters: [] },
   'suggestions.json': { version: 1, suggestions: [] },
@@ -42,7 +45,7 @@ async function virtualProduction(context, options = {}) {
     expect(url.pathname.startsWith(servedPrefix)).toBe(true);
     const relative = decodeURIComponent(url.pathname.slice(servedPrefix.length));
     const name = relative || 'index.html';
-    expect(name, 'No nested paths or traversal in the fixture server').toMatch(/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/);
+    expect(name, 'Only root assets or the named photo directory; no traversal').toMatch(/^(?:images\/)?[a-zA-Z0-9][a-zA-Z0-9._-]*$/);
     expect(localAssets.has(name), 'Only an existing local static asset can be served: ' + name).toBe(true);
     if (name === 'analytics-config.json') {
       configReads.push(request.url());

@@ -40,7 +40,7 @@ The redirect belongs to this GitHub Pages account and repository. Renaming or re
 - `response-checklist.pdf` is the visitor download: a two-page A4 checklist with selectable text, tick boxes and clickable links.
 - `response-checklist.md` is the editable source for the PDF.
 
-This collection is not exhaustive. Original documents remain with their publishers. It contains no private correspondence, family records or reproduced pupil photographs.
+This collection is not exhaustive. Original documents remain with their publishers. It contains no private correspondence or family records. Selected school photographs show activity details without children’s faces.
 
 ## Files
 
@@ -182,3 +182,12 @@ New Parent Voices submissions require explicit YouTube publication permission an
 ## Legacy address compatibility
 
 See [CONSOLIDATION.md](CONSOLIDATION.md). Both previous addresses forward ordinary HTML to this site, retain browser-origin saved-word recovery and preserve direct download/data files. Legacy pages have no submission forms or analytics. Printed `/visit/` addresses still hand off directly to the school.
+
+## School photography — 8 October 2026
+
+The owner confirmed school permission to reuse photographs without children’s faces. Two photographs were selected from the school homepage slideshow, inspected in full and at their displayed crops, and resized/compressed locally with metadata removed. No generative alterations, names or identifying details were added. Capture dates are unknown; the photographs illustrate school life rather than document current provision or findings.
+
+- `images/school-discovery-{480,960}.jpg`: hands holding a leaf and ladybird. Original: https://www.kewriverside.richmond.sch.uk/_site/data/files/images/slideshow/47E166F0EE2EDDB76758B11BBF0FA8FB.JPG
+- `images/school-project-{480,960}.jpg`: classroom solar-system model. Original: https://www.kewriverside.richmond.sch.uk/_site/data/files/images/slideshow/DDC26CF7327250E266276FB0704EE853.JPG
+
+The first image sits beside the desktop homepage introduction and is omitted at phone widths to protect the action and task routes. The second is in the existing school-visit section on all layouts. Alternative text and visible school-source credit accompany both. Local files remain safe when downloaded or viewed without CSS; faces are absent from the assets themselves.

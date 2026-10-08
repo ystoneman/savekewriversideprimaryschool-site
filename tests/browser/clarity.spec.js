@@ -19,16 +19,16 @@ test('Options: the Parent plan arrives at the response, useful answer and option
   expect(await page.locator('.options-insight').evaluate(el => Boolean(el.compareDocumentPosition(document.getElementById('options-navigation')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
   expect(await page.locator('#options .action-card').evaluateAll(cards => cards.map(card => card.id))).toEqual(optionIds);
   await expect(page.locator('.action-card > details.option-card[open]')).toHaveCount(0);
-  await expect(page.locator('.options-prep a[href="proposal.html#prep-sessions"]')).toBeVisible();
-  await expect(page.locator('.options-prep a[href="proposal.html#school-meeting"]')).toBeVisible();
+  await expect(page.locator('.options-prep a[href="evidence.html#records"]')).toBeVisible();
+  await expect(page.locator('.options-prep a[href="proposal.html#questions"]')).toBeVisible();
   const enquiry = page.locator('.options-school-enquiry');
   await expect(enquiry).toBeVisible();
   expect(await enquiry.evaluate(el => el.closest('details') === null)).toBe(true);
   await expect(enquiry.locator('a[href="https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us"]')).toBeVisible();
   await expect(enquiry).toContainText(/closure is proposed/i);
-  for (const target of ['prep-sessions', 'school-meeting']) {
-    await activate(page.locator(`.options-prep a[href="proposal.html#${target}"]`), hasTouch);
-    await expect(page).toHaveURL(new RegExp(`proposal\\.html#${target}$`));
+  for (const [target, destination] of [['records', 'evidence'], ['questions', 'proposal']]) {
+    await activate(page.locator(`.options-prep a[href="${destination}.html#${target}"]`), hasTouch);
+    await expect(page).toHaveURL(new RegExp(`${destination}\\.html#${target}$`));
     await expect(page.locator('#' + target)).toBeInViewport();
     await page.goBack();
     await expect(page).toHaveURL(/options\.html#options$/);

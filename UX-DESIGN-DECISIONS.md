@@ -1,5 +1,17 @@
 # UX design decisions
 
+## School photography, current actions and reading letters first — 8 October 2026
+
+Visitor needs (J1–J9): the owner asked for real school photographs without children’s faces, a less crowded shared header, clearer action emphasis, a Parent action plan focused on what parents can do now, and a letters page that starts with reading.
+
+Decision: retain the existing type, colours, evidence and task routes. Remove the extra decorative icon row from phone participation tiles while preserving their labels, 44px targets, current-page treatment and exposed Letters/Share ideas routes. Tighten header spacing. Add two small local responsive school photographs, with source credit and alternative text; the leaf-and-ladybird photo accompanies the desktop appeal and the classroom-project photo sits in the existing school-visit section. Phone arrivals reach urgent actions and all six task destinations before photography. Sources and permission context are documented in README.md.
+
+Move the newest-first letters board before the full, open writing form. Visible Write a letter anchors at the page introduction and feed heading lead directly to the existing form. This intentionally updates J4’s placement; it reduces the reading path while retaining one ordinary anchor for writers. Keep short opinion/assessment/identity qualifications with the feed and the official-response distinction before the reading/writing choice. Existing independent permissions, drafts, provider-return recovery, individual letter IDs and full-text controls remain. A collapsed composer was considered; the open form below avoids introducing disclosure-dependent draft/focus recovery. Writer-only links from the Parent plan and other pages go straight to the composer. On Back, recover the saved reading position when WebKit reloads an anchored page and jumps to its original heading; retain manual-restoration and user-input safeguards.
+
+Past September sessions and the advertised 6 October rally leave the active plan and homepage entry descriptions. Retain the original session and meeting IDs in native historical disclosures outside the current plan, and the rally page as an explicitly archived advertised event. No attendance, outcome or school endorsement is inferred. Current response, evidence, community participation and practical family guidance remain prominent.
+
+Initial independent UX/campaign/date reviews informed the change. Implementation review and completed checks are recorded in TESTING.md and CHANGELOG.md. No unfamiliar-person trial or measured engagement improvement is claimed.
+
 ## Newest community letters first — 8 October 2026
 
 Visitor need (J4): readers should find newly published letters at the top, as the owner requested after recent additions were hard to find below older entries. Render validated letters by descending publication date; because dates have day precision, later additions in the source list lead same-day ties. Sort a copy of the data, preserving stored records, letter IDs, full text, assessment labels and individual links. The reading/writing entries and form stay in place. Regression coverage uses mixed-date fictional entries and day ties; existing incoming-link, expansion and Back checks continue to cover older letters after sorting. Implementation and release verification are recorded with the associated pull request.
@@ -22,6 +34,10 @@ Independent campaign and UX reviews covered the plan and actual implementation. 
 
 Recorded: 22 September 2026. Status: implementation in progress; final verification and publication are recorded separately in [CHANGELOG.md](CHANGELOG.md). This is a design rationale, not a report of a user study or a claim that every visitor will complete these tasks successfully.
 
+## Anchored Back recovery — 8 October 2026 (J2/J4)
+
+Visitors returning from the direct letter composer should resume at the current-action link they chose. The retained hosted iPhone WebKit trace shows a correct departure restoration followed by the original fragment being reapplied after the first frame. Delay the bounded correction until the next frame, retaining matching-entry, manual-restoration, user-input and single-return safeguards. Prefer this observed lifecycle correction to repeated timers or broader scroll overrides. The original viewport/<5px regression remains; a deterministic late-fragment regression fails with the prior script. Local browser and native Safari Simulator evidence is recorded in TESTING.md; exact-head hosted release checks and live verification are tracked with PR #15.
+
 ## Purpose and constraints
 
 Help people understand the proposal, check its evidence and take useful action in support of Kew Riverside. Visitors should quickly distinguish a proposed outcome from a decision, an official council response from a contribution to this independent website, and verified figures from forecasts or unanswered questions.
@@ -43,7 +59,7 @@ Priority allocates attention; every existing task retains usable access. Visitor
 | J1 · Essential orientation | Understand the proposal, current decision status and relevant dates | Homepage status/date information, `proposal.html`, `faq.html` and directly cited official records; distinguish proposed, conditional and decided outcomes. |
 | J2 · Prominent action | Find what I can usefully do now | Named Parent action plan shortcut visible on homepage arrival, plus shared navigation to `proposal.html#parent-plan`; no disclosure or familiarity with the containing page required for the shortcut. |
 | J3 · Prominent action | Give my views to the decision-maker | Explicit official-response links and current verified deadline/stage; a website letter, idea or video does not replace an official response. |
-| J4 · Prominent participation | Read community experience or write a letter | Exposed Community letters / Read & add yours header tile to `letters.html`, with the letters board directly after the form, reading and writing shortcuts, and independent permissions (optional quoting only on top of publication). |
+| J4 · Prominent participation | Read community experience or write a letter | Exposed Community letters / Read & add yours header tile to `letters.html`, with the newest-first letters board before the form, exposed reading and writing shortcuts, and independent permissions (optional quoting only on top of publication). |
 | J5 · Prominent participation | Offer an idea, evidence, question or correction | Exposed Share ideas / Ask or suggest header tile to `feedback.html`, with visible category cards, contextual category links and clear private/public choices. |
 | J6 · Easy to discover | Understand and check the case | All six homepage task destinations; Understand, `options.html`, Evidence navigation and findings at `evidence.html#records`, with a visible source-search shortcut to `evidence.html#source-search` (and `index.html#records` retained as a compatibility entry); the full report and readable research through the homepage shortcut, Evidence and existing proposal route. Educational evidence at `understand.html#learning-and-results`, reached through the existing comparison/visit areas and `faq.html#learning`. Preserve sources, charts/tables, filters, direct anchors and downloads. |
 | J7 · Protected family task | Understand my child's practical next steps | Homepage child-next-steps card and `faq.html#school-places`; distinguish current-family contingencies from prospective-family admissions and preserve both. |

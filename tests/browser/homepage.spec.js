@@ -160,3 +160,23 @@ test('Shared video QR: the exact upload path remains directly usable with an int
   await expect(page.locator('main a[href="letters.html#letter-form"]').last()).toBeVisible();
   await expectScrollSettled(page, 'Back to video upload');
 });
+test('Homepage: real school photos load locally with readable descriptions and keep phone tasks first', async ({ page }) => {
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: width === 1440 ? 1000 : 844 });
+    await page.goto('/index.html');
+    const discovery = page.locator('.hero-school-photo');
+    if (width <= 700) await expect(discovery).toBeHidden();
+    else {
+      await expect(discovery).toBeVisible();
+      await expect(discovery.locator('img')).toHaveAttribute('alt', 'Hands holding an autumn leaf with a ladybird.');
+      expect(await discovery.locator('img').evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
+    }
+    const project = page.locator('.school-project-photo img');
+    await project.scrollIntoViewIfNeeded();
+    await expect(project).toHaveAttribute('alt', 'A handmade solar-system model on a classroom table.');
+    await expect.poll(() => project.evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
+    expect(await project.evaluate(el => new URL(el.currentSrc).origin === location.origin)).toBe(true);
+    expect(await page.locator('#find-your-way').evaluate(el => Boolean(el.compareDocumentPosition(document.getElementById('visit-school')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  }
+});

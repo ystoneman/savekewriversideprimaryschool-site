@@ -92,17 +92,17 @@
   .voice-medallion{width:38px;height:38px}
   .site-header .participation-nav .voice-icon{width:23px;height:23px}
 }
-/* Phones: two tiles, medallion above the words, so each label stays on one line. */
+/* Phones: keep both participation routes exposed without a decorative extra row. */
 @media (max-width:430px){
   .site-header .participation-nav{gap:8px}
-  .site-header .participation-nav a{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:7px;padding:10px 10px 11px 11px;min-height:0}
-  .voice-medallion{width:32px;height:32px}
+  .site-header .participation-nav a{align-items:center;justify-content:flex-start;gap:0;padding:8px 10px;min-height:52px}
+  .site-header .voice-medallion{display:none}
   .site-header .participation-nav .voice-icon{width:20px;height:20px}
   .site-header .participation-nav .participation-label{font-size:14.5px}
   .site-header .participation-nav .participation-label small{font-size:12.5px;margin-top:2px}
 }
 @media (max-width:370px){
-  .site-header .participation-nav a{padding:9px 7px 10px 8px}
+  .site-header .participation-nav a{padding:8px}
   .site-header .participation-nav .participation-label{font-size:13.5px}
   .site-header .participation-nav .participation-label small{font-size:11.5px;letter-spacing:-.01em}
 }
@@ -115,3 +115,9 @@
   .v-body,.v-sheet{fill:Canvas!important}
 }
 @media print{.voice-medallion{display:none}}
+
+/* A quieter frame keeps labels and actions in the foreground. */
+.site-header .participation-nav a,
+.site-header .participation-nav .nav-contribute{border-radius:8px;box-shadow:none;background-image:none}
+.site-header .participation-nav a:hover,
+.site-header .participation-nav .nav-contribute:hover{box-shadow:none}

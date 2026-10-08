@@ -370,8 +370,8 @@
         fragment.append(article);
       });
       board.replaceChildren(fragment);
-      boardStatus.textContent = data.letters.length ? data.letters.length + ' published letter' + (data.letters.length === 1 ? '' : 's') + '.' : 'No community letters have been published yet. You can submit yours for review above.';
+      boardStatus.textContent = data.letters.length ? data.letters.length + ' published letter' + (data.letters.length === 1 ? '' : 's') + '.' : 'No community letters have been published yet. You can submit yours for review using the form below.';
       openLinkedLetter();
     })
-    .catch(() => { boardStatus.textContent = 'The letters could not be loaded. Please reload to try again. You can still send a letter for private review above.'; });
+    .catch(() => { boardStatus.textContent = 'The letters could not be loaded. Please reload to try again. You can still send a letter for private review using the form below.'; });
 })();

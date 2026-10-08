@@ -135,25 +135,29 @@
   }
   window.addEventListener('pageshow', event => {
     const position = history.state?.kewReadingPosition;
-    const returned = event.persisted || performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+    const reloadedBack = !event.persisted && performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+    const returned = event.persisted || reloadedBack;
     if (returned && position?.url === location.href && Number.isFinite(position.x) && Number.isFinite(position.y) && position.y > 0 && history.scrollRestoration !== 'manual') {
-      // WebKit can reset to zero just after pageshow on an external handoff.
-      // Give native restoration its frame, preserving it whenever it succeeds.
+      // WebKit can reset to zero or the original fragment on a reloaded Back.
+      // Native fragment restoration can run after pageshow's first frame,
+      // overwriting an already restored departure. Wait through that frame;
+      // keep cancellation active until the following frame's correction.
       const interactions = ['pointerdown', 'keydown', 'click', 'input', 'change'];
       const cancel = () => { cancelAnimationFrame(frame); cleanup(); forgetPosition(position); };
       const cleanup = () => {
         interactions.forEach(type => document.removeEventListener(type,cancel));
         window.removeEventListener('wheel',cancel);
       };
-      const frame = requestAnimationFrame(() => {
+      const restore = () => {
         cleanup();
         const currentPosition = history.state?.kewReadingPosition;
-        if (location.href === position.url && currentPosition?.url === position.url && currentPosition.x === position.x && currentPosition.y === position.y && history.scrollRestoration !== 'manual' && scrollY === 0) {
+        if (location.href === position.url && currentPosition?.url === position.url && currentPosition.x === position.x && currentPosition.y === position.y && history.scrollRestoration !== 'manual' && (scrollY === 0 || (reloadedBack && location.hash))) {
           window.scrollTo({left:position.x,top:position.y,behavior:'instant'});
         }
         // One return only: toolbar navigation must not revive an older departure.
         forgetPosition(position);
-      });
+      };
+      let frame = requestAnimationFrame(() => { frame = requestAnimationFrame(restore); });
       interactions.forEach(type => document.addEventListener(type,cancel,{once:true}));
       window.addEventListener('wheel',cancel,{once:true,passive:true});
     } else forgetPosition(position);

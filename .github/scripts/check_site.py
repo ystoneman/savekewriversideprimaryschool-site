@@ -11,6 +11,7 @@ from public_data import validate_board
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_FILES = frozenset('''
+images/school-discovery-480.jpg images/school-discovery-960.jpg images/school-project-480.jpg images/school-project-960.jpg
 rally.html rally.css rally-6-october.ics
 fundraising-trustees.html fundraising-admin.html fundraising-briefs.css
 visit/index.html qr/kew-riverside-website-qr.png qr/kew-riverside-website-qr.svg qr/kew-riverside-visit-qr.png qr/kew-riverside-visit-qr.svg qr/savekewriverside-home-qr.png qr/savekewriverside-home-qr.svg qr/savekewriverside-visit-qr.png qr/savekewriverside-visit-qr.svg

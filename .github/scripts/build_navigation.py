@@ -5,11 +5,11 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026100101'
+VERSION = '2026100804'
 PAGES = {
     # Page identity labels only. The Menu and footer come from MENU_GROUPS and
     # FOOTER_LINKS, so registering a page never adds a Menu row by itself.
-    'rally.html': 'Tuesday rally', 'letters.html': 'Community letters', 'videos.html': 'Share a video', 'feedback.html': 'Share ideas',
+    'rally.html': 'Past rally', 'letters.html': 'Community letters', 'videos.html': 'Share a video', 'feedback.html': 'Share ideas',
     'index.html': 'Home', 'about.html': 'About', 'proposal.html': 'Proposal & dates',
     'faq.html': 'FAQ', 'understand.html': 'Numbers & results', 'options.html': 'Ways to keep Kew open',
     'lessons.html': 'Lessons', 'evidence.html': 'Evidence', 'supporters.html': 'Supporters',
@@ -58,17 +58,17 @@ FOOTER_LINKS = [
 ]
 # Explicit destinations avoid navigation generated from hidden templates or every source card.
 SECTIONS = {
-    'rally.html': [('when-and-where','When and where'),('schedule','Tuesday schedule'),('attending','Coming along'),('photos','Photo choices'),('council-and-response','Council and your response'),('updates','Questions and updates')],
-    'index.html': [('meeting-invitation','Council meeting'),('find-your-way','Find what you need'),('research-shortcut','Historical research','find-your-way'),('quick-answers','Before you respond'),('visit-school','Considering Kew Riverside Primary School?')],
+    'rally.html': [('when-and-where','Past event'),('schedule','Advertised schedule'),('attending','Original access notes'),('photos','Photo choices'),('council-and-response','Council and your response'),('updates','Questions or corrections')],
+    'index.html': [('find-your-way','Find what you need'),('research-shortcut','Historical research','find-your-way'),('quick-answers','Before you respond'),('visit-school','Considering Kew Riverside Primary School?')],
     'evidence.html': [('records','Current Kew findings'),('london-findings','Lessons from other schools','records'),('finding-st-john','St John the Divine','records'),('finding-linked-schools','Fenstanton & Holy Trinity','records'),('finding-pooles','Pooles Park','records'),('source-search','Find a source'),('source-library','Original sources','source-search'),('evidence','Numbers behind the proposal'),('timeline','Dates and next steps'),('earlier-record','Earlier public record'),('gaps','Unanswered questions'),('gap-budget','Keeping Kew open','gaps'),('gap-pupil-impacts',"Children’s needs",'gaps'),('gap-selection','Why Kew?','gaps'),('gap-closure-costs','Closure costs and site','gaps'),('gap-alternatives','Costed alternatives','gaps'),('gap-recruitment','Recruitment support','gaps'),('gap-forecasts','Pupil and housing forecasts','gaps'),('gap-answers','Written answers','gaps'),('evidence-found','Evidence obtained','gaps'),('gap-records','Process and records','gaps'),('method','Method and limits')],
     'options.html': [('option-7','Your official response'),('options-prep-title','Prepare together'),('options-findings-title','What an alternative needs'),('options-navigation','Ways to help'),('option-recovery-plan','A practical recovery plan','options-navigation'),('option-crowdfunding','Funding','options-navigation'),('option-demand','Pupil demand','options-navigation'),('option-enrolment','School enquiries','options-navigation'),('option-5','Closure costs','options-navigation'),('option-6',"Children’s needs",'options-navigation'),('option-8','Legal experience','options-navigation'),('options-sources-title','Evidence and next steps')],
-    'proposal.html': [('parent-plan','Parent action plan'),('prep-sessions','PTA information sessions','parent-plan'),('plan-attend','Council meeting','parent-plan'),('plan-respond','Your response','parent-plan'),('timetable','Timeline'),('questions','Questions worth asking'),('question-continuity',"Your child’s next school",'questions'),('question-learning',"Your child’s learning",'questions'),('question-budget','The budget','questions'),('question-closure-costs','Closure costs','questions'),('question-demand','Pupil forecasts','questions'),('question-alternatives','Alternatives','questions'),('who-decides','Who decides'),('other-schools','Lessons from other schools'),('decision-record','Decision record'),('take-part','Official response routes')],
+    'proposal.html': [('parent-plan','Parent action plan'),('plan-share','Evidence and letters','parent-plan'),('plan-respond','Your response','parent-plan'),('plan-keep-going','More ways to help','parent-plan'),('past-parent-events','Past events'),('timetable','Timeline'),('questions','Questions worth asking'),('question-continuity',"Your child’s next school",'questions'),('question-learning',"Your child’s learning",'questions'),('question-budget','The budget','questions'),('question-closure-costs','Closure costs','questions'),('question-demand','Pupil forecasts','questions'),('question-alternatives','Alternatives','questions'),('who-decides','Who decides'),('other-schools','Lessons from other schools'),('decision-record','Decision record'),('take-part','Official response routes')],
     'understand.html': [('pupil-trends','Pupil numbers'),('forecast-checks','Forecast checks'),('school-places','Unfilled places'),('year-groups','Year groups'),('budget','School finances'),('closure-costs','Closure costs','budget'),('other-proposals','Other Richmond proposals'),('learning-and-results','Learning and results'),('inspection-summary','Inspection findings','learning-and-results'),('mixed-age-curriculum','Mixed-age learning','learning-and-results'),('methodology','Method and limits')],
     'faq.html': [('taking-part','Ways to help'),('decisions','Dates and decisions'),('money','Money'),('school-places','School places'),('learning','Learning and results')],
     'lessons.html': [('key-lessons','Key lessons'),('visual-guide','Visual guide'),('catalogue','All 16 schools'),('method','Method and limits')],
     'lessons-sources.html': [('source-register','Source register'),('claim-ledger','Evidence and interpretation')],
     'about.html': [('our-story','Our family story'),('site-responsibility','Who is responsible'),('updates','What has changed'),('contact','Contact Yann')],
-    'letters.html': [('letter-form','Write a letter'),('letter-guidelines','Letter guidelines'),('letters','Read community letters')],
+    'letters.html': [('letters','Read community letters'),('letter-form','Write a letter'),('letter-guidelines','Letter guidelines')],
     'feedback.html': [('feedback-form','Share an idea or question'),('review-rules','How review works'),('suggestions','Read shared ideas')],
     # The short video page needs no section list beside the Menu.
     'supporters.html': [('supporter-form','Supporter statement'),('supporter-list-section','Confirmed supporters')],
