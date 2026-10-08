@@ -30,7 +30,7 @@
   // Each ID is an entry in the page's own "On this page" list (top level, plus the
   // Evidence source library); a heading ID stands for its enclosing section.
   const SECTIONS = {
-    'index.html': ['meeting-invitation', 'find-your-way', 'quick-answers', 'visit-school'],
+    'index.html': ['find-your-way', 'quick-answers', 'visit-school'],
     'proposal.html': ['parent-plan', 'timetable', 'who-decides', 'questions', 'other-schools', 'decision-record', 'take-part'],
     'faq.html': ['taking-part', 'decisions', 'money', 'school-places', 'learning'],
     'understand.html': ['pupil-trends', 'forecast-checks', 'school-places', 'year-groups', 'budget', 'other-proposals', 'learning-and-results', 'methodology'],

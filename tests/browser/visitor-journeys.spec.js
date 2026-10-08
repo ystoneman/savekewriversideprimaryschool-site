@@ -351,7 +351,7 @@ test('Parent plan: correct PTA dates, the video route for new families and offic
   await expect(page.locator('#plan-share a[href="videos.html#upload"]')).toHaveCount(0);
   await expect(page.locator('#plan-keep-going')).toContainText('To help new families discover the school, share your parent testimonial. Adults only.');
   await expect(page.locator('.parent-reassurance')).toContainText('Keep following any admissions or SEND (special educational needs and disabilities) instructions');
-  for (const href of ['letters.html', 'videos.html#upload', 'feedback.html?kind=evidence#feedback-form', 'feedback.html?kind=meeting#feedback-form', 'options.html#options']) {
+  for (const href of ['letters.html#letter-form', 'videos.html#upload', 'feedback.html?kind=evidence#feedback-form', 'feedback.html?kind=meeting#feedback-form', 'options.html#options']) {
     await page.goto('/proposal.html#parent-plan');
     await activate(page.locator(`#parent-plan a[href="${href}"]`), hasTouch);
     await expectDestination(page, href, baseURL);

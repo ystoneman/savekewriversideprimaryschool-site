@@ -31,13 +31,16 @@ for (const [width, height] of [[390, 844], [1440, 1000]]) {
 test('Parent plan: writing link opens the composer and Back returns to current actions', async ({ page, hasTouch }) => {
   await page.goto('/proposal.html#parent-plan');
   const write = page.locator('#plan-share a[href="letters.html#letter-form"]');
+  await write.scrollIntoViewIfNeeded();
+  const planPosition = await page.evaluate(() => scrollY);
   if (hasTouch) await write.tap(); else await write.click();
   await expect(page).toHaveURL(/letters\.html#letter-form$/);
   await expect(page.locator('#letter-form-title')).toBeInViewport();
   await expect(page.locator('#message')).toBeInViewport();
   await page.goBack();
   await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
-  await expect(page.locator('#parent-plan-title')).toBeInViewport();
+  await expect(write).toBeInViewport();
+  await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - planPosition)).toBeLessThan(5);
 });
 
 function boardData(board, entries) {
