@@ -1,5 +1,17 @@
 const { test, expect, pages, headerLinks, expectDestination, expectStillArrival, captureSubmissions } = require('./fixtures');
 
+test('No JavaScript: campaign ownership, letter-data fallback and journalist guidance remain available', async ({ page }) => {
+  await page.goto('/letters.html');
+  await expect(page).toHaveTitle('Community letters | Save Kew Riverside Primary School Campaign');
+  await expect(page.locator('.campaign-subtitle strong')).toHaveText('CAMPAIGN');
+  await expect(page.locator('noscript a[href="letters.json"]')).toBeVisible();
+  await page.locator('.invite-lead a[href="about.html#press"]').click();
+  await expect(page.locator('#press h2')).toBeInViewport();
+  await expect(page.locator('#press')).toContainText('independent parent-led website run by Yann Stoneman');
+  await page.locator('#press a[href="#contact"]').click();
+  await expect(page.locator('#contact > h2')).toBeInViewport();
+});
+
 test('No JavaScript: page identity and native section routes retain nested content and recovery', async ({ page }) => {
   await page.goto('/options.html');
   await expect(page.locator('.page-name')).toHaveText('Ways to keep Kew open');

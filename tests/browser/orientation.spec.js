@@ -67,7 +67,7 @@ const menuGroups = [
   ['This website', [['Home', 'index.html'], ['About & contact', 'about.html']]],
 ];
 const menuNames = menuGroups.flatMap(([, links]) => links.map(([label]) => label));
-const footerLinks = ['about.html', 'proposal.html', 'faq.html', 'evidence.html#records', 'letters.html', 'feedback.html', 'videos.html#upload', 'lessons.html', 'supporters.html', 'corrections.html', 'lessons-sources.html', 'privacy.html', 'privacy.html#analytics'];
+const footerLinks = ['about.html', 'about.html#press', 'proposal.html', 'faq.html', 'evidence.html#records', 'letters.html', 'feedback.html', 'videos.html#upload', 'lessons.html', 'supporters.html', 'corrections.html', 'lessons-sources.html', 'privacy.html', 'privacy.html#analytics'];
 
 async function activeSection(page) {
   return page.locator('.section-links a[aria-current="location"]').evaluateAll(links => links.length === 1 ? links[0].dataset.sectionId : null);

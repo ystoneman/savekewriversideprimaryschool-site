@@ -46,11 +46,13 @@
   document.addEventListener('focusin', event => {
     controls.forEach(control => { if (control.open && !control.contains(event.target)) control.open = false; });
     // Keep a newly focused control clear of the persistent region. No passive focus changes.
-    if (event.target.closest('main')) requestAnimationFrame(() => {
+    if (event.target.closest('main')) requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (document.activeElement !== event.target) return;
       const rect = event.target.getBoundingClientRect();
       const bottom = bar.getBoundingClientRect().bottom;
       if (rect.top < bottom + 8 && rect.bottom > 0) window.scrollBy({top:rect.top-bottom-12,behavior:'instant'});
-    });
+      else if (rect.height <= innerHeight-bottom-24 && rect.bottom > innerHeight - 8 && rect.top < innerHeight) window.scrollBy({top:rect.bottom-innerHeight+12,behavior:'instant'});
+    }));
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;

@@ -664,7 +664,7 @@ for (const [file, image] of [['index.html', 'og-home.png'], ['letters.html', 'og
     onceOnly();
     await page.goto('/' + file);
     const meta = key => page.locator(`meta[property="${key}"], meta[name="${key}"]`).getAttribute('content');
-    expect(await meta('og:image')).toBe(SITE + image + '?v=2026100102');
+    expect(await meta('og:image')).toBe(SITE + image + '?v=2026100901');
     expect(await meta('og:image:width')).toBe('1200');
     expect(await meta('og:image:height')).toBe('630');
     expect(await meta('og:image:alt')).toBeTruthy();
