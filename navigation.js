@@ -51,7 +51,7 @@
       const rect = event.target.getBoundingClientRect();
       const bottom = bar.getBoundingClientRect().bottom;
       if (rect.top < bottom + 8 && rect.bottom > 0) window.scrollBy({top:rect.top-bottom-12,behavior:'instant'});
-      else if (rect.bottom > innerHeight - 8 && rect.top < innerHeight) window.scrollBy({top:rect.bottom-innerHeight+12,behavior:'instant'});
+      else if (rect.height <= innerHeight-bottom-24 && rect.bottom > innerHeight - 8 && rect.top < innerHeight) window.scrollBy({top:rect.bottom-innerHeight+12,behavior:'instant'});
     }));
   });
   document.addEventListener('keydown', event => {
