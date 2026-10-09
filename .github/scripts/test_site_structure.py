@@ -141,6 +141,28 @@ class SiteStructureTests(unittest.TestCase):
         cls.pages = {name: Document((ROOT / name).read_text(encoding='utf-8'))
                      for name in sorted(PUBLIC_FILES) if name.endswith('.html')}
 
+    def test_campaign_publisher_identity_survives_all_page_builders(self):
+        from build_navigation import render_navigation
+        expected = 'Save Kew Riverside Primary School Campaign'
+        base = 'https://savekewriversideprimaryschool.org/'
+        for name, page in self.pages.items():
+            if name in REDIRECT_PAGES:
+                continue
+            with self.subTest(page=name):
+                document = (ROOT / name).read_text()
+                metadata = {a.get('property', a.get('name')): a.get('content') for a in page.metadata if 'itemprop' not in a}
+                self.assertEqual(metadata['og:site_name'], expected)
+                self.assertEqual(metadata['og:url'], base + ('' if name == 'index.html' else name))
+                self.assertIn('Independent parent-led campaign.', metadata['description'])
+                if name in ('lessons.html', 'lessons-sources.html', 'understand.html'):
+                    self.assertEqual(metadata['og:description'], metadata['description'])
+                self.assertIn('aria-label="'+expected+' home"', document)
+                self.assertIn('<strong>CAMPAIGN</strong>', document)
+                self.assertEqual(render_navigation(name, document), document, 'Regeneration must retain campaign identity')
+        self.assertIn('<title>Community letters | '+expected+'</title>', (ROOT / 'letters.html').read_text())
+        self.assertIn('itemtype="https://schema.org/WebSite"', (ROOT / 'index.html').read_text())
+        self.assertIn(('a', 'href', 'about.html#press'), self.pages['letters.html'].references)
+
     def test_local_links_resources_and_fragments_resolve(self):
         for name, page in self.pages.items():
             for tag, attribute, reference in page.references:
