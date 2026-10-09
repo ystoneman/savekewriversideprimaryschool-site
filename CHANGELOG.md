@@ -8,7 +8,7 @@
 - Place the campaign name and permanent domain link beside each letter's displayed author/date. Add Copy attribution with success feedback and a selectable manual-copy fallback; use existing public fields and canonical letter IDs without arrival query parameters. Explain unavailable letter addresses after the feed loads.
 - Add About's For journalists section with preferred campaign credit, displayed-name attribution, individual-letter links, the official school website and the existing contact route. Source attribution grants no extra reuse permission. Align About's publication summary with the existing screening policy.
 - Print long letters in full once, retaining contributor, publisher and canonical URL while excluding screen-only excerpts and controls. Keep reading disclosure state intact. Refine keyboard focus recovery after native scrolling to keep controls clear of both viewport edges.
-- Independent UX and campaign planning reviews informed the implementation. Implementation review, executed checks and coverage limitations are recorded in TESTING.md when completed. Publication and live verification are pending.
+- Independent UX and campaign planning and actual-implementation reviews completed; all actionable findings are fixed and rechecked. All 71 Python checks and complete hosted browser gates pass (2,378 passed, 93 existing intentional skips). Executed checks and native-iOS/user-trial limitations are recorded in TESTING.md and [PR #18](https://github.com/ystoneman/savekewriversideprimaryschool-site/pull/18). Publication and live verification are pending.
 
 ### Research freshness and received budget — 8 October 2026
 
