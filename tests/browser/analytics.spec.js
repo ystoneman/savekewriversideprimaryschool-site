@@ -976,24 +976,27 @@ test('On the privacy page at 320px, How analytics works closes the panel to reve
   await expect(page.locator('#analytics h2')).toBeInViewport();
 });
 
-test('An enabled collector remains off on localhost', async ({ page }) => {
-  const sent = [];
+test('Both enabled collectors remain off on localhost', async ({ page }) => {
+  const sent = [], aggregates = [];
   await page.route('**/analytics-config.json', route => route.fulfill({ json: fakeConfig }));
   await page.route(endpoint, async route => { sent.push(route.request().postData()); await route.fulfill({ json: {} }); });
+  await page.route(counterEndpoint, async route => { aggregates.push(route.request().postData()); await route.fulfill({ json: { accepted: true } }); });
   await savedChoice(page);
   await page.goto('/index.html');
   const panel = await choices(page);
   await expect(panel.getByRole('button', { name: ALLOW, exact: true })).toBeEnabled();
   expect(sent).toEqual([]);
+  expect(aggregates).toEqual([]);
 });
 
-test('An enabled collector remains off on a nested path of the production hostname', async ({ page, context }) => {
-  const { sent } = await virtualProduction(context, { prefix: '/unrelated-project/' });
+test('Both enabled collectors remain off on a nested path of the production hostname', async ({ page, context }) => {
+  const { sent, aggregates } = await virtualProduction(context, { prefix: '/unrelated-project/' });
   await savedChoice(page);
   await page.goto(origin + '/unrelated-project/index.html');
   const panel = await choices(page);
   await expect(panel.getByRole('button', { name: ALLOW, exact: true })).toBeEnabled();
   expect(sent).toEqual([]);
+  expect(aggregates).toEqual([]);
 });
 
 test.describe('Analytics with JavaScript disabled', () => {
