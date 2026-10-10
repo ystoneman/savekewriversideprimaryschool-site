@@ -289,11 +289,18 @@
 
   const boardStatus = document.getElementById('letters-message');
   const board = document.getElementById('letters-list');
+  const unavailable = document.getElementById('letter-unavailable');
+  let lettersLoaded = false;
   function openLinkedLetter() {
     const id = location.hash.slice(1);
-    if (!/^letter-[a-f0-9]{12}$/.test(id)) return;
+    unavailable.hidden = true;
+    if (!/^letter-[a-f0-9]{12}$/.test(id) || !lettersLoaded) return;
     const article = document.getElementById(id);
-    if (!article) return;
+    if (!article) {
+      unavailable.hidden = false;
+      unavailable.scrollIntoView({block: 'start', behavior: 'instant'});
+      return;
+    }
     const story = article.querySelector('details');
     if (story) story.open = true;
     article.scrollIntoView({block: 'start', behavior: 'instant'});
@@ -334,7 +341,53 @@
         const removal = document.createElement('a');
         removal.href = 'feedback.html?kind=privacy&letter=' + encodeURIComponent(item.id) + '#feedback-form';
         removal.textContent = 'Report this letter or request removal';
-        article.append(author, meta);
+        removal.className = 'letter-removal';
+        const letterURL = 'https://savekewriversideprimaryschool.org/letters.html#' + item.id;
+        const publicationDate = new Date(item.date + 'T12:00:00Z').toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric',timeZone:'UTC'});
+        const attribution = 'Community letter by ' + item.displayName + ', published ' + publicationDate + ' on Save Kew Riverside Primary School Campaign, an independent parent-led website.\n' + letterURL;
+        const source = document.createElement('div');
+        source.className = 'letter-source';
+        const publisher = document.createElement('p');
+        publisher.textContent = 'Published on Save Kew Riverside Primary School Campaign · Independent and parent-led';
+        const actions = document.createElement('div');
+        actions.className = 'letter-source-actions';
+        const permalink = document.createElement('a');
+        permalink.className = 'letter-permalink';
+        permalink.href = letterURL;
+        permalink.textContent = 'savekewriversideprimaryschool.org';
+        permalink.setAttribute('aria-label', 'savekewriversideprimaryschool.org — Permanent link to the letter by ' + item.displayName);
+        const copy = document.createElement('button');
+        copy.type = 'button';
+        copy.className = 'letter-copy';
+        copy.textContent = 'Copy attribution';
+        copy.setAttribute('aria-label', 'Copy attribution for the letter by ' + item.displayName);
+        const fallback = document.createElement('textarea');
+        fallback.className = 'letter-attribution-fallback';
+        fallback.readOnly = true;
+        fallback.hidden = true;
+        fallback.setAttribute('aria-label', 'Attribution for the letter by ' + item.displayName);
+        const status = document.createElement('span');
+        status.className = 'letter-copy-status';
+        status.setAttribute('role', 'status');
+        copy.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(attribution);
+            fallback.hidden = true;
+            status.textContent = 'Attribution copied.';
+          } catch {
+            fallback.value = attribution;
+            fallback.hidden = false;
+            status.textContent = 'Select and copy this attribution with your device’s Copy command.';
+            fallback.focus();
+            fallback.select();
+          }
+        });
+        const printedURL = document.createElement('p');
+        printedURL.className = 'letter-print-url';
+        printedURL.textContent = letterURL;
+        actions.append(permalink, copy);
+        source.append(publisher, actions, fallback, status, printedURL);
+        article.append(author, meta, source);
         if (item.body.length > 1200) {
           const excerpt = document.createElement('p');
           excerpt.className = 'letter-excerpt';
@@ -362,7 +415,13 @@
             if (!story.open) summary.scrollIntoView({block: 'center', behavior: 'instant'});
           });
           story.append(summary, body, collapse);
-          article.append(excerpt, story);
+          // Closed details can suppress their contents in WebKit print output,
+          // even with display overrides. A print-only copy avoids changing the
+          // reader's disclosure state or triggering scrolling while printing.
+          const printBody = document.createElement('p');
+          printBody.className = 'letter-print-body';
+          printBody.textContent = item.body;
+          article.append(excerpt, story, printBody);
         } else {
           article.append(body);
         }
@@ -370,6 +429,7 @@
         fragment.append(article);
       });
       board.replaceChildren(fragment);
+      lettersLoaded = true;
       boardStatus.textContent = data.letters.length ? data.letters.length + ' published letter' + (data.letters.length === 1 ? '' : 's') + '.' : 'No community letters have been published yet. You can submit yours for review using the form below.';
       openLinkedLetter();
     })

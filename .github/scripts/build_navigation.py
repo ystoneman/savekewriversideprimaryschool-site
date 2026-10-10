@@ -5,7 +5,9 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026100804'
+VERSION = '2026100901'
+SITE_NAME = 'Save Kew Riverside Primary School Campaign'
+SITE_URL = 'https://savekewriversideprimaryschool.org/'
 PAGES = {
     # Page identity labels only. The Menu and footer come from MENU_GROUPS and
     # FOOTER_LINKS, so registering a page never adds a Menu row by itself.
@@ -48,7 +50,7 @@ MENU_GROUPS = [
 ]
 # Every page's footer, including the destinations kept out of the Menu.
 FOOTER_LINKS = [
-    ('about.html', 'About & contact', ''), ('proposal.html', 'Proposal & dates', ''),
+    ('about.html', 'About & contact', ''), ('about.html#press', 'For journalists', ''), ('proposal.html', 'Proposal & dates', ''),
     ('faq.html', 'FAQ', ''), ('evidence.html#records', 'Evidence', ''),
     ('letters.html', 'Community letters', ''), ('feedback.html', 'Share ideas', ''),
     ('videos.html#upload', 'Share a video', ''), ('lessons.html', 'Lessons', ''),
@@ -67,7 +69,7 @@ SECTIONS = {
     'faq.html': [('taking-part','Ways to help'),('decisions','Dates and decisions'),('money','Money'),('school-places','School places'),('learning','Learning and results')],
     'lessons.html': [('key-lessons','Key lessons'),('visual-guide','Visual guide'),('catalogue','All 16 schools'),('method','Method and limits')],
     'lessons-sources.html': [('source-register','Source register'),('claim-ledger','Evidence and interpretation')],
-    'about.html': [('our-story','Our family story'),('site-responsibility','Who is responsible'),('updates','What has changed'),('contact','Contact Yann')],
+    'about.html': [('our-story','Our family story'),('site-responsibility','Who is responsible'),('press','For journalists'),('updates','What has changed'),('contact','Contact Yann')],
     'letters.html': [('letters','Read community letters'),('letter-form','Write a letter'),('letter-guidelines','Letter guidelines')],
     'feedback.html': [('feedback-form','Share an idea or question'),('review-rules','How review works'),('suggestions','Read shared ideas')],
     # The short video page needs no section list beside the Menu.
@@ -75,9 +77,80 @@ SECTIONS = {
     'privacy.html': [('public-roles','Public roles'),('funding-privacy','Funding ideas'),('supporters-privacy','Supporters'),('contact-privacy','Private contact'),('letters-privacy','Community letters'),('video-privacy','Videos'),('requests','Your choices'),('analytics','Analytics'),('device-storage','On-device storage')],
 }
 
+def render_identity(name, document):
+    """Keep publisher identity in generated and maintained pages alike."""
+    esc = html.escape
+    titles = {
+        'index.html': SITE_NAME,
+        'letters.html': 'Community letters',
+        'about.html': 'Our story & contact',
+        'proposal.html': 'Proposal, dates & who decides',
+        'understand.html': 'Numbers & results: Richmond school data',
+        'faq.html': 'Your questions answered',
+        'evidence.html': 'Evidence and sources',
+        'options.html': 'Ways to keep Kew Riverside Primary School open',
+        'lessons.html': 'Lessons from other schools',
+        'lessons-sources.html': 'Research citations',
+        'feedback.html': 'Ideas, evidence & questions',
+        'videos.html': 'Parent testimonials',
+        'supporters.html': 'Named supporters',
+        'privacy.html': 'Privacy & moderation',
+        'corrections.html': 'Private corrections',
+        'rally.html': 'Past advertised rally · 6 October',
+        'sent.html': 'Next steps',
+        'fundraising-trustees.html': 'Trustee brief',
+        'fundraising-admin.html': 'Account setup brief',
+    }
+    title = titles[name] + ('' if name == 'index.html' else ' | ' + SITE_NAME)
+    document = re.sub(r'<title>.*?</title>', '<title>'+esc(title)+'</title>', document, flags=re.S)
+    def meta(document, attribute, key, value):
+        tag = '<meta '+attribute+'="'+key+'" content="'+esc(value, quote=True)+'">'
+        pattern = r'<meta '+attribute+'="'+re.escape(key)+r'"[^>]*>'
+        document = re.sub(pattern, '', document)
+        return document.replace('</head>', tag+'</head>', 1)
+    for attribute, key in [('name', 'description'), ('property', 'og:description')]:
+        # Research builders start with Proposal's head; use their own page description.
+        source_attribute, source_key = ('name', 'description') if name in ('lessons.html', 'lessons-sources.html', 'understand.html') else (attribute, key)
+        match = re.search(r'<meta '+source_attribute+'="'+source_key+r'" content="([^"]*)"', document)
+        description = html.unescape(match.group(1)) if match else titles[name]+'.'
+        prefix = 'Independent parent-led campaign. '
+        if not description.startswith(prefix):
+            description = prefix+description
+        document = meta(document, attribute, key, description)
+    for key, value in [('og:site_name', SITE_NAME), ('og:title', title), ('og:type', 'website'),
+                       ('og:url', SITE_URL+('' if name == 'index.html' else name))]:
+        document = meta(document, 'property', key, value)
+    if '<meta name="twitter:title"' in document:
+        document = meta(document, 'name', 'twitter:title', title)
+    if '<meta name="twitter:description"' in document:
+        description = re.search(r'<meta property="og:description" content="([^"]*)"', document).group(1)
+        document = meta(document, 'name', 'twitter:description', html.unescape(description))
+    document = re.sub(r'<link rel="canonical"[^>]*>', '', document)
+    document = document.replace('</head>', '<link rel="canonical" href="'+SITE_URL+('' if name == 'index.html' else name)+'"></head>', 1)
+    document = re.sub(r'(og-[^"?]+\.png)\?v=\d+', r'\1?v='+VERSION, document)
+    if name == 'index.html':
+        document = re.sub(r'<html\b[^>]*>', '<html lang="en-GB" itemscope itemtype="https://schema.org/WebSite">', document, count=1)
+        document = meta(document, 'itemprop', 'name', SITE_NAME)
+        document = re.sub(r'<link itemprop="url"[^>]*>', '', document)
+        document = document.replace('</head>', '<link itemprop="url" href="'+SITE_URL+'"></head>', 1)
+    def brand(match):
+        opening = re.sub(r'aria-label="[^"]*"', 'aria-label="'+SITE_NAME+' home"', match.group(1))
+        symbol = match.group(2).split('</svg>', 1)[0]+'</svg>'
+        wording = '<span>Save Kew Riverside<br>Primary School<small class="campaign-subtitle"><strong>CAMPAIGN</strong><span>Independent and parent-led</span></small></span>'
+        return opening+symbol+wording+'</a>'
+    document = re.sub(r'(<a class="brand"[^>]*>)(.*?)</a>', brand, document, count=1, flags=re.S)
+    # The masthead carries independence; retain scoped update dates without
+    # repeating identity in a separate strip above it.
+    document = re.sub(r'(<div class="independent-bar"><div class="wrap">)<span>[^<]*</span>(?=<span>)',
+                      r'\1', document, count=1, flags=re.S)
+    footer = '<footer><div class="wrap footer-inner"><div><strong>'+esc(SITE_NAME)+'</strong><p>An independent parent-led website to help keep the school open.<br>Created and maintained by <a href="about.html#site-responsibility">Yann Stoneman</a>.</p></div>'
+    document = re.sub(r'<footer><div class="wrap footer-inner"><div>.*?</div>', footer, document, count=1, flags=re.S)
+    return document
+
 def render_navigation(name, document):
     if name not in PAGE_LABELS or 'class="site-header"' not in document:
         return document
+    document = render_identity(name, document)
     esc = html.escape
     document = re.sub(r'<!-- orientation:start -->.*?<!-- orientation:end -->', '', document, flags=re.S)
     document = re.sub(r'<link rel="stylesheet" href="orientation\.css(?:\?v=\d+)?">', '', document)
