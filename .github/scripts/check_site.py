@@ -31,6 +31,7 @@ og-home.png og-letters.png og-ideas.png og-videos.png
 og-fundraising-trustees-v1.png og-fundraising-admin-v1.png
 '''.split())
 MAINTENANCE_FILES = frozenset('''
+SEO-IMPLEMENTATION-PLAN.md
 tests/browser/campaign.spec.js
 .github/scripts/compatibility-assets.json .github/scripts/compatibility_release.py .github/scripts/test_compatibility_release.py CONSOLIDATION.md
 tests/review-evidence/research-update-mobile.png tests/review-evidence/research-update-desktop.png
