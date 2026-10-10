@@ -1,5 +1,12 @@
 # UX design decisions
 
+## Aggregate statistics default — candidate, 10 October 2026
+
+Visitor need (J1–J9): obtain useful lawful website statistics without requiring every visitor to opt in, while keeping individual visit analytics optional. Use a separate daily-counter backend for default aggregate measurement and consent-only Umami for the unchanged optional scope. A prominent in-flow explanation gives Review choices and a one-click Turn analytics off, with equal controls and no automatic focus. Preserve saved refusals, browser signals, private-page exclusions and earlier basic-only scope.
+
+Home places the notice after Parent action plan so that shortcut stays exposed; video retains its primary CTA/process before the notice; Letters keeps reading/writing shortcuts before it. New anchored or restored arrivals may skip the notice: default measurement waits until its explanation actually enters the viewport, and never scrolls/focuses visitors to obtain analytics. The optional panel opens only on request. This trades some missing counts for clear presentation and protected tasks. Detailed timing starts after opt-in, including consent changed in another tab. Review and delivery evidence belongs in TESTING.md/CHANGELOG.md; current journey priorities remain unchanged.
+
+
 ## Current research and received budget — 8 October 2026
 
 Visitor needs (J1/J6): identify what has actually changed and distinguish received evidence from requests still outstanding. Use scoped freshness labels on the existing pages, retaining historical source dates. Keep the short financial explanation on arrival and the received summary's penny-level table in the existing optional disclosure. Add a source-library record and one-page signature-removed copy beside the HTML figures; record receipt in the existing answered/evidence-obtained section. The new borough forecast comparison stays inside the existing forecast detail with explicit geographic and time-horizon limits. This retains existing navigation, action priorities and incoming routes. A new research landing page or reproduction of the private dossier would add unnecessary reading depth. Independent evidence and rendered UX review and verification limits are recorded in TESTING.md.

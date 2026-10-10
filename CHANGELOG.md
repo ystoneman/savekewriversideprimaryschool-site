@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — aggregate default and consent-only Umami
+
+- Prepared a separate daily-counter Worker/D1 collector for page opens, broad sources, viewport groups and fixed interaction thresholds, with no individual analytics rows or identities. Backend deployed and its D1 binding, disabled application logs/traces, Free plan and daily retention trigger verified; website release and receipt still pending. Umami is explicitly consent-only; old refusals/privacy signals and old basic-only scope persist.
+- Updated the in-flow first-visit notice, direct objection and privacy explanation. Home notice follows Parent action plan; anchor arrivals wait for actual notice visibility, without forced scrolling/focus. Prior claim that merely avoiding individual Umami reports qualified its retained records for the exception is withdrawn.
+- Planning privacy/evidence and UX reviews completed. Actual privacy review corrected cross-tab consent timing, legacy-basic payload scope and explicit default wording. Independent rendered recheck has no remaining actionable findings, including 320px settings, enlarged text and the short-phone response route. Native iPhone 17/iOS 26.5 Safari touch choices, refusal, Parent action plan and Back worked. Five real-SQLite backend tests, 70 Python tests and 356 focused browser checks pass. Complete browser/hosted gates and real receipt remain pending; the website change is not published.
+
+
 ## Unreleased
 
 ### Research freshness and received budget — 8 October 2026

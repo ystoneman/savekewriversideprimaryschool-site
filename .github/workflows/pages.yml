@@ -21,6 +21,11 @@ jobs:
           persist-credentials: false
       - name: Test privacy and security guards
         run: python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - name: Test aggregate collector privacy and storage
+        run: node --test analytics-backend/worker.test.mjs
       - name: Check JavaScript syntax
         run: for script in *.js .github/scripts/old_site_redirect.js; do node --check "$script"; done
       - name: Validate and stage only public assets

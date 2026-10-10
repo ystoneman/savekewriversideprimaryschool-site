@@ -7,8 +7,9 @@ const origin = 'https://savekewriversideprimaryschool.org';
 const prefix = '/';
 const site = origin + prefix;
 const endpoint = 'https://gateway.umami.is/api/send';
+const counterEndpoint = 'https://kew-riverside-statistics.analytics-backend.workers.dev/count';
 const choiceKey = 'kew-analytics-choice-v1';
-const fakeConfig = { enabled: true, websiteId: '01234567-89ab-4cde-8123-456789abcdef' };
+const fakeConfig = { enabled: true, counterEnabled: true, websiteId: '01234567-89ab-4cde-8123-456789abcdef' };
 const officialForm = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform';
 const sentinel = 'FICTIONAL_PRIVATE_VALUE_NEVER_SEND_84';
 const types = {
@@ -37,6 +38,7 @@ const emptyBoards = {
 async function virtualProduction(context, options = {}) {
   const sent = [];
   const configReads = [];
+  const aggregates = [];
   const servedPrefix = options.prefix || prefix;
   await context.route(origin + '/**', async route => {
     const request = route.request();
@@ -71,7 +73,13 @@ async function virtualProduction(context, options = {}) {
       await route.fulfill({ json: { cache: 'fictional-test-session-only' } });
     }
   });
-  return { sent, configReads };
+  await context.route(counterEndpoint, async route => {
+    const request = route.request();
+    expect(request.method()).toBe('POST');
+    aggregates.push({ body: request.postDataJSON(), headers: request.headers() });
+    await route.fulfill({ json: { accepted: true } });
+  });
+  return { sent, configReads, aggregates };
 }
 
 async function savedChoice(page, choice = 'allow', until = 'future') {
@@ -88,7 +96,7 @@ async function choices(page) {
 }
 
 const ALLOW = 'Include detailed usage';
-const BASIC = 'Basic counts only';
+const BASIC = 'Aggregate statistics only';
 const OFF = 'Turn analytics off';
 
 async function allowAnalytics(page) {
@@ -140,34 +148,89 @@ async function freezeAfterLoad(page) {
   await expect(page.locator('#analytics-panel')).toHaveCount(0);
 }
 
-test('First visit to the new domain sends no analytics until a level is chosen', async ({ page, context }) => {
-  const { sent, configReads } = await virtualProduction(context);
+test('First visit starts aggregate statistics without enabling Umami', async ({ page, context }) => {
+  const { sent, configReads, aggregates } = await virtualProduction(context);
   await page.goto(site);
   await freezeAfterLoad(page);
   expect(configReads).toHaveLength(1);
   expect(sent).toEqual([]);
   const invitation = page.locator('.analytics-invitation');
   await expect(invitation).toBeVisible();
-  await expect(invitation.getByRole('button', { name: 'Keep off', exact: true })).toBeVisible();
+  await expect.poll(() => aggregates.filter(r => r.body.counters.some(c => c.metric === 'page')).length).toBe(1);
+  expect(aggregates[0].body).toEqual({ counters: [
+    { metric: 'page', label: 'index.html' }, { metric: 'source', label: 'direct' },
+    { metric: 'viewport', label: page.viewportSize().width < 600 ? 'small' : page.viewportSize().width < 1000 ? 'medium' : 'large' },
+  ] });
+  await expect(invitation.getByRole('button', { name: 'Turn analytics off', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.activeElement.closest('.analytics-invitation'))).toBeNull();
   expect(await page.evaluate(key => localStorage.getItem(key), choiceKey)).toBeNull();
-  await invitation.getByRole('button', { name: 'Choose analytics', exact: true }).click();
+  await invitation.getByRole('button', { name: 'Review choices', exact: true }).click();
   await expect(page.locator('#analytics-panel')).toBeVisible();
   expect(sent).toEqual([]);
   await page.locator('#analytics-panel').getByRole('button', { name: 'Close analytics choices' }).click();
-  await expect(invitation.getByRole('button', { name: 'Choose analytics', exact: true })).toBeFocused();
+  await expect(invitation.getByRole('button', { name: 'Review choices', exact: true })).toBeFocused();
   const panel = await choices(page);
-  await expect(panel.getByRole('status')).toContainText('analytics off (the default on this domain)');
-  await expect(panel.getByRole('button', { name: OFF, exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(panel.getByRole('status')).toContainText('aggregate statistics only (the default)');
+  await expect(panel.getByRole('button', { name: BASIC, exact: true })).toHaveAttribute('aria-pressed', 'true');
   await panel.getByRole('button', { name: BASIC, exact: true }).click();
-  await expect.poll(() => pageViews(sent).length).toBe(1);
+  expect(sent).toEqual([]);
   expect(events(sent, 'Section reached')).toEqual([]);
 });
+
+test('An anchored first visit waits for presentation without moving the visitor', async ({ page, context }) => {
+  const { sent, aggregates } = await virtualProduction(context);
+  await page.goto(site + 'evidence.html#gaps');
+  await expect(page.locator('#gaps')).toBeInViewport();
+  await page.waitForTimeout(250);
+  expect(aggregates).toEqual([]);
+  expect(sent).toEqual([]);
+  await page.locator('.analytics-invitation').scrollIntoViewIfNeeded();
+  await expect.poll(() => aggregates.filter(r => r.body.counters.some(c => c.metric === 'page')).length).toBe(1);
+  expect(sent).toEqual([]);
+});
+
+test('The aggregate default records reviewed interactions without Umami or identifiers', async ({ page, context }) => {
+  const { sent, aggregates } = await virtualProduction(context);
+  await controlledAttention(page);
+  await page.goto(site + 'evidence.html');
+  await expect.poll(() => aggregates.length).toBe(1);
+  await page.locator('#gaps').evaluate(el => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+  await page.clock.runFor(15_000);
+  await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'active' && c.label === '15'))).toBe(true);
+  await analyticsDownloadClick(page, 'a[download][href="sources.csv"]');
+  await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'action' && c.label === 'Download clicked: source index'))).toBe(true);
+  expect(sent).toEqual([]);
+  const allowed = JSON.parse(readFileSync(path.join(root, 'analytics-backend/labels.json')));
+  for (const r of aggregates) {
+    expect(Object.keys(r.body)).toEqual(['counters']);
+    for (const c of r.body.counters) {
+      expect(Object.keys(c).sort()).toEqual(['label', 'metric']);
+      expect(allowed[c.metric]).toContain(c.label);
+    }
+    for (const field of ['cookie', 'referer', 'authorization']) expect(r.headers).not.toHaveProperty(field);
+  }
+  expect(await page.evaluate(key => localStorage.getItem(key), choiceKey)).toBeNull();
+});
+
+for (const state of ['deny', 'dnt', 'gpc', 'storage']) {
+  test(`Both collectors stay off for ${state}`, async ({ page, context }) => {
+    const { sent, aggregates } = await virtualProduction(context);
+    if (state === 'deny') await savedChoice(page, 'deny');
+    else await page.addInitScript(state => {
+      if (state === 'dnt') Object.defineProperty(navigator, 'doNotTrack', { get: () => '1' });
+      if (state === 'gpc') Object.defineProperty(navigator, 'globalPrivacyControl', { get: () => true });
+      if (state === 'storage') Object.defineProperty(window, 'localStorage', { get: () => { throw new Error('fictional storage denial'); } });
+    }, state);
+    await page.goto(site);
+    await page.waitForTimeout(250);
+    expect(sent).toEqual([]); expect(aggregates).toEqual([]);
+  });
+}
 
 test('Keeping first-visit analytics off persists across pages and can be changed through the footer', async ({ page, context }) => {
   const { sent } = await virtualProduction(context);
   await page.goto(site);
-  await page.locator('.analytics-invitation').getByRole('button', { name: 'Keep off', exact: true }).click();
+  await page.locator('.analytics-invitation').getByRole('button', { name: 'Turn analytics off', exact: true }).click();
   await expect(page.locator('.analytics-invitation')).toBeHidden();
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).choice, choiceKey)).toBe('deny');
   await page.goto(site + 'faq.html');
@@ -175,7 +238,7 @@ test('Keeping first-visit analytics off persists across pages and can be changed
   expect(sent).toEqual([]);
   const panel = await choices(page);
   await panel.getByRole('button', { name: BASIC, exact: true }).click();
-  await expect.poll(() => pageViews(sent).length).toBe(1);
+  expect(sent).toEqual([]);
 });
 
 test('Slow configuration does not move a focused field or turn first-visit collection on', async ({ page, context }) => {
@@ -185,11 +248,11 @@ test('Slow configuration does not move a focused field or turn first-visit colle
   await page.goto(site + 'letters.html');
   const invitation = page.locator('.analytics-invitation');
   await expect(invitation).toBeVisible();
-  await expect(invitation.getByRole('button', { name: 'Choose analytics' })).toBeDisabled();
+  await expect(invitation.getByRole('button', { name: 'Review choices' })).toBeDisabled();
   await page.locator('#message').fill('Fictional letter typed before configuration loads');
   const before = await page.locator('#message').boundingBox();
   release();
-  await expect(invitation.getByRole('button', { name: 'Choose analytics' })).toBeEnabled();
+  await expect(invitation.getByRole('button', { name: 'Review choices' })).toBeEnabled();
   await expect(page.locator('#message')).toBeFocused();
   expect(await page.locator('#message').boundingBox()).toEqual(before);
   expect(sent).toEqual([]);
@@ -199,7 +262,7 @@ for (const [setting, label] of [['allow', ALLOW], ['basic', BASIC], ['deny', OFF
   test(`First-visit prompt offers the ${setting} choice without enabling analytics on open`, async ({ page, context }) => {
     const { sent } = await virtualProduction(context);
     await page.goto(site);
-    await page.locator('.analytics-invitation').getByRole('button', { name: 'Choose analytics' }).click();
+    await page.locator('.analytics-invitation').getByRole('button', { name: 'Review choices' }).click();
     expect(sent).toEqual([]);
     const panel = page.locator('#analytics-panel');
     await panel.getByRole('button', { name: label, exact: true }).click();
@@ -207,7 +270,8 @@ for (const [setting, label] of [['allow', ALLOW], ['basic', BASIC], ['deny', OFF
     await expect(page.locator('.analytics-invitation')).toBeHidden();
     expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).choice, choiceKey)).toBe(setting);
     if (setting === 'deny') expect(sent).toEqual([]);
-    else await expect.poll(() => pageViews(sent).length).toBe(1);
+    else if (setting === 'allow') await expect.poll(() => pageViews(sent).length).toBe(1);
+    else expect(sent).toEqual([]);
   });
 }
 
@@ -263,7 +327,7 @@ test('An old-origin objection and unfinished draft cannot transfer, so the new o
   await expect(page.locator('#message')).toHaveValue('');
   await expect(page.locator('#draft-notice')).toContainText('Drafts saved on the old website address cannot appear here');
   const panel = await choices(page);
-  await expect(panel.getByRole('status')).toContainText('analytics off (the default on this domain)');
+  await expect(panel.getByRole('status')).toContainText('aggregate statistics only (the default)');
   await panel.getByRole('button', { name: 'Close analytics choices' }).click();
   const recovery = page.locator('#draft-notice').getByRole('link', { name: 'open the earlier GitHub letters page' });
   await expect(recovery).toHaveAttribute('href', 'https://ystoneman.github.io/kew-riverside-website/letters.html?recover=draft#letter-form');
@@ -289,7 +353,7 @@ test('A previous custom-domain objection and unfinished draft cannot transfer, s
   await expect(page.locator('#message')).toHaveValue('');
   await expect(page.locator('#draft-notice')).toContainText('Drafts saved on the old website address cannot appear here');
   const panel = await choices(page);
-  await expect(panel.getByRole('status')).toContainText('analytics off (the default on this domain)');
+  await expect(panel.getByRole('status')).toContainText('aggregate statistics only (the default)');
   await panel.getByRole('button', { name: 'Close analytics choices' }).click();
   const recovery = page.locator('#draft-notice').getByRole('link', { name: 'open the previous letters page' });
   await expect(recovery).toHaveAttribute('href', 'https://savekewriverside.org/letters.html?recover=draft#letter-form');
@@ -342,7 +406,7 @@ test('An explicit detailed choice sends fixed events without a cookie', async ({
   }
   const panel = await choices(page);
   await expect(panel.getByRole('heading')).toBeFocused();
-  await expect(panel.getByRole('status')).toContainText('basic page counts and detailed usage.');
+  await expect(panel.getByRole('status')).toContainText('aggregate statistics and detailed Umami usage.');
   await expect(panel.getByRole('button', { name: ALLOW, exact: true })).toHaveAttribute('aria-pressed', 'true');
   for (const name of [ALLOW, BASIC, OFF]) {
     const button = panel.getByRole('button', { name, exact: true });
@@ -445,7 +509,7 @@ for (const signal of ['globalPrivacyControl', 'doNotTrack']) {
   });
 }
 
-test('An expired allow choice falls back to analytics off', async ({ page, context }) => {
+test('An expired allow choice stops Umami and falls back to aggregate statistics', async ({ page, context }) => {
   const { sent } = await virtualProduction(context);
   await controlledAttention(page);
   await savedChoice(page, 'allow', 'past');
@@ -455,18 +519,19 @@ test('An expired allow choice falls back to analytics off', async ({ page, conte
   await page.clock.runFor(15_000);
   expect(sent).toEqual([]);
   const panel = await choices(page);
-  await expect(panel.getByRole('status')).toContainText('analytics off (the default on this domain)');
+  await expect(panel.getByRole('status')).toContainText('aggregate statistics only (the default)');
 });
 
 // Before 25 September 2026 detailed usage was opt-in. A saved basic-only choice
 // (or a later one) must never widen to the new default.
 test('A saved Basic counts only choice sends page views but no detailed usage', async ({ page, context }) => {
-  const { sent } = await virtualProduction(context);
+  const { sent, aggregates } = await virtualProduction(context);
   await controlledAttention(page);
   await savedChoice(page, 'basic');
   await page.goto(site + 'evidence.html');
   await freezeAfterLoad(page);
-  await expect.poll(() => sent.length).toBe(1);
+  await expect.poll(() => aggregates.filter(r => r.body.counters.some(c => c.metric === 'page')).length).toBe(1);
+  expect(sent).toEqual([]);
   await page.locator('#gaps').evaluate(element => element.scrollIntoView({ block: 'start', behavior: 'instant' }));
   for (let interval = 0; interval < 11; interval += 1) {
     await page.evaluate(() => window.dispatchEvent(new Event('pointerdown')));
@@ -475,18 +540,37 @@ test('A saved Basic counts only choice sends page views but no detailed usage', 
   await analyticsDownloadClick(page, 'a[download][href="sources.csv"]');
   await page.reload();
   await freezeAfterLoad(page);
-  await expect.poll(() => sent.length).toBe(2);
+  await expect.poll(() => aggregates.filter(r => r.body.counters.some(c => c.metric === 'page')).length).toBe(2);
   await page.clock.runFor(30_000);
-  expect(sent).toHaveLength(2);
+  expect(sent).toEqual([]);
+  expect(aggregates.every(r => r.body.counters.every(c => c.metric === 'page'))).toBe(true);
   expect(sent.every(request => !request.body.payload.name)).toBe(true);
   const panel = await choices(page);
-  await expect(panel.getByRole('status')).toContainText('basic page counts only');
+  await expect(panel.getByRole('status')).toContainText('page-open totals only (earlier choice)');
   await expect(panel.getByRole('button', { name: BASIC, exact: true })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('Detailed opt-in in another tab starts timing after permission', async ({ page, context }) => {
+  const { sent, aggregates } = await virtualProduction(context);
+  await controlledAttention(page);
+  await page.goto(site);
+  await expect.poll(() => aggregates.length).toBe(1);
+  await page.clock.runFor(10_000);
+  expect(sent).toEqual([]);
+  const other = await context.newPage();
+  await other.goto(site + 'about.html');
+  await other.evaluate(key => localStorage.setItem(key,
+    JSON.stringify({ v: 2, choice: 'allow', until: Date.now() + 86_400_000 })), choiceKey);
+  await expect.poll(() => pageViews(sent).length).toBe(1);
+  await page.clock.runFor(5_000);
+  expect(events(sent, 'Active viewing')).toEqual([]);
+  await page.clock.runFor(10_000);
+  await expect.poll(() => events(sent, 'Active viewing')).toEqual([{ seconds: 15 }]);
 });
 
 for (const state of ['disabled', 'invalid-id', 'unavailable']) {
   test(`Analytics stays disconnected with ${state} configuration`, async ({ page, context }) => {
-    const config = state === 'disabled' ? { enabled: false, websiteId: fakeConfig.websiteId } : { enabled: true, websiteId: 'not-a-provider-id' };
+    const config = state === 'disabled' ? { enabled: false, websiteId: fakeConfig.websiteId } : { enabled: true, counterEnabled: true, websiteId: 'not-a-provider-id' };
     const { sent } = await virtualProduction(context, { config, configFailure: state === 'unavailable' });
     await savedChoice(page);
     await page.goto(site);

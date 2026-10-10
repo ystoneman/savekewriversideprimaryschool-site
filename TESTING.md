@@ -1,5 +1,13 @@
 # Testing the website
 
+## Aggregate statistics candidate — 10 October 2026
+
+- Backend: five Node tests against actual in-memory SQLite pass, covering atomic aggregate increments, strict label/property/origin/privacy/size rejection, failures and retention. Schema contains only daily counters. Seventy Python privacy/security/packaging tests pass.
+- Browser regressions add default aggregate receipt through interception, anchor visibility gating, independent fixed labels, no unsolicited choice storage, both-collector privacy refusals and legacy basic-only preservation. Existing Umami event/private-input regressions remain. Cross-tab optional timing begins after consent. All 356 focused analytics/theme checks pass across four script-enabled projects. Independent final rendered review has no remaining actionable findings. Complete final five-project/hosted checks and actual Cloudflare/Umami receipt are pending.
+- Native iPhone 17 / iOS 26.5 Safari Simulator: touch opened Choices with all three settings visible; Turn analytics off dismissed the notice; Parent action plan opened and Safari Back returned without reviving the refused notice. No form was submitted. This is a native Simulator check, separate from browser emulation.
+- Temporary local rendered preview at port4391 removes upgrade-insecure only in HTTP responses, permits the local UI gate and blocks all collector submissions. It is not deployed source or evidence of receiving-provider success.
+
+
 ## Research freshness and received budget — 8 October 2026
 
 - All 70 Python privacy/security/data/artifact tests pass. Independent sentinels pin the received summary's penny values and receipt/approval dates, borough scope and forecast horizons; regressions reject the stale masthead and missing-budget arrival. Generated comparison, case-evidence, source and historical research freshness checks remain enabled. The budget PDF is explicitly included in both canonical and compatibility allowlists.
