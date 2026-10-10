@@ -20,9 +20,10 @@ function headerLinks(file, selector) {
   return links;
 }
 
-// The analytics collector is the only other origin a page's policy allows. analytics.js
-// contacts it only from the production host (analytics.spec.js), never from this server.
-const productionOnly = { 'connect-src': ['https://gateway.umami.is/api/send'] };
+// The two collectors are the only other origins a page's policy allows. analytics.js
+// contacts both only from the production host (analytics.spec.js), never this server.
+const productionOnly = { 'connect-src': ['https://gateway.umami.is/api/send',
+  'https://kew-riverside-statistics.analytics-backend.workers.dev/count'] };
 
 // True when the page's policy, including the default that other fetch directives fall
 // back to, lets it reach no other origin when served by this test harness.

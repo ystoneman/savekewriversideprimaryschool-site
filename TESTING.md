@@ -1,5 +1,14 @@
 # Testing the website
 
+## Aggregate statistics candidate — 10 October 2026
+
+- Backend: five Node tests against actual in-memory SQLite pass, covering atomic aggregate increments, strict label/property/origin/privacy/size rejection, failures and retention. Schema contains only daily counters. Seventy Python privacy/security/packaging tests pass.
+- Browser regressions add default aggregate receipt through interception, anchor visibility gating, independent fixed labels, no unsolicited choice storage, both-collector privacy refusals and legacy basic-only preservation. Existing Umami event/private-input regressions remain. Cross-tab optional timing begins after consent. All 356 focused analytics/theme checks pass across four script-enabled projects. Independent final rendered review has no remaining actionable findings. Complete final five-project/hosted checks and actual Cloudflare/Umami receipt are pending.
+- Native iPhone 17 / iOS 26.5 Safari Simulator: touch opened Choices with all three settings visible; Turn analytics off dismissed the notice; Parent action plan opened and Safari Back returned without reviving the refused notice. No form was submitted. This is a native Simulator check, separate from browser emulation.
+- Concurrent campaign identity/letter-attribution PR #18 was preserved through integration. Combined 71 Python checks and independent rendered review pass. Initial complete hosted checks caught the test harness's stale one-collector CSP allowance; extend it only with the fixed aggregate endpoint and explicitly assert both collectors remain off on localhost/nested paths. No external-request assertion is removed. Final complete reruns remain pending.
+- Temporary local rendered preview at port4391 removes upgrade-insecure only in HTTP responses, permits the local UI gate and blocks all collector submissions. It is not deployed source or evidence of receiving-provider success.
+
+
 ## Campaign identity and attribution — 9 October 2026
 
 - All 71 Python privacy/security/data/artifact checks pass; the explicit public allowlist validates 117 assets. Navigation, comparison and research builders pass freshness checks. JavaScript syntax and whitespace checks pass. Existing provider forms, public board records and Privacy's main text match the baseline.

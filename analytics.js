@@ -1,20 +1,21 @@
 /* First-party collector. Only fixed, reviewed labels leave the page.
  * Protocol: https://docs.umami.is/docs/api/sending-stats
  * No provider JavaScript, DOM recording, form listeners or visitor identity API.
- * Two tiers, both off on the new domain until the visitor chooses: a basic page
- * view, and detailed usage (sections, active time, named actions). A visitor can
- * keep page views only ("Basic counts only") or turn both off.
+ * Default aggregate statistics, and opt-in Umami usage analytics.
+ * A visitor can keep aggregate statistics only or turn both off.
  * No cookie is set and nothing is written to storage unless a choice is made.
  */
 (() => {
   'use strict';
   const ENDPOINT = 'https://gateway.umami.is/api/send';
+  // Separate aggregate service; deployment settings verified 10 October 2026.
+  const COUNTER_ORIGIN = 'https://kew-riverside-statistics.analytics-backend.workers.dev';
   const HOST = 'savekewriversideprimaryschool.org';
   const ROOT = '/';
   const KEY = 'kew-analytics-choice-v1';
   const DAY = 24 * 60 * 60 * 1000;
   // An explicit allow lapses after 180 days. An objection or a basic-only choice
-  // is kept for five years before the off-by-default state applies again.
+  // is kept for five years before the aggregate default applies again.
   const LIFETIME = { allow: 180 * DAY, basic: 5 * 365 * DAY, deny: 5 * 365 * DAY };
   const PAGES = {
     'index.html': 'Home & evidence', 'proposal.html': 'Proposal & action plan',
@@ -61,7 +62,9 @@
   let config, choice = null, storageOK = true, collecting = false;
   let timer, previousTick = 0, lastActivity = 0, seconds = 0, pageSent = false;
   let opener, panel, status, buttons, invitation;
-  let configLoaded = false;
+  let legacyBasic = false;
+  let configLoaded = false, noticePresented = false, observer;
+  let umamiPageSent = false;
   const sectionElement = id => {
     const element = document.getElementById(id);
     return element && /^H[1-6]$/.test(element.tagName) ? element.closest('section') : element;
@@ -72,19 +75,23 @@
   sections.forEach(s => { s.nested = sections.filter(other => other !== s && s.element.contains(other.element)); });
   const milestones = new Set();
   const actionsSent = new Set();
+  const aggregateEvents = new Set();
   const pending = new Set();
   const browserObjects = () => navigator.doNotTrack === '1' || navigator.globalPrivacyControl === true;
   function readChoice() {
+    const wasDetailed = choice === 'allow';
     try {
       const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
-      choice = saved && saved.v === 1 && ['allow', 'basic', 'deny'].includes(saved.choice) &&
+      choice = saved && [1, 2].includes(saved.v) && ['allow', 'basic', 'deny'].includes(saved.choice) &&
         Number.isFinite(saved.until) && saved.until > Date.now() ? saved.choice : null;
-    } catch (_) { storageOK = false; choice = null; }
+      legacyBasic = choice === 'basic' && saved.v === 1;
+    } catch (_) { storageOK = false; choice = null; legacyBasic = false; }
+    if (choice === 'allow' && !wasDetailed) resetDetailedAttention();
   }
-  // Page views require an explicit saved choice on this new origin. Earlier
-  // objections on the GitHub Pages origin cannot be read or migrated here.
+  // New visitors get aggregate counts after the notice is actually presented.
+  // An explicit refusal always takes precedence over this default.
   function counting() {
-    return config?.enabled === true && storageOK && ['allow', 'basic'].includes(choice) && !browserObjects() &&
+    return config?.enabled === true && storageOK && choice !== 'deny' && (choice !== null || noticePresented) && !browserObjects() &&
       location.hostname === HOST && sitePath(location.pathname) && !privateRoute;
   }
   // Detailed usage requires the visitor's explicit allow choice.
@@ -104,18 +111,47 @@
       return url.protocol === 'https:' ? 'https://external.example/' : '';
     } catch (_) { return ''; }
   }
-  function send(name, data) {
-    if (name ? !detailed() : !counting()) return;
-    const payload = { website: config.websiteId, hostname: HOST, url: canonical(file), title: PAGES[file], referrer: referrer() };
-    if (name) { payload.name = name; payload.data = data; }
+  function counter(rows) {
+    if (!counting() || config.counterEnabled !== true) return;
+    rows = rows.filter(row => {
+      const key = row.metric + ':' + row.label;
+      if (aggregateEvents.has(key)) return false;
+      aggregateEvents.add(key); return true;
+    });
+    if (!rows.length) return;
+    request(COUNTER_ORIGIN + '/count', { counters: rows }, { 'Content-Type': 'text/plain' });
+  }
+  function request(endpoint, body, headers) {
     const controller = new AbortController();
     pending.add(controller);
-    fetch(ENDPOINT, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+    fetch(endpoint, {
+      method: 'POST', headers,
       credentials: 'omit', referrerPolicy: 'no-referrer', keepalive: true,
-      signal: controller.signal, body: JSON.stringify({ type: 'event', payload })
+      signal: controller.signal, body: JSON.stringify(body)
     }).catch(() => {}).finally(() => pending.delete(controller));
     // No persistent queue or retry: revocation must never release old events.
+  }
+  function send(name, data) {
+    if (!counting() || (name && legacyBasic)) return;
+    if (!name) {
+      const source = referrer();
+      const bucket = !source ? 'direct' : source.startsWith('/') ? 'internal' :
+        source.includes('google.com') ? 'google' : source.includes('bing.com') ? 'bing' :
+        source.includes('duckduckgo.com') ? 'duckduckgo' : source.includes('social.example') ? 'social' : 'external';
+      counter(legacyBasic ? [{ metric: 'page', label: file }] :
+        [{ metric: 'page', label: file }, { metric: 'source', label: bucket },
+          { metric: 'viewport', label: innerWidth < 600 ? 'small' : innerWidth < 1000 ? 'medium' : 'large' }]);
+    } else {
+      const metric = { 'Active viewing': 'active', 'Section reached': 'reached',
+        'Section viewed 10s': 'viewed', 'Action opened': 'action' }[name];
+      if (metric) counter([{ metric, label: metric === 'active' ? String(data.seconds) :
+        metric === 'action' ? data.action : file + '#' + data.section }]);
+    }
+    if (!detailed()) return;
+    const payload = { website: config.websiteId, hostname: HOST, url: canonical(file), title: PAGES[file], referrer: referrer() };
+    if (name) { payload.name = name; payload.data = data; }
+    request(ENDPOINT, { type: 'event', payload }, { 'Content-Type': 'application/json',
+      'x-umami-website-id': config.websiteId, 'x-umami-hostname': HOST });
   }
   function visibleArea(element) {
     if (element.closest('[hidden]') || !element.getClientRects().length) return 0;
@@ -130,7 +166,7 @@
     // Capped deltas prevent hidden/suspended tabs from adding a long elapsed gap.
     const elapsed = Math.min(1.5, Math.max(0, (now - previousTick) / 1000));
     previousTick = now;
-    if (!detailed()) { stop(); return; }
+    if (!counting()) { stop(); return; }
     if (document.visibilityState !== 'visible' || !document.hasFocus() || now - lastActivity > 60000 || !panel.hidden) return;
     seconds += elapsed;
     for (const threshold of [15, 30, 60, 120, 300]) {
@@ -156,8 +192,16 @@
   }
   function start() {
     if (!counting()) return;
-    if (!pageSent) { send(); pageSent = true; }
-    if (collecting || !detailed()) return;
+    if (!pageSent) { send(); pageSent = true; if (detailed()) umamiPageSent = true; }
+    // Opting in after aggregate collection needs its own Umami page view.
+    if (detailed() && !umamiPageSent) {
+      if (pageSent) {
+        const payload = { website: config.websiteId, hostname: HOST, url: canonical(file), title: PAGES[file], referrer: referrer() };
+        request(ENDPOINT, { type: 'event', payload }, { 'Content-Type': 'application/json', 'x-umami-website-id': config.websiteId, 'x-umami-hostname': HOST });
+      }
+      umamiPageSent = true;
+    }
+    if (collecting || legacyBasic) return;
     collecting = true;
     lastActivity = previousTick = performance.now();
     timer = setInterval(tick, 1000);
@@ -168,9 +212,18 @@
     pending.clear();
   }
   function persist(value) {
-    try { localStorage.setItem(KEY, JSON.stringify({ v: 1, choice: value, until: Date.now() + LIFETIME[value] })); choice = value; }
+    const newlyDetailed = value === 'allow' && choice !== 'allow';
+    try { localStorage.setItem(KEY, JSON.stringify({ v: 2, choice: value, until: Date.now() + LIFETIME[value] })); choice = value; legacyBasic = false; }
     catch (_) { storageOK = false; choice = null; }
-    stop(); start(); update();
+    stop();
+    // Optional events measure attention after permission, not earlier activity.
+    // Aggregate event deduplication remains separate across this transition.
+    if (newlyDetailed) resetDetailedAttention();
+    start(); update();
+  }
+  function resetDetailedAttention() {
+    seconds = 0; milestones.clear(); actionsSent.clear();
+    sections.forEach(s => { s.seconds = 0; s.reached = false; s.engaged = false; });
   }
   function node(tag, text, className) {
     const el = document.createElement(tag);
@@ -182,7 +235,7 @@
   function update() {
     const ready = config?.enabled === true;
     const locked = !ready || !storageOK || browserObjects();
-    const current = choice || 'deny';
+    const current = choice || 'basic';
     for (const [value, el] of Object.entries(buttons)) {
       el.disabled = locked;
       el.setAttribute('aria-pressed', String(!locked && !privateRoute && value === current));
@@ -191,8 +244,8 @@
       !storageOK ? 'Your browser could not save a choice, so analytics stays off.' :
       browserObjects() ? 'Your browser’s privacy signal is keeping all analytics off.' :
       privateRoute ? 'Analytics is off on this ' + (file === 'feedback.html' ? 'Share ideas' : 'private request') + ' page.' :
-      current === 'allow' ? 'Current setting: basic page counts and detailed usage.' :
-      current === 'deny' ? 'Current setting: analytics off' + (choice ? '.' : ' (the default on this domain).') : 'Current setting: basic page counts only.';
+      current === 'allow' ? 'Current setting: aggregate statistics and detailed Umami usage.' :
+      current === 'deny' ? 'Current setting: analytics off.' : legacyBasic ? 'Current setting: page-open totals only (earlier choice).' : 'Current setting: aggregate statistics only (the default).';
     updateInvitation();
   }
   function updateInvitation() {
@@ -202,8 +255,11 @@
   }
   function restoreFocus() {
     let target = opener;
-    if (!target?.isConnected || target.closest('[hidden]')) {
-      target = invitation?.nextElementSibling || invitation?.parentElement.nextElementSibling || document.querySelector('main h1');
+    const visible = element => element?.isConnected && !element.closest('[hidden]') && element.getClientRects().length;
+    if (!visible(target)) {
+      target = invitation?.nextElementSibling || invitation?.parentElement.nextElementSibling;
+      while (target && !visible(target)) target = target.nextElementSibling;
+      if (!visible(target)) target = document.querySelector('main h1');
       if (target && !target.hasAttribute('tabindex')) target.tabIndex = -1;
     }
     target?.focus({ preventScroll: true });
@@ -217,18 +273,18 @@
     const title = node('h2', 'Analytics choices'); title.id = 'analytics-title'; title.tabIndex = -1;
     const dismiss = button('×', close); dismiss.className = 'analytics-close'; dismiss.setAttribute('aria-label', 'Close analytics choices');
     panel.append(title, dismiss,
-      node('p', 'Analytics is off on this new domain until you choose a level. Basic counts only records page opens and broad sources. Umami infers device, browser and approximate location. No cookies are set.'),
-      node('p', 'Include detailed usage also counts broad sections, active time and key link opens. Turn analytics off stops both levels.'));
+      node('p', 'Aggregate statistics keep daily page and interaction totals without visitor histories. Optional Umami groups activity into visits and derives device and approximate location. Turn analytics off stops both.'));
     // The choices come before the longer explanation so they fit a small phone screen.
     status = node('p'); status.setAttribute('role', 'status'); panel.append(status);
     const actions = node('div', '', 'analytics-actions');
     const choose = value => () => { persist(value); if (storageOK) close(); };
     buttons = {
       allow: button('Include detailed usage', choose('allow')),
-      basic: button('Basic counts only', choose('basic')),
+      basic: button('Aggregate statistics only', choose('basic')),
       deny: button('Turn analytics off', choose('deny'))
     };
     actions.append(...Object.values(buttons)); panel.append(actions);
+    panel.append(node('p', 'Aggregate statistics only keeps daily totals of page opens, broad sources, screen-size groups, section visibility, active-time milestones and selected link opens.'));
     panel.append(node('p', 'We never record your screen, words you type, names or contact details. Everything on the site works whatever you choose.'));
     const more = node('a', 'How analytics works'); more.href = 'privacy.html#analytics'; panel.append(more);
     // Close without returning focus, so the explanation it leads to is not covered.
@@ -240,30 +296,42 @@
   function buildInvitation() {
     invitation = node('section', '', 'analytics-invitation');
     invitation.setAttribute('aria-labelledby', 'analytics-invitation-title');
-    const title = node('p', 'Analytics is off. Help improve this website?');
+    const title = node('p', 'Aggregate statistics on. Detailed off.');
     title.id = 'analytics-invitation-title';
     const actions = node('div', '', 'analytics-actions');
-    const review = button('Choose analytics', () => { open(review); });
-    const refuse = button('Keep off', () => { opener = refuse; persist('deny'); restoreFocus(); });
+    const review = button('Choices', () => { open(review); });
+    review.setAttribute('aria-label', 'Review choices');
+    const refuse = button('Turn off', () => { opener = refuse; persist('deny'); restoreFocus(); });
+    refuse.setAttribute('aria-label', 'Turn analytics off');
+    const more = node('a', 'Why?'); more.setAttribute('aria-label', 'How statistics work'); more.href = 'privacy.html#analytics';
+    title.append(' ', more);
     actions.append(review, refuse); invitation.append(title, actions);
     // Insert synchronously after the arrival content, before config resolves.
     // No automatic focus, overlay, or delayed insertion above a focused control.
     const main = document.querySelector('main');
-    let after = main?.querySelector('.hero .hero-note, #upload-step-two');
+    let after = main?.querySelector('.parent-plan-spotlight, #upload-step-two');
     const letterIntro = main?.querySelector('.invite-hero');
     if (letterIntro) {
-      letterIntro.append(invitation); return;
-    }
+      letterIntro.append(invitation);
+    } else {
     if (!after) {
       after = main?.querySelector('h1');
       if (after?.nextElementSibling?.tagName === 'P') after = after.nextElementSibling;
     }
     if (after) after.after(invitation);
     else main?.append(invitation);
-
+    }
+    // Anchored arrivals and Back may skip the notice. Never scroll or move focus
+    // to analytics; collect only once at least half of its explanation is visible.
+    observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.intersectionRatio >= .5)) {
+        noticePresented = true; observer.disconnect(); start();
+      }
+    }, { threshold: .5 });
+    observer.observe(title);
   }
   function action(event) {
-    if (!detailed()) return;
+    if (!counting()) return;
     const a = event.target.closest?.('a[href]');
     if (!a || a.hasAttribute('data-analytics-choices') || a.closest('form, #letters-list, #suggestions-list, #supporter-list, .analytics-panel')) return;
     let label = Object.hasOwn(ACTIONS, a.href) ? ACTIONS[a.href] : undefined;
@@ -302,7 +370,7 @@
   window.addEventListener('pagehide', stop);
   window.addEventListener('pageshow', event => {
     if (event.persisted) {
-      pageSent = false; seconds = 0; milestones.clear(); actionsSent.clear();
+      pageSent = false; umamiPageSent = false; seconds = 0; milestones.clear(); actionsSent.clear(); aggregateEvents.clear();
       sections.forEach(s => { s.seconds = 0; s.reached = false; s.engaged = false; });
     }
     readChoice(); update(); start();

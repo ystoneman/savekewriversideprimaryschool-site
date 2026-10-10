@@ -1,0 +1,22 @@
+{
+  "name": "kew-riverside-statistics",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-10",
+  "workers_dev": true,
+  "observability": {
+    "enabled": false
+  },
+  "triggers": {
+    "crons": [
+      "0 3 * * *"
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "COUNTS",
+      "database_name": "kew-riverside-statistics",
+      "database_id": "660b12a1-c4d0-4bfe-a48c-cc4bbeccca3d"
+    }
+  ],
+  "account_id": "4d2b93c3cee65b33571888f16df023f8"
+}

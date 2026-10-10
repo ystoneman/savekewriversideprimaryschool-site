@@ -1,5 +1,12 @@
 # UX design decisions
 
+## Aggregate statistics default — candidate, 10 October 2026
+
+Visitor need (J1–J9): obtain useful lawful website statistics without requiring every visitor to opt in, while keeping individual visit analytics optional. Use a separate daily-counter backend for default aggregate measurement and consent-only Umami for the unchanged optional scope. A prominent in-flow explanation gives Review choices and a one-click Turn analytics off, with equal controls and no automatic focus. Preserve saved refusals, browser signals, private-page exclusions and earlier basic-only scope.
+
+Home places the notice after Parent action plan so that shortcut stays exposed; video retains its primary CTA/process before the notice; Letters keeps reading/writing shortcuts before it. New anchored or restored arrivals may skip the notice: default measurement waits until its explanation actually enters the viewport, and never scrolls/focuses visitors to obtain analytics. The optional panel opens only on request. This trades some missing counts for clear presentation and protected tasks. Detailed timing starts after opt-in, including consent changed in another tab. Review and delivery evidence belongs in TESTING.md/CHANGELOG.md; current journey priorities remain unchanged.
+
+
 ## Campaign publisher identity and letter attribution — 9 October 2026
 
 Visitor need (J1/J4): the owner reports journalists attributing community letters to the school's website. The previous school-only masthead and page/site titles could encourage that interpretation; no particular article or causal usability study was inspected. The owner approved a campaign identity, point-of-use source credit, copying, journalist guidance and consistent preview/print treatment, then requested a prominent CAMPAIGN subtitle and the exact Letters title “Community letters | Save Kew Riverside Primary School Campaign”.

@@ -45,7 +45,7 @@ VIDEO-PERMISSIONS.md CONTRIBUTING.md .github/CODEOWNERS .github/pull_request_tem
 .agents/skills/kew-campaign-review/SKILL.md .agents/skills/kew-campaign-review/agents/openai.yaml
 .agents/skills/kew-ux-review/SKILL.md .agents/skills/kew-ux-review/agents/openai.yaml
 .agents/skills/kew-evidence-review/SKILL.md .agents/skills/kew-evidence-review/agents/openai.yaml
-ANALYTICS.md tests/browser/analytics.spec.js
+ANALYTICS.md tests/browser/analytics.spec.js analytics-backend/worker.mjs analytics-backend/worker.test.mjs analytics-backend/labels.json analytics-backend/schema.sql analytics-backend/wrangler.jsonc analytics-backend/README.md
 ENROLMENT-OUTREACH-BRIEF.md .github/scripts/build_learning.py .github/scripts/test_learning.py .github/scripts/build_case_evidence.py .github/scripts/test_case_evidence.py .github/scripts/build_checklist.py .github/scripts/build_sources.py tests/browser/sofiya.spec.js
 tests/browser/videos.spec.js tests/browser/top-journeys.spec.js tests/browser/homepage.spec.js tests/browser/harness.spec.js
 .github/scripts/build_lessons.py .github/scripts/test_lessons.py tests/browser/lessons.spec.js
@@ -58,7 +58,7 @@ tests/browser/desktop.spec.js tests/browser/no-javascript.spec.js
 tests/browser/contributions.spec.js tests/browser/evidence.spec.js tests/browser/boards.spec.js
 tests/browser/visitor-journeys.spec.js tests/browser/understand.spec.js tests/browser/participation.spec.js .github/scripts/build_understand.py .github/scripts/test_understand.py
 '''.split())
-CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://gateway.umami.is/api/send; base-uri 'none'; object-src 'none'; frame-src 'none'; form-action 'self' https://formspree.io; upgrade-insecure-requests"
+CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://gateway.umami.is/api/send https://kew-riverside-statistics.analytics-backend.workers.dev/count; base-uri 'none'; object-src 'none'; frame-src 'none'; form-action 'self' https://formspree.io; upgrade-insecure-requests"
 SECRET_PATTERNS = [
     r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',
     r'\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{50,})\b',
@@ -154,7 +154,7 @@ def validate_site(root=ROOT):
         if name.endswith('.js'):
             require(not re.search(r'\b(?:innerHTML|outerHTML|insertAdjacentHTML|eval)\b|document\.write\s*\(', data), 'Unsafe DOM/code execution sink in ' + name)
     analytics = json.loads((root / 'analytics-config.json').read_text())
-    require(set(analytics) == {'enabled', 'websiteId'} and type(analytics['enabled']) is bool, 'Invalid analytics configuration.')
+    require(set(analytics) == {'enabled', 'websiteId', 'counterEnabled'} and type(analytics['enabled']) is bool and type(analytics['counterEnabled']) is bool, 'Invalid analytics configuration.')
     require((analytics['enabled'] and isinstance(analytics['websiteId'], str) and re.fullmatch(r'[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}', analytics['websiteId'])) or (analytics['enabled'] is False and analytics['websiteId'] == ''), 'Analytics must have a valid public website ID or stay disabled.')
     for kind in ('suggestions', 'letters', 'supporters'):
         validate_board(json.loads((root / (kind + '.json')).read_text()), kind)
