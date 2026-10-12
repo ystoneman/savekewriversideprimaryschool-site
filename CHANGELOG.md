@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Emphasise only the homepage days-remaining phrase with bold ink-coloured text and a short gold underline. Keep the exact wording, line height, spacing, automatic rollover and expired/no-script guidance. Independent rendered UX review and local checks pass; hosted/live release evidence will be recorded in the pull request.
+
 - Add the approved short London calendar-day countdown beneath the homepage Respond action, retaining the exact published date. Update on visible minute ticks, return and activation; show singular/today states and retire the invitation after the deadline. Keep the no-script dated fallback and Safari pressed-target guard. Independent campaign/evidence/rendered UX review found no remaining issue. Local verification is recorded in TESTING.md; hosted release and live verification pending.
 
 - Add estimated daily visitors (unique browsers) through a browser-local date marker and cross-tab lock. Repeat page views do not create additional daily increments. Preserve earlier scopes and refusals, remove the marker on Off, and send only an isolated aggregate total. Update the compact notice and privacy/storage explanation, including UTC boundaries, conservative undercount and browser-versus-people limits. Implementation verification and deployment pending.

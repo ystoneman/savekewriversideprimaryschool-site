@@ -1,5 +1,10 @@
 # Testing the website
 
+## Countdown visual emphasis — 12 October 2026
+
+All 22 deadline unit tests, five homepage smoke cases, 34 iPhone/desktop WebKit homepage cases, 149 Python checks and seven backend tests pass; syntax/whitespace checks and fresh 124-file staging pass. The stage directory guard refused an existing preview directory; a fresh directory corrected the local setup. Independent actual-diff/rendered UX review compared baseline/current at 320/390/1440px in light/dark appearance with fresh analytics notice: same note height and Help position, one line and no overflow; expiry removes the emphasis. Native iPhone 17 / iOS 26.5 Safari inspected the current isolated preview with collectors blocked; bold countdown and underline readable without additional layout. No permissions reduced or form submitted. Hosted gates and live deployment evidence belong in the release pull request.
+
+
 ## Homepage countdown — 12 October 2026
 
 - Independently verified the official response form’s published 16 October 2026 deadline; no closing hour inferred. London calendar-date tests cover 4/2/1 days remaining, deadline day and expiry, minute refresh, return and the same-stage midnight regression. All 22 deadline unit tests and 68 homepage browser cases pass across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit. The initial four homepage smoke cases passed before implementation. Static fallback retains the exact dated council-information route.
