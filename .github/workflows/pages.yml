@@ -16,6 +16,13 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    outputs:
+      reuse: ${{ steps.reuse.outputs.reuse }}
+      proof_run: ${{ steps.reuse.outputs.proof_run }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -33,6 +40,22 @@ jobs:
         run: for script in *.js .github/scripts/old_site_redirect.js; do node --check "$script"; done
       - name: Validate and stage only public assets
         run: python3 .github/scripts/check_site.py --stage "$RUNNER_TEMP/public-site"
+      - name: Capture validation evidence
+        if: github.event_name == 'pull_request'
+        run: python3 .github/scripts/pr_browser_reuse.py capture --site "$RUNNER_TEMP/public-site" --out "$RUNNER_TEMP/validation-evidence/evidence.json"
+      - name: Save validation evidence
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr-evidence-${{ github.run_id }}-${{ github.run_attempt }}-validate-1
+          path: ${{ runner.temp }}/validation-evidence/evidence.json
+          if-no-files-found: error
+          retention-days: 2
+      - name: Verify reusable PR browser results
+        id: reuse
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/pr_browser_reuse.py probe --site "$RUNNER_TEMP/public-site"
       - name: Upload checked site
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
@@ -41,6 +64,8 @@ jobs:
           retention-days: 1
 
   browser-shards:
+    needs: validate
+    if: needs.validate.outputs.reuse != 'true'
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27
@@ -76,8 +101,22 @@ jobs:
             *webkit*|iphone-no-javascript) npx playwright install webkit ;;
             *) npx playwright install chromium ;;
           esac
+      - name: Capture browser inputs
+        if: github.event_name == 'pull_request'
+        run: python3 .github/scripts/pr_browser_reuse.py capture --project="${{ matrix.project }}" --shard="${{ matrix.shard }}" --total="${{ matrix.total }}" --out "$RUNNER_TEMP/browser-inputs.json"
       - name: Test navigation and visitor journeys
         run: npm test -- --project="${{ matrix.project }}" --shard="${{ matrix.shard }}/${{ matrix.total }}"
+      - name: Seal browser evidence
+        if: github.event_name == 'pull_request'
+        run: python3 .github/scripts/pr_browser_reuse.py seal --project="${{ matrix.project }}" --shard="${{ matrix.shard }}" --total="${{ matrix.total }}" --before "$RUNNER_TEMP/browser-inputs.json" --out "$RUNNER_TEMP/browser-evidence/evidence.json"
+      - name: Save browser evidence
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.project }}-${{ matrix.shard }}
+          path: ${{ runner.temp }}/browser-evidence/evidence.json
+          if-no-files-found: error
+          retention-days: 2
       - name: Save browser report and failure evidence
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -90,14 +129,20 @@ jobs:
 
   browser-tests:
     if: ${{ always() }}
-    needs: browser-shards
+    needs: [validate, browser-shards]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Require every browser project to pass
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Require complete browser coverage
         env:
+          VALIDATION_RESULT: ${{ needs.validate.result }}
           BROWSER_RESULT: ${{ needs.browser-shards.result }}
-        run: test "$BROWSER_RESULT" = success
+          REUSE: ${{ needs.validate.outputs.reuse }}
+          PROOF_RUN: ${{ needs.validate.outputs.proof_run }}
+        run: python3 .github/scripts/pr_browser_reuse.py gate
 
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

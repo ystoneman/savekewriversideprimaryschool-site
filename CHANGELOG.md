@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Verified PR browser results after merge — 12 October 2026
+
+- Reuse complete successful PR browser results only for identical tracked contents, public bytes and runtime, backed by ten verified receipts from the matching first-attempt run. Keep fresh main validation and independently staged deployment artifacts.
+- Require evidence from the same London day and within six hours; fall back to the full browser suite for every missing or uncertain condition. Main workflow reruns deliberately force fresh checks. Add adversarial provenance, archive, freshness and publication-gate regressions.
+- Independent implementation review found no blocking issue. Local validation and the remaining hosted integration checks are recorded in TESTING.md; final release evidence belongs in the implementation pull request. No visitor-facing file changes.
+
 ### Aggregate analytics audit and clearer choices — 12 October 2026
 
 - Document purpose, necessity, limits and exclusions in ANALYTICS.md. Add separate fixed referral/browser/OS/device counts, public-page arrival pairs, per-page active thresholds and coarse page-loading measurements; retain immediate daily aggregation, privacy exclusions, objections and unchanged Umami payload scope.
