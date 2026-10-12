@@ -19,11 +19,14 @@ for (const width of [320, 390, 700, 701, 1100, 1101, 1440]) {
       await expect(label).toHaveText('CAMPAIGN');
       await expect(label).toBeInViewport({ ratio: 1 });
       expect(await label.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(14);
-      for (const selector of ['.nav-letters', '.nav-contribute']) {
-        await expect(page.locator('.participation-nav ' + selector)).toBeInViewport({ ratio: 1 });
-      }
+      await expect(page.locator('#main-action')).toBeVisible();
+      await expect(page.locator('.home-plan')).toBeVisible();
+      await expect(page.locator('#share-trigger')).toBeVisible();
+      await page.locator('.mobile-menu summary').click();
+      for (const href of ['letters.html', 'feedback.html']) await expect(page.locator(`.mobile-menu a[href="${href}"]`)).toBeVisible();
+      await page.locator('.mobile-menu summary').click();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      if (width <= 390) await expect(page.locator('.parent-plan-spotlight a')).toBeInViewport({ ratio: 1 });
+      if (width <= 390) await expect(page.locator('#main-action')).toBeInViewport({ ratio: 1 });
     });
   }
 }

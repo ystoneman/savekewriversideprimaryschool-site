@@ -37,13 +37,16 @@ async function sendFictionalLetter(page, options = {}) {
 for (const file of pages) {
   test(`${file}: both participation tiles are visible, labelled and easy to tap`, async ({ page }) => {
     await page.goto('/' + file);
-    const nav = page.getByRole('navigation', { name: 'Take part' });
+    if (file === 'index.html') await page.locator('.mobile-menu summary').click();
+    const nav = file === 'index.html' ? page.locator('.mobile-menu') : page.getByRole('navigation', { name: 'Take part' });
     const letters = nav.getByRole('link', { name: /^Community letters/ });
     const ideas = nav.getByRole('link', { name: /^Share ideas/ });
     await expect(letters).toBeVisible();
     await expect(ideas).toBeVisible();
-    await expect(letters).toContainText('Read & add yours');
-    await expect(ideas).toContainText('Ask or suggest');
+    if (file !== 'index.html') {
+      await expect(letters).toContainText('Read & add yours');
+      await expect(ideas).toContainText('Ask or suggest');
+    }
     await expect(letters).toHaveAttribute('href', 'letters.html');
     await expect(ideas).toHaveAttribute('href', 'feedback.html');
     for (const tile of [letters, ideas]) {
@@ -52,7 +55,7 @@ for (const file of pages) {
       expect(box.width).toBeGreaterThanOrEqual(44);
     }
     // The medallions are decoration; the words carry the meaning.
-    await expect(nav.locator('.voice-medallion[aria-hidden="true"]')).toHaveCount(2);
+    await expect(nav.locator('.voice-medallion[aria-hidden="true"]')).toHaveCount(file === 'index.html' ? 0 : 2);
     if (file === 'letters.html') await expect(letters).toHaveAttribute('aria-current', 'page');
     else await expect(letters).not.toHaveAttribute('aria-current', /.*/);
     if (file === 'feedback.html') await expect(ideas).toHaveAttribute('aria-current', 'page');
@@ -62,7 +65,7 @@ for (const file of pages) {
 
 test('At 320px the two tiles sit side by side within the page', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
-  for (const file of ['index.html', 'letters.html', 'feedback.html', 'faq.html', 'sent.html']) {
+  for (const file of ['letters.html', 'feedback.html', 'faq.html', 'sent.html']) {
     await page.goto('/' + file);
     const first = await page.locator('.participation-nav .nav-letters').boundingBox();
     const second = await page.locator('.participation-nav .nav-contribute').boundingBox();

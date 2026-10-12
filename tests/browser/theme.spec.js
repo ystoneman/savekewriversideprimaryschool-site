@@ -34,10 +34,17 @@ for (const file of pages) {
       const url = new URL(href);
       if (!url.pathname.endsWith('/button-motion.css')) expect(url.searchParams.get('v'), 'Theme-dependent CSS must bypass older cached palettes').toMatch(/^\d+$/);
     }
+    if (file === 'index.html') await page.locator('#site-settings > summary').click();
     await expect(page.getByLabel('Appearance', { exact: true })).toHaveValue('system');
     await expect(page.getByLabel('Appearance', { exact: true })).toHaveCSS('min-height','44px');
-    await expect(page.locator('.participation-nav .nav-letters')).toBeVisible();
-    await expect(page.locator('.participation-nav .nav-contribute')).toBeVisible();
+    if (file === 'index.html') {
+      await page.locator('.mobile-menu summary').click();
+      await expect(page.locator('.mobile-menu a[href="letters.html"]')).toBeVisible();
+      await expect(page.locator('.mobile-menu a[href="feedback.html"]')).toBeVisible();
+    } else {
+      await expect(page.locator('.participation-nav .nav-letters')).toBeVisible();
+      await expect(page.locator('.participation-nav .nav-contribute')).toBeVisible();
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     // Measure only after the complete document has been painted.
     await paintFullPage(page);
@@ -115,13 +122,14 @@ test('Unanswered questions links, status labels and disclosure controls have rea
 
 test('Manual choices persist across pages and Back; System resumes live device changes', async ({ page }) => {
   await page.emulateMedia({ colorScheme:'dark' });
-  await page.goto('/index.html');
+  await page.goto('/index.html'); await page.locator('#site-settings > summary').click();
   await page.getByLabel('Appearance', { exact:true }).selectOption('light');
   await appearance(page, light);
   await page.reload(); await appearance(page, light);
-  await page.locator('.nav-letters').click(); await appearance(page, light);
+  await page.locator('.mobile-menu summary').click(); await page.locator('.mobile-menu a[href="letters.html"]').click(); await appearance(page, light);
   await page.getByLabel('Appearance', { exact:true }).selectOption('dark');
   await page.goBack(); await appearance(page, dark);
+  if (await page.locator('#site-settings').getAttribute('open') === null) await page.locator('#site-settings > summary').click();
   await expect(page.getByLabel('Appearance', { exact:true })).toHaveValue('dark');
   await page.getByLabel('Appearance', { exact:true }).selectOption('dark');
   await page.emulateMedia({ colorScheme:'light' }); await appearance(page, dark);
@@ -132,7 +140,7 @@ test('Manual choices persist across pages and Back; System resumes live device c
 
 test('A saved Light choice paints a fresh page under a dark device setting', async ({ page, context }) => {
   await page.emulateMedia({ colorScheme:'dark' });
-  await page.goto('/index.html');
+  await page.goto('/index.html'); await page.locator('#site-settings > summary').click();
   await page.getByLabel('Appearance', { exact:true }).selectOption('light');
   const fresh = await context.newPage();
   await fresh.emulateMedia({ colorScheme:'dark' });
@@ -144,7 +152,7 @@ test('A saved Light choice paints a fresh page under a dark device setting', asy
 });
 
 test('Another open tab receives a changed or removed override', async ({ page, context }) => {
-  await page.emulateMedia({ colorScheme:'light' }); await page.goto('/index.html');
+  await page.emulateMedia({ colorScheme:'light' }); await page.goto('/index.html'); await page.locator('#site-settings > summary').click();
   const second=await context.newPage(); await second.emulateMedia({colorScheme:'light'}); await second.goto('/faq.html');
   await page.getByLabel('Appearance', { exact:true }).selectOption('dark');
   await appearance(second,dark);
@@ -184,7 +192,7 @@ test('Dark mode keeps forms, disclosure content and focus readable without chang
 });
 
 test('Analytics choices follow the system appearance while remaining readable', async ({page}) => {
-  await page.emulateMedia({colorScheme:'dark'}); await page.goto('/index.html');
+  await page.emulateMedia({colorScheme:'dark'}); await page.goto('/index.html'); await page.locator('#site-settings > summary').click();
   await page.getByRole('link',{name:'Analytics choices',exact:true}).click();
   const panel=page.locator('#analytics-panel');
   await expect(panel).toBeVisible();
@@ -232,7 +240,7 @@ test('Expanded borough chart keeps a solid surface in light and dark appearances
 });
 
 test('Dark system with a manual override still prints in light colours', async ({page}) => {
-  await page.emulateMedia({colorScheme:'dark'}); await page.goto('/index.html');
+  await page.emulateMedia({colorScheme:'dark'}); await page.goto('/index.html'); await page.locator('#site-settings > summary').click();
   await page.getByLabel('Appearance',{exact:true}).selectOption('dark');
   await page.emulateMedia({media:'print'});
   await expect(page.locator('html')).toHaveCSS('color-scheme','light');
@@ -243,11 +251,11 @@ test('Dark system with a manual override still prints in light colours', async (
 test('Narrow dark arrival retains the parent plan and touch navigation', async ({page}) => {
   await page.setViewportSize({width:320,height:568});
   await page.emulateMedia({colorScheme:'dark'}); await page.goto('/index.html');
-  await expect(page.locator('.parent-plan-spotlight')).toBeInViewport();
+  await expect(page.locator('#main-action')).toBeInViewport();
   await page.locator('.mobile-menu summary').click();
   await expect(page.locator('.mobile-menu')).toHaveAttribute('open','');
-  await page.locator('.mobile-menu a[href="faq.html"]').click();
-  await expect(page).toHaveURL(/faq\.html$/); await appearance(page,dark);
+  await page.locator('.mobile-menu a[href="faq.html#school-places"]').click();
+  await expect(page).toHaveURL(/faq\.html#school-places$/); await appearance(page,dark);
   await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open','');
 });
 
@@ -277,8 +285,10 @@ test('Primary buttons stand out at least 3:1 from their background in both appea
         const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
         const behind = el => { for (let node = el.parentElement; node; node = node.parentElement) { const c = rgb(getComputedStyle(node).backgroundColor); if (c) return c; } return rgb(getComputedStyle(document.documentElement).backgroundColor) || [255, 255, 255]; };
         return [...document.querySelectorAll('main .primary')].filter(el => el.getClientRects().length).map(el => {
-          const own = rgb(getComputedStyle(el).backgroundColor);
-          return { label: el.textContent.replace(/\s+/g, ' ').trim().slice(0, 40), ratio: own ? +ratio(own, behind(el)).toFixed(2) : 0 };
+          const style=getComputedStyle(el), own=rgb(style.backgroundColor), boundary=rgb(style.borderTopColor);
+          const fill=own ? ratio(own,behind(el)) : 0;
+          const border=boundary && parseFloat(style.borderTopWidth)>=2 && ['solid','double'].includes(style.borderTopStyle) ? ratio(boundary,behind(el)) : 0;
+          return {label:el.textContent.replace(/\s+/g,' ').trim().slice(0,40),ratio:+Math.max(fill,border).toFixed(2)};
         }).filter(item => item.ratio < 3);
       });
       expect(weak, `${colorScheme}: ${file}${seed ? ' (after a letter)' : ''}`).toEqual([]);

@@ -26,6 +26,8 @@ jobs:
           node-version: '24'
       - name: Test aggregate collector privacy and storage
         run: node --test analytics-backend/worker.test.mjs
+      - name: Test automatic homepage deadline transitions
+        run: node --test tests/unit/home-landing.test.cjs
       - name: Check JavaScript syntax
         run: for script in *.js .github/scripts/old_site_redirect.js; do node --check "$script"; done
       - name: Validate and stage only public assets

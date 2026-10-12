@@ -233,7 +233,8 @@ test('Proposal: optional research opens as a document while Lessons and existing
   await page.goBack();
   await expect(research).toBeInViewport();
   await page.goto('/index.html');
-  await expect(page.locator('#research-shortcut a[href="lessons-report.pdf"]')).toHaveAttribute('download', 'lessons-report.pdf');
+  await page.locator('.mobile-menu summary').click();
+  await expect(page.locator('.mobile-menu a[href="lessons-report.pdf"]')).toHaveAttribute('download', 'lessons-report.pdf');
 });
 
 test('Clarity pages: enlarged main text reflows at a narrow width', async ({ page }) => {

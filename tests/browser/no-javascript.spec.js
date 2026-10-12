@@ -133,8 +133,14 @@ for (const file of pages) {
     for (const href of headerLinks(file, 'mobile')) {
       await page.goto('/' + file);
       await page.locator('.mobile-menu summary').tap();
-      await page.locator(`.mobile-menu a[href="${href}"]`).tap();
-      await expectDestination(page, href, baseURL);
+      if (href.endsWith('.pdf')) {
+        const [download]=await Promise.all([page.waitForEvent('download'),page.locator(`.mobile-menu a[href="${href}"]`).tap()]);
+        expect(download.suggestedFilename()).toBe(href==='response-checklist.pdf'?'kew-riverside-response-checklist.pdf':href);
+        expect(await download.failure()).toBeNull();
+      } else {
+        await page.locator(`.mobile-menu a[href="${href}"]`).tap();
+        await expectDestination(page, href, baseURL);
+      }
     }
   });
 }
@@ -152,12 +158,14 @@ test('No JavaScript: evidence is readable and council identity stays disabled', 
 
 test('No JavaScript: homepage and Evidence expose the full report and web research', async ({ page }) => {
   await page.goto('/index.html');
-  const shortcut = page.locator('#research-shortcut');
+  await page.locator('.mobile-menu summary').click();
+  const shortcut = page.locator('.mobile-menu');
   await expect(shortcut).toContainText('44-page PDF');
   await shortcut.locator('a[href="lessons.html"]').tap();
   await expect(page).toHaveURL(/lessons\.html$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('What can other schools teach us?');
   await page.goBack();
+  await page.locator('.mobile-menu summary').click();
   await shortcut.locator('a[href="evidence.html#source-lessons-report"]').tap();
   const report = page.locator('#source-lessons-report');
   await expect(report).toBeInViewport();
@@ -177,7 +185,8 @@ test('No JavaScript: homepage and Evidence expose the full report and web resear
 
 test('No JavaScript: budget and forecast answers, sources and optional data remain readable', async ({ page }) => {
   await page.goto('/index.html');
-  await page.locator('#find-your-way a[href="understand.html"]').tap();
+  await page.locator('.mobile-menu summary').tap();
+  await page.locator('.mobile-menu a[href="understand.html"]').tap();
   await expect(page).toHaveURL(/understand\.html$/);
   await expect(page.locator('#budget')).toContainText('£231,685');
   await expect(page.locator('#forecast-checks')).toContainText(/Kew planning area/i);
@@ -311,7 +320,8 @@ test('No JavaScript: Understand retains charts, underlying data and council cont
 
 test('No JavaScript: contextual learning entry exposes the results, native tables and downloads', async ({ page }) => {
   await page.goto('/index.html');
-  await page.locator('#visit-school a[href="understand.html#learning-and-results"]').tap();
+  await page.locator('.mobile-menu summary').tap();
+  await page.locator('.mobile-menu a[href="understand.html#learning-and-results"]').tap();
   const section = page.locator('#learning-and-results');
   await expect(section).toBeInViewport();
   await expect(page.locator('svg#attainment-chart')).toBeVisible();
@@ -339,13 +349,11 @@ test('No JavaScript: contextual learning entry exposes the results, native table
 test('No JavaScript: prospective families can follow learning and open the sourced FAQ answers', async ({ page }) => {
   await page.goto('/index.html#visit-school');
   const visit = page.locator('#visit-school');
-  await expect(visit.locator('a[href^="https://www.kewriverside.richmond.sch.uk/"]')).toBeVisible();
-  await expect(visit.locator('a[href="proposal.html"]')).toBeVisible();
-  await expect(visit.locator('a[href^="https://www.richmond.gov.uk/"][href*="primary"]')).toBeVisible();
-  await visit.locator('a[href="understand.html#learning-and-results"]').tap();
+  await expect(visit.locator('a[href="visit/index.html"]')).toBeVisible();
+  await page.goto('/index.html');
+  await page.locator('.mobile-menu summary').tap();
+  await page.locator('.mobile-menu a[href="understand.html#learning-and-results"]').tap();
   await expect(page.locator('#learning-and-results')).toBeInViewport();
-  await page.goBack();
-  await expect(visit).toBeInViewport();
   await page.goto('/faq.html#learning');
   await expect(page.locator('#learning')).toBeInViewport();
   for (const id of ['school-results', 'latest-inspection', 'mixed-age-learning', 'mixed-age-research']) {
@@ -407,7 +415,7 @@ test('No JavaScript: past meeting is absent on arrival and old links provide a r
 
 test('No JavaScript: the parent plan, session dates and additional actions are available', async ({ page }) => {
   await page.goto('/index.html');
-  await page.locator('.parent-plan-spotlight a').tap();
+  await page.locator('.home-plan').tap();
   await expect(page.locator('#parent-plan-title')).toBeInViewport();
   await expect(page.locator('#parent-plan #prep-sessions, #parent-plan #plan-attend')).toHaveCount(0);
   await page.locator('#prep-sessions > summary').tap();
@@ -472,8 +480,9 @@ test('No JavaScript: video guidance and external upload route remain available',
 test('No JavaScript: the named parent action plan is visible on arrival', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/index.html');
-  const plan = page.getByRole('complementary', { name: 'Parent action plan', exact: true }).getByRole('link', { name: 'Parent action plan', exact: true });
-  await expect(plan).toBeInViewport({ ratio: 1 });
+  const plan = page.locator('.home-plan');
+  await expect(plan).toBeVisible();
+  await expect(page.locator('#main-action')).toBeInViewport({ratio:1});
   await plan.tap();
   await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
   await expect(page.locator('#parent-plan-title')).toBeInViewport();
@@ -634,14 +643,12 @@ test('No JavaScript: the Parent action plan opens with its own response button i
   await expect(respond).toBeInViewport({ ratio: 1 });
 });
 
-test('No JavaScript: the homepage shows the Parent action plan and the response button on arrival', async ({ page }) => {
-  await page.goto('/index.html');
-  await expect(page.locator('.parent-plan-spotlight a')).toBeInViewport({ ratio: 1 });
-  const respond = page.locator('#top .button.primary');
-  await expect(respond).toHaveAttribute('href', 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform');
-  await expect(respond).toBeInViewport({ ratio: 1 });
-  // The saved-search note for old evidence links stays available below the hero.
-  await expect(page.locator('.saved-search-note a[href="evidence.html#records"]')).toBeVisible();
+test('No JavaScript: the homepage has a date-safe council link, Help and manual Share', async ({ page }) => {
+ await page.goto('/index.html');await expect(page.locator('.home-plan')).toBeVisible();
+ const respond=page.locator('#main-action');await expect(respond).toHaveAttribute('href',/richmond.gov.uk.*kew_riverside_consultation/);
+ await expect(respond).toHaveAccessibleName(/Check the council consultation/);await expect(page.locator('.intro')).toContainText('On 12 October 2026');
+ await page.locator('#share-fallback > summary').tap();await expect(page.getByLabel('Campaign link')).toHaveValue('https://savekewriversideprimaryschool.org/');
+ await expect(page.locator('#share-trigger')).toBeHidden();
 });
 
 test('No JavaScript: the Menu opens Share a video at its permission step', async ({ page }) => {

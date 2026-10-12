@@ -90,6 +90,7 @@ async function savedChoice(page, choice = 'allow', until = 'future') {
 }
 
 async function choices(page) {
+  if (await page.locator('#site-settings').count() && await page.locator('#site-settings').getAttribute('open') === null) await page.locator('#site-settings > summary').click();
   await page.getByRole('link', { name: 'Analytics choices', exact: true }).click();
   const panel = page.locator('#analytics-panel');
   await expect(panel).toBeVisible();
@@ -314,7 +315,7 @@ for (const width of [320, 390, 1440]) {
           const invite = document.querySelector('.analytics-invitation');
           if (invite.hidden) return false;
           const r = invite.getBoundingClientRect();
-          return [...document.querySelectorAll('.button.primary, .parent-plan-spotlight a')].some(el => {
+          return [...document.querySelectorAll('.button.primary, .home-plan')].some(el => {
             if (!el.getClientRects().length) return false;
             const b = el.getBoundingClientRect();
             return b.bottom > r.top && b.top < r.bottom && b.right > r.left && b.left < r.right;
@@ -329,7 +330,7 @@ for (const width of [320, 390, 1440]) {
       await expect(page.locator('.analytics-invitation')).toBeVisible();
       await expect(field).toHaveValue('Fictional letter for invitation focus check');
       await page.goto(site);
-      const shortcut = page.locator('.parent-plan-spotlight a');
+      const shortcut = page.locator('#main-action');
       const box = await shortcut.boundingBox();
       expect(box.y + box.height).toBeLessThan(width === 320 ? 568 : width === 390 ? 844 : 1000);
     }
@@ -411,15 +412,16 @@ test('An explicit detailed choice sends fixed events without a cookie', async ({
   expect(sent[0].headers).not.toHaveProperty('referer');
   expect(sent[0].headers).not.toHaveProperty('authorization');
   // Explicit detailed usage includes sections, active time and named actions.
-  await page.locator('#find-your-way').evaluate(element => element.scrollIntoView({ block: 'start', behavior: 'instant' }));
+  // The compact homepage has no long reading sections to measure.
   await page.clock.runFor(10_000);
-  await expect.poll(() => events(sent, 'Section reached')).toContainEqual({ section: 'find-your-way' });
-  await expect.poll(() => events(sent, 'Section viewed 10s')).toEqual([{ section: 'find-your-way' }]);
+  expect(events(sent, 'Section reached')).toEqual([]);
+  expect(events(sent, 'Section viewed 10s')).toEqual([]);
   for (let interval = 0; interval < 10; interval += 1) {
     await page.evaluate(() => window.dispatchEvent(new Event('pointerdown')));
     await page.clock.runFor(30_000);
   }
   await expect.poll(() => events(sent, 'Active viewing')).toEqual([15, 30, 60, 120, 300].map(seconds => ({ seconds })));
+  await page.locator('.mobile-menu summary').click();
   await analyticsDownloadClick(page, 'a[download][href="response-checklist.pdf"]');
   await expect.poll(() => events(sent, 'Action opened')).toEqual([{ action: 'Download clicked: checklist' }]);
   expect(pageViews(sent)).toHaveLength(1);
@@ -1032,6 +1034,7 @@ test.describe('Analytics with JavaScript disabled', () => {
     await page.goto(site);
     await expect(page.locator('main')).toBeVisible();
     await expect(page.locator('.analytics-invitation, #analytics-panel')).toHaveCount(0);
+    await page.locator('#site-settings > summary').click();
     await page.getByRole('link', { name: 'Analytics choices', exact: true }).click();
     await expect(page).toHaveURL(site + 'privacy.html#analytics');
     await expect(page.locator('#analytics')).toBeVisible();

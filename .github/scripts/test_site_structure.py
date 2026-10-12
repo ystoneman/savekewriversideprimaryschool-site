@@ -269,13 +269,24 @@ class SiteStructureTests(unittest.TestCase):
                 self.assertEqual(actual, baseline, 'Pages must load the same navigation release exactly once')
 
     def test_shared_navigation_destinations_stay_consistent(self):
-        baseline = self.pages['index.html'].navigation
-        expected_desktop = navigation_destinations('index.html', baseline['desktop-explore'])
+        baseline = self.pages['about.html'].navigation
+        expected_desktop = navigation_destinations('about.html', baseline['desktop-explore'])
         self.assertTrue(expected_desktop)
         for name, page in self.pages.items():
             if name in REDIRECT_PAGES:
                 continue
             with self.subTest(page=name):
+                if name == 'index.html':
+                    mobile = navigation_destinations(name, page.navigation['mobile-menu'])
+                    required = {('proposal.html','parent-plan'),('letters.html',''),('feedback.html',''),('videos.html','upload'),('faq.html','school-places'),('options.html',''),('proposal.html','timetable'),('understand.html',''),('understand.html','supporting-research'),('evidence.html','records'),('evidence.html','gaps'),('evidence.html','source-search'),('lessons.html',''),('lessons-report.pdf','')}
+                    self.assertTrue(required <= mobile, 'Compact home Menu lost a protected destination')
+                    self.assertIn('data-home-landing', (ROOT/name).read_text())
+                    self.assertEqual(mobile, navigation_destinations(name, page.navigation['desktop-explore']), 'Home uses the complete Menu at every width')
+                    footer = re.search(r'<footer>.*?</footer>', (ROOT/name).read_text(), re.S)
+                    self.assertIsNotNone(footer)
+                    footer_pages = {local_destination(name, href)[0] for href in re.findall(r'href="([^"]+)"', footer.group()) if local_destination(name, href)}
+                    self.assertTrue({'lessons.html','supporters.html','privacy.html','corrections.html','lessons-sources.html','about.html'} <= footer_pages, 'Compact footer must retain all supporting routes')
+                    continue
                 desktop = navigation_destinations(name, page.navigation['desktop-explore'])
                 mobile = navigation_destinations(name, page.navigation['mobile-menu'])
                 participation = navigation_destinations(name, page.navigation['participation-nav'])

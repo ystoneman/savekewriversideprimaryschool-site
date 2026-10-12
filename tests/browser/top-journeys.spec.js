@@ -6,10 +6,10 @@ const official = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_A
 // hero gained this through spacing only; text sizes are unchanged. At 320 × 568 the
 // Parent action plan keeps the first screen (see the existing J2 arrival checks).
 for (const [width, height] of [[375, 667], [390, 844]]) {
-  test(`Top journeys: ${width}×${height} homepage arrival shows the Parent action plan and the response button`, async ({ page }) => {
+  test(`Top journeys: ${width}×${height} homepage arrival shows Help and the response button`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto('/index.html');
-    await expect(page.locator('.parent-plan-spotlight a')).toBeInViewport({ ratio: 1 });
+    await expect(page.locator('.home-plan')).toBeInViewport({ ratio: 1 });
     const respond = page.locator('#top .button.primary');
     await expect(respond).toHaveAttribute('href', official);
     await expect(respond).toBeInViewport({ ratio: 1 });
@@ -32,9 +32,8 @@ for (const [width, height] of [[320, 568], [390, 844]]) {
   });
 }
 
-test('Top journeys: a child\'s school place leads the six homepage routes', async ({ page }) => {
+test('Top journeys: a child’s school place is clearly named in Menu', async ({ page }) => {
   await page.goto('/index.html');
-  const first = page.locator('#find-your-way .route-card').first();
-  await expect(first).toHaveAttribute('href', 'faq.html#school-places');
-  await expect(first).toContainText('My child’s next steps');
+  await page.locator('.mobile-menu summary').click();
+  await expect(page.locator('.mobile-menu a[href="faq.html#school-places"]')).toHaveAccessibleName('My child’s next steps');
 });

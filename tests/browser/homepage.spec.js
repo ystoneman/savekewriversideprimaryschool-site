@@ -33,25 +33,22 @@ async function activate(locator, hasTouch) {
   else await locator.click();
 }
 
-test('Short homepage: visitors choose destinations before any long document or strategy collection', async ({ page, hasTouch }) => {
+test('Short homepage: three large actions lead before optional detail', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
   await expect(page.locator('main .source-card, main .action-card, main .school-roll-chart')).toHaveCount(0);
-  await expect(page.locator('#find-your-way .route-card')).toHaveCount(6);
-  await expect(page.locator('#find-your-way .discovery-heading')).toContainText('Shortcuts to pages and answers on this website.');
-  expect((await page.locator('#find-your-way .route-arrow').allTextContents()).map(text => text.trim())).toEqual(Array(6).fill('→'));
-  await expect(page.locator('#top')).toContainText(/proposal to close/i);
+  await expect(page.locator('.actions .action:visible')).toHaveCount(3);
+  await expect(page.locator('#top')).toContainText(/proposes closing/i);
   await expect(page.locator('#top')).toContainText('No final decision has been made.');
   await expect(page.locator('#top')).toContainText(/16\s+October/i);
-  await expect(page.locator('#research-shortcut a[href="lessons.html"]')).toBeVisible();
-  await expect(page.locator('#research-shortcut a[href="lessons.html"]')).toHaveAccessibleName(/Lessons/);
-  await expect(page.locator('#research-shortcut a[href="lessons-report.pdf"]')).toBeVisible();
-  await expect(page.locator('#visit-school a[href="understand.html#learning-and-results"]')).toBeVisible();
-  await expect(page.locator('#find-your-way a[href="faq.html#school-places"]')).toBeVisible();
-  const chooser = await page.locator('#find-your-way').boundingBox();
-  const answers = await page.locator('#quick-answers').boundingBox();
-  expect(chooser.y + chooser.height).toBeLessThanOrEqual(answers.y + 1);
+  for (const action of await page.locator('.actions .action:visible').all()) {
+    expect((await action.boundingBox()).height).toBeGreaterThanOrEqual(64);
+  }
   for (const [destination, target] of [['options.html', 'main h1'], ['evidence.html#records', '#records']]) {
-    await activate(page.locator(`#find-your-way a[href="${destination}"]`), hasTouch);
+    await activate(page.locator('.mobile-menu summary'), hasTouch);
+    await expect(page.locator('.mobile-menu a[href="lessons.html"]')).toBeVisible();
+    await expect(page.locator('.mobile-menu a[href="lessons-report.pdf"]')).toHaveAccessibleName(/44-page PDF/);
+    await expect(page.locator('.mobile-menu a[href="faq.html#school-places"]')).toBeVisible();
+    await activate(page.locator(`.mobile-menu a[href="${destination}"]`), hasTouch);
     await expect(page).toHaveURL(new RegExp(destination.replace('.', '\\.') + '$'));
     await expect(page.locator(target)).toBeInViewport();
     await page.goBack();
@@ -83,7 +80,7 @@ test('Dedicated pages: local navigation exposes depth and retains a homepage rec
   }
   await activate(page.locator('header a.brand'), hasTouch);
   await expect(page).toHaveURL(/index\.html(?:#top)?$/);
-  await expect(page.locator('#find-your-way')).toBeVisible();
+  await expect(page.locator('#headline')).toBeVisible();
 });
 
 legacyTest('Legacy homepage: representative shared fragments reach their original content', async ({ page }) => {
@@ -129,16 +126,16 @@ legacyTest('Legacy homepage: source links recover conflicting filters and do not
 });
 
 legacyTest('Legacy homepage: a fragment added after arrival routes without changing unrelated homepage links', async ({ page }) => {
-  await page.goto('/index.html#visit-school');
-  await expect(page).toHaveURL(/index\.html#visit-school$/);
-  await expect(page.locator('#visit-school')).toBeInViewport();
+  await page.goto('/index.html#press');
+  await expect(page).toHaveURL(/index\.html#press$/);
+  await expect(page.locator('#press')).toBeInViewport();
   await page.evaluate(() => { location.hash = '#crowdfunding-recipient'; });
   await expect(page).toHaveURL(/options\.html#crowdfunding-recipient$/);
   await expect(page.locator('#crowdfunding-recipient')).toBeVisible();
   await expect(page.locator('#crowdfunding-recipient')).toBeInViewport();
   await page.goBack();
-  await expect(page).toHaveURL(/index\.html#visit-school$/);
-  await expect(page.locator('#visit-school')).toBeInViewport();
+  await expect(page).toHaveURL(/index\.html#press$/);
+  await expect(page.locator('#press')).toBeInViewport();
 });
 
 test('Shared video QR: the exact upload path remains directly usable with an intercepted handoff', async ({ page, hasTouch }) => {
@@ -160,23 +157,19 @@ test('Shared video QR: the exact upload path remains directly usable with an int
   await expect(page.locator('main a[href="letters.html#letter-form"]').last()).toBeVisible();
   await expectScrollSettled(page, 'Back to video upload');
 });
-test('Homepage: real school photos load locally with readable descriptions and keep phone tasks first', async ({ page }) => {
+test('Homepage: the ladybird loads locally and follows actions on phones', async ({ page }) => {
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: width === 1440 ? 1000 : 844 });
     await page.goto('/index.html');
-    const discovery = page.locator('.hero-school-photo');
-    if (width <= 700) await expect(discovery).toBeHidden();
-    else {
-      await expect(discovery).toBeVisible();
-      await expect(discovery.locator('img')).toHaveAttribute('alt', 'Hands holding an autumn leaf with a ladybird.');
-      expect(await discovery.locator('img').evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
+    const photo = page.locator('.hero-school-photo img');
+    await expect(photo).toBeVisible();
+    await expect(photo).toHaveAttribute('alt', 'Hands holding an autumn leaf with a ladybird.');
+    await expect.poll(() => photo.evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
+    expect(await photo.evaluate(el => new URL(el.currentSrc).origin === location.origin)).toBe(true);
+    if (width <= 700) {
+      const actions = await page.locator('.actions').boundingBox(), image = await photo.boundingBox();
+      expect(image.y).toBeGreaterThan(actions.y + actions.height);
     }
-    const project = page.locator('.school-project-photo img');
-    await project.scrollIntoViewIfNeeded();
-    await expect(project).toHaveAttribute('alt', 'A handmade solar-system model on a classroom table.');
-    await expect.poll(() => project.evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
-    expect(await project.evaluate(el => new URL(el.currentSrc).origin === location.origin)).toBe(true);
-    expect(await page.locator('#find-your-way').evaluate(el => Boolean(el.compareDocumentPosition(document.getElementById('visit-school')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
 });

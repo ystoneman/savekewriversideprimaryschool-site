@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Compact main campaign homepage — 12 October 2026
+
+- Port the owner-approved short prototype to the canonical website's main homepage: a brief appeal, large Respond / Help / Share actions and the existing local leaf-and-ladybird photograph. Restore the ladybird after the owner rejected the exterior still's quality. The campaign contact is pcfs2026@gmail.com.
+- Share the permanent campaign address through the native share sheet, clipboard or a selectable manual fallback. Refresh the London-date consultation state on return, visible-page intervals and before response activation; after the deadline, retire the form shortcut and direct visitors to current council information. Without scripts, retain an explicitly dated council-information fallback.
+- Put supporting tasks in Menu and the complete footer routes in About & appearance. Preserve the recent campaign curation, source/search/download and legacy links, saved appearance and privacy choices, and the ordinary shared shell on other pages. Historical school-enquiry links hand directly to the separate school contact route; the short campaign homepage carries no recruitment promotion.
+- Independent campaign, evidence and rendered UX planning/implementation reviews completed, with findings corrected and bounded rechecks recorded in TESTING.md. Local validation has completed; the interrupted full browser run is not a pass. Exact-revision hosted gates, deployment and live verification remain pending.
+
 ### Campaign-first curation — 12 October 2026
 
 - Replace numerical arrival headlines with this parent-led site’s case for keeping Kew open: assess on-site alternatives, compare full costs and protect children’s continuity. Promote Ways to keep Kew open in shared exploration; retain the former numbers route as Our case for Kew, with subordinate supporting research.

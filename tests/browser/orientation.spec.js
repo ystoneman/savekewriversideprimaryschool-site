@@ -67,6 +67,12 @@ const menuGroups = [
   ['This website', [['Home', 'index.html'], ['About & contact', 'about.html']]],
 ];
 const menuNames = menuGroups.flatMap(([, links]) => links.map(([label]) => label));
+const homeMenuNames = ['Respond to the council','Parent action plan','Community letters','Share a video','Share ideas','I have something to add','Response checklist (PDF)','Ways to keep Kew open','What happens when?','My child’s next steps','Evidence','Questions for the council','Supporting research','Our case for Kew','Search the sources','Learning and results','Research report source','Research on other schools','Research report (44-page PDF)','Home','About & contact'];
+const homeMenuGroups = [
+ ['Take part', [['Respond to the council','proposal.html#take-part'],['Parent action plan','proposal.html#parent-plan'],['Community letters','letters.html'],['Share a video','videos.html#upload'],['Share ideas','feedback.html'],['I have something to add','feedback.html?kind=evidence#feedback-form'],['Response checklist (PDF)','response-checklist.pdf']]],
+ ['Keep Kew open', [['Ways to keep Kew open','options.html'],['What happens when?','proposal.html#timetable'],['My child’s next steps','faq.html#school-places'],['Evidence','evidence.html#records'],['Questions for the council','evidence.html#gaps'],['Supporting research','understand.html#supporting-research'],['Our case for Kew','understand.html'],['Search the sources','evidence.html#source-search'],['Learning and results','understand.html#learning-and-results'],['Research report source','evidence.html#source-lessons-report'],['Research on other schools','lessons.html'],['Research report (44-page PDF)','lessons-report.pdf']]],
+ ['This website', [['Home','index.html'],['About & contact','about.html']]],
+];
 const footerLinks = ['about.html', 'about.html#press', 'proposal.html', 'faq.html', 'evidence.html#records', 'letters.html', 'feedback.html', 'videos.html#upload', 'lessons.html', 'supporters.html', 'corrections.html', 'lessons-sources.html', 'privacy.html', 'privacy.html#analytics'];
 
 async function activeSection(page) {
@@ -112,7 +118,7 @@ test('Orientation: Back preserves a later reading position and a subsequent depa
   await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
   await activate(page.locator('.brand'), hasTouch);
   await page.waitForURL('**/index.html', { waitUntil: 'load' });
-  await expect(page.locator('#find-your-way')).toBeVisible();
+  await expect(page.locator('#headline')).toBeVisible();
   await page.goBack();
   await page.waitForURL(originalURL, { waitUntil: 'load' });
   await expect(page.locator('.page-name')).toHaveText('Share a video');
@@ -189,7 +195,7 @@ test('Orientation: each main page has a stable identity and the complete menu in
     const menu = page.locator('.mobile-menu');
     await activate(menu.locator(':scope > summary'), hasTouch);
     const names = await menu.locator('a').allTextContents();
-    expect(names.map(text => text.trim())).toEqual(menuNames);
+    expect(names.map(text => text.trim())).toEqual(file === 'index.html' ? homeMenuNames : menuNames);
     // A page outside the curated Menu is still one tap away in its footer.
     const label = name === 'About' ? 'About & contact' : name;
     if (menuNames.includes(label)) await expect(menu.getByRole('link', { name: label, exact: true })).toHaveAttribute('aria-current', 'page');
@@ -237,7 +243,7 @@ test('Orientation: keyboard users reach Questions for the council directly after
   const next = browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab';
   await menu.locator(':scope > summary').focus();
   await page.keyboard.press('Enter');
-  for (let i = 0; i <= menuNames.indexOf('Evidence'); i++) await page.keyboard.press(next);
+  for (let i = 0; i <= homeMenuNames.indexOf('Evidence'); i++) await page.keyboard.press(next);
   await expect(menu.getByRole('link', { name: 'Evidence', exact: true })).toBeFocused();
   await page.keyboard.press(next);
   await expect(menu.getByRole('link', { name: 'Questions for the council', exact: true })).toBeFocused();
@@ -454,12 +460,13 @@ test('Orientation: the curated Menu keeps its three groups and every footer keep
       group.querySelector('.menu-group-label').textContent.trim(),
       [...group.querySelectorAll('a')].map(link => [link.textContent.trim(), link.getAttribute('href')]),
     ]));
-    const expected = menuGroups.map(([heading, links]) => [heading, file === 'sent.html' && heading === 'This website' ? [...links, ['Next steps', 'sent.html']] : links]);
+    const selectedGroups = file === 'index.html' ? homeMenuGroups : menuGroups;
+    const expected = selectedGroups.map(([heading, links]) => [heading, file === 'sent.html' && heading === 'This website' ? [...links, ['Next steps', 'sent.html']] : links]);
     expect(groups, file).toEqual(expected);
     expect(await nav.locator(':scope > a').count(), `${file}: no link outside a group`).toBe(0);
     // The official response leads Take part with the Parent action plan's emphasis.
     await expect(nav.locator('a[href="proposal.html#take-part"]')).toHaveClass(/\bnav-respond\b/);
-    const footer = await page.locator('footer .footer-inner > div:last-child a').evaluateAll(links => links.map(link => link.getAttribute('href')));
+    const footer = await page.locator('footer .footer-inner > div:last-child a, footer .home-footer-links a').evaluateAll(links => links.map(link => link.getAttribute('href')));
     expect(footer, `${file} footer`).toEqual(footerLinks);
   }
   // The longer footer must wrap on every page, not run off landscape phones.
@@ -467,6 +474,7 @@ test('Orientation: the curated Menu keeps its three groups and every footer keep
   for (const file of pages) {
     await page.goto('/' + file);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), `${file} at 667 × 375`).toBeLessThanOrEqual(0);
-    await expect(page.locator('footer .footer-inner > div:last-child a').last()).toBeVisible();
+    if (file === 'index.html') await page.locator('#site-settings > summary').click();
+    await expect(page.locator('footer .footer-inner > div:last-child a, footer .home-footer-links a').last()).toBeVisible();
   }
 });

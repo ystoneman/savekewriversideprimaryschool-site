@@ -33,13 +33,15 @@ async function refine(page, label, value) {
 
 test('Report discovery: homepage links reach the web research and download the 44-page report', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
-  const shortcut = page.locator('#research-shortcut');
+  await page.locator('.mobile-menu summary').click();
+  const shortcut = page.locator('.mobile-menu');
   await expect(shortcut).toContainText('44-page PDF');
   const web = shortcut.locator('a[href="lessons.html"]');
   if (hasTouch) await web.tap(); else await web.click();
   await expect(page).toHaveURL(/lessons\.html$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('What can other schools teach us?');
   await page.goBack();
+  await page.locator('.mobile-menu summary').click();
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     shortcut.locator('a[href="lessons-report.pdf"]').click(),

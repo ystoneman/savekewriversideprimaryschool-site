@@ -38,7 +38,8 @@ test('Research refresh: borough forecast stays qualified and links to its origin
 
 test('Research update: homepage evidence leads to current findings, annual table and Back', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
-  const evidence = page.locator('#find-your-way a[href="evidence.html#records"]');
+  await page.locator('.mobile-menu summary').click();
+  const evidence = page.locator('.mobile-menu a[href="evidence.html#records"]');
   if (hasTouch) await evidence.tap(); else await evidence.click();
   await expect(page.locator('#kew-findings-title')).toBeInViewport();
   await expect(page.locator('#kew-finance')).toContainText('indicative forecast');
