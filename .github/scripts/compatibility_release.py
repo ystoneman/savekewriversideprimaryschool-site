@@ -17,6 +17,10 @@ REPOSITORY='ystoneman/savekewriversideprimaryschool-site'
 TARGETS={'ystoneman/kew-riverside-website':'https://ystoneman.github.io/kew-riverside-website/', 'ystoneman/savekewriverside-site':'https://savekewriverside.org/'}
 RECORD='compatibility-release.json'
 
+class Superseded(ValueError):
+ pass
+
+
 def require(ok,message):
  if not ok:raise ValueError(message)
 def digest(files):
@@ -34,11 +38,19 @@ def request(url,method='GET',data=None,authenticated=False):
  with urllib.request.urlopen(urllib.request.Request(url,data=payload,headers=headers,method=method),timeout=30) as response:
   raw=response.read();return json.loads(raw) if raw else None
 
+def actually_deployed(jobs):
+ matches=[job for job in jobs if job.get('name')=='deploy']
+ if len(matches)!=1 or matches[0].get('conclusion')!='success':return False
+ steps=[step for step in matches[0].get('steps',[]) if step.get('name')=='Deploy validated artifact']
+ return len(steps)==1 and steps[0].get('conclusion')=='success'
+
 def checked_run(run,jobs,sha):
  require(re.fullmatch(r'[0-9a-f]{40}',sha) is not None,'Invalid source SHA.')
  require(run.get('head_sha')==sha and run.get('head_branch')=='main' and run.get('event')=='push' and run.get('path')=='.github/workflows/pages.yml','Source must be a canonical main release.')
- named={j['name']:j.get('conclusion') for j in jobs}
- require(all(named.get(n)=='success' for n in ['validate','browser-tests','deploy']),'Canonical validation, browser tests and deployment must have succeeded.')
+ for name in ['validate','browser-tests','deploy']:
+  matches=[job for job in jobs if job.get('name')==name]
+  require(len(matches)==1 and matches[0].get('conclusion')=='success','Canonical validation, browser tests and deployment must have succeeded.')
+ require(actually_deployed(jobs),'Canonical deployment action must have succeeded.')
 
 def guard(sha,run_id):
  require(str(run_id).isdigit(),'Invalid source run identifier.')
@@ -50,14 +62,15 @@ def guard(sha,run_id):
   if len(batch)<100:break
   page+=1
  checked_run(run,jobs,sha)
- # A failed compatibility job does not make the already-successful canonical deploy untrusted.
+ # Only actual canonical publications supersede; skipped stale jobs do not.
  releases=request(base+'/actions/runs?branch=main&event=push&per_page=30')['workflow_runs']
+ require(any(candidate['id']==int(run_id) for candidate in releases),'Source release not found among recent canonical releases.')
  for candidate in releases:
-  if candidate['id']==int(run_id):break
+  if candidate['id']<=int(run_id):continue
+  if candidate.get('path')!='.github/workflows/pages.yml' or candidate.get('event')!='push' or candidate.get('head_branch')!='main':continue
   candidate_jobs=request(base+'/actions/runs/'+str(candidate['id'])+'/jobs?per_page=100')['jobs']
-  if any(j['name']=='deploy' and j.get('conclusion')=='success' for j in candidate_jobs):
-   raise ValueError('A newer canonical deployment supersedes this release.')
- else:raise ValueError('Source release not found among recent canonical releases.')
+  if actually_deployed(candidate_jobs):
+   raise Superseded('A newer canonical deployment supersedes this release.')
  return run
 
 def prepare(output,sha,run_id):
@@ -108,18 +121,42 @@ def synchronize(sha,run_id):
   child=result['workflow_run_id'];completed=False
   # Replace and verify one origin before starting the next; keep failures retryable.
   while time.monotonic()<deadline:
+   guard(sha,run_id)
    run=request(base+'/actions/runs/'+str(child),authenticated=True)
    # GitHub can return the queued run before its input-based metadata is initialized.
    # The exact dispatch ID stays authoritative; require provenance before completion.
    if run['status']=='completed':
     require(run.get('display_title')=='Compatibility '+sha and run.get('event')=='workflow_dispatch' and run.get('head_branch')=='main' and run.get('path')=='.github/workflows/pages.yml','Dispatched workflow does not match this compatibility release.')
     require(run['conclusion']=='success','Compatibility deployment failed: '+repository+'; rerun the canonical compatibility job after correcting it.')
+    guard(sha,run_id)
     verify(origin,record);print('Verified:',repository,flush=True);completed=True;break
    time.sleep(15)
   require(completed,'Compatibility deployment timed out; completion remains unverified.')
  # Read every retained copy once more, including removals, after both deployments.
- for origin in TARGETS.values():verify(origin,record)
+ for origin in TARGETS.values():
+  guard(sha,run_id)
+  verify(origin,record)
+ guard(sha,run_id)
  print('All compatibility assets verified for',sha,flush=True)
+
+def synchronize_latest(sha,run_id):
+ try:
+  synchronize(sha,run_id)
+ except Exception as error:
+  if not isinstance(error,Superseded):
+   # A child can fail its own stale guard while the parent is polling it.
+   # Only confirmed supersession may retire such a failure; API uncertainty fails.
+   try:guard(sha,run_id)
+   except Superseded:pass
+   else:raise
+  message='Superseded compatibility release retired; newer canonical release owns reconciliation. No complete-copy verification claimed.'
+  print(message,flush=True)
+  if os.environ.get('GITHUB_STEP_SUMMARY'):
+   with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as output:output.write(message+'\n')
+  return False
+ if os.environ.get('GITHUB_STEP_SUMMARY'):
+  with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as output:output.write('All compatibility copies verified for '+sha+'\n')
+ return True
 
 if __name__=='__main__':
  parser=argparse.ArgumentParser(description=__doc__)
@@ -128,7 +165,7 @@ if __name__=='__main__':
  args=parser.parse_args()
  if args.operation=='guard':guard(args.sha,args.run_id)
  elif args.operation=='prepare':prepare(args.output,args.sha,args.run_id)
- elif args.operation=='synchronize':synchronize(args.sha,args.run_id)
+ elif args.operation=='synchronize':synchronize_latest(args.sha,args.run_id)
  else:
   with tempfile.TemporaryDirectory() as tmp:
    record=prepare(Path(tmp)/'bundle',args.sha,args.run_id);verify(args.origin,record)
