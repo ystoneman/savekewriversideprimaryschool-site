@@ -28,7 +28,7 @@ Every PR still runs the complete nine-batch, five-browser suite. A main push may
 
 Evidence must be no more than six hours old and from the same London calendar day. Missing, expired, incomplete, altered or unavailable proof, a changed base/tree/runtime, forks, direct pushes and reruns all require fresh browser checks. Rerun the main workflow to force fresh coverage. Main always reruns privacy/security/unit validation and stages its own public artifact. The publication gate accepts either successful fresh browser checks or explicitly verified reuse with skipped browser jobs; other combinations fail closed. The workflow summary identifies the reused PR run or fallback reason.
 
-Local verification: 116 Python tests and 19 Node tests pass; all 124 public files stage successfully. Independent read-only implementation review found no blocking issue. Hosted receipt transport, full current-revision PR checks, post-merge reuse and deployment remain to be verified and will be recorded in the pull request. No public asset changed.
+Local verification: 116 Python tests and 19 Node tests pass; all 124 public files stage successfully. Independent read-only implementation review found no blocking issue. PR #30 passed its complete hosted suite and all ten real receipts verify, including archive transport/digests and the synthetic merge tree. Its first production run safely fell back to full checks: API version 2026-03-10 omits merge_commit_sha. Pinning the supported 2022-11-28 API version makes the complete real evidence decision succeed. The correction adds a transport-header regression; final hosted reuse/deployment results are recorded in its follow-up pull request. No public asset changed.
 
 ### Short reading layers throughout the website — 12 October 2026
 
