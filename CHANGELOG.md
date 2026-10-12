@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Narrow publishing queues — 12 October 2026
+
+- Allow production validation to run independently, serialize canonical publication briefly, and reconcile the retained legacy sites under a separate queue. Preserve all validation/browser checks, exact-result reuse and non-cancelling publication locks.
+- Refuse obsolete canonical revisions immediately before publishing. Require an actual successful deployment action before compatibility work; retire confirmed superseded reconciliation truthfully while keeping genuine failures visible. Preserve every compatibility file/hash/MIME and live-copy check.
+- Add adversarial queue/provenance/cancellation regressions and record independent review plus local validation in TESTING.md. Hosted release and live verification evidence belongs in the implementation pull request. No public asset changes.
+
 ### Mobile follow-up simplification — 12 October 2026
 
 - Compact the inner-page phone header while keeping exposed Community letters / Share ideas, Menu and the named section chooser. Move its existing page/update strip into Menu on phones; preserve desktop status and the maintained action deadlines.

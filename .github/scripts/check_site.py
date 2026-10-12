@@ -41,6 +41,7 @@ tests/browser/simple-guides.spec.js tests/browser/simple-research.spec.js tests/
 SEO-OPERATIONS.md .github/scripts/build_seo.py .github/scripts/test_seo.py tests/browser/seo.spec.js
 SEO-IMPLEMENTATION-PLAN.md
 tests/browser/campaign.spec.js
+.github/scripts/deployment_queue.py .github/scripts/test_deployment_queue.py
 .github/scripts/compatibility-assets.json .github/scripts/compatibility_release.py .github/scripts/test_compatibility_release.py CONSOLIDATION.md
 tests/review-evidence/research-update-mobile.png tests/review-evidence/research-update-desktop.png
 tests/browser/research-update.spec.js

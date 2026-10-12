@@ -8,8 +8,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: pages-${{ github.ref }}
-  # New PR revisions replace obsolete checks; active production releases are not cancelled.
+  group: pages-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  # PR revisions share cancellation; production checks run independently.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -147,22 +147,40 @@ jobs:
   deploy:
     if: ${{ !cancelled() && needs.validate.result == 'success' && needs.browser-tests.result == 'success' && github.ref == 'refs/heads/main' && github.event_name == 'push' }}
     needs: [validate, browser-tests]
+    concurrency:
+      group: pages-refs/heads/main
+      cancel-in-progress: false
+    outputs:
+      published: ${{ steps.deployment.outcome == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      contents: read
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Reject obsolete canonical publication
+        id: current
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/deployment_queue.py --sha "${{ github.sha }}"
       - name: Deploy validated artifact
+        if: steps.current.outputs.current == 'true'
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
 
   compatibility:
-    if: ${{ !cancelled() && needs.deploy.result == 'success' && github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+    if: ${{ !cancelled() && needs.deploy.result == 'success' && needs.deploy.outputs.published == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push' }}
     needs: deploy
+    concurrency:
+      group: compatibility-pages-publication
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
