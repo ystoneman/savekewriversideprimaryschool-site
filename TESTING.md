@@ -34,6 +34,14 @@ All 22 deadline unit tests, five homepage smoke cases, 34 iPhone/desktop WebKit 
 
 ## Unreleased
 
+### Campaign-led openings and deduplication — 12 October 2026
+
+Independent campaign/evidence planning and actual-diff reviews completed. Rechecked the original Fletching and St John decision records, with Isle of Wight official follow-up/minutes supporting the newly exposed examples; the petition report was unavailable on fresh retrieval and its statement relies on the maintained source inspection. The lead directly inspected the council-linked official response form and its published 16 October 2026 deadline, and the council page still describes pre-statutory proposed closure. No fields were entered or forms submitted.
+
+All 149 Python checks, 29 Node unit/backend checks, generator freshness, whitespace and 124-file public staging pass. Comparison with the released baseline found zero removed IDs or destinations and unchanged form-control attributes on all seven changed visitor pages. Initial browser checks caught stale deleted-wording assertions and ambiguous selectors after adding summary links; those checks now verify sourcing/qualifications and target the original detailed findings. New source-scope checks open the native document-context disclosure. New named-case Back checks use the existing 600ms arrival-stability assertion before returning; they do not claim rapid-Back coverage. Eight final targeted route checks pass across four engines. Final broader focused results and complete hosted release results belong in the release pull request.
+
+Independent rendered UX covered Evidence, Lessons, Options, FAQ, About and Letters at 320×568, 390×844 and 1440×1000 in light/dark WebKit, direct/nested anchors, source scope and Back, FAQ forecast detail, option safeguards and doubled root-font reflow. No actionable finding remained. Screenshots are private outside the public artifact. This is browser emulation, not native iOS, operating-system text enlargement or an unfamiliar-person study. No interaction handler, layout style, permissions or recruitment communication changed. Hosted gates, actual deployment and retained-origin verification remain release checks.
+
 ### Narrow publishing queues — 12 October 2026
 
 Production runs validate independently. PR revisions retain their shared cancellation group; each main workflow run has a unique group. Only canonical publication holds the existing `pages-refs/heads/main` lock, preserving safe transition from older workflow-wide locks. Publication is never automatically cancelled by a newer run. Under that lock, a read-only main-reference check refuses malformed/unavailable responses and skips obsolete revisions. Validation and browser coverage must already have succeeded; compatibility requires the actual deployment action's successful output.

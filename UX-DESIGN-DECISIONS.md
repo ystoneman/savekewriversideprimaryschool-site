@@ -1,5 +1,13 @@
 # UX design decisions
 
+## Campaign-led openings and progressive evidence — 12 October 2026
+
+J1/J2/J4/J6/J7: the owner requested implementation and deployment of the duplication/framing audit, beginning with Evidence, Lessons and Options. Let Our case explain the position, Evidence deliver findings and sources, Options explain assessable alternatives, Proposal explain process/questions and FAQ answer practical questions. Keep short context on directly shared pages; remove repeated general introductions and warnings that add no new meaning.
+
+Lessons' short layer now exposes named historical outcomes and links directly to full cases. Essential selection, causal, legal-route and recovery limits remain beside the relevant takeaway. Evidence keeps one visible viable-alternative qualification; its optional introduction explains provenance. Options asks for assessment before identifying delivery requirements, retaining each option's specific dependencies on direct arrivals. About's purpose comes first; source-card scope remains locally understandable and links to a shared definition. FAQ and draft recovery keep essential context at the decision instead of repeating it in optional guides.
+
+Independent planning and implementation campaign/evidence reviews informed these changes; a wording correction limits the funding/partner statement to what the site has established. Rendered UX, unchanged routes, Back, no-script and automated results are recorded in TESTING.md and the release pull request. No visitor-study or improved conversion result is claimed. Journey priority, permissions, recruitment communications and global navigation are unchanged.
+
 ## Homepage deadline countdown — 12 October 2026
 
 J1/J3: the owner approved a brief countdown immediately beneath Respond. Replace the existing active deadline line with London calendar days remaining plus the exact date; use “1 day left” and “Closes today”, without adding a panel or claiming an unpublished closing hour. Keep the existing dated council-information fallback after the published deadline and without JavaScript. Refresh by date as well as stage so a page left open across midnight does not retain yesterday’s count; preserve the Safari pointerdown guard. Independent campaign, evidence and rendered UX planning/implementation review found no remaining issue. Verification is recorded in TESTING.md and the release pull request.

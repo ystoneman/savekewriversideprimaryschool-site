@@ -1,4 +1,4 @@
-const { test, expect } = require('./fixtures');
+const { test, expect, expectScrollSettled } = require('./fixtures');
 
 const compactPages = [
   ['evidence.html', '#evidence-kew-detail', 550],
@@ -48,6 +48,36 @@ test('Direct research and citation targets open their full context without a sec
     await expect(page.locator(parent)).toHaveAttribute('open', '');
     await expect(page.locator(content)).toBeVisible();
   }
+});
+
+test('Named Lessons outcomes reveal their case and restore the reading position with Back', async ({ page }) => {
+  await page.goto('/lessons.html');
+  await expect(page.locator('#research-cases')).not.toHaveAttribute('open', '');
+  for (const id of ['fletching', 'st-john', 'cowes']) {
+    await page.locator(`#key-lessons > .simple-intro a[href="#case-${id}"]`).click();
+    await expect(page.locator('#research-cases')).toHaveAttribute('open', '');
+    await expect(page.locator(`#case-${id} .lesson-case-body`)).toBeVisible();
+    await expect(page.locator(`#case-${id}`)).toBeInViewport();
+    await expectScrollSettled(page, 'Named case arrival');
+    await page.goBack();
+    await expect(page).toHaveURL(/lessons\.html$/);
+    await expect(page.locator(`#key-lessons > .simple-intro a[href="#case-${id}"]`)).toBeInViewport();
+  }
+});
+
+test('A source card explains its review scope locally and reveals the shared definition', async ({ page }) => {
+  await page.goto('/evidence.html#source-strategy-2023');
+  const card = page.locator('#source-strategy-2023');
+  await expect(card).toContainText('Reviewed for this summary; not every claim independently checked');
+  // Document context remains native optional depth on a source-card arrival.
+  await card.locator('details > summary').click();
+  await expect(card.locator('a[href="#review-scope"]')).toBeVisible();
+  await card.locator('a[href="#review-scope"]').click();
+  await expect(page.locator('#review-scope')).toBeInViewport();
+  await expect(page.locator('#review-scope')).toHaveAttribute('open', '');
+  await expect(page.locator('#review-scope')).toContainText('does not mean every claim was independently validated');
+  await page.goBack();
+  await expect(card).toBeInViewport();
 });
 
 test('Citation search finds full locators, recovers empty results and reveals filtered direct links', async ({ page }) => {
