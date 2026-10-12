@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Screened community letter — 12 October 2026
+
+- Add one community letter with current publication consent, preserving the contributor's complete wording and chosen display name and labelling it AI screened. Local privacy, data and public-asset validation pass. Complete browser gates, deployment and verification on all retained origins are separate release checks.
+
 ### Verified PR browser results after merge — 12 October 2026
 
 - Pin the supported GitHub API version that exposes merge identity; the first hosted integration safely fell back when the newer API omitted it.
