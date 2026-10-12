@@ -477,7 +477,7 @@ test('No JavaScript: video guidance and external upload route remain available',
 });
 
 
-test('No JavaScript: the named parent action plan is visible on arrival', async ({ page }) => {
+test('No JavaScript: the named parent action plan is visible on arrival', {tag:'@home-smoke'}, async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/index.html');
   const plan = page.locator('.home-plan');

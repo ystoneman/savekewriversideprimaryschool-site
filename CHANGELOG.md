@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Faster release checks — 12 October 2026
+
+- Split each Safari/WebKit browser project into three parallel shards, retaining the full five-project suite, existing assertions and required aggregate success gate. Keep two workers per runner, zero retries and separate failure evidence for each shard.
+- Cancel obsolete PR checks when a newer revision arrives; keep production deployments serialized. Add an early homepage smoke command using existing regressions and configurable output/report directories for safe parallel local testing.
+- Add coverage and publication-gate regressions for the matrix. No public website asset or visitor behavior changes. Local partition verification covers all 2,602 unique test IDs once; four smoke checks pass in 3.9s, and all 81 Python and 19 Node checks pass. Independent implementation review has no remaining actionable findings. Successful hosted checks and measured timings are recorded in the pull request when completed; no faster runtime is claimed yet.
+
 ### Compact main campaign homepage — 12 October 2026
 
 - Port the owner-approved short prototype to the canonical website's main homepage: a brief appeal, large Respond / Help / Share actions and the existing local leaf-and-ladybird photograph. Restore the ladybird after the owner rejected the exterior still's quality. The campaign contact is pcfs2026@gmail.com.

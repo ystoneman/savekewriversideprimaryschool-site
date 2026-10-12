@@ -1,5 +1,21 @@
 # Testing the website
 
+## Faster release checks — 12 October 2026
+
+The full hosted suite retains all five browser projects, assertions, privacy guards, two workers per runner and zero automatic retries. The two Safari/WebKit projects are each split across three runners; Android, desktop Chromium and the no-JavaScript project each retain one. The `browser-tests` gate still requires every matrix entry to succeed before deployment. Failure reports and traces have unique names per project/shard. A new workflow regression checks that no browser project or shard is missing or duplicated, rejects inconsistent totals and preserves the publication gates.
+
+New PR revisions automatically cancel obsolete runs for that PR. Active production runs are not cancelled. GitHub concurrency serializes production work but does not guarantee FIFO ordering of pending runs. Successful PR results are not reused after merge; both complete release gates remain required.
+
+For homepage changes, run `npm run test:home-smoke` early. It selects four existing regressions: native sharing, preserved task/menu destinations, Safari's expired-deadline activation and the fully visible council action at 320 × 568 without JavaScript. Their existing assertions are unchanged and remain in the complete suite. This is an initial feedback check, not a substitute for full release validation.
+
+For parallel local runs in one checkout, isolate all three shared resources, for example:
+
+```sh
+KEW_TEST_PORT=4281 KEW_TEST_OUTPUT_DIR=/tmp/kew-smoke-results KEW_TEST_REPORT_DIR=/tmp/kew-smoke-report npm run test:home-smoke
+```
+
+Give another run different values for all three, or use separate worktrees and different ports. Avoid running multiple complete suites on the same Mac; run bounded independent checks and use hosted runners for the authoritative complete browser result. Local verification: all four smoke checks passed in 3.9s with isolated port/results/report paths. Playwright JSON enumeration confirms exactly the same 2,602 unique test IDs, each present once across the nine jobs (iPhone WebKit 205/205/204; desktop WebKit 198/198/198; Android 614; desktop Chromium 594; no-script 186). All 81 Python checks, five SQLite backend tests and 14 deadline unit tests pass; 122 public files stage successfully, and public asset bytes are unchanged. JavaScript syntax and whitespace checks pass. Independent read-only implementation review confirmed complete coverage, fail-closed gates, PR-only cancellation and report isolation; clarify that separate worktrees still require distinct ports and GitHub does not guarantee FIFO ordering. The previous production workflow took 13m09s, including an 11m48s iPhone WebKit test step. Complete current-revision hosted outcomes and measured timings are recorded in the pull request when finished; no faster runtime is claimed yet.
+
 ## Compact main campaign homepage — 12 October 2026
 
 - Local validation passes all 76 Python privacy/security/data/artifact tests, five actual-SQLite aggregate-backend tests and 14 homepage deadline unit checks. Public staging accepts exactly 122 files. The new homepage stylesheet is separate from the existing stylesheet used by Evidence and Options. Long-section analytics are intentionally absent from the compact homepage; page/choice privacy behavior and the existing backend labels remain unchanged.
