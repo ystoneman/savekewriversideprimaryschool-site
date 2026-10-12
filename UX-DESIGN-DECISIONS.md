@@ -1,5 +1,10 @@
 # UX design decisions
 
+## Homepage deadline countdown — 12 October 2026
+
+J1/J3: the owner approved a brief countdown immediately beneath Respond. Replace the existing active deadline line with London calendar days remaining plus the exact date; use “1 day left” and “Closes today”, without adding a panel or claiming an unpublished closing hour. Keep the existing dated council-information fallback after the published deadline and without JavaScript. Refresh by date as well as stage so a page left open across midnight does not retain yesterday’s count; preserve the Safari pointerdown guard. Independent campaign, evidence and rendered UX planning/implementation review found no remaining issue. Verification is recorded in TESTING.md and the release pull request.
+
+
 ## Daily browser count notice — 12 October 2026
 
 J1–J9: the owner wants daily audience estimates without consent and without repeat page opens inflating visitors. Retain the compact first-notice placement and Analytics/Off/Why controls. Explain the saved date directly in that notice and in the opened choices; the longer privacy explanation covers UTC days, local-storage retention and estimation limits. Earlier choices retain their scope and the panel states that daily browser counting is off until reviewed. A larger explanatory banner was considered but risks displacing protected phone actions. Independent planning and actual-diff privacy/UX reviews completed. Rendered 320/390/1440px, legacy-choice panels and native iPhone Safari verification passed; deployment evidence is recorded in the release PR.

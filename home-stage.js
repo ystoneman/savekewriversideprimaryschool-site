@@ -17,8 +17,10 @@
     // still until click. Changing the paragraph on pointerdown moved the link
     // under a finger in Safari and cancelled the activation.
     if (event?.type === 'pointerdown') return;
-    if (stage === rendered) return;
-    rendered = stage;
+    // The count changes at London midnight even while the stage stays active.
+    const renderKey = `${stage}:${today}`;
+    if (renderKey === rendered) return;
+    rendered = renderKey;
     action.removeAttribute('aria-label');
     action.replaceChildren(document.createTextNode(active ? 'Respond to the council' : 'Check the council consultation'));
     const arrow = document.createElement('span'); arrow.setAttribute('aria-hidden','true'); arrow.textContent = '↗︎'; action.append(arrow);
@@ -26,7 +28,10 @@
       const date = document.createElement('strong'); date.textContent = '1 September 2027';
       const decision = document.createElement('strong'); decision.textContent = 'No final decision has been made.';
       intro.replaceChildren(document.createTextNode('Richmond Council proposes closing the school from '), date, document.createTextNode('. '), decision);
-      note.textContent = 'Official consultation · Respond by 16 October 2026.';
+      // Compare calendar dates, not elapsed hours or the visitor's time zone.
+      const days = Math.round((Date.UTC(2026, 9, 16) - Date.UTC(Number(part('year')), Number(part('month')) - 1, Number(part('day')))) / 86400000);
+      const remaining = days === 0 ? 'Closes today' : `${days} ${days === 1 ? 'day' : 'days'} left`;
+      note.textContent = `${remaining} · Respond by 16 October 2026.`;
     } else {
       intro.textContent = 'On 12 October 2026, Richmond Council was consulting on proposed closure from 1 September 2027. Check the council’s page for the current position.';
       note.textContent = stage === 'expired' ? 'The published 16 October deadline has passed. Check the council’s latest information before acting.' : 'Published response deadline: 16 October 2026. Check the council’s page.';
