@@ -9,6 +9,16 @@ Independent UX and privacy planning reviews informed the decision. This is a des
 
 ## Unreleased
 
+### Mobile follow-up simplification — 12 October 2026
+
+J1–J7/J9: the owner approved the mobile audit and requested implementation, push and deployment, beginning with header, Share ideas and letter cards. On ordinary phone arrivals the existing update/page strip moves into Menu under Page information and the duplicate page name is omitted visually; the main heading, visible participation links and separate labelled section chooser remain. This saves space without adding an activation to local topics or changing the curated Menu destinations. Desktop identity and update status remain exposed.
+
+Share ideas uses compact labelled native radio cards, a short private/public introduction and exposed official-response and reviewed-ideas routes. All category descriptions, private-only restrictions, contextual arrivals, submission fields and permission choices remain. Letter excerpts are shorter original-text prefixes and appear before compact attribution controls; visible campaign/domain provenance, exact full text/copy/report/print and anonymous authorship remain intact.
+
+The other approved opportunities bring FAQ search/topics, About contact and supporter actions earlier, and consolidate overlapping Evidence exploration navigation. Original introductions and detailed qualifications remain in named optional sections; consent scope, proposal status, deadlines and claim-changing limits stay beside the relevant decision. No recruitment communication or data collection is added. Rejected: hiding Letters/Share ideas in Menu, removing source attribution, reducing permission wording, replacing category choices with a dropdown and nesting local navigation under another submenu. Existing original URLs, anchors, source and form routes remain protected.
+
+Verification is recorded in TESTING.md; browser emulation is not an unfamiliar-person real-phone trial. The owner explicitly authorized this release; no such trial is claimed.
+
 ### Short reading layers throughout the website — 12 October 2026
 
 Visitor need (J1–J7/J9): after approving the much shorter homepage, the owner asked for similarly drastic simplification elsewhere while retaining every piece of information through drilldown. The intended reduction is roughly 80% of default reading, not a quota requiring every page to hide the same proportion. This is an owner-approved design direction and checkpoint, not a measured usability or engagement result.

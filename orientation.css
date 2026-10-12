@@ -96,3 +96,24 @@ html.has-orientation{scroll-behavior:auto}
   .letter-card{break-inside:auto}
   .letter-card .public-author,.letter-card .suggestion-meta{break-after:avoid}
 }
+
+/* Mobile arrivals: the page heading supplies identity; status remains in Menu. */
+.mobile-page-note{display:none}
+@media(max-width:700px){
+  .simple-page .independent-bar{display:none}
+  .simple-page .mobile-page-note{display:block;border-top:1px solid var(--line);margin-top:8px;padding:8px 12px;color:var(--body);font-size:13px;line-height:1.5}
+  .simple-page .mobile-page-note .menu-group-label{padding:0 0 4px}
+  .simple-page .mobile-page-note span{display:block}
+  .simple-page .site-header .header-inner{min-height:0;padding-block:5px;gap:4px}
+  .simple-page .site-header .brand{font-size:16px;line-height:1.15}
+  .simple-page .site-header .brand svg{width:26px;height:26px}
+  .simple-page .site-header .brand .campaign-subtitle{margin-top:1px}
+  .simple-page .site-header .brand .campaign-subtitle strong{font-size:11px}
+  .simple-page .site-header .participation-nav{gap:8px}
+  .simple-page .site-header .participation-nav a{min-height:44px;padding:5px 10px}
+  .simple-page .orientation-inner{min-height:44px;gap:8px}
+  .simple-page .site-orientation .page-name{display:none}
+  .nav-large-text .simple-page .site-orientation .page-name{display:block}
+  .simple-page .page-sections>summary{padding:4px 8px;min-height:44px;gap:0 8px}
+  .simple-page .site-orientation .mobile-menu>summary{min-height:44px}
+}

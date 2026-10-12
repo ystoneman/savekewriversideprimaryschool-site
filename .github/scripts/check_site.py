@@ -33,6 +33,7 @@ og-home.png og-letters.png og-ideas.png og-videos.png
 og-fundraising-trustees-v1.png og-fundraising-admin-v1.png
 '''.split())
 MAINTENANCE_FILES = frozenset('''
+tests/browser/mobile-header.spec.js tests/browser/mobile-feedback.spec.js tests/browser/mobile-letters.spec.js tests/browser/mobile-reading.spec.js tests/browser/mobile-contact-support.spec.js
 .github/scripts/pr_browser_reuse.py .github/scripts/test_pr_browser_reuse.py
 .github/scripts/test_browser_workflow.py
 tests/browser/home-landing.spec.js tests/unit/home-landing.test.cjs

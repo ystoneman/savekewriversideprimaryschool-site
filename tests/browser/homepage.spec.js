@@ -58,6 +58,8 @@ test('Short homepage: three large actions lead before optional detail', async ({
 
 test('Dedicated pages: local navigation exposes depth and retains a homepage recovery path', async ({ page, hasTouch }) => {
   await page.goto('/evidence.html#records');
+  await activate(page.locator('#evidence-library-guide > summary'), hasTouch);
+  await expect(page.locator('#evidence-library-guide')).toHaveAttribute('open', '');
   const evidenceNav = page.locator('#evidence-navigation, .evidence-more');
   for (const id of ['evidence', 'records', 'source-lessons-report', 'earlier-record', 'gaps', 'method']) {
     const link = evidenceNav.locator(`a[href="#${id}"]`);

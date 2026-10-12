@@ -10,3 +10,12 @@
 .family-story{max-width:72ch}.family-story .about-section{padding-block:20px}.family-story .about-section p{line-height:1.8}.site-owner-bridge{max-width:72ch;border-left:3px solid var(--theme-border, #46603d);padding:8px 0 8px 22px;margin:28px 0;font-size:17px;line-height:1.8}
 
 .crowdfunding-card{scroll-margin-top:28px}.funding-status,.funding-context{background:var(--theme-soft, #edf1e9);border-left:3px solid var(--theme-border, #46603d);padding:16px 20px;border-radius:0 8px 8px 0}.funding-status{font-size:15px!important}.funding-questions{margin-top:24px}.funding-questions>h4{font:700 20px/1.4 Arial,sans-serif;margin:0 0 12px}.funding-questions ol{padding-left:24px}.funding-questions li{padding:14px 0;border-bottom:1px solid var(--line)}.funding-questions li:last-child{border-bottom:0}.funding-questions li h4{font:700 16px/1.5 Arial,sans-serif;margin:0 0 6px}.funding-questions li p{font-size:15px;margin:0 0 4px}.funding-questions li>a{display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700}.funding-feedback{margin-top:24px}.funding-feedback p{font-size:14px;max-width:70ch;margin-top:16px}.funding-context{margin:20px 0}.funding-context h3{font:700 20px/1.4 Arial,sans-serif;margin-top:0}.funding-context p{font-size:15px}.feedback-form:has(#kind option[value="crowdfunding"]:checked) .publication-only,.feedback-form:has(#kind option[value="privacy"]:checked) .publication-only{display:none}
+
+/* Named support on phones: read the exact statement and scope before choosing. */
+@media(max-width:700px){
+  .simple-page .supporters-page .feedback-intro{padding-bottom:0;margin-bottom:12px}
+  .simple-page .supporters-page .support-statement{font:700 18px/1.45 Arial,sans-serif;padding:12px 16px;margin:12px 0}
+  .simple-page .supporters-page .support-scope{font-size:15px;line-height:1.5;margin:12px 0}
+  .simple-page .supporters-page .simple-actions{margin:14px 0}
+  .simple-page .about-page .simple-intro h1{margin-top:0;margin-bottom:14px}
+}

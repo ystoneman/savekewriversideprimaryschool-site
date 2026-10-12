@@ -387,13 +387,13 @@
         printedURL.textContent = letterURL;
         actions.append(permalink, copy);
         source.append(publisher, actions, fallback, status, printedURL);
-        article.append(author, meta, source);
+        article.append(author, meta);
         if (item.body.length > 350) {
           const excerpt = document.createElement('p');
           excerpt.className = 'letter-excerpt';
-          const opening = item.body.replace(/\s+/g, ' ').trim().slice(0, 300);
+          const opening = item.body.replace(/\s+/g, ' ').trim().slice(0, 180);
           const wordEnd = opening.lastIndexOf(' ');
-          excerpt.textContent = (wordEnd > 220 ? opening.slice(0, wordEnd) : opening) + '…';
+          excerpt.textContent = (wordEnd > 120 ? opening.slice(0, wordEnd) : opening) + '…';
           const story = document.createElement('details');
           story.className = 'letter-story';
           const summary = document.createElement('summary');
@@ -421,9 +421,9 @@
           const printBody = document.createElement('p');
           printBody.className = 'letter-print-body';
           printBody.textContent = item.body;
-          article.append(excerpt, story, printBody);
+          article.append(excerpt, source, story, printBody);
         } else {
-          article.append(body);
+          article.append(body, source);
         }
         article.append(removal);
         fragment.append(article);

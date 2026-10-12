@@ -148,7 +148,7 @@ test('Homepage: current response and historical meeting source lead to useful ac
 test('FAQ: every answer is a readable native disclosure with a useful destination', async ({ page, hasTouch }) => {
   await page.goto('/faq.html');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  await expect(page.locator('main details')).toHaveCount(questionIds.length);
+  await expect(page.locator('main .faq-answer')).toHaveCount(questionIds.length);
   for (const [section, ids] of Object.entries(questions)) {
     for (const id of ids) {
       const answer = page.locator(`#${section} details#${id}`);
@@ -188,17 +188,17 @@ test('FAQ: search finds and opens matching answers, handles no results and reset
   await expect(page.locator('#deficit-meaning')).toBeVisible();
   await expect(page.locator('#deficit-meaning')).toHaveAttribute('open', '');
   await expect(page.locator('#choose-school')).toBeHidden();
-  expect(await page.locator('main details:visible').count()).toBeLessThan(questionIds.length);
+  expect(await page.locator('main .faq-answer:visible').count()).toBeLessThan(questionIds.length);
   await expect(page.locator('#faq-results')).toContainText(/answer|result/i);
   await query.fill('zz-no-matching-answer-zz');
-  await expect(page.locator('main details:visible')).toHaveCount(0);
+  await expect(page.locator('main .faq-answer:visible')).toHaveCount(0);
   await expect(page.locator('#faq-empty')).toBeVisible();
   for (const section of Object.keys(questions)) await expect(page.locator('#' + section)).toBeHidden();
   await activate(page.getByRole('button', { name: 'Clear search', exact: true }), hasTouch);
   await expect(query).toHaveValue('');
   await expect(page.locator('#faq-empty')).toBeHidden();
-  await expect(page.locator('main details:visible')).toHaveCount(questionIds.length);
-  await expect(page.locator('main details[open]')).toHaveCount(0);
+  await expect(page.locator('main .faq-answer:visible')).toHaveCount(questionIds.length);
+  await expect(page.locator('main .faq-answer[open]')).toHaveCount(0);
 });
 
 test('FAQ: a direct answer link opens the intended answer and brings it into view', async ({ page }) => {
@@ -237,7 +237,7 @@ test('FAQ: topic links restore answers hidden by a previous search', async ({ pa
   await expect(page.locator('#faq-query')).toHaveValue('');
   await expect(page.locator('#school-places')).toBeVisible();
   await expect(page.locator('#school-places')).toBeInViewport();
-  await expect(page.locator('main details:visible')).toHaveCount(questionIds.length);
+  await expect(page.locator('main .faq-answer:visible')).toHaveCount(questionIds.length);
   await expect(page.locator('#faq-empty')).toBeHidden();
 });
 

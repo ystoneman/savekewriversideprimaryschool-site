@@ -112,6 +112,7 @@ test('Report discovery: direct and repeated report anchors recover incompatible 
   await refine(page, 'Record type', 'Inspection');
   await expect(report).toBeHidden();
   await expect(page).toHaveURL(/#source-lessons-report$/);
+  await page.locator('#evidence-library-guide > summary').click();
   const shortcut = page.locator('#research-shortcut[href="#source-lessons-report"]');
   if (hasTouch) await shortcut.tap(); else await shortcut.click();
   await expect(report).toBeVisible();
@@ -152,6 +153,7 @@ test('Direct evidence references remain visible when URL filters exclude them', 
 
 test('New source terms find the appropriate reviewed records without counting explanation links', async ({ page }) => {
   await page.goto('/evidence.html#records');
+  await page.locator('#evidence-library-guide > summary').click();
   const search = page.getByLabel('Search source records and research reports');
   await expect(search).toHaveAttribute('aria-describedby', 'record-search-help');
   await expect(page.locator('#record-search-help')).toContainText(/not the full text of linked documents or every website answer/i);
@@ -433,6 +435,7 @@ test('Saved Evidence searches canonicalize the search anchor while retaining fil
     await expect(page.locator('.source-card:visible')).toHaveCount(1);
     await expect(page.locator('.source-card:visible h3')).toContainText('First Ofsted inspection');
     await expect(page).toHaveURL(/evidence\.html\?q=Ofsted&type=Inspection&year=2003#source-search$/);
+    await page.locator('#evidence-library-guide > summary').click();
     await page.locator('#evidence-navigation a[href="#records"]').click();
     await expect(page.locator('#kew-findings-title')).toBeInViewport();
     await expect(search).toHaveValue('Ofsted');

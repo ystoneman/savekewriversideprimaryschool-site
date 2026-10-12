@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Mobile follow-up simplification — 12 October 2026
+
+- Compact the inner-page phone header while keeping exposed Community letters / Share ideas, Menu and the named section chooser. Move its existing page/update strip into Menu on phones; preserve desktop status and the maintained action deadlines.
+- Bring the Share ideas message earlier with a short introduction and compact native category cards. Keep the reading route, all six categories/descriptions, original guidance and unchanged private/public choices accessible.
+- Lead letter cards with shorter verbatim excerpts before attribution tools. Retain visible campaign/domain provenance, complete original letters, exact copying, reporting, direct arrivals and full printing.
+- Apply the remaining approved mobile audit to FAQ search, Evidence exploration groups, About contact and the supporter statement/actions. Retain original information through named disclosures, essential qualifications beside decisions, source/deadline routes and unchanged consent. School recruitment remains separate; homepage content is unchanged.
+- Local, independent review and final hosted/live evidence are recorded in TESTING.md and the implementation pull request. These changes are design judgments, not measured visitor-study improvements.
+
 ### Screened community letter — 12 October 2026
 
 - Add one community letter with current publication consent, preserving the contributor's complete wording and chosen display name and labelling it AI screened. Local privacy, data and public-asset validation pass. Complete browser gates, deployment and verification on all retained origins are separate release checks.

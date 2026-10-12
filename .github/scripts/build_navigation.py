@@ -5,7 +5,7 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026101203'
+VERSION = '2026101204'
 PREVIEW_VERSION = '2026100901'  # Shared images are unchanged by this curation.
 SITE_NAME = 'Save Kew Riverside Primary School Campaign'
 SITE_URL = 'https://savekewriversideprimaryschool.org/'
@@ -198,6 +198,8 @@ def render_navigation(name, document):
     if name == 'index.html' and 'data-home-landing' in document:
         return render_home_navigation(document)
     document = render_identity(name, document)
+    for asset in ('letters.js', 'contribute.css', 'feedback.css', 'community.css', 'discovery.css'):
+        document = re.sub(re.escape(asset)+r'\?v=\d+', asset+'?v='+VERSION, document)
     esc = html.escape
     def compact_body(match):
         tag = match.group()
@@ -269,7 +271,9 @@ def render_navigation(name, document):
             entries.append(('sent.html', 'Next steps', ''))
         links = ''.join(menu_link(*entry) for entry in entries)
         groups.append(f'<div class="menu-group" role="group" aria-labelledby="menu-group-{index}"><p class="menu-group-label" id="menu-group-{index}">{esc(heading)}</p>{links}</div>')
-    menu = '<details class="mobile-menu" name="site-navigation"><summary>Menu <span aria-hidden="true">⌄</span></summary><nav aria-label="All website pages">'+''.join(groups)+'</nav></details>'
+    status = re.search(r'<div class="independent-bar"><div class="wrap">(.*?)</div></div>', document, re.S)
+    mobile_status = '<div class="mobile-page-note"><p class="menu-group-label">Page information</p>'+status.group(1)+'</div>' if status else ''
+    menu = '<details class="mobile-menu" name="site-navigation"><summary>Menu <span aria-hidden="true">⌄</span></summary><nav aria-label="All website pages">'+''.join(groups)+mobile_status+'</nav></details>'
     ids = set(re.findall(r'\bid="([^"]+)"', document))
     sections = [entry for entry in SECTIONS.get(name,[]) if entry[0] in ids]
     section_html = ''
