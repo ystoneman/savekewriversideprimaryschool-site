@@ -12,6 +12,7 @@ from public_data import validate_board
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_FILES = frozenset('''
 sitemap.xml robots.txt home-stage.js home-actions.js home-landing.css
+simplify.js simplify.css
 images/school-discovery-480.jpg images/school-discovery-960.jpg images/school-project-480.jpg images/school-project-960.jpg
 rally.html rally.css rally-6-october.ics
 fundraising-trustees.html fundraising-admin.html fundraising-briefs.css
@@ -34,6 +35,7 @@ og-fundraising-trustees-v1.png og-fundraising-admin-v1.png
 MAINTENANCE_FILES = frozenset('''
 .github/scripts/test_browser_workflow.py
 tests/browser/home-landing.spec.js tests/unit/home-landing.test.cjs
+tests/browser/simple-guides.spec.js tests/browser/simple-research.spec.js tests/browser/simple-participation.spec.js tests/browser/simplification.spec.js
 SEO-OPERATIONS.md .github/scripts/build_seo.py .github/scripts/test_seo.py tests/browser/seo.spec.js
 SEO-IMPLEMENTATION-PLAN.md
 tests/browser/campaign.spec.js

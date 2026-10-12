@@ -13,6 +13,8 @@ test('Options: the Parent plan arrives at the response, useful answer and option
   await expect(page.locator('#option-7 .options-response-button')).toHaveAttribute('href', officialResponse);
   await expect(page.locator('#option-7')).toContainText('16 October 2026');
   expect(await page.locator('#option-7').evaluate(el => el.closest('details') === null)).toBe(true);
+  await expect(page.locator('#options-preparation-detail')).not.toHaveAttribute('open','');
+  await page.locator('#options-preparation-detail > summary').click();
   await expect(page.locator('.options-insight')).toBeVisible();
   await expect(page.locator('#options-findings-title')).toBeVisible();
   await expect(page.locator('.options-insight')).toContainText(/budget|costed/i);
@@ -179,16 +181,18 @@ test('Options: a failed enhancement leaves all optional rows and funding questio
   await expect(page.locator('.options-school-enquiry')).toBeVisible();
 });
 
-test('Proposal: immediate actions and stage dates stay outside optional detail', async ({ page }) => {
+test('Proposal: immediate actions stay exposed and full stage dates open on demand', async ({ page }) => {
   await page.goto('/proposal.html');
   await expect(page.locator('.proposal-actions')).toContainText('You can respond now');
   await expect(page.locator('.proposal-actions a')).toBeVisible();
   await expect(page.locator('.parent-plan-lead')).toContainText('optional');
-  await expect(page.locator('.parent-reassurance a[href="faq.html#school-places"]')).toBeVisible();
+  await expect(page.locator('#parent-plan > .simple-note a[href="faq.html#school-places"]')).toBeVisible();
+  await expect(page.locator('#proposal-timetable-details')).not.toHaveAttribute('open','');
+  await page.locator('#proposal-timetable-details > summary').click();
   for (const stage of await page.locator('#future-timeline > li').all()) {
     await expect(stage.locator(':scope > h3')).toBeVisible();
     await expect(stage.locator(':scope > .stage-label')).toBeVisible();
-    expect(await stage.evaluate(el => el.closest('details') === null)).toBe(true);
+    expect(await stage.evaluate(el => el.closest('details').open)).toBe(true);
   }
   for (const id of ['parent-plan', 'school-meeting', 'question-budget', 'who-decides', 'decision-record']) {
     await page.goto('/proposal.html#' + id);
@@ -199,6 +203,7 @@ test('Proposal: immediate actions and stage dates stay outside optional detail',
 test('Proposal: fuller roles and decision records open with keyboard and touch', async ({ page, hasTouch }) => {
   await page.goto('/proposal.html#who-decides');
   for (const id of ['roles-detail', 'decision-record-detail']) {
+    if(id==='decision-record-detail') await page.goto('/proposal.html#decision-record');
     const detail = page.locator('#' + id);
     await expect(detail).not.toHaveAttribute('open', '');
     await activate(detail.locator(':scope > summary'), hasTouch);

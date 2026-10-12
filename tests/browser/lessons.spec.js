@@ -2,6 +2,10 @@ const { test, expect, expectStillArrival } = require('./fixtures');
 const { readFileSync } = require('node:fs');
 const data = JSON.parse(readFileSync(require('node:path').join(__dirname, '../../lessons-data.json'), 'utf8'));
 async function activate(locator, hasTouch) { if (hasTouch) await locator.tap(); else await locator.click(); }
+async function openTakeaways(page) {
+  const detail = page.locator('#research-takeaways');
+  if (!await detail.evaluate(node => node.open)) await detail.locator(':scope > summary').click();
+}
 
 test('Research: proposal offers a compact route to the optional catalogue and report', async ({ page, hasTouch }) => {
   await page.goto('/proposal.html#other-schools');
@@ -18,8 +22,9 @@ test('Research: proposal offers a compact route to the optional catalogue and re
   expect((await download).suggestedFilename()).toBe('lessons-report.pdf');
 });
 
-test('Research: paired findings and their limits precede the optional research index', async ({ page }) => {
+test('Research: expanded paired findings keep their limits before the optional research index', async ({ page }) => {
   await page.goto('/lessons.html#key-lessons');
+  await openTakeaways(page);
   const findings = page.locator('.lesson-takeaways article');
   await expect(findings).toHaveCount(3);
   for (const finding of await findings.all()) {
@@ -35,6 +40,7 @@ test('Research: paired findings and their limits precede the optional research i
   await expect(page.locator('#lesson-decision-and-transition .lesson-caveat')).toContainText('not an automatic right of appeal');
   await expect(page.locator('#lesson-petition-evidence')).toContainText('do not measure their effect');
   await expect(page.locator('.lesson-next')).toContainText('does not reach the council');
+  await page.locator('#research-next-question > summary').click();
   await expect(page.locator('.lesson-next a[href="proposal.html#take-part"]')).toBeVisible();
   expect(await page.locator('#key-lessons').evaluate(el => Boolean(el.compareDocumentPosition(document.querySelector('[aria-label="Research sections"]')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
   const boxes = await findings.evaluateAll(nodes => nodes.map(node => ({ top: node.getBoundingClientRect().top, bottom: node.getBoundingClientRect().bottom })));
@@ -47,6 +53,7 @@ test('Research: paired findings and their limits precede the optional research i
 
 test('Research: each paired school opens its case directly and Back returns to the findings', async ({ page, hasTouch }) => {
   await page.goto('/lessons.html#key-lessons');
+  await openTakeaways(page);
   for (const id of ['fletching', 'broad-oak', 'st-john', 'st-bartholomew', 'godshill', 'brading', 'oakfield', 'wroxall', 'arreton', 'cowes']) {
     await activate(page.locator(`#key-lessons a[href="#case-${id}"]`), hasTouch);
     await expect(page).toHaveURL(new RegExp(`#case-${id}$`));
@@ -60,6 +67,7 @@ test('Research: each paired school opens its case directly and Back returns to t
 
 test('Research: a repeated finding link restores a filtered case without hijacking modified clicks', async ({ page, hasTouch }) => {
   await page.goto('/lessons.html#key-lessons');
+  await openTakeaways(page);
   const link = page.locator('#key-lessons a[href="#case-fletching"]');
   const entry = page.locator('#case-fletching');
   await activate(link, hasTouch);
@@ -85,6 +93,7 @@ test('Research: findings remain readable with enlarged text on a narrow phone', 
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/lessons.html');
+    await openTakeaways(page);
     await page.evaluate(() => {
       const text = [...document.querySelectorAll('.lesson-landing-hero :is(h1,p,a,strong), #key-lessons :is(h2,h3,p,a,span,strong)')];
       const sizes = text.map(node => parseFloat(getComputedStyle(node).fontSize) * 2);
@@ -105,6 +114,7 @@ test.describe('Research without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
   test('paired findings link to native cases and preserve source access', async ({ page, hasTouch }) => {
     await page.goto('/lessons.html#key-lessons');
+  await openTakeaways(page);
     await expect(page.locator('#lesson-financial-plan .lesson-caveat')).toBeVisible();
     await expect(page.locator('#lesson-decision-and-transition .lesson-caveat')).toBeVisible();
     await expect(page.locator('#lesson-petition-evidence .lesson-caveat')).toBeVisible();
@@ -191,7 +201,7 @@ test('Research: direct case and evidence links reveal disclosures and restore fi
 });
 
 test('Research: keyboard disclosures and full citation register remain accessible', async ({ page }) => {
-  await page.goto('/lessons.html');
+  await page.goto('/lessons.html#visual-guide');
   const summary = page.locator('#exhibit-4 > summary');
   await summary.focus();await page.keyboard.press('Enter');
   await expect(page.locator('#exhibit-4')).toHaveAttribute('open','');

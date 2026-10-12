@@ -181,6 +181,7 @@ test('Evidence arrival leads with current Kew findings and retains historical ca
   await page.goto('/evidence.html#records');
   const findings = page.locator('#london-findings');
   await expect(page.locator('#kew-findings-title')).toBeInViewport();
+  await page.locator('#evidence-kew-detail > summary').click();
   const historical = page.locator('#kew-findings a[href="#london-findings"]');
   if (hasTouch) await historical.tap(); else await historical.click();
   await expect(findings.getByRole('heading', {name:'Four London schools kept teaching.'})).toBeInViewport();
@@ -285,6 +286,7 @@ test('New source anchors recover from incompatible saved filters and repeat visi
   await expect(page.getByLabel('Search source records and research reports')).toHaveValue('');
   await refine(page, 'Record type', 'Inspection');
   await expect(source).toBeHidden();
+  await page.locator('#evidence-questions-detail > summary').click();
   await page.locator('#gap-budget summary').click();
   await page.locator('#gap-budget a[href="#source-school-balances-mar-2026"]').click();
   await expect(source).toBeVisible();
@@ -389,6 +391,7 @@ test('Evidence repeated council-figures links reopen the chart and separate repo
   await page.goto('/evidence.html#source-lessons-report');
   await expect(page.locator('#source-lessons-report')).toBeInViewport();
   await expect(page.locator('#source-library')).not.toHaveAttribute('open', '');
+  await page.locator('#evidence-questions-detail > summary').click();
   const resolved = page.locator('.gap-detail').filter({has:page.getByRole('heading', {name:'The complete 2026 inspection report'})});
   await expect(resolved.locator('.gap-state')).toBeVisible();
   await expect(resolved.locator('.gap-state')).toHaveText('Evidence found');
@@ -406,7 +409,7 @@ test('Opening a source in another tab leaves the current reading position and li
 
 
 test('London findings lead directly to the named case with sources, and Back returns to the insight', async ({ page, hasTouch }) => {
-  await page.goto('/evidence.html#records');
+  await page.goto('/evidence.html#london-findings');
   for (const [finding, target] of [['finding-st-john','case-st-john'], ['finding-linked-schools','case-fenstanton'], ['finding-pooles','case-pooles']]) {
     const link = page.locator(`#${finding} a[href="lessons.html#${target}"]`);
     if (hasTouch) await link.tap(); else await link.click();
@@ -414,7 +417,7 @@ test('London findings lead directly to the named case with sources, and Back ret
     await expect(page.locator('#' + target)).toBeInViewport();
     await expect(page.locator(`#${target} .source-note a`).first()).toBeVisible();
     await page.goBack();
-    await expect(page).toHaveURL(/evidence\.html#records$/);
+    await expect(page).toHaveURL(/evidence\.html#london-findings$/);
     await expect(link).toBeVisible();
   }
 });

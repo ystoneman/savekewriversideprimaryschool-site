@@ -31,7 +31,7 @@ for (const [width, height] of [[390, 844], [1440, 1000]]) {
 
 test('Parent plan: writing link opens the composer and Back returns to current actions', async ({ page, hasTouch }) => {
   await page.goto('/proposal.html#parent-plan');
-  const write = page.locator('#plan-share a[href="letters.html#letter-form"]');
+  const write = page.locator('#parent-plan > nav.simple-actions a[href="letters.html#letter-form"]');
   await write.scrollIntoViewIfNeeded();
   const planPosition = await page.evaluate(() => scrollY);
   if (hasTouch) await write.tap(); else await write.click();
@@ -212,10 +212,10 @@ for (const review of ['Human reviewed', 'AI screened']) {
   });
 }
 
-test('Letters of 1200 characters remain fully readable without disclosure', async ({ page }) => {
+test('Letters of 350 characters remain fully readable without disclosure', async ({ page }) => {
   const board = boards.find(item => item.resource === 'letters');
-  const sample = { ...entry(board), body: 'A short fictional letter. '.repeat(50).slice(0, 1197) + 'END' };
-  expect(sample.body.length).toBe(1200);
+  const sample = { ...entry(board), body: 'A short fictional letter. '.repeat(50).slice(0, 347) + 'END' };
+  expect(sample.body.length).toBe(350);
   await page.route('**/letters.json', route => route.fulfill({ json: boardData(board, [sample]) }));
   await page.goto('/letters.html');
   const article = page.locator('#' + sample.id);

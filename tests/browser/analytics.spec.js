@@ -91,7 +91,7 @@ async function savedChoice(page, choice = 'allow', until = 'future') {
 
 async function choices(page) {
   if (await page.locator('#site-settings').count() && await page.locator('#site-settings').getAttribute('open') === null) await page.locator('#site-settings > summary').click();
-  await page.getByRole('link', { name: 'Analytics choices', exact: true }).click();
+  await page.locator('footer').getByRole('link', { name: 'Analytics choices', exact: true }).click();
   const panel = page.locator('#analytics-panel');
   await expect(panel).toBeVisible();
   return panel;
@@ -353,11 +353,12 @@ test('An old-origin objection and unfinished draft cannot transfer, so the new o
   await freezeAfterLoad(page);
   expect(sent).toEqual([]);
   await expect(page.locator('#message')).toHaveValue('');
-  await expect(page.locator('#draft-notice')).toContainText('Drafts saved on the old website address cannot appear here');
+  await expect(page.locator('#draft-recovery-notice')).toContainText('Drafts saved on the old website address cannot appear here');
   const panel = await choices(page);
   await expect(panel.getByRole('status')).toContainText('aggregate statistics only (the default)');
   await panel.getByRole('button', { name: 'Close analytics choices' }).click();
-  const recovery = page.locator('#draft-notice').getByRole('link', { name: 'open the earlier GitHub letters page' });
+  await page.locator('#draft-recovery > summary').click();
+  const recovery = page.locator('#draft-recovery-notice').getByRole('link', { name: 'open the earlier GitHub letters page' });
   await expect(recovery).toHaveAttribute('href', 'https://ystoneman.github.io/kew-riverside-website/letters.html?recover=draft#letter-form');
   await recovery.click();
   await expect(page).toHaveURL('https://ystoneman.github.io/kew-riverside-website/letters.html?recover=draft#letter-form');
@@ -379,11 +380,12 @@ test('A previous custom-domain objection and unfinished draft cannot transfer, s
   await freezeAfterLoad(page);
   expect(sent).toEqual([]);
   await expect(page.locator('#message')).toHaveValue('');
-  await expect(page.locator('#draft-notice')).toContainText('Drafts saved on the old website address cannot appear here');
+  await expect(page.locator('#draft-recovery-notice')).toContainText('Drafts saved on the old website address cannot appear here');
   const panel = await choices(page);
   await expect(panel.getByRole('status')).toContainText('aggregate statistics only (the default)');
   await panel.getByRole('button', { name: 'Close analytics choices' }).click();
-  const recovery = page.locator('#draft-notice').getByRole('link', { name: 'open the previous letters page' });
+  await page.locator('#draft-recovery > summary').click();
+  const recovery = page.locator('#draft-recovery-notice').getByRole('link', { name: 'open the previous letters page' });
   await expect(recovery).toHaveAttribute('href', 'https://savekewriverside.org/letters.html?recover=draft#letter-form');
   await page.goto(site + 'privacy.html#device-storage');
   const storage = page.locator('#device-storage + p');
@@ -765,6 +767,7 @@ test('Visitors choosing detailed analytics report Evidence and Options sections,
   await page.clock.runFor(1000);
   await expect.poll(() => events(sent, 'Section reached')).toContainEqual({ section: 'source-search' });
   for (const id of ['gaps', 'source-library']) {
+    if(id==='gaps') await page.locator('#evidence-questions-detail > summary').click();
     await page.locator('#' + id).evaluate(element => element.scrollIntoView({ block: 'start', behavior: 'instant' }));
     await page.evaluate(() => window.dispatchEvent(new Event('pointerdown')));
     await page.clock.runFor(11_000);
@@ -925,6 +928,7 @@ test('An official-form handoff records a fixed opening label, never a completed 
   });
   await page.goto(site + 'letters.html');
   await allowAnalytics(page);
+  await page.locator('#letter-official-details > summary').click();
   await page.locator('.official-notice a').first().click();
   await expect.poll(() => handoffs.length).toBe(1);
   await expect.poll(() => events(sent, 'Action opened')).toEqual([{ action: 'Opened official response form' }]);

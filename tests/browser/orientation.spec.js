@@ -130,7 +130,7 @@ test('Orientation: Back preserves a later reading position and a subsequent depa
 
 test('Orientation: reloaded Back restores reading after a late native fragment jump', async ({ page }) => {
   await page.goto('/proposal.html#parent-plan');
-  const write = page.locator('#plan-share a[href="letters.html#letter-form"]');
+  const write = page.locator('#parent-plan > .simple-actions a[href="letters.html#letter-form"]');
   await write.scrollIntoViewIfNeeded();
   const departureY = await page.evaluate(() => scrollY);
   await page.evaluate(async y => {
@@ -227,7 +227,7 @@ test('Orientation: Questions for the council opens its named section and repeate
 
   // Reading farther down leaves the hash unchanged; the same menu link must
   // still return to the questions instead of doing nothing on a repeated hash.
-  await page.locator('#method').evaluate(node => node.scrollIntoView({ block: 'start', behavior: 'instant' }));
+  await page.locator('#method').evaluate(node => { for (let parent=node.parentElement;parent;parent=parent.parentElement) if (parent.tagName==='DETAILS') parent.open=true; node.scrollIntoView({block:'start',behavior:'instant'}); });
   await expect(heading).not.toBeInViewport();
   await expect(page).toHaveURL(/evidence\.html#gaps$/);
   await activate(menu.locator(':scope > summary'), hasTouch);
@@ -275,7 +275,7 @@ test('Orientation: passive reading updates location without changing URL, histor
   await summary.focus();
   const initial = await page.evaluate(() => ({ url: location.href, history: history.length }));
   for (const id of ['source-search', 'earlier-record', 'method']) {
-    await page.locator('#' + id).evaluate(node => node.scrollIntoView({ block: 'start', behavior: 'instant' }));
+    await page.locator('#' + id).evaluate(node => { for (let parent=node.parentElement;parent;parent=parent.parentElement) if (parent.tagName==='DETAILS') parent.open=true; node.scrollIntoView({block:'start',behavior:'instant'}); });
     await expect.poll(() => activeSection(page)).toBe(id);
     await expect(page.locator('.section-trail')).toContainText(await page.locator(`.section-links a[data-section-id="${id}"]`).textContent());
     await expect(page.locator('.page-name')).toHaveText('Evidence');

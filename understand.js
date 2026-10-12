@@ -7,7 +7,7 @@
   // Restore each reader's disclosure choices after the print dialog closes.
   let printState;
   window.addEventListener('beforeprint', () => {
-    if (printState) return;
+    if (document.querySelector('main [data-simple-toggle]') || printState) return;
     printState = Array.from(document.querySelectorAll('#supporting-research, #supporting-research details'),
       detail => [detail, detail.open]);
     printState.forEach(([detail]) => { detail.open = true; });
