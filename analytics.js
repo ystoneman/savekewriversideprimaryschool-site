@@ -193,10 +193,16 @@
   function countDailyBrowser() {
     if (!dailyScope || !counting() || config.counterEnabled !== true || !navigator.locks?.request) return;
     navigator.locks.request('kew-analytics-browser-day', () => {
-      readChoice();
       if (!dailyScope || !counting() || config.counterEnabled !== true) return;
       const day = new Date().toISOString().slice(0, 10);
       try {
+        // Check the latest persisted scope without changing this page's Umami
+        // permission/timing state. Storage events own that separate transition.
+        const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+        const current = saved && [1, 2, 3, 4].includes(saved.v) &&
+          ['allow', 'basic', 'deny'].includes(saved.choice) &&
+          Number.isFinite(saved.until) && saved.until > Date.now() ? saved : null;
+        if ((current?.choice || null) !== choice || (current && current.v !== 4)) return;
         if (localStorage.getItem(BROWSER_DAY_KEY) === day) return;
         localStorage.setItem(BROWSER_DAY_KEY, day);
       } catch (_) { return; }

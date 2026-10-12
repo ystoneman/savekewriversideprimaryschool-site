@@ -1271,3 +1271,24 @@ test('Daily browser: Off clears marker, blocks a waiting lock, and renewed basic
   await (await choices(page)).getByRole('button', { name: BASIC, exact: true }).click();
   await expect.poll(() => dailyBrowsers(aggregates).length).toBe(2);
 });
+
+test('Daily browser: delayed scope check cannot activate or reset Umami', async ({ page, context }) => {
+  const { sent, aggregates } = await virtualProduction(context);
+  await controlledAttention(page);
+  await page.addInitScript(() => {
+    navigator.locks.request('kew-analytics-browser-day', () => new Promise(resolve => { window.releaseDailyLock = resolve; }));
+  });
+  await page.goto(site);
+  await expect.poll(() => aggregatePages(aggregates).length).toBe(1);
+  await page.evaluate(async key => {
+    // This fixture deliberately changes storage without a UI/storage-event
+    // permission transition. A count-only callback must not apply that choice.
+    localStorage.setItem(key, JSON.stringify({ v: 2, choice: 'allow', until: Date.now() + 86400000 }));
+    window.releaseDailyLock();
+    await navigator.locks.request('kew-analytics-browser-day', () => {});
+  }, choiceKey);
+  await page.clock.runFor(20_000);
+  expect(sent).toEqual([]);
+  expect(dailyBrowsers(aggregates)).toEqual([]);
+  expect(await page.evaluate(key => localStorage.getItem(key), browserDayKey)).toBeNull();
+});
