@@ -30,3 +30,20 @@ WHERE metric <> 'page' ORDER BY day DESC, metric, total DESC;
 Counts of opens and threshold crossings, not unique visitors or completed actions.
 Never sum cumulative active-time thresholds as duration. No raw events/browser history.
 `node --test worker.test.mjs` uses real in-memory SQLite with fictional requests.
+
+## Additional aggregate reports (v3, 12 October 2026)
+
+Backend must be deployed before the client: new fixed labels are additive; old
+clients remain compatible. No schema migration or additional privileges needed.
+
+```sql
+SELECT day, metric, label, total FROM counts
+WHERE metric IN ('browser','os','device','referral','navigation','active_page','load','ttfb','fcp')
+ORDER BY day DESC, metric, total DESC;
+```
+
+Divide a category by its own metric total, never overall page opens: older saved
+choices retain earlier scope. Device estimates are not unique people. Timings
+include unavailable separately; do not compute exact averages from ranges.
+Page pairs are aggregate arrivals, not individual journeys. See ANALYTICS.md for
+the purpose audit, limits, and why unique visitor estimation is not implemented.

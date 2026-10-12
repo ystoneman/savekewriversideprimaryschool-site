@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Aggregate analytics audit and clearer choices — 12 October 2026
+
+- Document purpose, necessity, limits and exclusions in ANALYTICS.md. Add separate fixed referral/browser/OS/device counts, public-page arrival pairs, per-page active thresholds and coarse page-loading measurements; retain immediate daily aggregation, privacy exclusions, objections and unchanged Umami payload scope.
+- Preserve earlier saved measurement scope until reviewed; new choices save v3. Explain the benefit and optional provider processing with equal clear actions. Update the public privacy explanation.
+- Unique estimation is assessed but not implemented: the proposed IP/browser sketch needs a defensible anonymity and key-erasure design. Validation and release evidence are recorded in TESTING.md when completed.
+
+
 ### Short reading layers throughout the website — 12 October 2026
 
 - Extend the owner-approved compact approach to the other campaign pages: short arrivals and large actions, with complete original guidance, evidence, notices and historical material in named native disclosures. The roughly 80% reduction is a design aim for initial reading, not a measured result on every page. The approved homepage remains intact.

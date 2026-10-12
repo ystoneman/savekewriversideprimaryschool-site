@@ -78,3 +78,14 @@ test('Retention deletes expired daily aggregates and keeps recent totals', async
   assert.equal(env.sql.prepare('SELECT count(*) AS n FROM counts').get().n, 2);
   assert.equal(env.sql.prepare("SELECT count(*) AS n FROM counts WHERE day='2020-01-01'").get().n, 0);
 });
+
+test('Expanded labels accept fixed aggregates and reject granular or private values', async () => {
+  const env = environment();
+  for (const [metric, label] of Object.entries({ browser: 'safari', os: 'ios', device: 'mobile', referral: 'richmond-nub', navigation: 'proposal.html>faq.html', active_page: 'faq.html|30', load: 'faq.html|under-1s', ttfb: 'faq.html|unavailable', fcp: 'faq.html|over-4s' })) {
+    assert.equal((await worker.fetch(request({ counters: [{ metric, label }] }), env)).status, 200);
+  }
+  for (const [metric, label] of [ ['browser', 'Safari/18.1'], ['referral', 'private.example'], ['navigation', 'feedback.html>faq.html'], ['navigation', 'proposal.html?name=private>faq.html'], ['active_page', 'letter-person|30'], ['load', 'faq.html|1234'] ]) {
+    assert.equal((await worker.fetch(request({ counters: [{ metric, label }] }), env)).status, 400);
+  }
+  assert.equal(env.sql.prepare('SELECT count(*) AS n FROM counts').get().n, 9);
+});
