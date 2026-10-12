@@ -415,6 +415,7 @@ class TransportTests(unittest.TestCase):
         first, second = [call.args[0] for call in self.api.opener.open.call_args_list]
         self.assertEqual(first.full_url, 'https://api.github.com/repos/' + reuse.REPOSITORY + '/actions/artifacts/42/zip')
         self.assertEqual(first.get_header('Authorization'), 'Bearer fictional-test-token')
+        self.assertEqual(first.get_header('X-github-api-version'), '2022-11-28')
         self.assertEqual(second.full_url, self.storage)
         self.assertIsNone(second.get_header('Authorization'))
         self.assertNotIn('fictional-test-token', str(second.header_items()))

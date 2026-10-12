@@ -189,8 +189,9 @@ class API:
 
     def request(self, path):
         require(path.startswith('/') and not path.startswith('//'), 'Invalid API path')
+        # This supported version retains merge_commit_sha; 2026-03-10 omits it.
         return urllib.request.Request('https://api.github.com/repos/' + REPOSITORY + path,
-            headers={'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2026-03-10',
+            headers={'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28',
                      'Authorization': 'Bearer ' + self.token, 'User-Agent': 'Kew-PR-evidence'})
 
     def get(self, path):
