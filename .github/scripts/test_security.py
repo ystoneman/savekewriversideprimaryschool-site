@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
-from check_site import CSP, Page, PUBLIC_FILES, ROOT, stage_site, validate_site
+from check_site import CSP, MAINTENANCE_FILES, Page, PUBLIC_FILES, ROOT, stage_site, validate_site
 from public_data import STATEMENT, STATEMENT_VERSION, validate_board
 
 
@@ -159,6 +159,25 @@ class DeploymentTests(unittest.TestCase):
                      'feedback.css#fragment', 'feedback.css?v=not-a-version', 'letters.js?v=1'):
             with self.subTest(href=href), self.assertRaises(ValueError):
                 Page(head + '<link rel="stylesheet" href="' + href + '">')
+
+
+    def test_only_unpublished_pages_may_load_unpublished_assets(self):
+        head = '<meta http-equiv="Content-Security-Policy" content="' + CSP + '"><meta name="referrer" content="strict-origin-when-cross-origin">'
+        unpublished = ('<script src="landing.js?v=1"></script>', '<link rel="stylesheet" href="landing.css?v=1">', '<img src="images/school-logo-384.png">')
+        self.assertTrue({'landing.js', 'landing.css', 'images/school-logo-384.png'} <= MAINTENANCE_FILES - PUBLIC_FILES)
+        for tag in unpublished:
+            with self.subTest(tag=tag):
+                Page(head + tag, PUBLIC_FILES | MAINTENANCE_FILES)
+                with self.assertRaises(ValueError):
+                    Page(head + tag)
+        with self.assertRaises(ValueError):
+            Page(head + '<a href="tel:+440000000000">Call</a>', PUBLIC_FILES | MAINTENANCE_FILES)
+
+    def test_published_pages_do_not_load_unpublished_assets(self):
+        for name in sorted(PUBLIC_FILES):
+            if name.endswith('.html'):
+                with self.subTest(page=name):
+                    Page((ROOT / name).read_text(encoding='utf-8'))
 
 
 if __name__ == '__main__': unittest.main()

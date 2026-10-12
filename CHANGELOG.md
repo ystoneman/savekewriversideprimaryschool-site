@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Proposed standalone landing page, not published — 12 October 2026
+
+- Add `landing.html` with its own stylesheet, scripts and images as an unpublished design proposal: the consultation deadline and council response route, three participation routes, attributed open-day flyer wording, sourced inspection, 2025 Year 6 results (with England, Richmond and cohort size) and 2002 opening cards, the council timetable, school open days and school contact details.
+- The files are maintenance files, so Pages does not deploy them. The page deliberately uses its own header instead of the shared navigation shell; publishing would need an agreed shell decision, browser tests and the specialist reviews in AGENTS.md. The school logo, flyer illustration and open-day year need confirmation first.
+- `check_site.py` now lets an unpublished page load its own unpublished assets. Published pages remain limited to public files, and every page keeps the policy, inline-code and link-scheme checks; two Python regressions cover this boundary.
+- Checked: 78 Python checks and 119-file validation pass. Local Chromium renders at 320–1440px in light and dark appearance; theme choice persistence and sharing with the main site's appearance setting; countdown and open-day date changes against frozen UK dates. Not checked: WebKit or iOS Safari, a no-JavaScript render, or the Playwright suite (public files are unchanged).
+
 ### Campaign search discovery — 11 October 2026
 
 - Add a curated ten-page canonical sitemap and permissive robots file. Keep recruitment, form-focused routes, exports and noindex pages out of this initial campaign sitemap; leave existing routes and permissions intact. Canonical SEO files are excluded from both legacy bundles.
