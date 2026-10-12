@@ -640,5 +640,8 @@
     "options.html|1-2.5s",
     "options.html|2.5-4s",
     "options.html|over-4s"
+  ],
+  "browser_day": [
+    "all"
   ]
 }

@@ -1,5 +1,13 @@
 # Testing the website
 
+## Daily browser estimate — 12 October 2026
+
+- All 344 analytics cases pass across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit. New regressions cover fresh-notice counting, reload/navigation, simultaneous tabs, UTC rollover, earlier v1–v3 scopes, unavailable locks/marker storage, failed delivery without retries, Off during a pending real lock, marker removal and renewed counting after re-opt-in.
+- All 116 Python checks, seven real-SQLite backend checks and 14 deadline checks pass. All JavaScript syntax and whitespace checks pass; 124 public assets validate. The generated Understand page's script version was updated in its maintained generator.
+- Six additional rendered arrival/control cases pass at 320/390/1440px. Independent actual-diff privacy review found no blocker and requested the now-added device/server-clock caveat. Independent UX reviewed prior/current captures plus fresh 390×664 and legacy v1/v3 320×568 fixtures; readable notice, all three choices and unchanged primary-action placement, with no remaining finding.
+- Native iPhone 17 / iOS 26.5 Safari verified the localhost fixture: updated notice and all choices readable, basic persists after reload, page totals rise to three while the browser total stays one. The fixture redirects both collectors to local in-memory counters; no real forms or providers received test submissions. This is native engine behaviour evidence, not production receipt. Hosted full-suite gates, backend/client deployment and live D1 receipt are pending.
+
+
 ## Aggregate analytics audit — 12 October 2026
 
 - All 81 Python privacy/security/data/artifact checks, six real-SQLite collector tests and 14 homepage deadline checks pass; 122 public files stage. JavaScript syntax and whitespace checks pass. Four early homepage smoke cases pass.
@@ -7,7 +15,7 @@
 - Independent actual-diff privacy review found and rechecked a load-timing race; sampling now waits until after the load handler and gives missing entries a bounded one-second opportunity. Independent UX review inspected 320/390/1440px captures and found all three choices readable and visible, with no remaining panel issue.
 - A newly added 320px Help-first-screen assertion failed. An isolated HEAD/current comparison in both Chromium and WebKit established identical geometry: notice y84.3125/h54, Respond y453.875/h68.5, Help y563.875/h66.5. This is a pre-existing mismatch with the journey-register wording, not analytics displacement. The new regression checks the primary Respond action stays fully visible and records that scope; no existing assertion was weakened and no homepage redesign was made.
 - Native iPhone 17 / iOS 26.5 Safari passed the local preview control check: readable notice/panel, all choices visible, basic selection closes the panel and persists after reload. Initial 127.0.0.1 subresource loading failed; a fresh localhost preview resolved it without reducing Safari protections. External collectors were disabled in this temporary preview. Browser emulation and independent screenshot review are recorded separately. No real contribution or council form was submitted.
-- Full hosted current-revision gates, backend deployment and actual live receipt are pending; record their outcomes in the pull request and task completion evidence.
+- The earlier aggregate release passed hosted checks and deployment; live receipt evidence is recorded in PR #29.
 
 
 ## Unreleased

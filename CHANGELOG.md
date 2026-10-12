@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add estimated daily visitors (unique browsers) through a browser-local date marker and cross-tab lock. Repeat page views do not create additional daily increments. Preserve earlier scopes and refusals, remove the marker on Off, and send only an isolated aggregate total. Update the compact notice and privacy/storage explanation, including UTC boundaries, conservative undercount and browser-versus-people limits. Implementation verification and deployment pending.
+
+
 ### Mobile follow-up simplification — 12 October 2026
 
 - Compact the inner-page phone header while keeping exposed Community letters / Share ideas, Menu and the named section chooser. Move its existing page/update strip into Menu on phones; preserve desktop status and the maintained action deadlines.

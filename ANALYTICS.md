@@ -1,5 +1,19 @@
 # Website statistics
 
+## Daily browser estimate — 12 October 2026
+
+The owner requested implementation and deployment of estimated daily visitors (unique browsers), including repeat-view verification. The chosen design uses only a browser-local UTC date under `kew-analytics-browser-day`; no unique token, IP hash, fingerprint or server deduplication set is introduced. This is our assessment under the ICO statistical-purpose exception, not approval by the regulator of this specific implementation.
+
+Purpose and necessity: distinguish repeat page opens from the approximate daily audience when assessing whether website content and navigation are useful. Page opens alone cannot answer that question. A date marker is less intrusive than retaining per-browser identifiers or visits; it enables one fixed daily increment without connecting activity. It must never be used for campaign targeting, supporter identification or decisions about people. The existing transmission legitimate-interest assessment and provider arrangements apply; the server schema and 365-day aggregate retention remain unchanged.
+
+Fresh visitors qualify only after the updated notice is fully visible. New explicit choices save v4; every v1–v3 scope and refusal is preserved. The daily marker is never accessed for a valid earlier non-refusing choice. Off removes it and blocks subsequent analytics access; browser privacy signals also suppress collection. No cookies are set. Local storage has no automatic physical expiry: the date becomes irrelevant after its UTC day and is replaced on a later counted day, removed by Off, or cleared with site data.
+
+A same-origin Web Lock serializes the check/write across tabs. Eligibility, the stored choice, configuration and UTC day are rechecked inside the lock. If locks or marker storage are unavailable, only the browser estimate is skipped. The marker is written before one isolated `browser_day/all` request, containing no date, page, device, referral or identifier. Delivery is never retried; interruptions can undercount. Server validation rejects combining this metric with any other row. Application logs stay disabled and IP/UA are not used or retained for deduplication; infrastructure necessarily handles connection data.
+
+Reporting: daily unique browser storage contexts, not exact people. Multiple devices/private sessions/storage clearing/re-opt-in can overcount; shared browsers, blockers, objections, unsupported locks and failed delivery can undercount. Suppression uses device UTC; backend totals use server UTC at receipt. Incorrect device clocks and requests crossing midnight can distort daily totals. UTC day boundaries may differ from a local calendar day. Summing daily totals yields browser-days, not weekly/monthly unique visitors. No historical backfill. Do not divide other dimensions by this estimate as if they were matched visitor records. The metric does not appear in Umami; query Cloudflare D1 as documented in the backend README.
+
+Independent privacy and UX planning reviews required conservative delivery, explicit earlier-scope status and compact notice wording. Actual-diff/rendered reviews and verification are recorded in TESTING.md and the release PR.
+
 ## Consent-free measurement audit — 12 October 2026
 
 Decision: extend immediate aggregate counters, preserving the same database schema and private reporting. This is a purpose/necessity and implementation assessment against current ICO guidance, not a claim that every conceivable metric is permitted or a professional legal opinion.
@@ -46,7 +60,7 @@ The earlier claim that avoiding Umami's individual-session views makes its retai
 
 ## Saved choices
 
-Keep the existing storage key so refusals survive. Read v1, v2 and v3. New explicit choices save v3; v1/v2 choices retain earlier aggregate scope until reviewed. Existing v1 basic choices keep page totals only, without widening to interaction measurement; reviewing Basic again saves v3 with the explained aggregate breadth. Existing allow retains the unchanged Umami scope. Allow lasts 180 days; basic/deny five years. Expired allow stops Umami and requires the notice before the aggregate default starts again. No choice is written automatically.
+Keep the existing storage key so refusals survive. Read v1, v2, v3 and v4. New explicit choices save v4; v1/v2 choices retain earlier aggregate scope until reviewed. Existing v1 basic choices keep page totals only, without widening to interaction measurement; reviewing Basic again saves v4 with the explained aggregate breadth. Existing allow retains the unchanged Umami scope. Allow lasts 180 days; basic/deny five years. Expired allow stops Umami and requires the notice before the aggregate default starts again. No choice is written automatically. The separate date-only daily-count marker is written for eligible fresh/v4 browsers after the updated notice or choice.
 
 ## Detailed Umami contract
 

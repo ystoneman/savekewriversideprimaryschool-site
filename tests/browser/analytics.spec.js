@@ -10,6 +10,7 @@ const site = origin + prefix;
 const endpoint = 'https://gateway.umami.is/api/send';
 const counterEndpoint = 'https://kew-riverside-statistics.analytics-backend.workers.dev/count';
 const choiceKey = 'kew-analytics-choice-v1';
+const browserDayKey = 'kew-analytics-browser-day';
 const fakeConfig = { enabled: true, counterEnabled: true, websiteId: '01234567-89ab-4cde-8123-456789abcdef' };
 const officialForm = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform';
 const sentinel = 'FICTIONAL_PRIVATE_VALUE_NEVER_SEND_84';
@@ -78,7 +79,7 @@ async function virtualProduction(context, options = {}) {
     const request = route.request();
     expect(request.method()).toBe('POST');
     aggregates.push({ body: request.postDataJSON(), headers: request.headers() });
-    await route.fulfill({ json: { accepted: true } });
+    await route.fulfill(options.counterFailure ? { status: 503, body: 'Intentional local counter outage', headers: { 'X-Test-Fixture': 'intentional-error' } } : { json: { accepted: true } });
   });
   return { sent, configReads, aggregates };
 }
@@ -1068,7 +1069,7 @@ test('Expanded aggregate metrics keep only fixed categories and never widen Umam
   expect(pageViews(sent)[0].body.payload.referrer).toBe('https://external.example/');
   expect(JSON.stringify(sent)).not.toContain('richmond-nub');
   expect(counters().filter(c => c.metric === 'device')).toHaveLength(1);
-  expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).v, choiceKey)).toBe(3);
+  expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).v, choiceKey)).toBe(4);
 });
 
 for (const from of ['proposal.html?private=secret#parent-plan', 'feedback.html', 'corrections.html', 'unknown.html']) {
@@ -1149,4 +1150,124 @@ test('Performance waits for late timing entries and sends one sample per metric'
   await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'fcp'))).toBe(true);
   const timings = aggregates.flatMap(r => r.body.counters).filter(c => ['load', 'ttfb', 'fcp'].includes(c.metric));
   expect(timings).toEqual([{ metric: 'load', label: 'faq.html|1-2.5s' }, { metric: 'ttfb', label: 'faq.html|under-1s' }, { metric: 'fcp', label: 'faq.html|1-2.5s' }]);
+});
+
+const dailyBrowsers = aggregates => aggregates.filter(r => r.body.counters.some(c => c.metric === 'browser_day'));
+const aggregatePages = aggregates => aggregates.filter(r => r.body.counters.some(c => c.metric === 'page'));
+
+async function dailyBasic(context) {
+  await context.addInitScript(key => localStorage.setItem(key,
+    JSON.stringify({ v: 4, choice: 'basic', until: Date.now() + 86400000 })), choiceKey);
+}
+
+test('Daily browser: fresh notice then reload, navigation and simultaneous tabs count once', async ({ page, context }) => {
+  const { aggregates, sent } = await virtualProduction(context);
+  await page.goto(site);
+  await expect.poll(() => dailyBrowsers(aggregates).length).toBe(1);
+  expect(dailyBrowsers(aggregates)[0].body).toEqual({ counters: [{ metric: 'browser_day', label: 'all' }] });
+  const date = await page.evaluate(key => localStorage.getItem(key), browserDayKey);
+  expect(date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  await page.reload();
+  await expect.poll(() => aggregatePages(aggregates).length).toBe(2);
+  await page.goto(site + 'faq.html');
+  await expect.poll(() => aggregatePages(aggregates).length).toBe(3);
+  const other = await context.newPage();
+  await other.goto(site + 'letters.html');
+  await expect.poll(() => aggregatePages(aggregates).length).toBe(4);
+  await page.waitForTimeout(200);
+  expect(dailyBrowsers(aggregates)).toHaveLength(1);
+  expect(sent).toEqual([]);
+  expect(JSON.stringify(dailyBrowsers(aggregates))).not.toContain(date);
+  // Start the next independent browser-day with two simultaneously arriving tabs.
+  await page.evaluate(key => localStorage.removeItem(key), browserDayKey);
+  await Promise.all([page.goto(site + 'about.html'), other.goto(site + 'faq.html')]);
+  await expect.poll(() => aggregatePages(aggregates).length).toBe(6);
+  await expect.poll(() => dailyBrowsers(aggregates).length).toBe(2);
+  await page.waitForTimeout(200);
+  expect(dailyBrowsers(aggregates)).toHaveLength(2);
+  await other.close();
+});
+
+test('Daily browser: same-day revisits suppressed and next UTC day counts again', async ({ page, context }) => {
+  const { aggregates } = await virtualProduction(context);
+  await dailyBasic(context);
+  await page.clock.setFixedTime(new Date('2026-10-12T23:59:50Z'));
+  await page.goto(site + 'faq.html');
+  await expect.poll(() => dailyBrowsers(aggregates).length).toBe(1);
+  await page.reload();
+  await expect.poll(() => aggregatePages(aggregates).length).toBe(2);
+  expect(dailyBrowsers(aggregates)).toHaveLength(1);
+  await page.clock.setFixedTime(new Date('2026-10-13T00:00:01Z'));
+  await page.goto(site + 'about.html');
+  await expect.poll(() => dailyBrowsers(aggregates).length).toBe(2);
+  expect(await page.evaluate(key => localStorage.getItem(key), browserDayKey)).toBe('2026-10-13');
+});
+
+for (const v of [1, 2, 3]) {
+  test(`Daily browser: v${v} choice does not even access marker until reviewed`, async ({ page, context }) => {
+    const { aggregates } = await virtualProduction(context);
+    await page.addInitScript(({ key, marker, v }) => {
+      localStorage.setItem(key, JSON.stringify({ v, choice: 'basic', until: Date.now() + 86400000 }));
+      const get = Storage.prototype.getItem, set = Storage.prototype.setItem;
+      window.dailyMarkerAccess = [];
+      Storage.prototype.getItem = function(k) { if (k === marker) window.dailyMarkerAccess.push('read'); return get.call(this, k); };
+      Storage.prototype.setItem = function(k, val) { if (k === marker) window.dailyMarkerAccess.push('write'); return set.call(this, k, val); };
+    }, { key: choiceKey, marker: browserDayKey, v });
+    await page.goto(site + 'faq.html');
+    await expect.poll(() => aggregatePages(aggregates).length).toBe(1);
+    expect(await page.evaluate(() => window.dailyMarkerAccess)).toEqual([]);
+    const panel = await choices(page);
+    await expect(panel.getByRole('status')).toContainText('daily browser count is off');
+    await panel.getByRole('button', { name: BASIC, exact: true }).click();
+    await expect.poll(() => dailyBrowsers(aggregates).length).toBe(1);
+    expect(await page.evaluate(() => window.dailyMarkerAccess)).toContain('write');
+  });
+}
+
+for (const failure of ['locks', 'marker-read', 'marker-write', 'delivery']) {
+  test(`Daily browser: ${failure} fails conservatively without blocking existing page counts`, async ({ page, context }) => {
+    const { aggregates } = await virtualProduction(context, { counterFailure: failure === 'delivery' });
+    await dailyBasic(context);
+    await page.addInitScript(({ failure, marker }) => {
+      if (failure === 'locks') Object.defineProperty(navigator, 'locks', { value: undefined });
+      if (failure.startsWith('marker-')) {
+        const operation = failure === 'marker-read' ? 'getItem' : 'setItem';
+        const original = Storage.prototype[operation];
+        Storage.prototype[operation] = function(k, ...args) {
+          if (k === marker) throw new Error('Fictional marker storage failure');
+          return original.call(this, k, ...args);
+        };
+      }
+    }, { failure, marker: browserDayKey });
+    await page.goto(site + 'faq.html');
+    await expect.poll(() => aggregatePages(aggregates).length).toBe(1);
+    if (failure === 'delivery') await expect.poll(() => dailyBrowsers(aggregates).length).toBe(1);
+    await page.reload();
+    await expect.poll(() => aggregatePages(aggregates).length).toBe(2);
+    await page.waitForTimeout(150);
+    expect(dailyBrowsers(aggregates)).toHaveLength(failure === 'delivery' ? 1 : 0);
+  });
+}
+
+test('Daily browser: Off clears marker, blocks a waiting lock, and renewed basic can count again', async ({ page, context }) => {
+  const { aggregates } = await virtualProduction(context);
+  await dailyBasic(context);
+  await page.addInitScript(() => {
+    // Hold the real lock before the collector starts; no mock locking semantics.
+    navigator.locks.request('kew-analytics-browser-day', () => new Promise(resolve => { window.releaseDailyLock = resolve; }));
+  });
+  await page.goto(site + 'faq.html');
+  await expect.poll(() => aggregatePages(aggregates).length).toBe(1);
+  const panel = await choices(page);
+  await panel.getByRole('button', { name: OFF, exact: true }).click();
+  await page.evaluate(() => window.releaseDailyLock());
+  await page.waitForTimeout(150);
+  expect(dailyBrowsers(aggregates)).toHaveLength(0);
+  expect(await page.evaluate(key => localStorage.getItem(key), browserDayKey)).toBeNull();
+  await (await choices(page)).getByRole('button', { name: BASIC, exact: true }).click();
+  await expect.poll(() => dailyBrowsers(aggregates).length).toBe(1);
+  await (await choices(page)).getByRole('button', { name: OFF, exact: true }).click();
+  expect(await page.evaluate(key => localStorage.getItem(key), browserDayKey)).toBeNull();
+  await (await choices(page)).getByRole('button', { name: BASIC, exact: true }).click();
+  await expect.poll(() => dailyBrowsers(aggregates).length).toBe(2);
 });

@@ -3,7 +3,7 @@
  * No provider JavaScript, DOM recording, form listeners or visitor identity API.
  * Default aggregate statistics, and opt-in Umami usage analytics.
  * A visitor can keep aggregate statistics only or turn both off.
- * No cookie is set and nothing is written to storage unless a choice is made.
+ * No cookie or visitor ID is set. A date-only daily-count marker stays on device.
  */
 (() => {
   'use strict';
@@ -13,6 +13,7 @@
   const HOST = 'savekewriversideprimaryschool.org';
   const ROOT = '/';
   const KEY = 'kew-analytics-choice-v1';
+  const BROWSER_DAY_KEY = 'kew-analytics-browser-day';
   const DAY = 24 * 60 * 60 * 1000;
   // An explicit allow lapses after 180 days. An objection or a basic-only choice
   // is kept for five years before the aggregate default applies again.
@@ -62,7 +63,7 @@
   let config, choice = null, storageOK = true, collecting = false;
   let timer, previousTick = 0, lastActivity = 0, seconds = 0, pageSent = false;
   let opener, panel, status, buttons, invitation;
-  let legacyBasic = false, expandedScope = true;
+  let legacyBasic = false, expandedScope = true, dailyScope = true;
   let performanceSent = false, restoredPage = false, performanceTimer, performanceAttempts = 0;
   let configLoaded = false, noticePresented = false, observer;
   let umamiPageSent = false;
@@ -83,10 +84,12 @@
     const wasDetailed = choice === 'allow';
     try {
       const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
-      choice = saved && [1, 2, 3].includes(saved.v) && ['allow', 'basic', 'deny'].includes(saved.choice) &&
+      choice = saved && [1, 2, 3, 4].includes(saved.v) && ['allow', 'basic', 'deny'].includes(saved.choice) &&
         Number.isFinite(saved.until) && saved.until > Date.now() ? saved.choice : null;
       legacyBasic = choice === 'basic' && saved.v === 1;
-      expandedScope = !choice || saved.v === 3;
+      expandedScope = !choice || saved.v >= 3;
+      dailyScope = !choice || saved.v === 4;
+      if (choice === 'deny' || browserObjects()) localStorage.removeItem(BROWSER_DAY_KEY);
     } catch (_) { storageOK = false; choice = null; legacyBasic = false; }
     if (choice === 'allow' && !wasDetailed) resetDetailedAttention();
   }
@@ -184,6 +187,25 @@
     if (!rows.length) return;
     request(COUNTER_ORIGIN + '/count', { counters: rows }, { 'Content-Type': 'text/plain' });
   }
+  // Same-origin locks serialize the date check/write across tabs. The date is
+  // not an identifier and is never sent. Mark before sending and never retry:
+  // interrupted delivery can undercount, but reloads cannot resend that day.
+  function countDailyBrowser() {
+    if (!dailyScope || !counting() || config.counterEnabled !== true || !navigator.locks?.request) return;
+    navigator.locks.request('kew-analytics-browser-day', () => {
+      readChoice();
+      if (!dailyScope || !counting() || config.counterEnabled !== true) return;
+      const day = new Date().toISOString().slice(0, 10);
+      try {
+        if (localStorage.getItem(BROWSER_DAY_KEY) === day) return;
+        localStorage.setItem(BROWSER_DAY_KEY, day);
+      } catch (_) { return; }
+      if (dailyScope && counting()) {
+        // Isolated total: no page, device, referral or date supplied by client.
+        request(COUNTER_ORIGIN + '/count', { counters: [{ metric: 'browser_day', label: 'all' }] }, { 'Content-Type': 'text/plain' });
+      }
+    }).catch(() => {});
+  }
   function request(endpoint, body, headers) {
     const controller = new AbortController();
     pending.add(controller);
@@ -258,6 +280,7 @@
     if (!counting()) return;
     if (!pageSent) { send(); pageSent = true; if (detailed()) umamiPageSent = true; }
     aggregateContext();
+    countDailyBrowser();
     measurePerformance();
     // Opting in after aggregate collection needs its own Umami page view.
     if (detailed() && !umamiPageSent) {
@@ -279,7 +302,8 @@
   }
   function persist(value) {
     const newlyDetailed = value === 'allow' && choice !== 'allow';
-    try { localStorage.setItem(KEY, JSON.stringify({ v: 3, choice: value, until: Date.now() + LIFETIME[value] })); choice = value; legacyBasic = false; expandedScope = true; }
+    try { localStorage.setItem(KEY, JSON.stringify({ v: 4, choice: value, until: Date.now() + LIFETIME[value] })); choice = value; legacyBasic = false; expandedScope = true; dailyScope = true;
+      if (value === 'deny') localStorage.removeItem(BROWSER_DAY_KEY); }
     catch (_) { storageOK = false; choice = null; }
     stop();
     // Optional events measure attention after permission, not earlier activity.
@@ -312,6 +336,7 @@
       privateRoute ? 'Analytics is off on this ' + (file === 'feedback.html' ? 'Share ideas' : 'private request') + ' page.' :
       current === 'allow' ? 'Current setting: aggregate statistics and detailed Umami usage.' :
       current === 'deny' ? 'Current setting: analytics off.' : legacyBasic ? 'Current setting: page-open totals only (earlier choice).' : 'Current setting: aggregate statistics only (the default).';
+    if (!locked && !privateRoute && current !== 'deny' && !dailyScope) status.textContent += ' Earlier choice: daily browser count is off until you choose again.';
     updateInvitation();
   }
   function updateInvitation() {
@@ -341,7 +366,7 @@
     const dismiss = button('×', close); dismiss.className = 'analytics-close'; dismiss.setAttribute('aria-label', 'Close analytics choices');
     panel.append(title, dismiss,
       node('p', 'Help us make useful information easier to find and fix pages that are slow or difficult to use.'),
-      node('p', 'Basic statistics keep daily totals without visitor histories. Optional Umami analytics groups your activity into visits and derives device and approximate location. Turn analytics off stops both.'));
+      node('p', 'Basic totals include a daily browser count using a saved date on this device, without visitor histories. Optional Umami analytics groups your activity into visits and derives device and approximate location. Turn analytics off stops both.'));
     // The choices come before the longer explanation so they fit a small phone screen.
     status = node('p'); status.setAttribute('role', 'status'); panel.append(status);
     const actions = node('div', '', 'analytics-actions');
@@ -353,6 +378,7 @@
     };
     actions.append(...Object.values(buttons)); panel.append(actions);
     panel.append(node('p', 'Basic statistics count page opens, public page-to-page arrivals, broad referral and device categories, loading-speed groups, section visibility, active-time milestones and selected link opens.'));
+    panel.append(node('p', 'The daily count estimates browsers, not people. The date stays here until replaced on a later counted day or cleared; Off removes it. Days use UTC.'));
     panel.append(node('p', 'We never record your screen, words you type, names or contact details. Everything on the site works whatever you choose.'));
     const more = node('a', 'How analytics works'); more.href = 'privacy.html#analytics'; panel.append(more);
     // Close without returning focus, so the explanation it leads to is not covered.
@@ -368,7 +394,7 @@
   function buildInvitation() {
     invitation = node('section', '', 'analytics-invitation');
     invitation.setAttribute('aria-labelledby', 'analytics-invitation-title');
-    const title = node('p', 'Basic statistics on. Umami off.');
+    const title = node('p', 'Basic on: daily browser count uses a saved date. Umami off.');
     title.id = 'analytics-invitation-title';
     const actions = node('div', '', 'analytics-actions');
     const review = button('Analytics', () => { open(review); });
