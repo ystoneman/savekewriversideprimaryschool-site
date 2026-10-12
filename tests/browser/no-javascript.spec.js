@@ -391,7 +391,7 @@ test('No JavaScript: optional sharing details and reviewed ideas remain usable',
 test('No JavaScript: all FAQ answers retain native disclosure and official routes', async ({ page }) => {
   await page.goto('/faq.html');
   await expect(page.locator('#faq-search')).toBeHidden();
-  const answers = page.locator('main details');
+  const answers = page.locator('main .faq-answer');
   await expect(answers).toHaveCount(16);
   for (const answer of await answers.all()) {
     await expect(answer).toBeVisible();
