@@ -7,6 +7,7 @@ const official = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_A
 for (const source of ['letters.html', 'feedback.html']) {
   test(`Video: discover private upload from ${source}`, async ({ page, baseURL, hasTouch }) => {
     await page.goto('/' + source);
+    if (source === 'feedback.html') await page.locator('#ideas-other-help > summary').click();
     const entry = page.locator('main a[href="videos.html#upload"]');
     if (source === 'letters.html') await expect(page.locator('.form-route').filter({ has: page.locator('a[href="videos.html#upload"]') })).toHaveText('Share your parent testimonial to help new families discover the school.');
     await expect(entry).toBeVisible();

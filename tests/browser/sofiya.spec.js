@@ -21,6 +21,10 @@ test('Learning: contextual homepage and evidence entries reach the results and s
     ['/index.html', page.locator('.mobile-menu')],
   ]) {
     await page.goto(path);
+    if (path === '/evidence.html') {
+      const topic = page.locator('#evidence-numbers-detail');
+      if (!await topic.evaluate(detail => detail.open)) await activate(topic.locator(':scope > summary'), hasTouch);
+    }
     if (path === '/index.html') await page.locator('.mobile-menu summary').click();
     const link = entry.locator('a[href="understand.html#learning-and-results"]');
     await expect(link).toBeVisible();
@@ -224,6 +228,7 @@ test('Inspection: original-source counts, search and the resolved gap agree', as
   await expect(inspection.locator('h3 a')).toHaveAttribute('href', 'https://www.kewriverside.richmond.sch.uk/attachments/download.asp?file=3619&type=pdf');
   await page.getByRole('button', { name: 'Clear filters' }).click();
   await expect(page.locator('.source-card:visible')).toHaveCount(61);
+  await activate(page.locator('#evidence-questions-detail > summary'), hasTouch);
   const gap = page.locator('#evidence-found');
   await expect(gap).toContainText(/resolved/i);
   await activate(gap.locator('summary'), hasTouch);

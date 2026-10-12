@@ -1,0 +1,77 @@
+/* A short arrival layer, with complete information one named topic away. */
+.simple-page .site-header .header-inner{min-height:64px;padding-block:8px;gap:14px}
+.simple-page .site-header .desktop-explore{font-size:14px}
+.simple-page .site-header .participation-nav a{padding:8px 12px;min-height:44px}
+.simple-page .site-header .participation-nav{align-items:stretch}
+.simple-page .participation-label small{display:none}
+.simple-page .voice-medallion{display:none}
+.simple-page .site-header .brand{font-size:20px}
+.simple-page .site-header .brand svg{width:30px;height:30px}
+.simple-page .campaign-subtitle span{display:none}
+.simple-page .orientation-inner{min-height:48px}
+.simple-page main{padding-top:28px;padding-bottom:32px}
+.simple-page main h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.1;letter-spacing:-.035em;max-width:25ch}
+.simple-page main h2{font-size:clamp(1.5rem,3vw,2.2rem);line-height:1.2}
+.simple-page .simple-intro{max-width:760px;padding-block:0 20px;margin-bottom:16px}
+.simple-page .simple-intro p{font-size:17px;line-height:1.55}
+.simple-actions{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0}
+.simple-actions :is(a,button){min-height:52px;display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border:1px solid var(--teal);border-radius:7px;font:700 16px/1.4 Arial,sans-serif;text-decoration:none;background:var(--paper);color:var(--ink);overflow-wrap:anywhere}
+.simple-actions .primary{background:var(--theme-primary,var(--green,var(--teal)));color:var(--theme-on-primary,#fff)}
+.simple-note{font-size:14px;line-height:1.5;color:var(--body);max-width:75ch}
+.current-response-note{display:block;margin-block:8px 12px}
+.simple-detail{margin:14px 0;border:1px solid var(--line);border-radius:8px;background:var(--paper);min-width:0}
+.simple-detail>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 18px;min-height:56px;font:700 17px/1.4 Arial,sans-serif;color:var(--ink);cursor:pointer;overflow-wrap:anywhere}
+.simple-detail>summary::-webkit-details-marker{display:none}
+.simple-detail>summary::after{content:'+';font-size:24px;flex:none;font-weight:400}
+.simple-detail[open]>summary::after{content:'−'}
+.simple-detail[open]>summary{border-bottom:1px solid var(--line)}
+.simple-detail-body{padding:20px;min-width:0;overflow-wrap:anywhere}
+.simple-detail-body>:first-child{margin-top:0}
+.simple-detail-body>:last-child{margin-bottom:0}
+.simple-detail-body :is(.wrap,.data-wrap){width:100%;max-width:100%}
+.simple-detail-body :is(section,article){min-width:0}
+.simple-page :is(a,summary,button,input,textarea):focus-visible{outline:3px solid var(--theme-focus,var(--teal));outline-offset:3px}
+.simple-page .simple-toolbar{margin-top:24px;border-top:1px solid var(--line);padding-top:12px}
+.simple-page .simple-toolbar:has(button[hidden]){display:none}
+.simple-toolbar button{min-height:44px;padding:10px 14px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:6px;font:inherit;cursor:pointer}
+.simple-page .footer-inner{gap:16px;align-items:flex-start}
+.simple-page .footer-inner p{font-size:13px}
+.simple-page .footer-inner>div:last-child{gap:2px 14px;font-size:13px}
+.simple-page .invite-hero,.simple-page .feedback-intro{padding-block:0 16px;margin-bottom:10px}
+.simple-page .simple-participation :is(.invite-layout,.feedback-layout){grid-template-columns:minmax(0,1fr)}
+.simple-page .kind-grid{gap:8px}
+.simple-page .kind-card{padding:12px}
+.simple-page .kind-card p{font-size:14px;margin-block:6px}
+.simple-page .simple-detail-body :is(.invite-hero,.lesson-hero){padding:0}
+.simple-page .simple-detail-body .simple-detail{margin-block:12px}
+.simple-page #citation-search-controls{padding:14px 0;margin:14px 0;max-width:760px}
+.simple-page .parent-plan-respond .button{min-height:56px;font-size:17px;padding:14px 18px}
+#citation-search-controls label{display:block;font-weight:700;margin-bottom:8px}
+#citation-search-controls input{width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);font:16px/1.4 Arial,sans-serif}
+#citation-search-controls button{min-height:44px;padding:8px 12px;margin-top:8px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:6px;font:inherit}
+#citation-search-controls :is(#citation-search-status,#citation-empty){font-size:14px;margin-block:8px}
+@media(max-width:700px){
+  .simple-page .site-header .header-inner{gap:5px;padding-block:6px}
+  .simple-page .site-header .brand{font-size:17px}
+  .simple-page .site-header .brand svg{width:28px;height:28px}
+  .simple-page .site-header .brand .campaign-subtitle strong{font-size:12px}
+  .simple-page .site-header .participation-nav{gap:8px;grid-row:2;grid-column:1/-1}
+  .simple-page .site-header .participation-nav a{padding:6px 10px;font-size:14px}
+  .simple-page .participation-label{font-size:14px}
+  .simple-page main{padding-top:20px}
+  .simple-page .orientation-inner{gap:6px;min-height:48px}
+  .simple-page .section-trail{font-size:12px}
+  .simple-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+  .simple-actions :is(a,button){justify-content:space-between;min-height:56px}
+  .simple-page .parent-plan-respond .button{display:flex;justify-content:space-between;width:100%}
+  .simple-detail>summary{font-size:16px;padding:13px 14px}
+  .simple-detail-body{padding:16px}
+  .simple-page .simple-participation .kind-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media print{
+  .simple-toolbar,.simple-actions,.simple-page .site-orientation{display:none!important}
+  .simple-detail{border:0;break-inside:auto}
+  .simple-detail>summary{padding:12px 0;border:0}
+  .simple-detail>summary::after{display:none}
+  .simple-detail-body{padding:0}
+}

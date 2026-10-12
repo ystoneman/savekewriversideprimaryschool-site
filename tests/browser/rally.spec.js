@@ -46,7 +46,10 @@ test('Rally: shared photo arrival preserves choice and formal response at narrow
   for (const width of [320, 390, 1101, 1250, 1440]) {
     await page.setViewportSize({ width, height: width === 1440 ? 1000 : 568 });
     await page.goto('/rally.html');
-    await expect(page.locator('.participation-label small').first()).toHaveCSS('display', 'block');
+    for (const action of await page.locator('.participation-nav a').all()) {
+      await expect(action).toBeVisible();
+      expect((await action.boundingBox()).height).toBeGreaterThanOrEqual(44);
+    }
     if (width > 1100) {
       const brand = await page.locator('.brand').boundingBox();
       const navigation = await page.locator('.desktop-explore').boundingBox();
@@ -74,7 +77,7 @@ test('Rally: shared photo arrival preserves choice and formal response at narrow
 });
 
 test('Rally: calendar download uses London evening time and retains pending arrangements', async ({ page, request }) => {
-  await page.goto('/rally.html');
+  await page.goto('/rally.html#schedule');
   const downloadEvent = page.waitForEvent('download');
   await page.getByRole('link', { name: 'Original calendar file (past event)' }).click();
   const download = await downloadEvent;

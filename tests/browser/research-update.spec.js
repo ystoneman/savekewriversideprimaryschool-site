@@ -42,6 +42,7 @@ test('Research update: homepage evidence leads to current findings, annual table
   const evidence = page.locator('.mobile-menu a[href="evidence.html#records"]');
   if (hasTouch) await evidence.tap(); else await evidence.click();
   await expect(page.locator('#kew-findings-title')).toBeInViewport();
+  await page.locator('#evidence-kew-detail > summary').click();
   await expect(page.locator('#kew-finance')).toContainText('indicative forecast');
   await page.locator('#kew-finance a[href="understand.html#budget"]').click();
   await expect(page.locator('#budget-title')).toBeInViewport();

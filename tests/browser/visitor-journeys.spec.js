@@ -79,6 +79,7 @@ test('Government closure guidance is cited at the point of use without adding re
   await expect(respond.locator(`a[href="${guidance}#page=6"]`)).toBeVisible();
   await expect(respond).toContainText('every view should be considered');
   await expect(respond.locator('a.button')).toHaveCount(1);
+  await page.goto('/proposal.html#questions');
   await expect(page.locator(`#question-demand a[href="${guidance}#page=8"]`)).toBeVisible();
   await expect(page.locator(`#question-alternatives a[href="${guidance}#page=8"]`)).toBeVisible();
   await page.goto('/options.html#options');
@@ -285,6 +286,7 @@ test('Parent plan: homepage shortcut and historical meeting details lead to curr
   await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
   await expect(page.locator('#parent-plan-title')).toBeInViewport();
   await expect(page.locator('#parent-plan')).toContainText('Closure is proposed, not decided.');
+  await page.locator('#parent-plan-full > summary').click();
   for (const [name, id] of [['Letters', 'plan-share'], ['Your response', 'plan-respond'], ['More ways to help', 'plan-keep-going']]) {
     await activate(page.getByRole('navigation', { name: 'Choose a parent action' }).getByRole('link', { name, exact: true }), hasTouch);
     await expect(page).toHaveURL(new RegExp('#' + id + '$'));
@@ -323,7 +325,9 @@ test('Parent plan: correct PTA dates, the video route for new families and offic
   await expect(page.locator('.parent-reassurance')).toContainText('Keep following any admissions or SEND (special educational needs and disabilities) instructions');
   for (const href of ['letters.html#letter-form', 'videos.html#upload', 'feedback.html?kind=evidence#feedback-form', 'feedback.html?kind=meeting#feedback-form', 'options.html#options']) {
     await page.goto('/proposal.html#parent-plan');
-    await activate(page.locator(`#parent-plan a[href="${href}"]`), hasTouch);
+    await page.locator('#parent-plan-full > summary').click();
+    const route=href==='letters.html#letter-form' ? '#plan-share' : '#parent-plan';
+    await activate(page.locator(`${route} a[href="${href}"]`), hasTouch);
     await expectDestination(page, href, baseURL);
   }
   await page.goto('/proposal.html#plan-respond');

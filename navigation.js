@@ -27,7 +27,7 @@
       const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
       if (target) {
         for (let node = target; node; node = node.parentElement) if (node.tagName === 'DETAILS') node.open = true;
-        const ownDetail = target.querySelector(':scope > details[data-options-detail]');
+        const ownDetail = target.querySelector(':scope > details[data-options-detail], :scope > details[data-simple-detail]');
         if (ownDetail) ownDetail.open = true;
         requestAnimationFrame(() => {
           const destination = target.matches('details') ? target.querySelector('summary') : target;
@@ -76,7 +76,8 @@
     scheduled = false;
     root.style.setProperty('--nav-bottom', Math.max(bar.getBoundingClientRect().bottom, bar.getBoundingClientRect().height)+'px');
     const available = entries.filter(item => exposed(item.target));
-    entries.forEach(item => { item.link.hidden = !available.includes(item); });
+    // Optional topics remain discoverable while their full text is closed.
+    entries.forEach(item => { item.link.hidden = !available.includes(item) && !item.target.closest('[data-simple-detail]') && !item.target.querySelector(':scope > details[data-simple-detail]'); });
     const edge = bar.getBoundingClientRect().bottom + 28;
     const passed = available.filter(item => item.target.getBoundingClientRect().top <= edge);
     let next = passed.at(-1) || null;
