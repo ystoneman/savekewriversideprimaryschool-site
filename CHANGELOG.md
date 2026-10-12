@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Screened community letter — 12 October 2026
+
+- Add one community letter with current publication consent, preserving the contributor's complete wording and chosen display name and labelling it AI screened. All 81 Python checks, 20 Node checks and public-asset validation pass locally. Complete browser gates, deployment and verification on all retained origins are separate release checks.
+
 ### Aggregate analytics audit and clearer choices — 12 October 2026
 
 - Document purpose, necessity, limits and exclusions in ANALYTICS.md. Add separate fixed referral/browser/OS/device counts, public-page arrival pairs, per-page active thresholds and coarse page-loading measurements; retain immediate daily aggregation, privacy exclusions, objections and unchanged Umami payload scope.
