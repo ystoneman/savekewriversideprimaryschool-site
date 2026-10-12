@@ -311,7 +311,7 @@ test('Understand: capacity and cohort graphics keep their dates, units and sourc
 test('Understand: questions, source references and proposal comparison lead to the cited context', async ({ page, hasTouch }) => {
   for (const id of chartSections) {
     await page.goto('/understand.html');
-  await openResearch(page);
+    await openResearch(page);
     await activate(page.locator(`.visual-route a[href="#${id}"]`), hasTouch);
     await expect(page).toHaveURL(new RegExp(`#${id}$`));
     await expect(page.locator('#' + id)).toBeInViewport();
@@ -322,7 +322,7 @@ test('Understand: questions, source references and proposal comparison lead to t
     ['other-proposals', 'hampton-wick-proposal-2026'],
   ]) {
     await page.goto('/understand.html');
-  await openResearch(page);
+    await openResearch(page);
     await activate(page.locator(`#${section} a[href="evidence.html#source-${source}"]`).first(), hasTouch);
     await expect(page).toHaveURL(new RegExp(`evidence.html#source-${source}$`));
     await expect(page.locator('#source-' + source)).toBeInViewport();

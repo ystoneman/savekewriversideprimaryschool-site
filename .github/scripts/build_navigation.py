@@ -6,6 +6,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[2]
 VERSION = '2026101102'
+PREVIEW_VERSION = '2026100901'  # Shared images are unchanged by this curation.
 SITE_NAME = 'Save Kew Riverside Primary School Campaign'
 SITE_URL = 'https://savekewriversideprimaryschool.org/'
 PAGES = {
@@ -142,7 +143,7 @@ def render_identity(name, document):
         document = meta(document, 'name', 'twitter:description', html.unescape(description))
     document = re.sub(r'<link rel="canonical"[^>]*>', '', document)
     document = document.replace('</head>', '<link rel="canonical" href="'+SITE_URL+('' if name == 'index.html' else name)+'"></head>', 1)
-    document = re.sub(r'(og-[^"?]+\.png)\?v=\d+', r'\1?v='+VERSION, document)
+    document = re.sub(r'(og-[^"?]+\.png)\?v=\d+', r'\1?v='+PREVIEW_VERSION, document)
     if name == 'index.html':
         document = re.sub(r'<html\b[^>]*>', '<html lang="en-GB" itemscope itemtype="https://schema.org/WebSite">', document, count=1)
         document = meta(document, 'itemprop', 'name', SITE_NAME)
