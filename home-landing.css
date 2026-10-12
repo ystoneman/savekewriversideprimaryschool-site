@@ -22,3 +22,6 @@
 @media(max-width:350px){body:has(.analytics-invitation:not([hidden])) .hero-grid{padding-top:15px}body:has(.analytics-invitation:not([hidden])) h1{font-size:2.3rem}body:has(.analytics-invitation:not([hidden])) .intro{margin-top:16px}body:has(.analytics-invitation:not([hidden])) .actions{margin-top:15px}}
 
 .mobile-menu nav{max-height:calc(100dvh + var(--nav-hide-top,-120px) - 24px)}
+
+/* The dated no-script council action also fits a 320 × 568 arrival. */
+@media(max-width:350px){.hero-grid{padding-top:20px}.intro{margin-top:18px}.actions{margin-top:18px}}
