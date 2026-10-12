@@ -76,7 +76,8 @@ test('Understand: the existing comparisons and new case questions are readable o
 
 test('Understand: homepage numbers route reaches dated finances and forecast checks', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
-  await activate(page.locator('#find-your-way a[href="understand.html"]'), hasTouch);
+  await page.locator('.mobile-menu summary').click();
+  await activate(page.locator('.mobile-menu a[href="understand.html"]'), hasTouch);
   await expect(page).toHaveURL(/understand\.html$/);
   await expect(page.locator('#supporting-research')).not.toHaveAttribute('open', '');
   await activate(page.locator('.campaign-route a[href="#supporting-research"]'), hasTouch);

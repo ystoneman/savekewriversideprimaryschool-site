@@ -18,9 +18,10 @@ async function activate(locator, hasTouch) {
 test('Learning: contextual homepage and evidence entries reach the results and support Back', async ({ page, hasTouch }) => {
   for (const [path, entry] of [
     ['/evidence.html', page.getByRole('complementary', { name: 'How does Kew Riverside Primary School compare?' })],
-    ['/index.html', page.locator('#visit-school')],
+    ['/index.html', page.locator('.mobile-menu')],
   ]) {
     await page.goto(path);
+    if (path === '/index.html') await page.locator('.mobile-menu summary').click();
     const link = entry.locator('a[href="understand.html#learning-and-results"]');
     await expect(link).toBeVisible();
     await expect(link).toHaveAccessibleName(/learning|results/i);
@@ -29,6 +30,7 @@ test('Learning: contextual homepage and evidence entries reach the results and s
     await expect(page.locator('#learning-and-results')).toBeInViewport();
     await page.goBack();
     await expect(page).toHaveURL(new RegExp(path.replace('.', '\\.') + '$'));
+    if (path === '/index.html') await page.locator('.mobile-menu summary').click();
     await expect(link).toBeVisible();
   }
 });
@@ -179,12 +181,13 @@ test('Learning: native data and method disclosures work by keyboard and download
 test('Learning: narrow arrival protects action routes and the chart stays inside the page', async ({ page, hasTouch }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/index.html');
-  const plan = page.getByRole('complementary', { name: 'Parent action plan', exact: true }).getByRole('link', { name: 'Parent action plan', exact: true });
-  await expect(plan).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('#main-action')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('.home-plan')).toHaveAttribute('href','proposal.html#parent-plan');
   await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open', '');
   for (const href of ['letters.html', 'feedback.html']) {
-    const link = page.locator(`header a[href="${href}"]:visible`);
-    await expect(link).toBeInViewport({ ratio: 1 });
+    await activate(page.locator('.mobile-menu summary'),hasTouch);
+    const link = page.locator(`.mobile-menu a[href="${href}"]`);
+    await expect(link).toBeVisible();
     await activate(link, hasTouch);
     await expect(page).toHaveURL(new RegExp(`${href.replace('.', '\\.')}$`));
     for (const consent of ['#allow-public', ...(href === 'letters.html' ? ['#allow-council', '#letter-consent'] : [])]) {
@@ -192,7 +195,8 @@ test('Learning: narrow arrival protects action routes and the chart stays inside
     }
     await page.goBack();
   }
-  await activate(page.locator('#visit-school a[href="understand.html#learning-and-results"]'), hasTouch);
+  await activate(page.locator('.mobile-menu summary'),hasTouch);
+  await activate(page.locator('.mobile-menu a[href="understand.html#learning-and-results"]'), hasTouch);
   await activate(page.locator('#attainment-detail > summary'), hasTouch);
   const chart = page.locator('#attainment-chart');
   await expect(chart).toBeVisible();
@@ -293,24 +297,17 @@ test('Recruitment: awareness channels retain direct school and normal-admissions
   for (const channel of ['nurseries', 'parent groups', 'community notices', 'word of mouth', 'social media']) {
     await expect(option).toContainText(new RegExp(channel, 'i'));
   }
-  await page.goto('/index.html#visit-school');
-  const visit = page.locator('#visit-school');
-  await expect(visit).toContainText(/proposed, not decided/i);
-  await expect(visit.locator('a[href="proposal.html"]')).toBeVisible();
-  await expect(visit.locator('a[href="understand.html#learning-and-results"]')).toBeVisible();
-  await expect(visit.locator('a[href^="https://www.richmond.gov.uk/"][href*="primary"]')).toBeVisible();
-  const contact = visit.locator('a[href^="https://www.kewriverside.richmond.sch.uk/"]');
-  await expect(contact).toHaveAccessibleName(/ask.*school.*visit/i);
-  const destination = await contact.getAttribute('href');
+  const destination='https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us';
   await page.route(destination, route => route.fulfill({ contentType: 'text/html', body: '<h1>Intercepted school contact</h1>' }));
-  await activate(contact, hasTouch);
+  await page.goto('/index.html#visit-school');
   await expect(page).toHaveURL(destination);
   await expect(page.getByRole('heading')).toHaveText('Intercepted school contact');
 });
 
 test('Contributions: letters lead to contextual evidence and optional video without adding permissions', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
-  await activate(page.locator('header a[href="letters.html"]:visible'), hasTouch);
+  await activate(page.locator('.mobile-menu summary'),hasTouch);
+  await activate(page.locator('.mobile-menu a[href="letters.html"]'),hasTouch);
   await expect(page.locator('#allow-public')).not.toBeChecked();
   await expect(page.locator('#allow-council')).not.toBeChecked();
   await activate(page.locator('main .form-route a[href="feedback.html?kind=evidence#feedback-form"]'), hasTouch);

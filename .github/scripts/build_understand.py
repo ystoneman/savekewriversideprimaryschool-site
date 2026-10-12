@@ -11,6 +11,7 @@ from html import escape
 from pathlib import Path
 from build_navigation import render_navigation
 import re
+from datetime import date
 import build_learning
 import build_case_evidence
 
@@ -147,10 +148,12 @@ def render(data, case_data=None):
 <section class="data-next"><div><h2>Use the evidence in your response.</h2><p>Explain what matters to your family, point to a dated source and ask a specific question. Community letters here are separate from the official consultation.</p></div><a class="button primary" href="response-checklist.pdf">Response checklist (PDF) ↓</a></section>
 </div></details>
 </main>'''
-    index = (ROOT / 'index.html').read_text()
+    index = (ROOT / 'proposal.html').read_text()
     header = index[index.index('<body'):index.index('<main')]
     # Share navigation without inheriting homepage-specific layout classes.
     header = re.sub(r'<body\b[^>]*>', '<body>', header, count=1)
+    checked = date.fromisoformat(json.loads((ROOT / 'sources.json').read_text())['researchChecked'])
+    header = re.sub(r'<span>Evidence updates: .*?</span>', f'<span>Kew evidence updated {checked.day} {checked:%B %Y}</span>', header, count=1)
     header = header.replace('href="#top"','href="index.html"').replace('href="#records"','href="evidence.html#records"')
     header = header.replace('href="understand.html"','href="understand.html" aria-current="page"')
     footer = index[index.index('<footer>'):]
@@ -158,7 +161,7 @@ def render(data, case_data=None):
     head = f'''<!doctype html>
 <html lang="en-GB"><head><meta charset="utf-8">{csp}
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="theme-color" content="#143936">
-<title>Understand the situation | Kew Riverside Primary School &amp; Richmond school data</title><meta name="description" content="Explore dated pupil trends, forecast checks, school finances, places and learning results for Kew Riverside Primary School and Richmond schools."><meta property="og:title" content="Understand the situation · Kew Riverside Primary School"><meta property="og:description" content="Dated, sourced answers on pupil numbers, forecasts, school finances, places and learning results."><meta property="og:type" content="website"><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css?v=2026092303"><link rel="stylesheet" href="participation.css?v=2026092303"><link rel="stylesheet" href="discovery.css?v=2026092303"><link rel="stylesheet" href="parent-plan.css?v=2026100802"><link rel="stylesheet" href="button-motion.css"><link rel="stylesheet" href="understand.css?v=2026101102"><script src="navigation.js?v=2026092202" defer></script><script src="understand.js?v=2026101102" defer></script><link rel="stylesheet" href="analytics.css?v=2026101101"><script src="analytics.js?v=2026101101" defer></script><link rel="stylesheet" href="voice.css?v=2026100802"><script src="voice.js?v=2026092301" defer></script><link rel="stylesheet" href="theme.css?v=2026092701"><script src="theme.js?v=2026092201"></script></head>
+<title>Understand the situation | Kew Riverside Primary School &amp; Richmond school data</title><meta name="description" content="Explore dated pupil trends, forecast checks, school finances, places and learning results for Kew Riverside Primary School and Richmond schools."><meta property="og:title" content="Understand the situation · Kew Riverside Primary School"><meta property="og:description" content="Dated, sourced answers on pupil numbers, forecasts, school finances, places and learning results."><meta property="og:type" content="website"><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css?v=2026092303"><link rel="stylesheet" href="participation.css?v=2026092303"><link rel="stylesheet" href="discovery.css?v=2026092303"><link rel="stylesheet" href="parent-plan.css?v=2026100802"><link rel="stylesheet" href="button-motion.css"><link rel="stylesheet" href="understand.css?v=2026101102"><script src="navigation.js?v=2026092202" defer></script><script src="understand.js?v=2026101102" defer></script><link rel="stylesheet" href="analytics.css?v=2026101101"><script src="analytics.js?v=2026101202" defer></script><link rel="stylesheet" href="voice.css?v=2026100802"><script src="voice.js?v=2026092301" defer></script><link rel="stylesheet" href="theme.css?v=2026092701"><script src="theme.js?v=2026092201"></script></head>
 '''
     return render_navigation('understand.html', head + header + body + footer)
 

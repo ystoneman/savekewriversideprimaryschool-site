@@ -1,0 +1,41 @@
+'use strict';
+(() => {
+  const council = 'https://www.richmond.gov.uk/services/children_and_family_care/schools_and_colleges/school_organisation_consultations/kew_riverside_consultation';
+  const form = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform';
+  const action = document.getElementById('main-action');
+  const note = document.getElementById('action-note');
+  const intro = document.querySelector('.intro');
+  let rendered = '';
+  function refreshStage(event) {
+    const parts = new Intl.DateTimeFormat('en-GB', {timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+    const part = type => parts.find(item => item.type === type).value;
+    const today = `${part('year')}-${part('month')}-${part('day')}`;
+    const stage = today >= '2026-10-12' && today <= '2026-10-16' ? 'active' : today > '2026-10-16' ? 'expired' : 'dated';
+    const active = stage === 'active';
+    action.href = active ? form : council;
+    // Retire an expired destination immediately, but keep the pressed target
+    // still until click. Changing the paragraph on pointerdown moved the link
+    // under a finger in Safari and cancelled the activation.
+    if (event?.type === 'pointerdown') return;
+    if (stage === rendered) return;
+    rendered = stage;
+    action.removeAttribute('aria-label');
+    action.replaceChildren(document.createTextNode(active ? 'Respond to the council' : 'Check the council consultation'));
+    const arrow = document.createElement('span'); arrow.setAttribute('aria-hidden','true'); arrow.textContent = '↗︎'; action.append(arrow);
+    if (active) {
+      const date = document.createElement('strong'); date.textContent = '1 September 2027';
+      const decision = document.createElement('strong'); decision.textContent = 'No final decision has been made.';
+      intro.replaceChildren(document.createTextNode('Richmond Council proposes closing the school from '), date, document.createTextNode('. '), decision);
+      note.textContent = 'Official consultation · Respond by 16 October 2026.';
+    } else {
+      intro.textContent = 'On 12 October 2026, Richmond Council was consulting on proposed closure from 1 September 2027. Check the council’s page for the current position.';
+      note.textContent = stage === 'expired' ? 'The published 16 October deadline has passed. Check the council’s latest information before acting.' : 'Published response deadline: 16 October 2026. Check the council’s page.';
+    }
+  }
+  refreshStage();
+  window.addEventListener('pageshow', refreshStage);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshStage(); });
+  setInterval(() => { if (!document.hidden) refreshStage(); }, 60000);
+  // Refresh before a click, keyboard activation, new-tab click or copied-link menu.
+  ['pointerdown','click','auxclick','contextmenu','keydown'].forEach(type => action.addEventListener(type, refreshStage, {capture:true}));
+})();

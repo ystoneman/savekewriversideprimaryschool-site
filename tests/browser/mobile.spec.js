@@ -7,8 +7,13 @@ for (const file of pages) {
         await page.goto('/' + file);
         await page.locator('.mobile-menu summary').tap();
         await expect(page.locator('.mobile-menu')).toHaveAttribute('open', '');
-        await page.locator(`.mobile-menu a[href="${href}"]`).tap();
-        await expectDestination(page, href, baseURL);
+        if (href.endsWith('.pdf')) {
+          const [download] = await Promise.all([page.waitForEvent('download'),page.locator(`.mobile-menu a[href="${href}"]`).tap()]);
+          expect(download.suggestedFilename()).toBe(href === 'response-checklist.pdf' ? 'kew-riverside-response-checklist.pdf' : href);expect(await download.failure()).toBeNull();
+        } else {
+          await page.locator(`.mobile-menu a[href="${href}"]`).tap();
+          await expectDestination(page, href, baseURL);
+        }
         await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open', '');
       });
     }
@@ -17,9 +22,10 @@ for (const file of pages) {
   test(`${file}: clear participation actions work on touch`, async ({ page, baseURL }) => {
     for (const [href, label] of [['letters.html', 'Community letters'], ['feedback.html', 'Share ideas']]) {
       await page.goto('/' + file);
-      const link = page.locator(`.participation-nav a[href="${href}"]`);
+      if (file === 'index.html') await page.locator('.mobile-menu summary').click();
+      const link = page.locator(`${file === 'index.html' ? '.mobile-menu' : '.participation-nav'} a[href="${href}"]`);
       await expect(link).toHaveAccessibleName(new RegExp(label));
-      await expect(link.locator('svg')).toHaveAttribute('aria-hidden', 'true');
+      if (file !== 'index.html') await expect(link.locator('svg')).toHaveAttribute('aria-hidden', 'true');
       await link.tap();
       await expectDestination(page, href, baseURL);
     }

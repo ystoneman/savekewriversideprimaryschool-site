@@ -6,15 +6,22 @@ for (const file of pages) {
       await test.step(href, async () => {
         await page.goto('/' + file);
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
-        await page.locator(`.desktop-explore a[href="${href}"]`).click();
-        await expectDestination(page, href, baseURL);
+        if (file === 'index.html') await page.locator('.mobile-menu summary').click();
+        if (href.endsWith('.pdf')) {
+          const [download] = await Promise.all([page.waitForEvent('download'),page.locator(`.desktop-explore a[href="${href}"]`).click()]);
+          expect(download.suggestedFilename()).toBe(href === 'response-checklist.pdf' ? 'kew-riverside-response-checklist.pdf' : href);expect(await download.failure()).toBeNull();
+        } else {
+          await page.locator(`.desktop-explore a[href="${href}"]`).click();
+          await expectDestination(page, href, baseURL);
+        }
       });
     }
     for (const [href, label] of [['letters.html', 'Community letters'], ['feedback.html', 'Share ideas']]) {
       await page.goto('/' + file);
-      const link = page.locator(`.participation-nav a[href="${href}"]`);
+      if (file === 'index.html') await page.locator('.mobile-menu summary').click();
+      const link = page.locator(`${file === 'index.html' ? '.mobile-menu' : '.participation-nav'} a[href="${href}"]`);
       await expect(link).toHaveAccessibleName(new RegExp(label));
-      await expect(link.locator('svg')).toHaveAttribute('aria-hidden', 'true');
+      if (file !== 'index.html') await expect(link.locator('svg')).toHaveAttribute('aria-hidden', 'true');
       await link.click();
       await expectDestination(page, href, baseURL);
     }

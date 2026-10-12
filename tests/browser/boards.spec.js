@@ -12,7 +12,8 @@ for (const [width, height] of [[390, 844], [1440, 1000]]) {
     const sample = { id: 'letter-aaaaaaaaaaaa', date: '2026-10-08', review: 'Human reviewed', displayName: 'Fictional local parent', body: 'This is a fictional letter for browser checks. We value the everyday discoveries, creativity and friendships that make a school a community.' };
     await page.route('**/letters.json', route => route.fulfill({ json: { version: 1, letters: [sample] } }));
     await page.goto('/index.html');
-    await page.locator('.participation-nav .nav-letters').click();
+    await page.locator('.mobile-menu summary').click();
+    await page.locator('.mobile-menu a[href="letters.html"]').click();
     await expect(page.locator('#letters-list .public-author')).toBeInViewport();
     expect(await page.locator('#letters').evaluate(el => Boolean(el.compareDocumentPosition(document.getElementById('letter-form')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
     const write = page.locator('.invite-hero a[href="#letter-form"]');

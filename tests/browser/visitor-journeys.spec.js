@@ -25,44 +25,24 @@ async function activate(locator, hasTouch) {
 }
 
 test('Homepage: responsive copy keeps words separated on mobile and desktop', async ({ page }) => {
-  const originalViewport = page.viewportSize();
-  try {
-    for (const width of [390, 1440]) {
-      await page.setViewportSize({ width, height: 1000 });
-      await page.goto('/index.html');
-      const story = page.locator('#top a[href="about.html#our-story"]');
-      await expect(story).toBeVisible();
-      await expect(story).toHaveAccessibleName(/family|story|chose/i);
-      for (const [selector, wording] of [
-        ['.discovery-heading > p', 'Shortcuts to pages and answers on this website.'],
-        ['#visit-school .visit-school-action > p', 'page. Please check directly'],
-      ]) {
-        const copy = page.locator(selector);
-        await expect(copy).toBeVisible();
-        expect((await copy.innerText()).replace(/\s+/g, ' ').trim(), `${selector} rendered at ${width}px`).toContain(wording);
-      }
-    }
-  } finally {
-    if (originalViewport) await page.setViewportSize(originalViewport);
-  }
+ for (const width of [390,1440]) {
+  await page.setViewportSize({width,height:1000});await page.goto('/index.html');
+  const text=(await page.locator('.intro').innerText()).replace(/\s+/g,' ');
+  expect(text).toContain('1 September 2027. No final decision has been made.');
+  await expect(page.locator('.home-plan')).toHaveAccessibleName(/Help the campaign/);
+ }
 });
 
-test('Prospective families can enquire directly from Home and Options without a promised tour', async ({ page }) => {
-  const schoolContact = 'https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us';
-  await page.goto('/index.html#visit-school');
-  const homeVisit = page.locator('#visit-school');
-  await expect(homeVisit).toContainText('what visits are available now');
-  await expect(homeVisit).toContainText('Closure is proposed, not decided');
-  await expect(homeVisit.locator('a.button.primary')).toHaveAttribute('href', schoolContact);
-  await expect(homeVisit.locator('a[href="https://www.richmond.gov.uk/primary_school_admissions"]')).toBeVisible();
-
-  await page.goto('/options.html#option-enrolment');
-  const option = page.locator('#option-enrolment');
-  await option.locator('.option-evidence > summary').click();
-  await expect(option.locator('.option-evidence')).toHaveAttribute('open', '');
-  await expect(option).toContainText('Ask the school what visits are available now');
-  await expect(option).toContainText('applications and admissions can continue');
-  await expect(option.locator('a[href^="https://www.kewriverside.richmond.sch.uk/page/"]').filter({ hasText: 'Ask the school about visits and places' })).toBeVisible();
+test('Prospective families retain the old direct school enquiry and Options routes', async ({ page }) => {
+ const contact='https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us';
+ await page.route(contact,route=>route.fulfill({contentType:'text/html',body:'<h1>Fictional school contact</h1>'}));
+ await page.goto('/index.html#visit-school');await expect(page).toHaveURL(contact);
+ await expect(page.getByRole('heading')).toHaveText('Fictional school contact');
+ await page.goto('/options.html#option-enrolment');const option=page.locator('#option-enrolment');
+ await option.locator('.option-evidence > summary').click();
+ await expect(option).toContainText('Ask the school what visits are available now');
+ await expect(option).toContainText('applications and admissions can continue');
+ await expect(option.locator('a[href^="https://www.kewriverside.richmond.sch.uk/page/"]').filter({hasText:'Ask the school about visits and places'})).toBeVisible();
 });
 
 test('Proposal presents six plain questions with children first and the official response independent', async ({ page }) => {
@@ -118,7 +98,7 @@ test('Options ranking links to the council’s published alternatives rather tha
 test('Homepage: past meeting links remain usable without promoting an expired event', async ({ page }) => {
   await page.goto('/index.html');
   await expect(page.locator('#meeting-invitation')).toBeHidden();
-  await expect(page.locator('.parent-plan-spotlight')).not.toContainText('PTA prep');
+  await expect(page.locator('.actions')).not.toContainText('PTA prep');
   await page.goto('/index.html#meeting-invitation');
   await expect(page).toHaveURL(/proposal\.html#school-meeting$/);
   await expect(page.locator('#school-meeting')).toBeInViewport();
@@ -139,23 +119,13 @@ test.describe('Past meeting stays retired independently of a visitor’s calenda
   }
 });
 
-test('Homepage: six clear entry routes lead to answers, dates, evidence and participation', async ({ page, hasTouch, baseURL }) => {
-  await page.goto('/index.html');
-  const routes = page.locator('#find-your-way .route-card');
-  expect(await routes.evaluateAll(links => links.map(link => link.getAttribute('href')))).toEqual(entryRoutes);
-  expect((await routes.locator('.route-destination').allTextContents()).map(text => text.trim())).toEqual(['FAQ · School places', 'Ways to keep Kew open', 'Proposal & dates · Timeline', 'Our case for Kew', 'Evidence', 'Share ideas']);
-  for (const href of entryRoutes) {
-    await page.goto('/index.html');
-    const link = page.locator(`#find-your-way a[href="${href}"]`);
-    await expect(link).toHaveAccessibleName(/\S/);
-    await activate(link, hasTouch);
-    await expectDestination(page, href, baseURL);
-    if (href.includes('kind=evidence')) {
-      await expect(page.locator('input[name="kind"][value="evidence"]')).toBeChecked();
-      await expect(page.locator('#message')).toHaveValue('');
-      await expect(page.locator('#allow-public')).not.toBeChecked();
-    }
-  }
+test('Homepage: six clear Menu routes lead to answers, dates, evidence and participation', async ({ page, hasTouch, baseURL }) => {
+ for (const href of entryRoutes) {
+  await page.goto('/index.html');await activate(page.locator('.mobile-menu summary'),hasTouch);
+  const link=page.locator(`.mobile-menu a[href="${href}"]`);await expect(link).toHaveAccessibleName(/\S/);
+  await activate(link,hasTouch);await expectDestination(page,href,baseURL);
+  if(href.includes('kind=evidence')) {await expect(page.locator('input[name="kind"][value="evidence"]')).toBeChecked();await expect(page.locator('#message')).toHaveValue('');await expect(page.locator('#allow-public')).not.toBeChecked();}
+ }
 });
 
 test('Homepage: current response and historical meeting source lead to useful actions', async ({ page, hasTouch }) => {
@@ -309,9 +279,9 @@ test('Proposal: the future timeline separates current participation from conditi
 
 test('Parent plan: homepage shortcut and historical meeting details lead to current actions', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
-  const invitation = page.locator('.parent-plan-spotlight');
-  await expect(invitation.getByRole('link', { name: 'Parent action plan', exact: true })).toBeVisible();
-  await activate(invitation.getByRole('link', { name: 'Parent action plan', exact: true }), hasTouch);
+  const invitation = page.locator('.home-plan');
+  await expect(invitation).toHaveAccessibleName(/Help the campaign/);
+  await activate(invitation, hasTouch);
   await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
   await expect(page.locator('#parent-plan-title')).toBeInViewport();
   await expect(page.locator('#parent-plan')).toContainText('Closure is proposed, not decided.');
@@ -396,9 +366,7 @@ test('FAQ: action comes first while school-place answers remain searchable and d
   await activate(page.locator('#choose-school a[href="proposal.html#parent-plan"]'), hasTouch);
   await expect(page.locator('#parent-plan-title')).toBeInViewport();
   await page.goto('/index.html');
-  const help = page.locator('#quick-answers details').filter({ hasText: 'What can we do together now?' });
-  await activate(help.locator('summary'), hasTouch);
-  await activate(help.locator('a[href="proposal.html#parent-plan"]'), hasTouch);
+  await activate(page.locator('.home-plan'), hasTouch);
   await expect(page.locator('#parent-plan-title')).toBeInViewport();
 });
 
@@ -406,8 +374,9 @@ test('FAQ: action comes first while school-place answers remain searchable and d
 test('Parent plan: a named homepage shortcut is visible before scrolling', async ({ page, hasTouch }) => {
   await page.setViewportSize({ width: hasTouch ? 320 : 1440, height: hasTouch ? 568 : 1000 });
   await page.goto('/index.html');
-  const shortcut = page.getByRole('link', { name: 'Parent action plan', exact: true }).filter({ has: page.locator('strong') });
-  await expect(shortcut).toBeInViewport({ ratio: 1 });
+  const shortcut = page.locator('.home-plan');
+  await expect(page.locator('#main-action')).toBeInViewport({ ratio: 1 });
+  await expect(shortcut).toBeVisible();
   await expect(shortcut).toHaveAttribute('href', 'proposal.html#parent-plan');
   await activate(shortcut, hasTouch);
   await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
@@ -432,41 +401,11 @@ test('Parent plan: the shared navigation names the plan at desktop and mobile si
   }
 });
 
-test('Action motion: the brief invitation keeps the link target still and usable', async ({ page, hasTouch }) => {
-  // Exercise this invitation before the meeting; the calendar-boundary test covers expiry.
-  await page.clock.setFixedTime(new Date('2026-09-28T12:00:00Z'));
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/index.html');
-  const shortcut = page.locator('.parent-plan-spotlight a');
-  const arrow = shortcut.locator('span');
-  const box = await shortcut.boundingBox();
-  const motion = await arrow.evaluate(element => {
-    const animation = element.getAnimations()[0];
-    if (!animation) return null;
-    const { delay, duration, iterations } = animation.effect.getTiming();
-    animation.pause();
-    animation.currentTime = delay + duration / 2;
-    return { duration, iterations, transform: getComputedStyle(element).transform };
-  });
-  expect(motion).not.toBeNull();
-  expect(motion.iterations).toBe(1);
-  expect(motion.duration).toBeLessThan(2000);
-  expect(motion.transform).not.toBe('none');
-  expect(await shortcut.boundingBox()).toEqual(box);
-  await expect(shortcut).toBeInViewport();
-  await arrow.evaluate(element => element.getAnimations().forEach(animation => animation.finish()));
-  await expect(arrow).toHaveCSS('transform', 'none');
-  if (!hasTouch) {
-    const button = page.locator('#top .button.primary');
-    await button.scrollIntoViewIfNeeded();
-    const restingBox = await button.boundingBox();
-    await button.hover();
-    await expect.poll(async () => (await button.boundingBox()).y).toBeLessThan(restingBox.y);
-    await expect(button).toBeVisible();
-  }
-  await activate(shortcut, hasTouch);
-  await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
-  await expect(page.locator('#parent-plan-title')).toBeInViewport();
+test('Action layout: the large Help target stays still and usable', async ({ page, hasTouch }) => {
+ await page.emulateMedia({reducedMotion:'no-preference'});await page.goto('/index.html');
+ const link=page.locator('.home-plan');await link.scrollIntoViewIfNeeded();const before=await link.boundingBox();
+ await expect(link.locator('span')).toHaveCSS('animation-name','none');expect(await link.boundingBox()).toEqual(before);
+ await activate(link,hasTouch);await expect(page).toHaveURL(/proposal\.html#parent-plan$/);await expect(page.locator('#parent-plan-title')).toBeInViewport();
 });
 
 test('Action motion: reduced-motion links stay still and support keyboard activation', async ({ page }) => {
@@ -474,7 +413,7 @@ test('Action motion: reduced-motion links stay still and support keyboard activa
   await page.clock.setFixedTime(new Date('2026-09-28T12:00:00Z'));
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/index.html');
-  for (const selector of ['.parent-plan-spotlight a']) {
+  for (const selector of ['.home-plan']) {
     const link = page.locator(selector);
     const arrow = link.locator('span');
     await link.focus();

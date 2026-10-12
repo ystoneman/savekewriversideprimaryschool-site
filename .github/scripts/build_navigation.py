@@ -164,9 +164,38 @@ def render_identity(name, document):
     document = re.sub(r'<footer><div class="wrap footer-inner"><div>.*?</div>', footer, document, count=1, flags=re.S)
     return document
 
+def render_home_navigation(document):
+    """Owner-approved compact homepage; other pages retain the shared shell."""
+    document = render_identity('index.html', document)
+    groups = []
+    for index, (heading, entries) in enumerate(MENU_GROUPS, 1):
+        entries = list(entries)
+        if heading == 'Take part':
+            entries += [('feedback.html?kind=evidence#feedback-form', 'I have something to add', ''),
+                        ('response-checklist.pdf', 'Response checklist (PDF)', '')]
+        elif heading == 'Keep Kew open':
+            entries = [(('faq.html#school-places', 'My child’s next steps', kind) if href == 'faq.html' else
+                        ('proposal.html#timetable', 'What happens when?', kind) if href == 'proposal.html' else
+                        (href, label, kind)) for href, label, kind in entries]
+            entries += [('understand.html', 'Our case for Kew', ''),
+                        ('evidence.html#source-search', 'Search the sources', ''),
+                        ('understand.html#learning-and-results', 'Learning and results', ''),
+                        ('evidence.html#source-lessons-report', 'Research report source', ''),
+                        ('lessons.html', 'Research on other schools', ''),
+                        ('lessons-report.pdf', 'Research report (44-page PDF)', '')]
+        links = ''.join('<a href="'+html.escape(href, quote=True)+'"'+(' aria-current="page"' if href == 'index.html' else '')+(' class="nav-respond"' if href == 'proposal.html#take-part' else '')+(' download="'+('kew-riverside-response-checklist.pdf' if href == 'response-checklist.pdf' else href)+'"' if href.endswith('.pdf') else '')+'>'+html.escape(label)+'</a>' for href,label,kind in entries)
+        groups.append('<div class="menu-group" role="group" aria-labelledby="menu-group-'+str(index)+'"><p class="menu-group-label" id="menu-group-'+str(index)+'">'+html.escape(heading)+'</p>'+links+'</div>')
+    menu = '<details class="mobile-menu" id="menu" name="site-navigation"><summary>Menu <span aria-hidden="true">⌄</span></summary><nav class="desktop-explore" aria-label="All website pages">'+''.join(groups)+'</nav></details>'
+    document = re.sub(r'<details class="mobile-menu" id="menu"[^>]*>.*?</details>', lambda _:menu, document, count=1, flags=re.S)
+    footer = ''.join('<a href="'+html.escape(href, quote=True)+'"'+extra+'>'+html.escape(label)+'</a>' for href,label,extra in FOOTER_LINKS)
+    document = re.sub(r'(<nav class="home-footer-links"[^>]*>).*?(</nav>)',lambda m:m.group(1)+footer+m.group(2),document,count=1,flags=re.S)
+    return document
+
 def render_navigation(name, document):
     if name not in PAGE_LABELS or 'class="site-header"' not in document:
         return document
+    if name == 'index.html' and 'data-home-landing' in document:
+        return render_home_navigation(document)
     document = render_identity(name, document)
     esc = html.escape
     document = re.sub(r'<!-- orientation:start -->.*?<!-- orientation:end -->', '', document, flags=re.S)
