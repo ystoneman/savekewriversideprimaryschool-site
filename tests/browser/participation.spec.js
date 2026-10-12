@@ -317,11 +317,13 @@ for (const file of ['about.html', 'corrections.html', 'supporters.html']) {
       sessionStorage.setItem('kr-sent-letter', JSON.stringify({ text, at: Date.now() }));
     }, LETTER);
     if (file === 'about.html') {
+      await page.goto('/about.html#contact');
       await page.locator('#contact-message').fill('A fictional private contact request for testing.');
       await page.locator('input[name="contact_consent"]').check();
     } else if (file === 'corrections.html') {
       await page.locator('#message').fill('A fictional private correction request for testing.');
     } else {
+      await page.getByRole('link', { name: 'Add my name', exact: true }).click();
       await page.locator('#public-name').fill('Fictional Adult');
       await page.locator('#supporter-email').fill('fictional@example.invalid');
       await page.locator('input[name="adult_self"]').check();
@@ -480,11 +482,12 @@ for (const [moment, open] of [['2026-10-16T23:30:00', true], ['2026-10-17T00:30:
     const openRoute = page.locator('#ideas-official-open');
     await expect(openRoute).toBeVisible({ visible: open });
     await expect(page.locator('#ideas-official-closed')).toBeVisible({ visible: !open });
-    // Letters and videos stay one tap away either way, and each link appears once.
+    // Letters stay exposed; optional video guidance remains one named disclosure away.
     const route = page.locator('.ideas-letter-route');
     await expect(route).toContainText(open ? 'You can also write a community letter' : 'Personal view? You can write a community letter', { useInnerText: true });
     await expect(route.getByRole('link', { name: 'write a community letter' })).toBeVisible();
-    await expect(route.getByRole('link', { name: 'share your parent testimonial' })).toBeVisible();
+    await page.locator('#ideas-other-help > summary').click();
+    await expect(page.locator('#ideas-other-help').getByRole('link', { name: 'share your parent testimonial' })).toBeVisible();
     await expect(page.locator('main a[href="videos.html#upload"]')).toHaveCount(1);
     if (!open) return;
     const official = openRoute.getByRole('link', { name: 'official response form' });
@@ -588,6 +591,7 @@ test('Thank-you page after a letter: make it official first, copy the words, the
   await expect(page.locator('#official-card')).toBeVisible();
   await expect(page.locator('#copy-step')).toBeVisible();
   await expect(page.locator('#open-step-number')).toHaveText('2');
+  await page.locator('#official-answering-help > summary').click();
   await expect(page.locator('#reminder-line a[href="respond-reminder.ics"]')).toBeVisible();
   await expect(page.locator('#share-card')).toBeVisible();
   const official = await page.locator('#official-card').boundingBox();
@@ -632,6 +636,7 @@ for (const [day, reminder, open] of [['2026-10-12', true, true], ['2026-10-13', 
     await arriveAfter(page, 'letter', { text: LETTER });
     await page.goto('/sent.html');
     await expect(page.locator('#official-card')).toBeVisible({ visible: open });
+    if (open) await page.locator('#official-answering-help > summary').click();
     await expect(page.locator('#reminder-line')).toBeVisible({ visible: reminder });
     await expect(page.locator('#official-closed')).toBeVisible({ visible: !open });
     if (!open) {

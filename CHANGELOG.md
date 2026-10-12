@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Short reading layers throughout the website — 12 October 2026
+
+- Extend the owner-approved compact approach to the other campaign pages: short arrivals and large actions, with complete original guidance, evidence, notices and historical material in named native disclosures. The roughly 80% reduction is a design aim for initial reading, not a measured result on every page. The approved homepage remains intact.
+- Compact the shared header to exposed Community letters / Share ideas links and a single wide-screen Parent action plan shortcut; keep the other destinations in Menu. The Parent plan exposes the official response, writing, offering help and family next steps before its optional full guide. Retain campaign contact at pcfs2026@gmail.com and keep school recruitment separate.
+- Preserve full reading, printing, original anchors, repeated links and Back recovery. Keep new disclosures open without scripts, retain original sources/downloads and add filtering with clear/no-results recovery to the existing research source catalogue. Forms, permission wording, endpoints, saved drafts and contributor content retain their existing semantics.
+- Extend date-aware official-response shortcuts across the pages, including plain links and direct arrivals. After the published deadline, route to current council information and show an adjacent dated explanation while preserving older information with its original dates. Correct the new petition summary to say totals do not guarantee success.
+- Source-preservation audits found no removed main-content IDs, links or form semantics. Independent implementation reviews and bounded automated, rendered and native Safari checks are recorded in TESTING.md, including corrected exploratory failures and the limits of those runs. Complete current-revision release checks, deployment and live verification remain pending; no visitor study or measured engagement improvement is claimed.
+
 ### Faster release checks — 12 October 2026
 
 - Split each Safari/WebKit browser project into three parallel shards, retaining the full five-project suite, existing assertions and required aggregate success gate. Keep two workers per runner, zero retries and separate failure evidence for each shard.

@@ -2,6 +2,9 @@
 from pathlib import Path
 from build_navigation import render_navigation
 import json,html,re,argparse
+
+def simple_detail(id, title, body):
+ return f'<details class="simple-detail" data-simple-detail open id="{id}"><summary>{title}</summary><div class="simple-detail-body">{body}</div></details>'
 ROOT=Path(__file__).resolve().parents[2]
 D=json.loads((ROOT/'lessons-data.json').read_text())
 C=D['catalogue'];F=D['comparisons'];E=D['exhibits'];S=D['sources'];Q=D['claims']
@@ -18,7 +21,7 @@ def page(title,body):
  h=re.sub(r'(?:Timetable checked|Proposal checked|Evidence updates:) [^<]+', 'Research checked 22 September 2026', header)
  h=re.sub(r'<title>.*?</title>','<title>'+esc(title)+' | Kew Riverside Primary School</title>',h)
  h=re.sub(r'<meta name="description" content="[^"]*">','<meta name="description" content="Selected school closure reprieves and comparisons, with eight graphics, a full case catalogue and complete citations. Evidence and limits for Kew Riverside Primary School families.">',h)
- h=h.replace('</head>','<link rel="stylesheet" href="lessons.css?v=2026092401"><script src="lessons.js" defer></script></head>')
+ h=h.replace('</head>','<link rel="stylesheet" href="lessons.css?v=2026092401"><script src="lessons.js?v=2026101203" defer></script></head>')
  return h+'<main id="main" class="lessons-page wrap">'+body+'</main>'+footer
 method=[]
 for block in D['methodology'].strip().split('\n\n'):
@@ -63,11 +66,33 @@ body=f'''<p class="lesson-breadcrumb"><a href="proposal.html#other-schools">Prop
 source_cards=[]
 for s in S:
  used=' · '.join(f'<a href="#{esc(q)}">{esc(q)}</a>' for q in s['used_by'])
- source_cards.append(f'''<article class="lesson-source" id="{esc(s['id'])}"><h3>{esc(s['id'])} · {esc(s['title'])}</h3><p>{esc(s['publisher'])} · {esc(s['type'])}</p><p class="source-note">Published / record date: {esc(s['date'])} · Accessed: {esc(s['accessed'])}</p><a class="lesson-full-url" href="{esc(s['url'])}">{esc(s['url'])}</a><dl><dt>Exact location</dt><dd>{esc(s['locator'])}</dd><dt>Inspection and access</dt><dd>{esc(s['access_method'])} {esc(s.get('integration_check',''))}</dd><dt>Used in</dt><dd>{used}</dd></dl></article>''')
+ source_cards.append(f'''<article class="lesson-source" id="{esc(s['id'])}"><details class="simple-detail" data-simple-detail open id="citation-{esc(s['id'])}"><summary><span><strong>{esc(s['id'])} · {esc(s['title'])}</strong><span class="lesson-subtitle">{esc(s['publisher'])} · {esc(s['type'])}</span></span></summary><div class="simple-detail-body"><p class="source-note">Published / record date: {esc(s['date'])} · Accessed: {esc(s['accessed'])}</p><a class="lesson-full-url" href="{esc(s['url'])}">{esc(s['url'])}</a><dl><dt>Exact location</dt><dd>{esc(s['locator'])}</dd><dt>Inspection and access</dt><dd>{esc(s['access_method'])} {esc(s.get('integration_check',''))}</dd><dt>Used in</dt><dd>{used}</dd></dl></div></details></article>''')
 claims=[]
 for q in Q:
  claims.append(f'''<details class="lesson-claim" id="{esc(q['id'])}"><summary><span><strong>{esc(q['id'])} · {esc(q['title'])}</strong><span class="lesson-subtitle">{esc(q['kind'])}</span></span></summary><div><p>{esc(q['claim'])}</p><p>{refs(q['sources'])}</p><p class="source-note">{esc(q['locator'])}</p></div></details>''')
 appendix=f'''<p class="lesson-breadcrumb"><a href="lessons.html">Lessons from other schools</a> / Citations</p><header class="lesson-hero"><p class="eyebrow">Complete citations appendix · 22 September 2026</p><h1>Follow every claim <br>back to its source.</h1><p class="lesson-lead">45 source records and 49 evidence or interpretation entries. This is the complete register for this research pack, not a bibliography of all school closures.</p><p>Each source keeps its dates, exact location and any limits on how it was inspected. Recommendations are labelled as editorial inferences. Some original records may restrict automated access.</p><div class="button-row"><a class="button primary" href="lessons.html">Back to the research</a><a class="button" href="lessons-report.pdf" download>Download report &amp; appendix (PDF)</a></div></header><nav class="proposal-nav" aria-label="Appendix sections"><a href="#source-register">45 source records</a><a href="#claim-ledger">49 claims &amp; interpretations</a><a href="lessons.html#method">Method &amp; limits</a></nav><section class="lesson-section" id="source-register"><h2>The source register</h2><nav class="lesson-source-index" aria-label="Source identifiers">{''.join('<a href="#'+esc(s['id'])+'">'+esc(s['id'])+'</a>' for s in S)}</nav>{''.join(source_cards)}</section><section class="lesson-section" id="claim-ledger"><h2>Evidence and interpretation ledger</h2><p>Open an entry to see its claim, sources and exact location. IDs such as S01 and G01 are sources. The other IDs describe cases, exhibits and interpretations.</p>{''.join(claims)}</section>'''
+# Keep all original material and stable anchors, with a short ordinary reading layer.
+# A linked original section sits inside its new disclosure and is revealed by simplify.js.
+for start, end, identity, title in [
+ ('<section class="lesson-section" id="visual-guide">', '<section class="lesson-section" id="catalogue">', 'research-graphics', 'Explore eight graphics'),
+ ('<section class="lesson-section" id="catalogue">', '<section class="lesson-section" id="method">', 'research-cases', 'Browse all 16 schools'),
+ ('<section class="lesson-section" id="method">', None, 'research-method', 'Method and limits'),
+]:
+ a=body.index(start); b=body.index(end,a) if end else len(body)
+ body=body[:a]+simple_detail(identity,title,body[a:b])+body[b:]
+a=body.index('<div class="lesson-takeaways">'); b=body.index('<div class="lesson-research-routes">',a)
+full_takeaways=body[a:b]
+short_takeaways='<div class="simple-intro"><p><strong>A viable budget matters.</strong> A reprieve is not lasting recovery.</p><p><strong>A challenge can change a decision or improve transition.</strong> Legal routes differ.</p><p><strong>Petition totals do not guarantee success.</strong> Selected cases cannot establish a winning threshold.</p></div>'
+body=body[:a]+short_takeaways+simple_detail('research-takeaways','Read the three lessons and their evidence',full_takeaways)+body[b:]
+a=body.index('<aside class="lesson-next">'); b=body.index('</aside>',a)+len('</aside>')
+body=body[:a]+simple_detail('research-next-question','Use the research in a question',body[a:b])+body[b:]
+a=body.index('<nav class="proposal-nav" aria-label="Research sections">'); b=body.index('<details class="simple-detail" data-simple-detail open id="research-graphics">',a)
+body=body[:a]+simple_detail('research-contents','Research contents and downloads',body[a:b])+body[b:]
+# A direct citation still opens its original article and precise source detail.
+a=appendix.index('<section class="lesson-section" id="source-register">'); b=appendix.index('<section class="lesson-section" id="claim-ledger">',a)
+appendix=appendix[:a]+simple_detail('citation-sources','45 source records',appendix[a:b])+simple_detail('citation-claims','49 claims and interpretations',appendix[b:])
+search='<div id="citation-search-controls" class="simple-intro" hidden><label for="citation-query">Find a source or claim</label><input id="citation-query" type="search" placeholder="Try a school, source ID or phrase" aria-describedby="citation-search-status"><button type="button" id="citation-clear">Clear search</button><p id="citation-search-status" role="status" aria-live="polite">45 sources and 49 claims · search titles and full notes</p><p id="citation-empty" hidden>No matching sources or claims. Try fewer words or clear the search.</p></div>'
+appendix=appendix.replace('<p>Each source keeps its dates',search+'<p>Each source keeps its dates',1)
 outputs={'lessons.html':page('Lessons from other schools',body),'lessons-sources.html':page('Research citations',appendix)}
 outputs={name:render_navigation(name,text) for name,text in outputs.items()}
 if __name__=='__main__':

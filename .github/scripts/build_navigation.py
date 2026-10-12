@@ -5,7 +5,7 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026101102'
+VERSION = '2026101203'
 PREVIEW_VERSION = '2026100901'  # Shared images are unchanged by this curation.
 SITE_NAME = 'Save Kew Riverside Primary School Campaign'
 SITE_URL = 'https://savekewriversideprimaryschool.org/'
@@ -167,6 +167,7 @@ def render_identity(name, document):
 def render_home_navigation(document):
     """Owner-approved compact homepage; other pages retain the shared shell."""
     document = render_identity('index.html', document)
+    document = re.sub(r'navigation\.js\?v=\d+', 'navigation.js?v='+VERSION, document)
     groups = []
     for index, (heading, entries) in enumerate(MENU_GROUPS, 1):
         entries = list(entries)
@@ -198,6 +199,29 @@ def render_navigation(name, document):
         return render_home_navigation(document)
     document = render_identity(name, document)
     esc = html.escape
+    def compact_body(match):
+        tag = match.group()
+        classes = re.search(r'class="([^"]*)"', tag)
+        if classes:
+            values = classes.group(1).split()
+            if 'simple-page' not in values:
+                tag = tag.replace(classes.group(), 'class="'+' '.join(values+['simple-page'])+'"')
+        else:
+            tag = tag[:-1]+' class="simple-page">'
+        return tag
+    document = re.sub(r'<body\b[^>]*>', compact_body, document, count=1)
+    def current_response(match):
+        tag = match.group()
+        if 'data-current-response' not in tag:
+            tag = tag[:-1]+' data-current-response>'
+        return tag
+    document = re.sub(r'<a\b(?=[^>]*href="https://docs\.google\.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform")[^>]*>', current_response, document)
+    document = re.sub(r'<link rel="stylesheet" href="simplify\.css(?:\?v=\d+)?">', '', document)
+    document = re.sub(r'<script src="simplify\.js(?:\?v=\d+)?" defer></script>', '', document)
+    document = document.replace('</head>', '<link rel="stylesheet" href="simplify.css?v='+VERSION+'"><script src="simplify.js?v='+VERSION+'" defer></script></head>', 1)
+    toolbar = '<div class="simple-toolbar"><button type="button" data-simple-toggle hidden>Show the full page</button></div>'
+    document = document.replace(toolbar, '')
+    document = document.replace('</main>', toolbar+'</main>', 1)
     document = re.sub(r'<!-- orientation:start -->.*?<!-- orientation:end -->', '', document, flags=re.S)
     document = re.sub(r'<link rel="stylesheet" href="orientation\.css(?:\?v=\d+)?">', '', document)
     document = re.sub(r'navigation\.js\?v=\d+', 'navigation.js?v='+VERSION, document)
@@ -207,7 +231,7 @@ def render_navigation(name, document):
     deferred_pattern = r'<script\b[^>]*\bdefer\b[^>]*>.*?</script>'
     deferred = re.findall(deferred_pattern, head, re.S)
     head = re.sub(deferred_pattern, '', head, flags=re.S)
-    deferred.sort(key=lambda script: 0 if 'src="navigation.js?' in script else 1)
+    deferred.sort(key=lambda script: 0 if 'src="navigation.js?' in script else 2 if 'src="simplify.js?' in script else 1)
     # Keep the existing synchronous, pre-paint theme initializer after the final
     # stylesheet too. This parser barrier also covers WebKit's early defer path.
     theme_pattern = r'<script src="theme\.js\?v=\d+"></script>'
@@ -221,7 +245,7 @@ def render_navigation(name, document):
     header = re.sub(r'<details class="mobile-menu">.*?</details>', '', header, flags=re.S)
     header = re.sub(r' aria-current="page"', '', header)
     # Keep the short wide-screen exploration row. The full menu is available at every width.
-    desktop = [('proposal.html#parent-plan','Parent action plan'),('about.html','About'),('proposal.html','Proposal & dates'),('options.html','Ways to keep Kew open'),('faq.html','FAQ'),('evidence.html#records','Evidence')]
+    desktop = [('proposal.html#parent-plan','Parent action plan')]
     def link(href, label, parent=False):
         current = ' aria-current="page"' if href.split('#')[0] == name and not parent else ''
         cls = ' class="nav-parent-plan"' if parent else ''

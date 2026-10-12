@@ -16,6 +16,7 @@ test('Share ideas offers distinct routes for letters, named support and private 
     await page.goto('/feedback.html');
     await page.getByRole('link', { name: new RegExp(name, 'i') }).click();
     await expect(page).toHaveURL(destination);
+    if (form === '#supporter-form') await page.getByRole('link', { name: 'Add my name', exact: true }).click();
     await expect(page.locator(form)).toBeVisible();
     if (form === '#letter-form') await expect(page.locator('#message')).toBeInViewport();
   }
@@ -277,6 +278,7 @@ test('Revoking council sharing excludes previously entered private details', asy
 test('Supporter requests require all three independent consent statements', async ({ page, hasTouch }) => {
   const submissions = await captureSubmissions(page);
   await page.goto('/supporters.html');
+  await page.getByRole('link', { name: 'Add my name', exact: true }).click();
   await page.locator('#public-name').fill('Test supporter');
   await page.locator('#supporter-email').fill('test@example.invalid');
   const choices = page.locator('#supporter-form input[type="checkbox"]');
@@ -312,7 +314,7 @@ test('Supporter requests require all three independent consent statements', asyn
 for (const [file, kind] of [['about.html', 'contact'], ['corrections.html', 'privacy']]) {
   test(`${file}: private contact route submits with no publication permission`, async ({ page }) => {
     const submissions = await captureSubmissions(page);
-    await page.goto('/' + file);
+    await page.goto('/' + file + (file === 'about.html' ? '#contact' : ''));
     await page.locator('textarea[name="message"]').fill('Synthetic private message intercepted by the local test runner.');
     for (const checkbox of await page.locator('form input[type="checkbox"][required]').all()) await checkbox.check();
     await page.locator('button[type="submit"]').click();
