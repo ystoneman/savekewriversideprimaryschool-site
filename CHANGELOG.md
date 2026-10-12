@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add estimated daily visitors (unique browsers) through a browser-local date marker and cross-tab lock. Repeat page views do not create additional daily increments. Preserve earlier scopes and refusals, remove the marker on Off, and send only an isolated aggregate total. Update the compact notice and privacy/storage explanation, including UTC boundaries, conservative undercount and browser-versus-people limits. Implementation verification and deployment pending.
+
 ### Narrow publishing queues — 12 October 2026
 
 - Allow production validation to run independently, serialize canonical publication briefly, and reconcile the retained legacy sites under a separate queue. Preserve all validation/browser checks, exact-result reuse and non-cancelling publication locks.

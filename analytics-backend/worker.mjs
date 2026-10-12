@@ -24,6 +24,8 @@ export function validate(value) {
     if (seen.has(key)) return null;
     seen.add(key);
   }
+  // Browser estimate is a standalone total, never combined with dimensions.
+  if (value.counters.some(row => row.metric === 'browser_day') && value.counters.length !== 1) return null;
   return value.counters;
 }
 

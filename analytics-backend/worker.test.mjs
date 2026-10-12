@@ -89,3 +89,15 @@ test('Expanded labels accept fixed aggregates and reject granular or private val
   }
   assert.equal(env.sql.prepare('SELECT count(*) AS n FROM counts').get().n, 9);
 });
+
+test('Daily browser accepts only an isolated fixed total, retaining no browser identity', async () => {
+  const env = environment();
+  const one = { metric: 'browser_day', label: 'all' };
+  assert.equal((await worker.fetch(request({ counters: [one] }), env)).status, 200);
+  for (const counters of [[one, valid.counters[0]], [{ ...one, label: '2026-10-12' }], [{ ...one, id: 'private-token' }]]) {
+    assert.equal((await worker.fetch(request({ counters }), env)).status, 400);
+  }
+  assert.deepEqual({ ...env.sql.prepare('SELECT * FROM counts').get() }, {
+    day: new Date().toISOString().slice(0, 10), metric: 'browser_day', label: 'all', total: 1,
+  });
+});

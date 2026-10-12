@@ -1,5 +1,10 @@
 # UX design decisions
 
+## Daily browser count notice — 12 October 2026
+
+J1–J9: the owner wants daily audience estimates without consent and without repeat page opens inflating visitors. Retain the compact first-notice placement and Analytics/Off/Why controls. Explain the saved date directly in that notice and in the opened choices; the longer privacy explanation covers UTC days, local-storage retention and estimation limits. Earlier choices retain their scope and the panel states that daily browser counting is off until reviewed. A larger explanatory banner was considered but risks displacing protected phone actions. Independent planning and actual-diff privacy/UX reviews completed. Rendered 320/390/1440px, legacy-choice panels and native iPhone Safari verification passed; deployment evidence is recorded in the release PR.
+
+
 ## Clearer optional analytics — 12 October 2026
 
 J1–J9: make the analytics choice understandable without covering the campaign tasks. Retain the compact first notice, label its button Analytics, and use its opened panel to explain the website-improvement benefit and Umami visit/device/location processing before equal Allow detailed analytics / Keep basic only / Turn analytics off actions. A larger direct-consent banner was considered but would require enough additional explanation and controls to risk displacing Respond/Help on the compact phone homepage. Remember refusals and keep existing provider scope; no automatic opt-in or repeated request to previously refusing visitors.

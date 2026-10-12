@@ -27,7 +27,7 @@ SELECT day, metric, label, total FROM counts
 WHERE metric <> 'page' ORDER BY day DESC, metric, total DESC;
 ```
 
-Counts of opens and threshold crossings, not unique visitors or completed actions.
+Page and interaction metrics count opens and threshold crossings, not unique visitors or completed actions.
 Never sum cumulative active-time thresholds as duration. No raw events/browser history.
 `node --test worker.test.mjs` uses real in-memory SQLite with fictional requests.
 
@@ -46,4 +46,20 @@ Divide a category by its own metric total, never overall page opens: older saved
 choices retain earlier scope. Device estimates are not unique people. Timings
 include unavailable separately; do not compute exact averages from ranges.
 Page pairs are aggregate arrivals, not individual journeys. See ANALYTICS.md for
-the purpose audit, limits, and why unique visitor estimation is not implemented.
+the purpose audit, limits, and the separately assessed daily browser estimate.
+
+## Daily browser estimate (v4)
+
+```sql
+SELECT day, total AS estimated_daily_browsers
+FROM counts WHERE metric = 'browser_day' AND label = 'all' ORDER BY day DESC;
+```
+
+Only a standalone fixed increment is accepted. Client date-only storage and
+same-origin locks suppress repeats; the server retains no deduplication identity.
+No row means no increments have been received for that day, not proof of zero
+visitors. Mark missing earlier dates as unavailable, never reconstruct from page
+opens. Daily totals must not be summed and labelled weekly/monthly uniques.
+Counts reflect eligible browser storage contexts, not exact people. Previous
+choices do not contribute until reviewed; interruption/blocking can undercount.
+See ANALYTICS.md and privacy.html for retention, purpose and accuracy limits.
