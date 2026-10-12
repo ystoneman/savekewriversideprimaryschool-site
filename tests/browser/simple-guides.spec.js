@@ -4,9 +4,15 @@ const official = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_A
 
 test('Short guides: homepage Help arrives at usable actions without opening the long plan', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
+  // A destination URL can commit before its stylesheet and deferred setup finish.
+  await page.route('**/simplify.css*', async route => {
+    await new Promise(resolve => setTimeout(resolve, 250));
+    await route.continue();
+  });
   await page.goto('/index.html');
   await page.locator('a.home-plan').click();
   await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
+  await page.waitForLoadState('load');
   await expectScrollSettled(page, 'compact Parent action plan');
   await expect(page.locator('#parent-plan-title')).toBeInViewport({ ratio: 1 });
   await expect(page.locator('.parent-plan-respond a')).toBeInViewport({ ratio: 1 });

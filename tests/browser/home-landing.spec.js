@@ -54,3 +54,23 @@ test('Homepage deadline: a page left open refreshes before an expired response c
  await page.route(council,route=>route.fulfill({contentType:'text/html',body:'<h1>Fictional current council information</h1>'}));
  await page.locator('#main-action').click();await expect(page).toHaveURL(council);await expect(page.getByRole('heading')).toHaveText('Fictional current council information');
 });
+for(const [at,label] of [['2026-10-12T12:00:00Z','4 days left'],['2026-10-14T23:00:00Z','1 day left'],['2026-10-15T23:00:00Z','Closes today']])test(`Homepage countdown: London date at ${at}`,async({page})=>{
+ await page.clock.setFixedTime(new Date(at));await page.goto('/index.html');
+ await expect(page.locator('#action-note')).toHaveText(`${label} · Respond by 16 October 2026.`);
+ await expect(page.locator('#main-action')).toHaveAttribute('href',official);
+});
+test('Homepage countdown: visible timer refreshes through midnight and expiry',{tag:'@home-smoke'},async({page})=>{
+ await page.clock.install({time:new Date('2026-10-14T22:59:30Z')});await page.goto('/index.html');
+ await expect(page.locator('#action-note')).toContainText('2 days left');await page.clock.runFor(60000);
+ await expect(page.locator('#action-note')).toContainText('1 day left');
+ await page.clock.setSystemTime(new Date('2026-10-16T22:59:30Z'));await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));
+ await expect(page.locator('#action-note')).toContainText('Closes today');await page.clock.runFor(60000);
+ await expect(page.locator('#main-action')).toHaveAttribute('href',council);await expect(page.locator('#action-note')).toContainText('deadline has passed');
+ await expect(page.locator('#action-note')).not.toContainText('days left');
+});
+test('Homepage countdown: return refreshes the active count without changing the response destination',async({page})=>{
+ await page.clock.setFixedTime(new Date('2026-10-12T22:59:59Z'));await page.goto('/index.html');
+ await expect(page.locator('#action-note')).toContainText('4 days left');
+ await page.clock.setFixedTime(new Date('2026-10-12T23:00:00Z'));await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));
+ await expect(page.locator('#action-note')).toContainText('3 days left');await expect(page.locator('#main-action')).toHaveAttribute('href',official);
+});

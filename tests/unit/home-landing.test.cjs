@@ -39,3 +39,24 @@ test('visible minute timer expires the full state; hidden timer waits for return
 test('refresh is stable and can reset both directions',()=>{
  const s=state('2026-10-12T12:00:00Z');s.tick();assert.match(s.action.href,/docs.google.com/);s.advance('2026-10-17T12:00:00Z');s.tick();assert.match(s.action.href,/www.richmond.gov.uk/);s.advance('2026-10-15T12:00:00Z');s.events.pageshow();assert.equal(s.action.textContent,'Respond to the council');assert.match(s.action.href,/docs.google.com/);
 });
+for (const [at, label] of [
+ ['2026-10-12T12:00:00Z', '4 days left'],
+ ['2026-10-14T22:59:59Z', '2 days left'],
+ ['2026-10-14T23:00:00Z', '1 day left'],
+ ['2026-10-15T23:00:00Z', 'Closes today'],
+]) test('London calendar countdown at '+at,()=>{
+ const s=state(at);assert.equal(s.note.textContent,`${label} · Respond by 16 October 2026.`);
+});
+for (const event of ['visibilitychange','pageshow']) test('countdown updates within the active stage on '+event,()=>{
+ const s=state('2026-10-12T22:59:59Z');s.advance('2026-10-12T23:00:00Z');s.events[event]();
+ assert.equal(s.note.textContent,'3 days left · Respond by 16 October 2026.');
+});
+test('visible minute timer updates the countdown; hidden page waits for return',()=>{
+ const s=state('2026-10-12T22:59:59Z');s.document.hidden=true;s.advance('2026-10-12T23:00:00Z');s.tick();
+ assert.match(s.note.textContent,/4 days left/);s.document.hidden=false;s.tick();assert.match(s.note.textContent,/3 days left/);
+});
+test('countdown midnight refresh does not move a pressed target before click',()=>{
+ const s=state('2026-10-15T22:59:59Z');s.advance('2026-10-15T23:00:00Z');s.events.pointerdown({type:'pointerdown'});
+ assert.match(s.note.textContent,/1 day left/);assert.match(s.action.href,/docs.google.com/);
+ s.events.click({type:'click'});assert.match(s.note.textContent,/Closes today/);
+});
