@@ -4,6 +4,7 @@
 
 ### Verified PR browser results after merge — 12 October 2026
 
+- Make publication conditions explicit: successful validation and browser coverage, successful canonical deployment before compatibility updates, and no cancellation. This allows intentional verified browser skips without bypassing failed gates.
 - Pin the supported GitHub API version that exposes merge identity; the first hosted integration safely fell back when the newer API omitted it.
 - Reuse complete successful PR browser results only for identical tracked contents, public bytes and runtime, backed by ten verified receipts from the matching first-attempt run. Keep fresh main validation and independently staged deployment artifacts.
 - Require evidence from the same London day and within six hours; fall back to the full browser suite for every missing or uncertain condition. Main workflow reruns deliberately force fresh checks. Add adversarial provenance, archive, freshness and publication-gate regressions.
