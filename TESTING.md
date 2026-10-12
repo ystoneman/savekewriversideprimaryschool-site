@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Verified PR browser results after merge — 12 October 2026
+
+Every PR still runs the complete nine-batch, five-browser suite. A main push may reuse that successful result only when the complete tracked Git tree, public-file digest, Node version/platform/architecture and pinned browser image match. All nine batches seal matching before/after evidence; validation contributes a tenth receipt. The verifier checks the same-repository merged PR, exact workflow/run/first attempt, successful ordered steps, synthetic merge parents and tree, artifact provenance and SHA-256 digests. Bounded JSON archives are read without extraction; storage requests never receive the GitHub token.
+
+Evidence must be no more than six hours old and from the same London calendar day. Missing, expired, incomplete, altered or unavailable proof, a changed base/tree/runtime, forks, direct pushes and reruns all require fresh browser checks. Rerun the main workflow to force fresh coverage. Main always reruns privacy/security/unit validation and stages its own public artifact. The publication gate accepts either successful fresh browser checks or explicitly verified reuse with skipped browser jobs; other combinations fail closed. The workflow summary identifies the reused PR run or fallback reason.
+
+Local verification: 116 Python tests and 19 Node tests pass; all 124 public files stage successfully. Independent read-only implementation review found no blocking issue. Hosted receipt transport, full current-revision PR checks, post-merge reuse and deployment remain to be verified and will be recorded in the pull request. No public asset changed.
+
 ### Short reading layers throughout the website — 12 October 2026
 
 This candidate extends the owner's compact-homepage direction to the remaining reading layers. The approximate 80% goal describes the design intent; these checks do not establish an exact per-page word reduction, unfamiliar-reader comprehension or conversion improvement. Existing information, consent and contribution behavior remain required, including no-script access, original deep links, full reading/print, clear/reset and Back. The complete current-revision release gates, deployment and live verification are still separate, pending checks.
@@ -23,7 +31,7 @@ The date review on 12 October followed the [council's current consultation page]
 
 The full hosted suite retains all five browser projects, assertions, privacy guards, two workers per runner and zero automatic retries. The two Safari/WebKit projects are each split across three runners; Android, desktop Chromium and the no-JavaScript project each retain one. The `browser-tests` gate still requires every matrix entry to succeed before deployment. Failure reports and traces have unique names per project/shard. A new workflow regression checks that no browser project or shard is missing or duplicated, rejects inconsistent totals and preserves the publication gates.
 
-New PR revisions automatically cancel obsolete runs for that PR. Active production runs are not cancelled. GitHub concurrency serializes production work but does not guarantee FIFO ordering of pending runs. Successful PR results are not reused after merge; both complete release gates remain required.
+New PR revisions automatically cancel obsolete runs for that PR. Active production runs are not cancelled. GitHub concurrency serializes production work but does not guarantee FIFO ordering of pending runs. The original sharding release reran successful PR results after merge. The verified-reuse policy below now governs that second browser run.
 
 For homepage changes, run `npm run test:home-smoke` early. It selects four existing regressions: native sharing, preserved task/menu destinations, Safari's expired-deadline activation and the fully visible council action at 320 × 568 without JavaScript. Their existing assertions are unchanged and remain in the complete suite. This is an initial feedback check, not a substitute for full release validation.
 

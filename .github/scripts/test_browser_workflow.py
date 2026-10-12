@@ -60,9 +60,13 @@ class BrowserWorkflowTests(unittest.TestCase):
         aggregate = self.workflow.split('  browser-tests:\n', 1)[1].split('  deploy:\n', 1)[0]
         deploy = self.workflow.split('  deploy:\n', 1)[1].split('  compatibility:\n', 1)[0]
         self.assertIn('if: ${{ always() }}', aggregate)
-        self.assertIn('needs: browser-shards', aggregate)
+        self.assertIn('needs: [validate, browser-shards]', aggregate)
         self.assertIn('BROWSER_RESULT: ${{ needs.browser-shards.result }}', aggregate)
-        self.assertIn('run: test "$BROWSER_RESULT" = success', aggregate)
+        self.assertIn('VALIDATION_RESULT: ${{ needs.validate.result }}', aggregate)
+        self.assertIn('REUSE: ${{ needs.validate.outputs.reuse }}', aggregate)
+        self.assertIn('PROOF_RUN: ${{ needs.validate.outputs.proof_run }}', aggregate)
+        self.assertIn('run: python3 .github/scripts/pr_browser_reuse.py gate', aggregate)
+        self.assertIn("if: needs.validate.outputs.reuse != 'true'", self.workflow)
         self.assertIn('needs: [validate, browser-tests]', deploy)
         self.assertIn("if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'", deploy)
         self.assertIn('fail-fast: false', self.workflow)

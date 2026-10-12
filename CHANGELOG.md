@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Verified PR browser results after merge — 12 October 2026
+
+- Reuse complete successful PR browser results only for identical tracked contents, public bytes and runtime, backed by ten verified receipts from the matching first-attempt run. Keep fresh main validation and independently staged deployment artifacts.
+- Require evidence from the same London day and within six hours; fall back to the full browser suite for every missing or uncertain condition. Main workflow reruns deliberately force fresh checks. Add adversarial provenance, archive, freshness and publication-gate regressions.
+- Independent implementation review found no blocking issue. Local validation and the remaining hosted integration checks are recorded in TESTING.md; final release evidence belongs in the implementation pull request. No visitor-facing file changes.
+
 ### Short reading layers throughout the website — 12 October 2026
 
 - Extend the owner-approved compact approach to the other campaign pages: short arrivals and large actions, with complete original guidance, evidence, notices and historical material in named native disclosures. The roughly 80% reduction is a design aim for initial reading, not a measured result on every page. The approved homepage remains intact.
