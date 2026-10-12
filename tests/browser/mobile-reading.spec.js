@@ -22,8 +22,8 @@ for (const width of [320, 390]) {
       await page.locator('.faq-topics a[href="#school-places"]').click();
       await expect(page.locator('#school-places')).toBeVisible();
       await page.locator('#faq-introduction > summary').click();
-      await expect(page.locator('#faq-introduction')).toContainText('Your questions, answered carefully.');
-      await expect(page.locator('#faq-introduction .faq-essentials')).toContainText('We can build the case together.');
+      await expect(page.locator('#faq-introduction')).toContainText('links to its sources or the website’s contribution rules');
+      await expect(page.locator('#faq-introduction')).toContainText('Forecasts keep their dates and qualifications');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     });
 
@@ -63,7 +63,7 @@ test('FAQ and Evidence retain complete introductory/exploration information with
   const page = await context.newPage();
   await page.goto(baseURL + '/faq.html');
   await expect(page.locator('#faq-introduction')).toHaveAttribute('open', '');
-  await expect(page.locator('#faq-introduction')).toContainText('Here is what the published papers say');
+  await expect(page.locator('#faq-introduction')).toContainText('what the published papers establish');
   await expect(page.locator('.faq-topics a')).toHaveCount(5);
   await page.goto(baseURL + '/evidence.html#research-shortcut');
   await expect(page.locator('#evidence-library-guide')).toHaveAttribute('open', '');

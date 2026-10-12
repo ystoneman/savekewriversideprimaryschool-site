@@ -55,7 +55,7 @@ test('Research: each paired school opens its case directly and Back returns to t
   await page.goto('/lessons.html#key-lessons');
   await openTakeaways(page);
   for (const id of ['fletching', 'broad-oak', 'st-john', 'st-bartholomew', 'godshill', 'brading', 'oakfield', 'wroxall', 'arreton', 'cowes']) {
-    await activate(page.locator(`#key-lessons a[href="#case-${id}"]`), hasTouch);
+    await activate(page.locator(`#research-takeaways a[href="#case-${id}"]`), hasTouch);
     await expect(page).toHaveURL(new RegExp(`#case-${id}$`));
     await expect(page.locator(`#case-${id}`)).toHaveAttribute('open', '');
     await expect(page.locator(`#case-${id} > summary`)).toBeInViewport();
@@ -68,7 +68,7 @@ test('Research: each paired school opens its case directly and Back returns to t
 test('Research: a repeated finding link restores a filtered case without hijacking modified clicks', async ({ page, hasTouch }) => {
   await page.goto('/lessons.html#key-lessons');
   await openTakeaways(page);
-  const link = page.locator('#key-lessons a[href="#case-fletching"]');
+  const link = page.locator('#research-takeaways a[href="#case-fletching"]');
   const entry = page.locator('#case-fletching');
   await activate(link, hasTouch);
   await activate(entry.locator(':scope > summary'), hasTouch);
@@ -118,7 +118,7 @@ test.describe('Research without JavaScript', () => {
     await expect(page.locator('#lesson-financial-plan .lesson-caveat')).toBeVisible();
     await expect(page.locator('#lesson-decision-and-transition .lesson-caveat')).toBeVisible();
     await expect(page.locator('#lesson-petition-evidence .lesson-caveat')).toBeVisible();
-    await activate(page.locator('#key-lessons a[href="#case-broad-oak"]'), hasTouch);
+    await activate(page.locator('#research-takeaways a[href="#case-broad-oak"]'), hasTouch);
     await expect(page).toHaveURL(/#case-broad-oak$/);
     const entry = page.locator('#case-broad-oak');
     await expect(entry.locator(':scope > summary')).toBeInViewport();

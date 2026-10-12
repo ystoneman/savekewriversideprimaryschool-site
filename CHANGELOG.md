@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Campaign-led openings and deduplication — 12 October 2026
+
+- Lead Evidence with the keep-open position and let its findings add evidence. Replace repeated pitch text with source provenance and retain one exposed alternative-viability qualification.
+- Lead Lessons with selected examples of stopped proposals and three named, usable findings. Keep selection, long-term recovery, rural/faith-school and petition-effect limits alongside the claims; retain the complete case records and citations.
+- Ask for realistic alternatives to be assessed on Options before explaining their requirements. Remove repeated general warnings while retaining option-specific safeguards, official response and direct family/school routes.
+- Put About's purpose first; shorten FAQ's redundant introduction and financial repetition, Letters' origin-recovery notice and source-card review boilerplate. Keep consent, source dates, search terms and original targets.
+- Independent campaign/evidence planning and actual-diff reviews completed; the evidence review's agreement-scope correction was applied. Rendered UX and local verification are recorded in TESTING.md. Hosted gates, canonical deployment and retained-copy verification will be recorded in the release pull request.
+
 - Emphasise only the homepage days-remaining phrase with bold ink-coloured text and a short gold underline. Keep the exact wording, line height, spacing, automatic rollover and expired/no-script guidance. Independent rendered UX review and local checks pass; hosted/live release evidence will be recorded in the pull request.
 
 - Add the approved short London calendar-day countdown beneath the homepage Respond action, retaining the exact published date. Update on visible minute ticks, return and activation; show singular/today states and retire the invitation after the deadline. Keep the no-script dated fallback and Safari pressed-target guard. Independent campaign/evidence/rendered UX review found no remaining issue. Local verification is recorded in TESTING.md; hosted release and live verification pending.
