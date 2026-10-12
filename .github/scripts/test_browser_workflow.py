@@ -70,12 +70,12 @@ class BrowserWorkflowTests(unittest.TestCase):
         self.assertIn('needs: [validate, browser-tests]', deploy)
         self.assertIn("if: ${{ !cancelled() && needs.validate.result == 'success' && needs.browser-tests.result == 'success' && github.ref == 'refs/heads/main' && github.event_name == 'push' }}", deploy)
         compatibility = self.workflow.split('  compatibility:\n', 1)[1]
-        self.assertIn("if: ${{ !cancelled() && needs.deploy.result == 'success' && github.ref == 'refs/heads/main' && github.event_name == 'push' }}", compatibility)
+        self.assertIn("if: ${{ !cancelled() && needs.deploy.result == 'success' && needs.deploy.outputs.published == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push' }}", compatibility)
         self.assertIn('fail-fast: false', self.workflow)
 
     def test_only_obsolete_pull_request_runs_are_cancelled(self):
         self.assertIn("cancel-in-progress: ${{ github.event_name == 'pull_request' }}", self.workflow)
-        self.assertIn('group: pages-${{ github.ref }}', self.workflow)
+        self.assertIn("group: pages-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}", self.workflow)
 
     def test_failure_evidence_has_a_unique_name_per_shard(self):
         self.assertIn('name: browser-test-failures-${{ matrix.project }}-${{ matrix.shard }}-of-${{ matrix.total }}', self.workflow)
