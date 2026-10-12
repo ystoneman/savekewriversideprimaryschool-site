@@ -5,6 +5,7 @@
     "test": "playwright test",
     "test:browser": "playwright test",
     "test:iphone": "playwright test --project=iphone-webkit",
+    "test:home-smoke": "playwright test --project=iphone-webkit --project=iphone-no-javascript --grep @home-smoke --workers=2",
     "test:report": "playwright show-report"
   },
   "devDependencies": {

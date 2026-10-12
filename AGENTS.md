@@ -29,6 +29,7 @@ Record the relevant roles, review stage and resolution briefly in the task summa
 
 ## Website changes and regression coverage
 
+- For homepage changes, run `npm run test:home-smoke` early, before submitting the release candidate, to catch small-phone/no-script, Safari deadline, sharing and menu regressions. This focused check supplements the complete hosted suite. Parallel local browser runs must use different `KEW_TEST_PORT` values and either separate checkouts or distinct `KEW_TEST_OUTPUT_DIR` and `KEW_TEST_REPORT_DIR` values; a different port alone does not isolate traces and reports.
 - For each new or changed visitor interaction, add or extend the browser test for that journey in `tests/browser/`. For a bug fix, include a regression that fails with the old behaviour where practical.
 - Keep the automatic all-page navigation, local-link, mobile-layout and no-JavaScript checks applicable to new public pages. Test new controls and states explicitly; automatic page discovery alone does not cover their behaviour.
 - Run the checks in `TESTING.md` before publishing. Browser tests and privacy/security checks must pass before deployment. Never skip, weaken or remove a failing assertion to obtain a passing build without resolving or explaining its cause.

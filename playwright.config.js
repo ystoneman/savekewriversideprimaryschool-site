@@ -9,7 +9,10 @@ module.exports = defineConfig({
   workers: process.env.CI ? 2 : 4,
   timeout: 45_000,
   expect: { timeout: 5_000 },
-  reporter: [[process.env.CI ? 'line' : 'list'], ['html', { open: 'never' }]],
+  outputDir: process.env.KEW_TEST_OUTPUT_DIR || 'test-results',
+  reporter: [[process.env.CI ? 'line' : 'list'], ['html', {
+    open: 'never', outputFolder: process.env.KEW_TEST_REPORT_DIR || 'playwright-report',
+  }]],
   use: {
     baseURL,
     ignoreHTTPSErrors: true,
