@@ -4,11 +4,14 @@
 .understand-hero h1{font-size:clamp(42px,5vw,66px);max-width:15ch;margin-bottom:20px}
 .understand-hero .intro{font-size:18px;max-width:59ch}
 .understand-hero .source-note{font-size:13px}
-.visual-route{border:1px solid var(--theme-border, #c4d1bd);background:var(--theme-soft, #edf3e8);border-radius:16px;padding:28px}
-.visual-route p{font-size:14px;margin-bottom:14px}
-.visual-route a{display:flex;align-items:center;gap:13px;min-height:48px;font-weight:700;font-size:14px;border-top:1px solid var(--theme-border, #c4d1bd);text-decoration:none}
+.visual-route,.campaign-route{border:1px solid var(--theme-border, #c4d1bd);background:var(--theme-soft, #edf3e8);border-radius:16px;padding:28px}
+.visual-route p,.campaign-route p{font-size:14px;margin-bottom:14px}
+.visual-route a,.campaign-route a{display:flex;align-items:center;gap:13px;min-height:48px;font-weight:700;font-size:14px;border-top:1px solid var(--theme-border, #c4d1bd);text-decoration:none}
 .visual-route a span{font:22px Georgia,serif;color:var(--theme-readable, #557d66)}
-.visual-route a:hover{text-decoration:underline}
+.visual-route a:hover,.campaign-route a:hover{text-decoration:underline}
+.research-disclosure{margin-bottom:48px}
+.research-disclosure>summary{font-size:18px;font-weight:700;overflow-wrap:anywhere}
+.research-body{padding-top:16px}
 .data-section{padding-block:48px;border-top:1px solid var(--theme-border, #cbd7ca);scroll-margin-top:112px}
 .data-section h2{font-size:clamp(30px,3.3vw,42px);max-width:24ch;margin-bottom:18px}
 .data-section .section-lead{font-size:17px;max-width:78ch}

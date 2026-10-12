@@ -1,5 +1,11 @@
 # Testing the website
 
+## Campaign-first curation — 12 October 2026
+
+Independent read-only campaign, UX and evidence planning reviews examined the maintained pages, generated navigation, source retention and protected journeys. Their findings led to campaign-led shared-link arrivals, an explicit supporting-research route and disclosure, retained family/action routes and receipt distinctions. The evidence review checked the local public budget PDF; fresh external-source recertification was unavailable to that reviewer. Existing figures and source records are unchanged.
+
+Changed regression coverage checks optional research on fresh arrival, explicit selection from Home/Evidence, section-menu recovery, native keyboard disclosure, incoming financial/educational anchors, printing with disclosure-state recovery and no-script routes. Existing chart arithmetic, source, family and participation checks remain. Local Python validation passes all 76 checks; the 119-file public allowlist and aggregate-collector tests pass. The first focused desktop Chromium run passed 86 checks and caught one preserved forecast-qualification wording mismatch, corrected before the full run. Independent actual-diff campaign and evidence reviews found no remaining actionable findings; numerical/educational text, all eight question cards, original IDs/source/download links and source-data bytes are preserved. Full browser results, rendered UX review and hosted publishing gates are still pending. Native iOS Simulator is unavailable in this Linux environment; browser WebKit emulation is recorded separately.
+
 ## Campaign search discovery — 11 October 2026
 
 - All 76 Python privacy/security/data/artifact tests and five real-SQLite backend tests pass. New regressions cover curated XML membership, self-canonicals/noindex, stale generated assets, head/body boundaries, actual chart labels, generator idempotence and legacy exclusions. Navigation, comparison, research and SEO freshness, JavaScript syntax and whitespace checks pass. Staging contains exactly 119 public files, excluding maintenance and private operations material.

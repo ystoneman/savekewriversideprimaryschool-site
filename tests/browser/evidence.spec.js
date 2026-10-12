@@ -203,7 +203,8 @@ test('Unanswered questions overview presents eight priorities without opening on
   const questions = page.locator('#gaps .gaps-grid > article');
   expect(await questions.evaluateAll(nodes => nodes.map(node => node.id))).toEqual(unansweredQuestionIds);
   await expect(page.locator('#gaps .gap-detail[open]')).toHaveCount(0);
-  await expect(page.locator('#gap-budget summary')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('#gaps h2')).toBeInViewport();
+  await expect(page.locator('#gaps .gaps-intro').first()).toContainText('compare the full costs');
   for (const question of await questions.all()) {
     await expect(question.locator('summary h3')).toBeVisible();
     await expect(question.locator('summary .gap-state')).toBeVisible();

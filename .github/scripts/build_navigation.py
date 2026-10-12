@@ -5,7 +5,7 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026100901'
+VERSION = '2026101102'
 SITE_NAME = 'Save Kew Riverside Primary School Campaign'
 SITE_URL = 'https://savekewriversideprimaryschool.org/'
 PAGES = {
@@ -13,7 +13,7 @@ PAGES = {
     # FOOTER_LINKS, so registering a page never adds a Menu row by itself.
     'rally.html': 'Past rally', 'letters.html': 'Community letters', 'videos.html': 'Share a video', 'feedback.html': 'Share ideas',
     'index.html': 'Home', 'about.html': 'About', 'proposal.html': 'Proposal & dates',
-    'faq.html': 'FAQ', 'understand.html': 'Numbers & results', 'options.html': 'Ways to keep Kew open',
+    'faq.html': 'FAQ', 'understand.html': 'Our case for Kew', 'options.html': 'Ways to keep Kew open',
     'lessons.html': 'Lessons', 'evidence.html': 'Evidence', 'supporters.html': 'Supporters',
     'privacy.html': 'Privacy', 'corrections.html': 'Corrections',
     'lessons-sources.html': 'Research citations', 'sent.html': 'Next steps',
@@ -35,13 +35,13 @@ MENU_GROUPS = [
         ('videos.html#upload', 'Share a video', ''),
         ('feedback.html', 'Share ideas', ''),
     ]),
-    ('Understand the proposal', [
+    ('Keep Kew open', [
+        ('options.html', 'Ways to keep Kew open', ''),
         ('proposal.html', 'Proposal & dates', ''),
         ('faq.html', 'FAQ', ''),
-        ('understand.html', 'Numbers & results', ''),
-        ('options.html', 'Ways to keep Kew open', ''),
         ('evidence.html#records', 'Evidence', ''),
-        ('evidence.html#gaps', 'Unanswered questions', 'sub'),
+        ('evidence.html#gaps', 'Questions for the council', 'sub'),
+        ('understand.html#supporting-research', 'Supporting research', 'sub'),
     ]),
     ('This website', [
         ('index.html', 'Home', ''),
@@ -62,10 +62,10 @@ FOOTER_LINKS = [
 SECTIONS = {
     'rally.html': [('when-and-where','Past event'),('schedule','Advertised schedule'),('attending','Original access notes'),('photos','Photo choices'),('council-and-response','Council and your response'),('updates','Questions or corrections')],
     'index.html': [('find-your-way','Find what you need'),('research-shortcut','Historical research','find-your-way'),('quick-answers','Before you respond'),('visit-school','Considering Kew Riverside Primary School?')],
-    'evidence.html': [('records','Current Kew findings'),('london-findings','Lessons from other schools','records'),('finding-st-john','St John the Divine','records'),('finding-linked-schools','Fenstanton & Holy Trinity','records'),('finding-pooles','Pooles Park','records'),('source-search','Find a source'),('source-library','Original sources','source-search'),('evidence','Numbers behind the proposal'),('timeline','Dates and next steps'),('earlier-record','Earlier public record'),('gaps','Unanswered questions'),('gap-budget','Keeping Kew open','gaps'),('gap-pupil-impacts',"Children’s needs",'gaps'),('gap-selection','Why Kew?','gaps'),('gap-closure-costs','Closure costs and site','gaps'),('gap-alternatives','Costed alternatives','gaps'),('gap-recruitment','Recruitment support','gaps'),('gap-forecasts','Pupil and housing forecasts','gaps'),('gap-answers','Written answers','gaps'),('evidence-found','Evidence obtained','gaps'),('gap-records','Process and records','gaps'),('method','Method and limits')],
+    'evidence.html': [('records','Current Kew findings'),('london-findings','Lessons from other schools','records'),('finding-st-john','St John the Divine','records'),('finding-linked-schools','Fenstanton & Holy Trinity','records'),('finding-pooles','Pooles Park','records'),('source-search','Find a source'),('source-library','Original sources','source-search'),('evidence','Numbers behind the proposal'),('timeline','Dates and next steps'),('earlier-record','Earlier public record'),('gaps','Questions for the council'),('gap-budget','Keeping Kew open','gaps'),('gap-pupil-impacts',"Children’s needs",'gaps'),('gap-selection','Why Kew?','gaps'),('gap-closure-costs','Closure costs and site','gaps'),('gap-alternatives','Costed alternatives','gaps'),('gap-recruitment','Recruitment support','gaps'),('gap-forecasts','Pupil and housing forecasts','gaps'),('gap-answers','Written answers','gaps'),('evidence-found','Evidence obtained','gaps'),('gap-records','Process and records','gaps'),('method','Method and limits')],
     'options.html': [('option-7','Your official response'),('options-prep-title','Prepare together'),('options-findings-title','What an alternative needs'),('options-navigation','Ways to help'),('option-recovery-plan','A practical recovery plan','options-navigation'),('option-crowdfunding','Funding','options-navigation'),('option-demand','Pupil demand','options-navigation'),('option-enrolment','School enquiries','options-navigation'),('option-5','Closure costs','options-navigation'),('option-6',"Children’s needs",'options-navigation'),('option-8','Legal experience','options-navigation'),('options-sources-title','Evidence and next steps')],
     'proposal.html': [('parent-plan','Parent action plan'),('plan-share','Evidence and letters','parent-plan'),('plan-respond','Your response','parent-plan'),('plan-keep-going','More ways to help','parent-plan'),('past-parent-events','Past events'),('timetable','Timeline'),('questions','Questions worth asking'),('question-continuity',"Your child’s next school",'questions'),('question-learning',"Your child’s learning",'questions'),('question-budget','The budget','questions'),('question-closure-costs','Closure costs','questions'),('question-demand','Pupil forecasts','questions'),('question-alternatives','Alternatives','questions'),('who-decides','Who decides'),('other-schools','Lessons from other schools'),('decision-record','Decision record'),('take-part','Official response routes')],
-    'understand.html': [('pupil-trends','Pupil numbers'),('forecast-checks','Forecast checks'),('school-places','Unfilled places'),('year-groups','Year groups'),('budget','School finances'),('closure-costs','Closure costs','budget'),('other-proposals','Other Richmond proposals'),('learning-and-results','Learning and results'),('inspection-summary','Inspection findings','learning-and-results'),('mixed-age-curriculum','Mixed-age learning','learning-and-results'),('methodology','Method and limits')],
+    'understand.html': [('supporting-research','Supporting research'),('pupil-trends','Pupil numbers'),('forecast-checks','Forecast checks'),('school-places','Unfilled places'),('year-groups','Year groups'),('budget','School finances'),('closure-costs','Closure costs','budget'),('other-proposals','Other Richmond proposals'),('learning-and-results','Learning and results'),('inspection-summary','Inspection findings','learning-and-results'),('mixed-age-curriculum','Mixed-age learning','learning-and-results'),('methodology','Method and limits')],
     'faq.html': [('taking-part','Ways to help'),('decisions','Dates and decisions'),('money','Money'),('school-places','School places'),('learning','Learning and results')],
     'lessons.html': [('key-lessons','Key lessons'),('visual-guide','Visual guide'),('catalogue','All 16 schools'),('method','Method and limits')],
     'lessons-sources.html': [('source-register','Source register'),('claim-ledger','Evidence and interpretation')],
@@ -85,9 +85,9 @@ def render_identity(name, document):
         'letters.html': 'Community letters',
         'about.html': 'Our story & contact',
         'proposal.html': 'Kew Riverside Primary School closure proposal: consultation and dates',
-        'understand.html': 'Kew Riverside Primary School finances and pupil numbers',
+        'understand.html': 'The case for keeping Kew Riverside Primary School open',
         'faq.html': 'Kew Riverside closure proposal: answers for families',
-        'evidence.html': 'Kew Riverside closure proposal: evidence and sources',
+        'evidence.html': 'Keeping Kew Riverside open: evidence and questions for the council',
         'options.html': 'Alternatives to closing Kew Riverside Primary School',
         'lessons.html': 'School closure reprieves: selected cases and lessons for Kew',
         'lessons-sources.html': 'Research citations',
@@ -102,11 +102,11 @@ def render_identity(name, document):
         'fundraising-admin.html': 'Account setup brief',
     }
     descriptions = {
-        'index.html': 'Find the Kew Riverside Primary School closure proposal, consultation dates, evidence and parent action plan, plus reviewed community letters.',
+        'index.html': 'Help keep Kew Riverside Primary School open. Find the parent action plan, community letters, alternatives to closure and the official consultation response route.',
         'proposal.html': 'Understand the proposed closure of Kew Riverside Primary School, the consultation process, who decides and the parent action plan. Responses are due by 16 October 2026.',
         'faq.html': 'Answers for families about the Kew Riverside Primary School closure proposal, consultation, school places and how to respond, with links to official sources.',
-        'understand.html': 'Explore dated Kew Riverside Primary School pupil figures, annual budget gaps and cumulative forecasts, alongside Richmond comparisons and source qualifications.',
-        'evidence.html': 'Read the sources behind the Kew Riverside Primary School closure proposal, including pupil forecasts, budget figures, official records and outstanding evidence requests.',
+        'understand.html': 'Our case for keeping Kew Riverside Primary School open: assess alternatives, compare the full costs and protect children’s continuity. Supporting research and sources are available to check.',
+        'evidence.html': 'Evidence for challenging the proposed closure of Kew Riverside Primary School: alternatives, full costs, children’s needs and questions for the council, with original sources to check.',
         'options.html': 'Explore alternatives to closing Kew Riverside Primary School and the evidence needed to assess them, with practical next steps in the parent action plan.',
         'lessons.html': 'Compare 12 selected reprieve schools across nine decision episodes with four closed schools. Examine the evidence, limits and lessons for Kew Riverside; reprieve does not establish lasting recovery.',
     }
@@ -191,7 +191,7 @@ def render_navigation(name, document):
     header = re.sub(r'<details class="mobile-menu">.*?</details>', '', header, flags=re.S)
     header = re.sub(r' aria-current="page"', '', header)
     # Keep the short wide-screen exploration row. The full menu is available at every width.
-    desktop = [('proposal.html#parent-plan','Parent action plan'),('about.html','About'),('proposal.html','Proposal & dates'),('understand.html','Numbers & results'),('faq.html','FAQ'),('evidence.html#records','Evidence')]
+    desktop = [('proposal.html#parent-plan','Parent action plan'),('about.html','About'),('proposal.html','Proposal & dates'),('options.html','Ways to keep Kew open'),('faq.html','FAQ'),('evidence.html#records','Evidence')]
     def link(href, label, parent=False):
         current = ' aria-current="page"' if href.split('#')[0] == name and not parent else ''
         cls = ' class="nav-parent-plan"' if parent else ''

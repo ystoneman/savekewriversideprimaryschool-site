@@ -16,7 +16,13 @@ async function activate(locator, hasTouch) {
   else await locator.click();
 }
 
+async function openResearch(page) {
+  const research = page.locator('#supporting-research');
+  if (!(await research.evaluate(node => node.open))) await research.locator(':scope > summary').click();
+}
+
 async function openComparison(page, id = 'pupil-trends-detail') {
+  await openResearch(page);
   const detail = page.locator('#' + id);
   if (!(await detail.evaluate(node => node.open))) await detail.locator(':scope > summary').click();
 }
@@ -42,14 +48,15 @@ test('Understand: evidence comparison preview leads directly to the visual expla
   const preview = page.getByRole('complementary', { name: 'How does Kew Riverside Primary School compare?' });
   await expect(preview).toBeVisible();
   await expect(preview).toContainText(/pupil trends, school places and year-group sizes/i);
-  await activate(preview.getByRole('link', { name: /Understand the situation/ }), hasTouch);
-  await expect(page).toHaveURL(/understand.html$/);
+  await activate(preview.getByRole('link', { name: /Check the supporting research/ }), hasTouch);
+  await expect(page).toHaveURL(/understand.html#supporting-research$/);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.locator('#pupil-trends-detail')).not.toHaveAttribute('open', '');
 });
 
 test('Understand: the existing comparisons and new case questions are readable on arrival', async ({ page }) => {
   await page.goto('/understand.html');
+  await openResearch(page);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   for (const id of sections) {
     await expect(page.locator('#' + id)).toBeVisible();
@@ -57,7 +64,7 @@ test('Understand: the existing comparisons and new case questions are readable o
   }
   await expect(page.getByRole('group', { name: 'Pupil trend measure' })).toBeHidden();
   await expect(page.locator('main svg:visible')).toHaveCount(0);
-  for (const detail of await page.locator('[data-overview-detail]').all()) {
+  for (const detail of await page.locator('#supporting-research [data-overview-detail]').all()) {
     await expect(detail).not.toHaveAttribute('open', '');
     await expect(detail.locator(':scope > summary')).toBeVisible();
   }
@@ -71,6 +78,8 @@ test('Understand: homepage numbers route reaches dated finances and forecast che
   await page.goto('/index.html');
   await activate(page.locator('#find-your-way a[href="understand.html"]'), hasTouch);
   await expect(page).toHaveURL(/understand\.html$/);
+  await expect(page.locator('#supporting-research')).not.toHaveAttribute('open', '');
+  await activate(page.locator('.campaign-route a[href="#supporting-research"]'), hasTouch);
   const budgetLink = page.locator('.visual-route a[href="#budget"]');
   const forecastLink = page.locator('.visual-route a[href="#forecast-checks"]');
   await expect(budgetLink).toBeVisible();
@@ -110,6 +119,7 @@ test('Understand: financial actuals, council projection and forecast error keep 
 
 test('Understand: optional financial table opens by keyboard and has a stable direct link', async ({ page }) => {
   await page.goto('/understand.html');
+  await openResearch(page);
   // Keep this check on the historical five-year table when other details precede it.
   const details = page.locator('#budget-actuals');
   const summary = details.locator('summary');
@@ -127,6 +137,7 @@ test('Understand: optional financial table opens by keyboard and has a stable di
 
 test('Understand: count and percentage controls change the charts and accessible state', async ({ page, hasTouch }) => {
   await page.goto('/understand.html');
+  await openResearch(page);
   await openComparison(page);
   await expectTrendMode(page, 'count');
   await activate(page.getByRole('button', { name: 'Percentage change', exact: true }), hasTouch);
@@ -138,6 +149,7 @@ test('Understand: count and percentage controls change the charts and accessible
 test('Understand: measure buttons work with a keyboard and retain visible focus', async ({ page, browserName }) => {
   const next = browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab';
   await page.goto('/understand.html');
+  await openResearch(page);
   await openComparison(page);
   const counts = page.getByRole('button', { name: 'Pupil numbers', exact: true });
   const change = page.getByRole('button', { name: 'Percentage change', exact: true });
@@ -155,6 +167,7 @@ test('Understand: measure buttons work with a keyboard and retain visible focus'
 
 test('Understand: each borough comparison opens and closes independently', async ({ page, hasTouch }) => {
   await page.goto('/understand.html');
+  await openResearch(page);
   for (const id of chartSections) {
     await test.step(id, async () => {
       await openComparison(page, id + '-detail');
@@ -175,6 +188,7 @@ test('Understand: each borough comparison opens and closes independently', async
 
 test('Understand: underlying local and borough tables remain available in either chart mode', async ({ page, hasTouch }) => {
   await page.goto('/understand.html');
+  await openResearch(page);
   await openComparison(page);
   const trend = page.locator('#pupil-trends');
   const localSummary = trend.locator('summary').filter({ hasText: /^View the local trend data$/ });
@@ -195,6 +209,7 @@ test('Understand: underlying local and borough tables remain available in either
 
 test('Understand: disclosures work through native keyboard interaction', async ({ page }) => {
   await page.goto('/understand.html');
+  await openResearch(page);
   await openComparison(page);
   const summary = page.locator('#pupil-trends summary').filter({ hasText: /^View the local trend data$/ });
   await summary.focus();
@@ -208,6 +223,7 @@ test('Understand: disclosures work through native keyboard interaction', async (
 test('Understand: charts and expanded tables fit a narrow viewport in both modes', async ({ page, hasTouch }) => {
   await page.setViewportSize({ width: 320, height: 844 });
   await page.goto('/understand.html');
+  await openResearch(page);
   await openComparison(page);
   for (const name of ['Percentage change', 'Pupil numbers']) {
     await activate(page.getByRole('button', { name, exact: true }), hasTouch);
@@ -228,6 +244,7 @@ test('Understand: charts and expanded tables fit a narrow viewport in both modes
 
 test('Understand: school dataset downloads as CSV', async ({ page }) => {
   await page.goto('/understand.html');
+  await openResearch(page);
   const link = page.locator('a[download][href="richmond-schools.csv"]').first();
   await expect(link).toHaveAccessibleName(/\S/);
   const [download] = await Promise.all([page.waitForEvent('download'), link.click()]);
@@ -241,6 +258,7 @@ test('Understand: school dataset downloads as CSV', async ({ page }) => {
 
 test('Understand: visible trend points, percentage baseline and local table match audited counts', async ({ page, hasTouch }) => {
   await page.goto('/understand.html');
+  await openResearch(page);
   await openComparison(page);
   const normaliseNumber = value => Number(value.replaceAll('−', '-').replace(/[+%,\s]/g, ''));
   for (const expected of sourceChecks) {
@@ -267,6 +285,7 @@ test('Understand: visible trend points, percentage baseline and local table matc
 
 test('Understand: capacity and cohort graphics keep their dates, units and source values distinct', async ({ page }) => {
   await page.goto('/understand.html');
+  await openResearch(page);
   await openComparison(page, 'school-places-detail');
   await openComparison(page, 'year-groups-detail');
   await expect(page.locator('#school-places .data-date')).toContainText('May 2025');
@@ -292,6 +311,7 @@ test('Understand: capacity and cohort graphics keep their dates, units and sourc
 test('Understand: questions, source references and proposal comparison lead to the cited context', async ({ page, hasTouch }) => {
   for (const id of chartSections) {
     await page.goto('/understand.html');
+  await openResearch(page);
     await activate(page.locator(`.visual-route a[href="#${id}"]`), hasTouch);
     await expect(page).toHaveURL(new RegExp(`#${id}$`));
     await expect(page.locator('#' + id)).toBeInViewport();
@@ -302,11 +322,13 @@ test('Understand: questions, source references and proposal comparison lead to t
     ['other-proposals', 'hampton-wick-proposal-2026'],
   ]) {
     await page.goto('/understand.html');
+  await openResearch(page);
     await activate(page.locator(`#${section} a[href="evidence.html#source-${source}"]`).first(), hasTouch);
     await expect(page).toHaveURL(new RegExp(`evidence.html#source-${source}$`));
     await expect(page.locator('#source-' + source)).toBeInViewport();
   }
   await page.goto('/understand.html');
+  await openResearch(page);
   const comparison = page.locator('#other-proposals');
   await expect(comparison.locator('.proposal-comparison article')).toHaveCount(2);
   await expect(comparison.locator('.section-lead')).toContainText('neither is a final decision');
@@ -356,6 +378,7 @@ test('Understand: published data keeps dated measurements and school-level total
 test('Understand: a failed enhancement script preserves readable charts and native data disclosures', async ({ page, hasTouch }) => {
   await page.route('**/understand.js*', route => route.fulfill({ status: 404, body: 'Intentional test outage', headers: { 'X-Test-Fixture': 'intentional-error' } }));
   await page.goto('/understand.html');
+  await openResearch(page);
   const controls = page.locator('[role="group"][aria-label="Pupil trend measure"]');
   await expect(controls).toHaveCount(1);
   await expect(controls).toBeHidden();
@@ -403,6 +426,7 @@ test('Understand: optional detail reveals by keyboard and incoming links recover
 test('Understand: the short-answer view reflows with text enlarged to 200 percent', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/understand.html');
+  await openResearch(page);
   const heading = page.getByRole('heading', { level: 1 });
   const originalSize = await heading.evaluate(node => parseFloat(getComputedStyle(node).fontSize));
   // Capture first, then apply: nested text must not be multiplied more than once.
@@ -424,30 +448,51 @@ test('Understand: the short-answer view reflows with text enlarged to 200 percen
   await expect(page.locator('#pupil-trends-detail > summary')).toBeVisible();
 });
 
-test('Understand: arrival explains three dated findings before asking readers to choose a topic', async ({ page, hasTouch }) => {
+test('Curation: campaign arrivals lead with advocacy and keep numeric research optional', async ({ page, hasTouch }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/understand.html');
-  const findings = page.locator('.number-findings');
-  const items = findings.locator(':scope > article');
-  await expect(items).toHaveCount(3);
-  for (const item of await items.all()) await expect(item).toBeVisible();
-  const [pupils, finances, forecasts] = await items.all();
-  for (const value of ['36.6%', '5.5%', '45 primary-phase schools', 'May 2022', 'May 2025', 'excluding nursery', 'not its cause']) {
-    await expect(pupils).toContainText(value);
-  }
-  for (const value of ['£231,685.09', '31 March 2026', 'more than £400,000', 'accumulated deficit', '2028/29', 'received final budget summary', 'ledger, detailed assumptions and current monitoring are still needed', 'long-term viability']) {
-    await expect(finances).toContainText(value);
-  }
-  for (const value of ['2025/26', 'January 2026', '651', '654', '88 forecast, 97 counted', 'one period across three schools', 'excluding nursery', 'not a forecast for Kew Riverside Primary School alone or a long-term accuracy test']) {
-    await expect(forecasts).toContainText(value);
-  }
-  const insightBox = await findings.boundingBox();
-  const topicsBox = await page.locator('.visual-route').boundingBox();
-  expect(insightBox.y + insightBox.height).toBeLessThan(topicsBox.y);
-  // Every short finding has a working route to its full sourced explanation.
-  for (const target of ['pupil-trends', 'budget', 'forecast-checks']) {
-    await activate(findings.locator(`a[href="#${target}"]`), hasTouch);
-    await expect(page.locator('#' + target)).toBeInViewport();
-    await expect(page).toHaveURL(new RegExp(`#${target}$`));
-  }
+  await expect(page.locator('#top')).toContainText('Our position:');
+  await expect(page.locator('.number-findings article')).toHaveCount(3);
+  await expect(page.locator('#top')).not.toContainText(/36\.6%|£212,417|651 pupils/);
+  await expect(page.locator('#supporting-research')).not.toHaveAttribute('open', '');
+  for (const id of ['pupil-trends', 'budget', 'learning-and-results']) await expect(page.locator('#' + id)).toBeHidden();
+  await activate(page.locator('.campaign-route a[href="#supporting-research"]'), hasTouch);
+  await expect(page.locator('#supporting-research')).toHaveAttribute('open', '');
+  await expect(page.locator('.visual-route a[href="#budget"]')).toBeVisible();
+  await activate(page.locator('.visual-route a[href="#budget"]'), hasTouch);
+  await expect(page.locator('#budget-title')).toBeInViewport();
+  await expect(page.locator('#budget')).toContainText('£212,417');
+  await expect(page.locator('#budget')).toContainText('Indicative');
+});
+
+test('Curation: the section menu recovers supporting research and existing sections', async ({ page }) => {
+  await page.goto('/understand.html');
+  const menu = page.locator('.page-sections');
+  await menu.locator(':scope > summary').click();
+  await expect(menu.locator('a[data-section-id="supporting-research"]')).toBeVisible();
+  await expect(menu.locator('a[data-section-id="budget"]')).toBeHidden();
+  await menu.locator('a[data-section-id="supporting-research"]').click();
+  const summary = page.locator('#supporting-research > summary');
+  await expect(summary).toBeFocused();
+  await expect(page.locator('#supporting-research')).toHaveAttribute('open', '');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#supporting-research')).not.toHaveAttribute('open', '');
+  await page.keyboard.press('Space');
+  await expect(page.locator('#supporting-research')).toHaveAttribute('open', '');
+  await menu.locator(':scope > summary').click();
+  await menu.locator('a[data-section-id="budget"]').click();
+  await expect(page.locator('#budget-title')).toBeInViewport();
+});
+
+test('Curation: printing reveals full research and restores the reader’s disclosure choices', async ({ page, browserName }) => {
+  await page.goto('/understand.html');
+  await expect(page.locator('#supporting-research')).not.toHaveAttribute('open', '');
+  const before = await page.locator('#supporting-research, #supporting-research details').evaluateAll(nodes => nodes.map(node => node.open));
+  await page.emulateMedia({ media: 'print' });
+  await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
+  for (const id of ['pupil-trends', 'budget-forecast', 'learning-and-results', 'methodology']) await expect(page.locator('#' + id)).toBeVisible();
+  if (browserName === 'chromium') expect((await page.pdf()).subarray(0, 5).toString()).toBe('%PDF-');
+  await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
+  await page.emulateMedia({ media: 'screen' });
+  expect(await page.locator('#supporting-research, #supporting-research details').evaluateAll(nodes => nodes.map(node => node.open))).toEqual(before);
 });
