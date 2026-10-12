@@ -68,7 +68,9 @@ class BrowserWorkflowTests(unittest.TestCase):
         self.assertIn('run: python3 .github/scripts/pr_browser_reuse.py gate', aggregate)
         self.assertIn("if: needs.validate.outputs.reuse != 'true'", self.workflow)
         self.assertIn('needs: [validate, browser-tests]', deploy)
-        self.assertIn("if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'", deploy)
+        self.assertIn("if: ${{ !cancelled() && needs.validate.result == 'success' && needs.browser-tests.result == 'success' && github.ref == 'refs/heads/main' && github.event_name == 'push' }}", deploy)
+        compatibility = self.workflow.split('  compatibility:\n', 1)[1]
+        self.assertIn("if: ${{ !cancelled() && needs.deploy.result == 'success' && github.ref == 'refs/heads/main' && github.event_name == 'push' }}", compatibility)
         self.assertIn('fail-fast: false', self.workflow)
 
     def test_only_obsolete_pull_request_runs_are_cancelled(self):
