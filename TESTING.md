@@ -1,5 +1,15 @@
 # Testing the website
 
+## Aggregate analytics audit — 12 October 2026
+
+- All 81 Python privacy/security/data/artifact checks, six real-SQLite collector tests and 14 homepage deadline checks pass; 122 public files stage. JavaScript syntax and whitespace checks pass. Four early homepage smoke cases pass.
+- Final local analytics run passes 152 cases across iPhone WebKit and desktop Chromium, covering finite payloads, raw-value/private-route rejection, preserved earlier choices, v3 consent, late/missing timing samples, refusal, unchanged Umami scope and rendered first-visit controls. All 66 theme cases passed in the preceding two-project run.
+- Independent actual-diff privacy review found and rechecked a load-timing race; sampling now waits until after the load handler and gives missing entries a bounded one-second opportunity. Independent UX review inspected 320/390/1440px captures and found all three choices readable and visible, with no remaining panel issue.
+- A newly added 320px Help-first-screen assertion failed. An isolated HEAD/current comparison in both Chromium and WebKit established identical geometry: notice y84.3125/h54, Respond y453.875/h68.5, Help y563.875/h66.5. This is a pre-existing mismatch with the journey-register wording, not analytics displacement. The new regression checks the primary Respond action stays fully visible and records that scope; no existing assertion was weakened and no homepage redesign was made.
+- Native iPhone 17 / iOS 26.5 Simulator was available, but the local HTTP preview loaded without its styles/scripts (Safari subresource upgrading/caching); no native analytics-control pass is claimed. Browser emulation and independent screenshot review are recorded separately. No real contribution or council form was submitted.
+- Full hosted current-revision gates, backend deployment and actual live receipt are pending; record their outcomes in the pull request and task completion evidence.
+
+
 ## Faster release checks — 12 October 2026
 
 The full hosted suite retains all five browser projects, assertions, privacy guards, two workers per runner and zero automatic retries. The two Safari/WebKit projects are each split across three runners; Android, desktop Chromium and the no-JavaScript project each retain one. The `browser-tests` gate still requires every matrix entry to succeed before deployment. Failure reports and traces have unique names per project/shard. A new workflow regression checks that no browser project or shard is missing or duplicated, rejects inconsistent totals and preserves the publication gates.

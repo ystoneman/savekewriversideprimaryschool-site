@@ -199,8 +199,8 @@ test('Analytics choices follow the system appearance while remaining readable', 
   await expect(panel).toHaveCSS('background-color','rgb(25, 43, 37)');
   await expect(panel).toHaveCSS('color','rgb(238, 244, 236)');
   // Aggregate statistics is the default; optional detailed measurement stays unpressed.
-  await expect(panel.getByRole('button',{name:'Aggregate statistics only'})).toHaveCSS('background-color','rgb(34, 56, 46)');
-  await expect(panel.getByRole('button',{name:'Include detailed usage'})).toHaveCSS('background-color','rgb(25, 43, 37)');
+  await expect(panel.getByRole('button',{name:'Keep basic only'})).toHaveCSS('background-color','rgb(34, 56, 46)');
+  await expect(panel.getByRole('button',{name:'Allow detailed analytics'})).toHaveCSS('background-color','rgb(25, 43, 37)');
   await expect(panel.getByRole('button',{name:'Turn analytics off'})).toHaveCSS('background-color','rgb(25, 43, 37)');
   await page.emulateMedia({colorScheme:'light'});
   await expect(panel).toHaveCSS('background-color','rgb(255, 253, 247)');

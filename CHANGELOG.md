@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Aggregate analytics audit and clearer choices — 12 October 2026
+
+- Document purpose, necessity, limits and exclusions in ANALYTICS.md. Add separate fixed referral/browser/OS/device counts, public-page arrival pairs, per-page active thresholds and coarse page-loading measurements; retain immediate daily aggregation, privacy exclusions, objections and unchanged Umami payload scope.
+- Preserve earlier saved measurement scope until reviewed; new choices save v3. Explain the benefit and optional provider processing with equal clear actions. Update the public privacy explanation.
+- Unique estimation is assessed but not implemented: the proposed IP/browser sketch needs a defensible anonymity and key-erasure design. Validation and release evidence are recorded in TESTING.md when completed.
+
+
 ### Faster release checks — 12 October 2026
 
 - Split each Safari/WebKit browser project into three parallel shards, retaining the full five-project suite, existing assertions and required aggregate success gate. Keep two workers per runner, zero retries and separate failure evidence for each shard.

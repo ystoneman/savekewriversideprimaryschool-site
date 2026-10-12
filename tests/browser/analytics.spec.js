@@ -97,8 +97,8 @@ async function choices(page) {
   return panel;
 }
 
-const ALLOW = 'Include detailed usage';
-const BASIC = 'Aggregate statistics only';
+const ALLOW = 'Allow detailed analytics';
+const BASIC = 'Keep basic only';
 const OFF = 'Turn analytics off';
 
 async function allowAnalytics(page) {
@@ -166,11 +166,11 @@ test('First visit starts aggregate statistics without enabling Umami', async ({ 
   await expect(invitation.getByRole('button', { name: 'Turn analytics off', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.activeElement.closest('.analytics-invitation'))).toBeNull();
   expect(await page.evaluate(key => localStorage.getItem(key), choiceKey)).toBeNull();
-  await invitation.getByRole('button', { name: 'Review choices', exact: true }).click();
+  await invitation.getByRole('button', { name: 'Review analytics choices', exact: true }).click();
   await expect(page.locator('#analytics-panel')).toBeVisible();
   expect(sent).toEqual([]);
   await page.locator('#analytics-panel').getByRole('button', { name: 'Close analytics choices' }).click();
-  await expect(invitation.getByRole('button', { name: 'Review choices', exact: true })).toBeFocused();
+  await expect(invitation.getByRole('button', { name: 'Review analytics choices', exact: true })).toBeFocused();
   const panel = await choices(page);
   await expect(panel.getByRole('status')).toContainText('aggregate statistics only (the default)');
   await expect(panel.getByRole('button', { name: BASIC, exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -220,10 +220,11 @@ test('The aggregate default records reviewed interactions without Umami or ident
   const { sent, aggregates } = await virtualProduction(context);
   await controlledAttention(page);
   await page.goto(site + 'evidence.html');
-  await expect.poll(() => aggregates.length).toBe(1);
+  await expect.poll(() => aggregates.filter(r => r.body.counters.some(c => c.metric === 'page')).length).toBe(1);
   await page.locator('#gaps').evaluate(el => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
   await page.clock.runFor(15_000);
   await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'active' && c.label === '15'))).toBe(true);
+  await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'active_page' && c.label === 'evidence.html|15'))).toBe(true);
   await analyticsDownloadClick(page, 'a[download][href="sources.csv"]');
   await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'action' && c.label === 'Download clicked: source index'))).toBe(true);
   expect(sent).toEqual([]);
@@ -275,11 +276,11 @@ test('Slow configuration does not move a focused field or turn first-visit colle
   await page.goto(site + 'letters.html');
   const invitation = page.locator('.analytics-invitation');
   await expect(invitation).toBeVisible();
-  await expect(invitation.getByRole('button', { name: 'Review choices' })).toBeDisabled();
+  await expect(invitation.getByRole('button', { name: 'Review analytics choices' })).toBeDisabled();
   await page.locator('#message').fill('Fictional letter typed before configuration loads');
   const before = await page.locator('#message').boundingBox();
   release();
-  await expect(invitation.getByRole('button', { name: 'Review choices' })).toBeEnabled();
+  await expect(invitation.getByRole('button', { name: 'Review analytics choices' })).toBeEnabled();
   await expect(page.locator('#message')).toBeFocused();
   expect(await page.locator('#message').boundingBox()).toEqual(before);
   expect(sent).toEqual([]);
@@ -289,7 +290,7 @@ for (const [setting, label] of [['allow', ALLOW], ['basic', BASIC], ['deny', OFF
   test(`First-visit prompt offers the ${setting} choice without enabling analytics on open`, async ({ page, context }) => {
     const { sent } = await virtualProduction(context);
     await page.goto(site);
-    await page.locator('.analytics-invitation').getByRole('button', { name: 'Review choices' }).click();
+    await page.locator('.analytics-invitation').getByRole('button', { name: 'Review analytics choices' }).click();
     expect(sent).toEqual([]);
     const panel = page.locator('#analytics-panel');
     await panel.getByRole('button', { name: label, exact: true }).click();
@@ -582,7 +583,7 @@ test('Detailed opt-in in another tab starts timing after permission', async ({ p
   const { sent, aggregates } = await virtualProduction(context);
   await controlledAttention(page);
   await page.goto(site);
-  await expect.poll(() => aggregates.length).toBe(1);
+  await expect.poll(() => aggregates.filter(r => r.body.counters.some(c => c.metric === 'page')).length).toBe(1);
   await page.clock.runFor(10_000);
   expect(sent).toEqual([]);
   const other = await context.newPage();
@@ -1041,4 +1042,107 @@ test.describe('Analytics with JavaScript disabled', () => {
     expect(configReads).toEqual([]);
     expect(sent).toEqual([]);
   });
+});
+
+test('Expanded aggregate metrics keep only fixed categories and never widen Umami', async ({ page, context }) => {
+  const { aggregates, sent } = await virtualProduction(context);
+  await page.addInitScript(({ sentinel }) => {
+    Object.defineProperty(navigator, 'userAgent', { value: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/120.0 Mobile Safari/537.36 ' + sentinel });
+    performance.getEntriesByType = type => type === 'navigation' ? [{ loadEventEnd: 3500, responseStart: 500 }] : [];
+    performance.getEntriesByName = name => name === 'first-contentful-paint' ? [{ startTime: 1500 }] : [];
+  }, { sentinel });
+  await page.goto(site + 'faq.html?private=' + sentinel, { referer: 'https://richmond.nub.news/news/' + sentinel + '?reader=' + sentinel });
+  const counters = () => aggregates.flatMap(r => r.body.counters);
+  await expect.poll(() => counters().some(c => c.metric === 'fcp')).toBe(true);
+  for (const [metric, label] of Object.entries({ referral: 'richmond-nub', browser: 'chrome', os: 'android', device: 'mobile', load: 'faq.html|2.5-4s', ttfb: 'faq.html|under-1s', fcp: 'faq.html|1-2.5s' })) {
+    expect(counters().filter(c => c.metric === metric)).toEqual([{ metric, label }]);
+  }
+  expect(JSON.stringify(aggregates)).not.toContain(sentinel);
+  expect(sent).toEqual([]);
+  await allowAnalytics(page);
+  await expect.poll(() => pageViews(sent).length).toBe(1);
+  expect(pageViews(sent)[0].body.payload.referrer).toBe('https://external.example/');
+  expect(JSON.stringify(sent)).not.toContain('richmond-nub');
+  expect(counters().filter(c => c.metric === 'device')).toHaveLength(1);
+  expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).v, choiceKey)).toBe(3);
+});
+
+for (const from of ['proposal.html?private=secret#parent-plan', 'feedback.html', 'corrections.html', 'unknown.html']) {
+  test('Aggregate arrivals allow only public page pairs from ' + from, async ({ page, context }) => {
+    const { aggregates } = await virtualProduction(context);
+    await page.goto(site + 'faq.html', { referer: site + from });
+    await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'device'))).toBe(true);
+    const pairs = aggregates.flatMap(r => r.body.counters).filter(c => c.metric === 'navigation');
+    expect(pairs).toEqual(from.startsWith('proposal.html') ? [{ metric: 'navigation', label: 'proposal.html>faq.html' }] : []);
+    expect(JSON.stringify(aggregates)).not.toContain('secret');
+  });
+}
+
+for (const prior of ['basic', 'allow']) {
+  test('Saved v2 ' + prior + ' keeps earlier aggregate scope until reviewed', async ({ page, context }) => {
+    const { aggregates, sent } = await virtualProduction(context);
+    await page.addInitScript(({ key, choice }) => localStorage.setItem(key, JSON.stringify({ v: 2, choice, until: Date.now() + 86400000 })), { key: choiceKey, choice: prior });
+    await page.goto(site + 'faq.html');
+    await expect.poll(() => aggregates.length).toBe(1);
+    expect(aggregates[0].body.counters.map(c => c.metric)).toEqual(['page', 'source', 'viewport']);
+    expect(pageViews(sent).length).toBe(prior === 'allow' ? 1 : 0);
+    const panel = await choices(page);
+    await panel.getByRole('button', { name: BASIC, exact: true }).click();
+    await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'device'))).toBe(true);
+    expect(aggregates.flatMap(r => r.body.counters).filter(c => c.metric === 'page')).toHaveLength(1);
+  });
+}
+
+test('Missing performance samples stay unavailable and Off stops new counters', async ({ page, context }) => {
+  const { aggregates, sent } = await virtualProduction(context);
+  await page.addInitScript(() => { performance.getEntriesByType = () => []; performance.getEntriesByName = () => []; });
+  await page.goto(site + 'faq.html');
+  await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'load'))).toBe(true);
+  const timing = aggregates.flatMap(r => r.body.counters).filter(c => ['load', 'ttfb', 'fcp'].includes(c.metric));
+  expect(timing).toHaveLength(3);
+  expect(timing.every(c => c.label === 'faq.html|unavailable')).toBe(true);
+  await page.locator('.analytics-invitation').getByRole('button', { name: OFF, exact: true }).click();
+  const count = aggregates.length;
+  await page.goto(site + 'about.html');
+  expect(aggregates).toHaveLength(count);
+  expect(sent).toEqual([]);
+});
+
+for (const width of [320, 390, 1440]) {
+  test('Clear analytics choice preserves campaign actions at width ' + width, async ({ page, context }, testInfo) => {
+    await page.setViewportSize({ width, height: width === 320 ? 568 : 900 });
+    const { sent } = await virtualProduction(context);
+    await page.goto(site);
+    const invitation = page.locator('.analytics-invitation');
+    await expect(invitation).toBeInViewport({ ratio: 1 });
+    // Baseline comparison confirms Help already starts below 568px; preserve
+    // the primary response arrival rather than changing the approved homepage.
+    await expect(page.locator('.actions .primary')).toBeInViewport({ ratio: 1 });
+    if (process.env.KEW_ANALYTICS_CAPTURES) await page.screenshot({ path: process.env.KEW_ANALYTICS_CAPTURES + '/' + testInfo.project.name + '-' + width + '-arrival.png' });
+    await invitation.getByRole('button', { name: 'Review analytics choices' }).click();
+    const panel = page.locator('#analytics-panel');
+    await expect(panel.getByText(/Optional Umami analytics groups/)).toBeVisible();
+    for (const name of [ALLOW, BASIC, OFF]) await expect(panel.getByRole('button', { name, exact: true })).toBeInViewport({ ratio: 1 });
+    expect(sent).toEqual([]);
+    if (process.env.KEW_ANALYTICS_CAPTURES) await page.screenshot({ path: process.env.KEW_ANALYTICS_CAPTURES + '/' + testInfo.project.name + '-' + width + '-choices.png' });
+    await panel.getByRole('button', { name: BASIC, exact: true }).click();
+    await expect(panel).toBeHidden();
+    await page.reload();
+    await expect(invitation).toHaveCount(0);
+    expect(sent).toEqual([]);
+  });
+}
+
+test('Performance waits for late timing entries and sends one sample per metric', async ({ page, context }) => {
+  const { aggregates } = await virtualProduction(context);
+  await page.addInitScript(() => {
+    window.timingReady = false;
+    performance.getEntriesByType = () => [{ loadEventEnd: window.timingReady ? 1800 : 0, responseStart: 600 }];
+    performance.getEntriesByName = () => window.timingReady ? [{ startTime: 1200 }] : [];
+    window.addEventListener('load', () => setTimeout(() => { window.timingReady = true; }, 100));
+  });
+  await page.goto(site + 'faq.html');
+  await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'fcp'))).toBe(true);
+  const timings = aggregates.flatMap(r => r.body.counters).filter(c => ['load', 'ttfb', 'fcp'].includes(c.metric));
+  expect(timings).toEqual([{ metric: 'load', label: 'faq.html|1-2.5s' }, { metric: 'ttfb', label: 'faq.html|under-1s' }, { metric: 'fcp', label: 'faq.html|1-2.5s' }]);
 });

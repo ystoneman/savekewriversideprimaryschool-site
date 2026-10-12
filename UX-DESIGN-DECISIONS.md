@@ -1,5 +1,12 @@
 # UX design decisions
 
+## Clearer optional analytics — 12 October 2026
+
+J1–J9: make the analytics choice understandable without covering the campaign tasks. Retain the compact first notice, label its button Analytics, and use its opened panel to explain the website-improvement benefit and Umami visit/device/location processing before equal Allow detailed analytics / Keep basic only / Turn analytics off actions. A larger direct-consent banner was considered but would require enough additional explanation and controls to risk displacing Respond/Help on the compact phone homepage. Remember refusals and keep existing provider scope; no automatic opt-in or repeated request to previously refusing visitors.
+
+Independent UX and privacy planning reviews informed the decision. This is a design hypothesis, not evidence of increased opt-in. Rendered and regression verification is recorded in TESTING.md.
+
+
 ## Compact main campaign homepage — 12 October 2026
 
 Visitor need (J1–J7): the owner reports repeated parent feedback that the campaign homepage should be much shorter and easier to share. The owner approved a roughly 85-word prototype, then explicitly requested its implementation on the main website, with one-tap sharing and automatic deadline refresh. Following a comparison, the owner rejected the exterior still and requested the existing ladybird photograph. This records an approved design checkpoint, not an unfamiliar-visitor study or measured engagement improvement.

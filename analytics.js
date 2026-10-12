@@ -62,7 +62,8 @@
   let config, choice = null, storageOK = true, collecting = false;
   let timer, previousTick = 0, lastActivity = 0, seconds = 0, pageSent = false;
   let opener, panel, status, buttons, invitation;
-  let legacyBasic = false;
+  let legacyBasic = false, expandedScope = true;
+  let performanceSent = false, restoredPage = false, performanceTimer, performanceAttempts = 0;
   let configLoaded = false, noticePresented = false, observer;
   let umamiPageSent = false;
   const sectionElement = id => {
@@ -82,9 +83,10 @@
     const wasDetailed = choice === 'allow';
     try {
       const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
-      choice = saved && [1, 2].includes(saved.v) && ['allow', 'basic', 'deny'].includes(saved.choice) &&
+      choice = saved && [1, 2, 3].includes(saved.v) && ['allow', 'basic', 'deny'].includes(saved.choice) &&
         Number.isFinite(saved.until) && saved.until > Date.now() ? saved.choice : null;
       legacyBasic = choice === 'basic' && saved.v === 1;
+      expandedScope = !choice || saved.v === 3;
     } catch (_) { storageOK = false; choice = null; legacyBasic = false; }
     if (choice === 'allow' && !wasDetailed) resetDetailedAttention();
   }
@@ -110,6 +112,67 @@
       if (/(^|\.)(facebook\.com|instagram\.com|youtube\.com|tiktok\.com)$/.test(url.hostname)) return 'https://social.example/';
       return url.protocol === 'https:' ? 'https://external.example/' : '';
     } catch (_) { return ''; }
+  }
+  // New dimensions stay in the aggregate service, never the Umami payload.
+  function aggregateContext() {
+    if (!expandedScope || legacyBasic) return;
+    let source = 'direct';
+    try {
+      const url = new URL(document.referrer);
+      const host = url.hostname.toLowerCase();
+      if (url.origin === location.origin) {
+        source = 'internal';
+        const from = url.pathname.split('/').pop() || 'index.html';
+        if (sitePath(url.pathname) && Object.hasOwn(PAGES, from) && !PRIVATE_PAGES.has(from)) {
+          counter([{ metric: 'navigation', label: from + '>' + file }]);
+        }
+      } else if (['https:', 'http:'].includes(url.protocol)) {
+        const sources = {
+          'bbc.co.uk': 'bbc', 'bbc.com': 'bbc', 'theguardian.com': 'guardian',
+          'standard.co.uk': 'standard', 'mylondon.news': 'mylondon',
+          'richmond.nub.news': 'richmond-nub', 'richmondandtwickenhamtimes.co.uk': 'richmond-times',
+          'yourlocalguardian.co.uk': 'local-guardian',
+          'facebook.com': 'facebook', 'instagram.com': 'instagram', 'youtube.com': 'youtube',
+          'tiktok.com': 'tiktok', 't.co': 'x', 'x.com': 'x', 'twitter.com': 'x',
+          'linkedin.com': 'linkedin', 'whatsapp.com': 'whatsapp',
+          'google.com': 'google', 'google.co.uk': 'google', 'bing.com': 'bing',
+          'duckduckgo.com': 'duckduckgo'
+        };
+        source = Object.entries(sources).find(([domain]) => host === domain || host.endsWith('.' + domain))?.[1] || 'external';
+      }
+    } catch (_) {}
+    counter([{ metric: 'referral', label: source }]);
+    // Parse locally into separate coarse buckets; never transmit the UA string.
+    const ua = navigator.userAgent || '';
+    const browser = /Edg(?:e|A|iOS)?\//.test(ua) ? 'edge' : /(?:OPR|Opera)\//.test(ua) ? 'opera' :
+      /SamsungBrowser\//.test(ua) ? 'samsung' : /(?:Firefox|FxiOS)\//.test(ua) ? 'firefox' :
+      /(?:Chrome|CriOS)\//.test(ua) ? 'chrome' : /Version\/.*Safari\//.test(ua) ? 'safari' : 'other';
+    const os = /Android/.test(ua) ? 'android' : /iPhone|iPad|iPod/.test(ua) ? 'ios' :
+      /Windows/.test(ua) ? 'windows' : /CrOS/.test(ua) ? 'chromeos' : /Macintosh|Mac OS X/.test(ua) ? 'macos' : /Linux/.test(ua) ? 'linux' : 'other';
+    const device = /iPad|Tablet/.test(ua) || (/Android/.test(ua) && !/Mobile/.test(ua)) ? 'tablet' :
+      /Mobi|iPhone|iPod/.test(ua) ? 'mobile' : /Windows|Macintosh|X11|CrOS/.test(ua) ? 'desktop' : 'other';
+    counter([{ metric: 'browser', label: browser }, { metric: 'os', label: os }, { metric: 'device', label: device }]);
+  }
+  function measurePerformance() {
+    if (performanceTimer || performanceSent || restoredPage) return;
+    // The load handler must finish before loadEventEnd can be nonzero.
+    performanceTimer = setTimeout(capturePerformance, 0);
+  }
+  function capturePerformance() {
+    performanceTimer = null;
+    if (!counting() || !expandedScope || legacyBasic || performanceSent || restoredPage || document.readyState !== 'complete') return;
+    // One sample per document; unsupported timings are explicit, never zero-speed.
+    const nav = performance.getEntriesByType?.('navigation')[0];
+    const paint = performance.getEntriesByName?.('first-contentful-paint')[0];
+    if ((!nav?.loadEventEnd || !paint?.startTime) && performanceAttempts++ < 5) {
+      performanceTimer = setTimeout(capturePerformance, 200); return;
+    }
+    performanceSent = true;
+    const bucket = value => !Number.isFinite(value) || value <= 0 ? 'unavailable' :
+      value <= 1000 ? 'under-1s' : value <= 2500 ? '1-2.5s' : value <= 4000 ? '2.5-4s' : 'over-4s';
+    for (const [metric, value] of [['load', nav?.loadEventEnd], ['ttfb', nav?.responseStart], ['fcp', paint?.startTime]]) {
+      counter([{ metric, label: file + '|' + bucket(value) }]);
+    }
   }
   function counter(rows) {
     if (!counting() || config.counterEnabled !== true) return;
@@ -147,6 +210,7 @@
       if (metric) counter([{ metric, label: metric === 'active' ? String(data.seconds) :
         metric === 'action' ? data.action : file + '#' + data.section }]);
     }
+    if (name === 'Active viewing' && expandedScope) counter([{ metric: 'active_page', label: file + '|' + data.seconds }]);
     if (!detailed()) return;
     const payload = { website: config.websiteId, hostname: HOST, url: canonical(file), title: PAGES[file], referrer: referrer() };
     if (name) { payload.name = name; payload.data = data; }
@@ -193,6 +257,8 @@
   function start() {
     if (!counting()) return;
     if (!pageSent) { send(); pageSent = true; if (detailed()) umamiPageSent = true; }
+    aggregateContext();
+    measurePerformance();
     // Opting in after aggregate collection needs its own Umami page view.
     if (detailed() && !umamiPageSent) {
       if (pageSent) {
@@ -207,13 +273,13 @@
     timer = setInterval(tick, 1000);
   }
   function stop() {
-    collecting = false; clearInterval(timer);
+    collecting = false; clearInterval(timer); clearTimeout(performanceTimer); performanceTimer = null;
     for (const controller of pending) controller.abort();
     pending.clear();
   }
   function persist(value) {
     const newlyDetailed = value === 'allow' && choice !== 'allow';
-    try { localStorage.setItem(KEY, JSON.stringify({ v: 2, choice: value, until: Date.now() + LIFETIME[value] })); choice = value; legacyBasic = false; }
+    try { localStorage.setItem(KEY, JSON.stringify({ v: 3, choice: value, until: Date.now() + LIFETIME[value] })); choice = value; legacyBasic = false; expandedScope = true; }
     catch (_) { storageOK = false; choice = null; }
     stop();
     // Optional events measure attention after permission, not earlier activity.
@@ -271,21 +337,22 @@
     // The full explanation opens only after an explicit request.
     panel = node('section', '', 'analytics-panel'); panel.hidden = true; panel.id = 'analytics-panel';
     panel.setAttribute('aria-labelledby', 'analytics-title');
-    const title = node('h2', 'Analytics choices'); title.id = 'analytics-title'; title.tabIndex = -1;
+    const title = node('h2', 'Help improve this website'); title.id = 'analytics-title'; title.tabIndex = -1;
     const dismiss = button('×', close); dismiss.className = 'analytics-close'; dismiss.setAttribute('aria-label', 'Close analytics choices');
     panel.append(title, dismiss,
-      node('p', 'Aggregate statistics keep daily page and interaction totals without visitor histories. Optional Umami groups activity into visits and derives device and approximate location. Turn analytics off stops both.'));
+      node('p', 'Help us make useful information easier to find and fix pages that are slow or difficult to use.'),
+      node('p', 'Basic statistics keep daily totals without visitor histories. Optional Umami analytics groups your activity into visits and derives device and approximate location. Turn analytics off stops both.'));
     // The choices come before the longer explanation so they fit a small phone screen.
     status = node('p'); status.setAttribute('role', 'status'); panel.append(status);
     const actions = node('div', '', 'analytics-actions');
     const choose = value => () => { persist(value); if (storageOK) close(); };
     buttons = {
-      allow: button('Include detailed usage', choose('allow')),
-      basic: button('Aggregate statistics only', choose('basic')),
+      allow: button('Allow detailed analytics', choose('allow')),
+      basic: button('Keep basic only', choose('basic')),
       deny: button('Turn analytics off', choose('deny'))
     };
     actions.append(...Object.values(buttons)); panel.append(actions);
-    panel.append(node('p', 'Aggregate statistics only keeps daily totals of page opens, broad sources, screen-size groups, section visibility, active-time milestones and selected link opens.'));
+    panel.append(node('p', 'Basic statistics count page opens, public page-to-page arrivals, broad referral and device categories, loading-speed groups, section visibility, active-time milestones and selected link opens.'));
     panel.append(node('p', 'We never record your screen, words you type, names or contact details. Everything on the site works whatever you choose.'));
     const more = node('a', 'How analytics works'); more.href = 'privacy.html#analytics'; panel.append(more);
     // Close without returning focus, so the explanation it leads to is not covered.
@@ -301,11 +368,11 @@
   function buildInvitation() {
     invitation = node('section', '', 'analytics-invitation');
     invitation.setAttribute('aria-labelledby', 'analytics-invitation-title');
-    const title = node('p', 'Site statistics on. Detailed off.');
+    const title = node('p', 'Basic statistics on. Umami off.');
     title.id = 'analytics-invitation-title';
     const actions = node('div', '', 'analytics-actions');
-    const review = button('Choices', () => { open(review); });
-    review.setAttribute('aria-label', 'Review choices');
+    const review = button('Analytics', () => { open(review); });
+    review.setAttribute('aria-label', 'Review analytics choices');
     const refuse = button('Off', () => { opener = refuse; persist('deny'); restoreFocus(); });
     refuse.setAttribute('aria-label', 'Turn analytics off');
     const more = node('a', 'Why?'); more.setAttribute('aria-label', 'How statistics work'); more.href = 'privacy.html#analytics';
@@ -365,9 +432,11 @@
   });
   window.addEventListener('storage', e => { if (e.key === KEY || e.key === null) { readChoice(); stop(); start(); update(); } });
   document.addEventListener('visibilitychange', () => { previousTick = performance.now(); if (document.visibilityState === 'visible') lastActivity = previousTick; });
+  window.addEventListener('load', () => setTimeout(measurePerformance, 0));
   window.addEventListener('pagehide', stop);
   window.addEventListener('pageshow', event => {
     if (event.persisted) {
+      restoredPage = true;
       pageSent = false; umamiPageSent = false; seconds = 0; milestones.clear(); actionsSent.clear(); aggregateEvents.clear();
       sections.forEach(s => { s.seconds = 0; s.reached = false; s.engaged = false; });
     }
