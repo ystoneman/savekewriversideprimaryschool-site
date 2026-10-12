@@ -44,7 +44,7 @@ test('Short guides: old proposal links reveal their exact original guidance and 
 test('Short guides: About exposes campaign contact and opens the complete press and private-contact routes', async ({ page }) => {
   await page.goto('/about.html');
   await expect(page.locator('main [data-simple-detail][open]')).toHaveCount(0);
-  await expect(page.locator('.simple-intro a[href="mailto:pcfs2026@gmail.com"]').first()).toBeVisible();
+  await expect(page.locator('.simple-intro a[href="mailto:savekrps@gmail.com"]').first()).toBeVisible();
   await page.getByRole('navigation', { name: 'About and contact' }).getByRole('link', { name: 'For journalists' }).click();
   await expect(page.locator('#about-press-details')).toHaveAttribute('open', '');
   await expect(page.locator('#press .press-credit')).toBeVisible();

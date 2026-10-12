@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Replace the campaign contact email on the homepage, press route and About page with `savekrps@gmail.com`; keep the existing contact placements and campaign/recruitment separation. Verification and publication evidence will be recorded in the release pull request.
+
 ### Campaign-led openings and deduplication — 12 October 2026
 
 - Lead Evidence with the keep-open position and let its findings add evidence. Replace repeated pitch text with source provenance and retain one exposed alternative-viability qualification.

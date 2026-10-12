@@ -9,7 +9,7 @@ for (const width of [320, 390]) {
       const intro = page.locator('main > .simple-intro');
       for (const words of ['Independent and parent-led', 'Yann Stoneman', 'Separate from the school, PTA and council', 'do not speak for every family']) await expect(intro).toContainText(words);
       const email = intro.getByRole('link', { name: 'Email the campaign', exact: true });
-      await expect(email).toHaveAttribute('href', 'mailto:pcfs2026@gmail.com');
+      await expect(email).toHaveAttribute('href', 'mailto:savekrps@gmail.com');
       const bounds = await email.boundingBox();
       expect(bounds.y + bounds.height).toBeLessThan(568);
       await expect(intro.getByRole('link', { name: 'For journalists', exact: true })).toHaveAttribute('href', '#press');
