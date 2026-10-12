@@ -56,14 +56,14 @@ async function activate(locator, hasTouch) {
 }
 const mainPages = [
   ['index.html', 'Home'], ['about.html', 'About'], ['proposal.html', 'Proposal & dates'],
-  ['faq.html', 'FAQ'], ['understand.html', 'Numbers & results'], ['options.html', 'Ways to keep Kew open'],
+  ['faq.html', 'FAQ'], ['understand.html', 'Our case for Kew'], ['options.html', 'Ways to keep Kew open'],
   ['lessons.html', 'Lessons'], ['evidence.html', 'Evidence'],
 ];
 // The curated Menu (27 September 2026): three labelled groups, official response
 // first. Pages outside it stay in every footer (footerLinks).
 const menuGroups = [
   ['Take part', [['Respond to the council', 'proposal.html#take-part'], ['Parent action plan', 'proposal.html#parent-plan'], ['Community letters', 'letters.html'], ['Share a video', 'videos.html#upload'], ['Share ideas', 'feedback.html']]],
-  ['Understand the proposal', [['Proposal & dates', 'proposal.html'], ['FAQ', 'faq.html'], ['Numbers & results', 'understand.html'], ['Ways to keep Kew open', 'options.html'], ['Evidence', 'evidence.html#records'], ['Unanswered questions', 'evidence.html#gaps']]],
+  ['Keep Kew open', [['Ways to keep Kew open', 'options.html'], ['Proposal & dates', 'proposal.html'], ['FAQ', 'faq.html'], ['Evidence', 'evidence.html#records'], ['Questions for the council', 'evidence.html#gaps'], ['Supporting research', 'understand.html#supporting-research']]],
   ['This website', [['Home', 'index.html'], ['About & contact', 'about.html']]],
 ];
 const menuNames = menuGroups.flatMap(([, links]) => links.map(([label]) => label));
@@ -193,8 +193,9 @@ test('Orientation: each main page has a stable identity and the complete menu in
     // A page outside the curated Menu is still one tap away in its footer.
     const label = name === 'About' ? 'About & contact' : name;
     if (menuNames.includes(label)) await expect(menu.getByRole('link', { name: label, exact: true })).toHaveAttribute('aria-current', 'page');
+    else if (file === 'understand.html') await expect(menu.getByRole('link', { name: 'Supporting research', exact: true })).toHaveAttribute('href', 'understand.html#supporting-research');
     else await expect(page.locator('footer').getByRole('link', { name, exact: true })).toHaveCount(1);
-    const questions = menu.getByRole('link', { name: 'Unanswered questions', exact: true });
+    const questions = menu.getByRole('link', { name: 'Questions for the council', exact: true });
     await expect(questions).toBeVisible();
     await expect(questions).toHaveAttribute('href', 'evidence.html#gaps');
     await expect(questions).not.toHaveAttribute('aria-current', 'page');
@@ -204,18 +205,18 @@ test('Orientation: each main page has a stable identity and the complete menu in
   }
 });
 
-test('Orientation: Unanswered questions opens its named section and repeated menu visits return there', async ({ page, hasTouch }) => {
+test('Orientation: Questions for the council opens its named section and repeated menu visits return there', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
   const menu = page.locator('.mobile-menu');
-  const questions = menu.getByRole('link', { name: 'Unanswered questions', exact: true });
+  const questions = menu.getByRole('link', { name: 'Questions for the council', exact: true });
   await activate(menu.locator(':scope > summary'), hasTouch);
   await activate(questions, hasTouch);
   await expect(page).toHaveURL(/evidence\.html#gaps$/);
   const heading = page.locator('#gaps h2');
-  await expect(heading).toHaveText('Unanswered questions');
+  await expect(heading).toHaveText('What the council must explain before closing Kew.');
   await expectUncovered(page, heading);
   await expect(page.locator('.page-name')).toHaveText('Evidence');
-  await expect(page.locator('.section-links a[data-section-id="gaps"]')).toHaveText('Unanswered questions');
+  await expect(page.locator('.section-links a[data-section-id="gaps"]')).toHaveText('Questions for the council');
   await expect(menu).not.toHaveAttribute('open', '');
 
   // Reading farther down leaves the hash unchanged; the same menu link must
@@ -226,11 +227,11 @@ test('Orientation: Unanswered questions opens its named section and repeated men
   await activate(menu.locator(':scope > summary'), hasTouch);
   await activate(questions, hasTouch);
   await expectUncovered(page, heading);
-  await expectScrollSettled(page, 'Repeated Unanswered questions menu arrival');
+  await expectScrollSettled(page, 'Repeated Questions for the council menu arrival');
   await expect(menu).not.toHaveAttribute('open', '');
 });
 
-test('Orientation: keyboard users reach Unanswered questions directly after Evidence', async ({ page, browserName }) => {
+test('Orientation: keyboard users reach Questions for the council directly after Evidence', async ({ page, browserName }) => {
   await page.goto('/index.html');
   const menu = page.locator('.mobile-menu');
   const next = browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab';
@@ -239,10 +240,10 @@ test('Orientation: keyboard users reach Unanswered questions directly after Evid
   for (let i = 0; i <= menuNames.indexOf('Evidence'); i++) await page.keyboard.press(next);
   await expect(menu.getByRole('link', { name: 'Evidence', exact: true })).toBeFocused();
   await page.keyboard.press(next);
-  await expect(menu.getByRole('link', { name: 'Unanswered questions', exact: true })).toBeFocused();
+  await expect(menu.getByRole('link', { name: 'Questions for the council', exact: true })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/evidence\.html#gaps$/);
-  await expectUncovered(page, page.getByRole('heading', { name: 'Unanswered questions', exact: true }));
+  await expectUncovered(page, page.getByRole('heading', { name: 'What the council must explain before closing Kew.', exact: true }));
   await expect(menu).not.toHaveAttribute('open', '');
 });
 

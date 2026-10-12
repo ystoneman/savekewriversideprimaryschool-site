@@ -3,6 +3,20 @@
   // Keep every existing deep target readable when scripting is unavailable.
   // Enhanced arrivals start with the short answers, then reveal a linked detail.
   document.querySelectorAll('details[data-overview-detail]').forEach(detail => { detail.open = false; });
+  // A closed research disclosure must still produce a complete printed copy.
+  // Restore each reader's disclosure choices after the print dialog closes.
+  let printState;
+  window.addEventListener('beforeprint', () => {
+    if (printState) return;
+    printState = Array.from(document.querySelectorAll('#supporting-research, #supporting-research details'),
+      detail => [detail, detail.open]);
+    printState.forEach(([detail]) => { detail.open = true; });
+  });
+  window.addEventListener('afterprint', () => {
+    if (!printState) return;
+    printState.forEach(([detail, open]) => { detail.open = open; });
+    printState = undefined;
+  });
   function revealLinkedDetails() {
     let id;
     try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }

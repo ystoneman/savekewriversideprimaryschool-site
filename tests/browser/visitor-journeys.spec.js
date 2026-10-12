@@ -143,7 +143,7 @@ test('Homepage: six clear entry routes lead to answers, dates, evidence and part
   await page.goto('/index.html');
   const routes = page.locator('#find-your-way .route-card');
   expect(await routes.evaluateAll(links => links.map(link => link.getAttribute('href')))).toEqual(entryRoutes);
-  expect((await routes.locator('.route-destination').allTextContents()).map(text => text.trim())).toEqual(['FAQ · School places', 'Ways to keep Kew open', 'Proposal & dates · Timeline', 'Numbers & results', 'Evidence', 'Share ideas']);
+  expect((await routes.locator('.route-destination').allTextContents()).map(text => text.trim())).toEqual(['FAQ · School places', 'Ways to keep Kew open', 'Proposal & dates · Timeline', 'Our case for Kew', 'Evidence', 'Share ideas']);
   for (const href of entryRoutes) {
     await page.goto('/index.html');
     const link = page.locator(`#find-your-way a[href="${href}"]`);

@@ -35,8 +35,9 @@ test('Learning: contextual homepage and evidence entries reach the results and s
 
 test('Learning: the local jump retains previous comparison sections and visible context', async ({ page, hasTouch }) => {
   await page.goto('/understand.html');
+  await page.locator('#supporting-research > summary').click();
   const expected = ['pupil-trends', 'forecast-checks', 'school-places', 'year-groups', 'budget', 'other-proposals', 'learning-and-results', 'methodology'];
-  expect(await page.locator('main > section[id]').evaluateAll(sections => sections.map(section => section.id).filter(id => id !== 'top'))).toEqual(expected);
+  expect(await page.locator('#supporting-research .research-body > section[id]').evaluateAll(sections => sections.map(section => section.id).filter(id => id !== 'top'))).toEqual(expected);
   await activate(page.locator('.visual-route a[href="#learning-and-results"]'), hasTouch);
   await expect(page.locator('#learning-and-results')).toBeInViewport();
   const section = page.locator('#learning-and-results');

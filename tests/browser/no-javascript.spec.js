@@ -53,22 +53,22 @@ test('No JavaScript: page identity and native section routes retain nested conte
   await expect(page.locator('#option-crowdfunding')).toBeInViewport();
 });
 
-test('No JavaScript: Unanswered questions is a direct menu route with a matching section label', async ({ page }) => {
+test('No JavaScript: Questions for the council is a direct menu route with a matching section label', async ({ page }) => {
   await page.goto('/index.html');
   const menu = page.locator('.mobile-menu');
-  const questions = menu.getByRole('link', { name: 'Unanswered questions', exact: true });
+  const questions = menu.getByRole('link', { name: 'Questions for the council', exact: true });
   await menu.locator(':scope > summary').tap();
   await expect(questions).toBeVisible();
   await expect(questions).toHaveAttribute('href', 'evidence.html#gaps');
   await questions.tap();
   await expect(page).toHaveURL(/evidence\.html#gaps$/);
   const heading = page.locator('#gaps h2');
-  await expect(heading).toHaveText('Unanswered questions');
+  await expect(heading).toHaveText('What the council must explain before closing Kew.');
   await expect(heading).toBeInViewport();
   const sections = page.locator('.page-sections');
   await sections.locator(':scope > summary').tap();
   const section = sections.locator('a[data-section-id="gaps"]');
-  await expect(section).toHaveText('Unanswered questions');
+  await expect(section).toHaveText('Questions for the council');
   await section.tap();
   await expect(heading).toBeInViewport();
   // Native same-document menu navigation must work with the existing hash too.

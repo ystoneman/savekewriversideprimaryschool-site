@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Campaign-first curation — 12 October 2026
+
+- Replace numerical arrival headlines with this parent-led site’s case for keeping Kew open: assess on-site alternatives, compare full costs and protect children’s continuity. Promote Ways to keep Kew open in shared exploration; retain the former numbers route as Our case for Kew, with subordinate supporting research.
+- Place the intact charts, financial figures and educational evidence in an optional native research disclosure. Preserve direct/repeated source and section links, no-script access, exports and print-state recovery.
+- Lead Evidence, its direct council-question arrival, the homepage overview and journalist guidance with campaign priorities and community voices. Retain receipt/review statuses, adverse facts and qualifications in their supporting context; no additional factual findings or collective mandate is asserted.
+- Independent campaign, UX and evidence planning and actual-diff reviews completed without remaining actionable findings. Local validation and browser results are recorded in TESTING.md; hosted publishing gates and verified deployment remain pending.
+
 ### Campaign search discovery — 11 October 2026
 
 - Add a curated ten-page canonical sitemap and permissive robots file. Keep recruitment, form-focused routes, exports and noindex pages out of this initial campaign sitemap; leave existing routes and permissions intact. Canonical SEO files are excluded from both legacy bundles.

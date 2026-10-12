@@ -212,9 +212,11 @@ class CaseEvidenceTests(unittest.TestCase):
     def test_received_budget_is_not_still_described_as_missing_on_arrival(self):
         html = (ROOT / 'understand.html').read_text()
         hero = html.split('id="top"', 1)[1].split('</section>', 1)[0]
-        self.assertIn('received final budget summary', hero)
-        self.assertIn('current monitoring are still needed', hero)
-        self.assertIn('finance updated 8 October', hero)
+        self.assertIn('Our position:', hero)
+        budget = html.split('<section class="data-section" id="budget"', 1)[1].split('<section class="data-section" id="other-proposals"', 1)[0]
+        self.assertIn('approved summary has now been received', budget)
+        self.assertIn('current monitoring and assumptions are still needed', budget)
+        self.assertIn('finance updated 8 October', html)
         self.assertNotIn('approved budget, ledger and assumptions remain missing', html)
 
     def test_generated_outputs_are_current(self):
