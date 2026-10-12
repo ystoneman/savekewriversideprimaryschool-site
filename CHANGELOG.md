@@ -10,6 +10,10 @@
 - Apply the remaining approved mobile audit to FAQ search, Evidence exploration groups, About contact and the supporter statement/actions. Retain original information through named disclosures, essential qualifications beside decisions, source/deadline routes and unchanged consent. School recruitment remains separate; homepage content is unchanged.
 - Local, independent review and final hosted/live evidence are recorded in TESTING.md and the implementation pull request. These changes are design judgments, not measured visitor-study improvements.
 
+### Screened community letter — 12 October 2026
+
+- Add one community letter with current publication consent, preserving the contributor's complete wording and chosen display name and labelling it AI screened. Local privacy, data and public-asset validation pass. Complete browser gates, deployment and verification on all retained origins are separate release checks.
+
 ### Verified PR browser results after merge — 12 October 2026
 
 - Pin the supported GitHub API version that exposes merge identity; the first hosted integration safely fell back when the newer API omitted it.
