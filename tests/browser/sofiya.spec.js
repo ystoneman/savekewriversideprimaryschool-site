@@ -270,7 +270,7 @@ test('Learning FAQ: remembered terms and incoming answer links recover from sear
   await activate(page.locator('.faq-topics a[href="#learning"]'), hasTouch);
   await expect(query).toHaveValue('');
   await expect(page.locator('#learning')).toBeInViewport();
-  await expect(page.locator('main details:visible')).toHaveCount(16);
+  await expect(page.locator('main .faq-answer:visible')).toHaveCount(16);
   for (const id of learningAnswers) {
     await page.goto('/faq.html#school-places');
     const answer = page.locator('#' + id);

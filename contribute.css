@@ -229,3 +229,18 @@ label.step-title{display:flex!important;margin-bottom:12px!important}
 .step-reminder{margin-bottom:24px}
 .sent-return:focus{outline:3px solid var(--teal);outline-offset:3px}
 .sent-return:focus:not(:focus-visible){outline:none}
+
+/* Letters lead with the contributor's own words. Source and reuse tools remain
+   outside the full-story disclosure and keep their complete attribution. */
+.letters-invite .letter-card .letter-excerpt{margin-block:12px 8px;line-height:1.55}
+.letters-invite .letter-card .letter-source{margin-block:8px 0;padding-block:8px 0;border-bottom:0;border-top:1px solid var(--line)}
+.letters-invite .letter-card .letter-source p{margin-bottom:0}
+.letters-invite .letter-card .letter-source-actions{gap:0 20px}
+.letters-invite .letter-card .letter-permalink{display:inline-flex;align-items:center;min-height:44px}
+.letters-invite .letter-card .letter-story{margin-block:4px 8px}
+@media(max-width:700px){
+  .letters-invite .letter-card{padding:18px}
+  .letters-invite .letter-card .suggestion-meta{margin-block:6px 0;gap:4px 14px}
+  .letters-invite .letter-card .letter-excerpt{font-size:16px}
+  .letters-invite .letter-card .letter-removal{display:inline-flex;align-items:center;min-height:44px;margin-top:4px;font-size:14px}
+}

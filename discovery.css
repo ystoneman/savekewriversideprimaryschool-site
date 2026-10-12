@@ -134,3 +134,16 @@
 
 /* Topic links should land immediately, including native no-script navigation. */
 html.faq-document{scroll-behavior:auto}
+
+/* FAQ arrivals: essentials and search first; the complete introduction is optional. */
+.simple-page .faq-compact-intro h1{margin:0 0 14px}
+.simple-page .faq-compact-intro .faq-short-status{font-size:16px;line-height:1.5;margin:8px 0;max-width:65ch;color:var(--body)}
+.simple-page .faq-page>.faq-search{margin:20px 0 14px}
+.simple-page .faq-page>.faq-topics{margin:14px 0 20px}
+.simple-page .faq-page>#faq-introduction .faq-intro{padding:0}
+.simple-page .faq-page>#faq-introduction .faq-essentials{margin-bottom:0}
+@media(max-width:700px){
+  .simple-page .faq-compact-intro .faq-short-status{font-size:15px;line-height:1.45}
+  .simple-page .faq-page>.faq-search{margin-top:16px}
+  .simple-page .faq-page>.faq-topics a{font-size:13px;padding-inline:12px}
+}

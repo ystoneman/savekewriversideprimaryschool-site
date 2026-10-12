@@ -13,3 +13,26 @@ html:has(.feedback-form){scroll-behavior:auto}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
 [hidden]{display:none!important}.form-route{font-size:16px!important;border-left:3px solid var(--theme-border, #789274);padding-left:16px;margin-top:24px}.official-notice{border:1px solid var(--theme-border, #9caf97);border-left:4px solid var(--theme-border, #315641);border-radius:8px;background:var(--theme-soft, #edf1e9);padding:22px 26px;margin-bottom:28px}.official-notice h2,.private-details h2{font:700 20px/1.35 Arial,sans-serif;letter-spacing:0;margin:0 0 12px}.official-notice p{font-size:15px;margin:8px 0}.sharing-options{border:0;padding:0;margin:12px 0;min-width:0}.sharing-options legend{font-weight:700;font-size:20px}.private-details{padding:20px;background:var(--theme-soft, #f1f4f0);border:1px solid var(--theme-border, #c5d1c3);border-radius:8px}.private-details .feedback-field{margin:18px 0 0}.submission-preview{border:1px solid var(--line);border-radius:8px;padding:16px;margin:24px 0}.submission-preview summary{cursor:pointer;font-weight:700;min-height:24px}.submission-preview .suggestion-body{white-space:pre-wrap;overflow-wrap:anywhere}.public-author{font-weight:700;overflow-wrap:anywhere}.sharing-summary{font-size:14px;background:var(--theme-soft, #edf1e9);padding:14px;border-radius:6px}.letter-card .suggestion-body{font-size:17px;line-height:1.75}.letter-card .public-author{margin-bottom:0}.letter-card .suggestion-meta{margin-top:12px}
+
+/* Share ideas on phones: compact native choices, with every description retained.
+   Scoped to this form so other contribution pages keep their own layout. */
+@media(max-width:700px){
+  .simple-page .ideas-invite .feedback-intro{padding-bottom:0;margin-bottom:16px}
+  .simple-page .ideas-invite .feedback-intro .invite-title{font-size:32px!important;line-height:1.1;margin:0 0 10px;letter-spacing:-.8px}
+  .simple-page .ideas-invite .feedback-intro .invite-lead{font-size:16px!important;line-height:1.45;margin:0 0 12px;max-width:none}
+  .simple-page .ideas-invite .feedback-intro .ideas-letter-route{font-size:15px;line-height:1.45;margin:0}
+  .simple-page .ideas-invite .feedback-intro .simple-note{font-size:14px;line-height:1.4;margin:4px 0 0}
+  .simple-page .ideas-invite .ideas-read-link{display:inline-flex;align-items:center;min-height:44px}
+  .simple-page .ideas-invite .ideas-form{padding:16px}
+  .simple-page .ideas-invite .kind-cards{margin-bottom:8px}
+  .simple-page .ideas-invite .kind-cards legend{font-size:16px;margin-bottom:8px}
+  .simple-page .ideas-invite .kind-grid{gap:8px}
+  .simple-page .ideas-invite .kind-card{display:grid;grid-template-columns:20px minmax(0,1fr);align-items:start;gap:8px;padding:10px!important;min-height:64px;font-size:14px;line-height:1.3;border-radius:8px}
+  .simple-page .ideas-invite .kind-card input{position:static;align-self:start;width:20px;height:20px;margin:0}
+  .simple-page .ideas-invite .kind-card .kind-icon{display:none}
+  .simple-page .ideas-invite .kind-card small{font-size:12px;line-height:1.3;margin-top:3px}
+  .simple-page .ideas-invite .kind-more{margin-top:4px}
+  .simple-page .ideas-invite .kind-more>summary{font-size:14px;min-height:44px;line-height:1.4}
+  .simple-page .ideas-invite #kind-help{margin:4px 0 12px}
+  .simple-page .ideas-invite .feedback-field{margin-bottom:18px}
+}
