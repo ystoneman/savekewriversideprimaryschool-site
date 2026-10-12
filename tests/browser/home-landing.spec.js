@@ -41,7 +41,7 @@ test('Homepage: old task chooser links open all six preserved destinations',{tag
  }
 });
 test('Homepage: shared press and manual-copy links reveal their content',async({page})=>{
- await page.goto('/index.html#press');await expect(page.locator('#press')).toHaveAttribute('open','');await expect(page.locator('#press')).toContainText('pcfs2026@gmail.com');
+ await page.goto('/index.html#press');await expect(page.locator('#press')).toHaveAttribute('open','');await expect(page.locator('#press')).toContainText('savekrps@gmail.com');
  await page.goto('/index.html#share');await expect(page.locator('#share-fallback')).toHaveAttribute('open','');await expect(page.getByLabel('Campaign link')).toHaveValue(canonical);
 });
 for(const [at,href,name] of [['2026-10-16T22:59:59Z',official,'Respond to the council'],['2026-10-16T23:00:00Z',council,'Check the council consultation'],['2027-09-01T12:00:00Z',council,'Check the council consultation']])test(`Homepage deadline: London stage at ${at}`,async({page})=>{
