@@ -2,7 +2,7 @@
 
 ## First-time visitor homepage introduction — 13 October 2026
 
-The homepage’s existing introduction now gives first-time visitors the proposal status and the supporters’ bounded ask in one compact paragraph. The active state attributes the proposal to Richmond Council; the post-deadline and no-JavaScript states bind it to 12 October 2026 and direct readers to the council’s latest position. “Test a costed pupil-number recovery plan and sustainable alternatives” does not claim that recovery, funding or a viable alternative is established. The hero remains link-free and the separate Open Day recruitment route is unchanged.
+The homepage’s existing introduction now gives first-time visitors the proposal status and the supporters’ bounded ask in one compact paragraph. The active state attributes the proposal to Richmond Council; the post-deadline and no-JavaScript states bind it to 12 October 2026 and direct readers to the council’s latest position. “Test costed recovery and sustainable alternatives” does not claim that recovery, funding or a viable alternative is established. The hero remains link-free and the separate Open Day recruitment route is unchanged.
 
 The final isolated homepage smoke passes all nine cases, including the unchanged 320 × 568 no-JavaScript full-response-action assertion. A focused final run passes 11 active/expired/static-copy cases across iPhone WebKit, desktop Chromium and no JavaScript; all 24 deadline unit checks pass. The preceding wider affected-journey run passed all 221 homepage, top-journey and no-JavaScript cases across those projects before the final wording-only tightening; no failing assertion was removed. JavaScript syntax and `git diff --check` pass.
 

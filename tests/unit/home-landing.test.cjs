@@ -15,7 +15,7 @@ function state(at) {
   return {action,note,intro,petition,petitionNote,document,events,advance:value=>{now=value},tick:()=>tick()};
 }
 test('current response goes directly to the official form',()=>{
- const s=state('2026-10-12T12:00:00Z');assert.match(s.action.href,/docs.google.com\/forms\/d\/e\/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ\/viewform$/);assert.equal(s.action.textContent,'Respond to the council');assert.match(s.note.textContent,/16 October 2026/);assert.match(s.intro.textContent,/Richmond Council proposes closure, not yet decided/);assert.match(s.intro.textContent,/costed pupil-number recovery plan/);
+ const s=state('2026-10-12T12:00:00Z');assert.match(s.action.href,/docs.google.com\/forms\/d\/e\/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ\/viewform$/);assert.equal(s.action.textContent,'Respond to the council');assert.match(s.note.textContent,/16 October 2026/);assert.match(s.intro.textContent,/Richmond Council proposes closure/);assert.match(s.intro.textContent,/no decision yet/);assert.match(s.intro.textContent,/costed recovery/);
 });
 test('London date boundary retains the response on 16 October',()=>{
  const s=state('2026-10-16T22:59:59Z');assert.match(s.action.href,/docs.google.com/);assert.equal(s.action.textContent,'Respond to the council');

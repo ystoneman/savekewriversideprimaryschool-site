@@ -34,7 +34,7 @@
     const arrow = document.createElement('span'); arrow.setAttribute('aria-hidden','true'); arrow.textContent = '↗︎'; action.append(arrow);
     const date = document.createElement('strong'); date.textContent = '1 September 2027';
     if (active) {
-      intro.replaceChildren(document.createTextNode('Richmond Council proposes closure, not yet decided, for '), date, document.createTextNode('. Supporters seek time to test a costed pupil-number recovery plan and sustainable alternatives.'));
+      intro.replaceChildren(document.createTextNode('Richmond Council proposes closure on '), date, document.createTextNode('; no decision yet. Supporters seek time to test costed recovery and sustainable alternatives.'));
       // Compare calendar dates, not elapsed hours or the visitor's time zone.
       const days = Math.round((Date.UTC(2026, 9, 16) - Date.UTC(Number(part('year')), Number(part('month')) - 1, Number(part('day')))) / 86400000);
       const remaining = days === 0 ? 'Closes today' : `${days} ${days === 1 ? 'day' : 'days'} left`;
@@ -43,7 +43,7 @@
       count.textContent = remaining;
       note.replaceChildren(count, document.createTextNode(' · Respond by 16 October 2026.'));
     } else {
-      intro.replaceChildren(document.createTextNode('On 12 October 2026, closure was proposed for '), date, document.createTextNode(', undecided. Supporters seek time to test a costed pupil-number recovery plan and sustainable alternatives. Check the council’s latest position.'));
+      intro.replaceChildren(document.createTextNode('On 12 October 2026, closure was proposed for '), date, document.createTextNode('; no decision yet. Supporters seek time to test costed recovery and sustainable alternatives. Check the council’s latest position.'));
       note.textContent = stage === 'expired' ? 'The published 16 October deadline has passed. Check the council’s latest information before acting.' : 'Published response deadline: 16 October 2026. Check the council’s page.';
     }
   }

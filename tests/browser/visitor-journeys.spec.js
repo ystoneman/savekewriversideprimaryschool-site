@@ -31,7 +31,7 @@ test('Homepage: responsive copy keeps words separated on mobile and desktop', as
   await page.setViewportSize({width,height:1000});await page.goto('/index.html');
   const text=(await page.locator('.intro').innerText()).replace(/\s+/g,' ');
   expect(text).toContain('Richmond Council proposes closure, not yet decided, for 1 September 2027.');
-  expect(text).toContain('Supporters seek time to test a costed pupil-number recovery plan and sustainable alternatives.');
+  expect(text).toContain('Supporters seek time to test costed recovery and sustainable alternatives.');
   await expect(page.locator('.home-plan')).toHaveAccessibleName(/Help the campaign/);
  }
 });

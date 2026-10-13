@@ -40,7 +40,7 @@ test('Short homepage: petition joins the response, Help and Share before optiona
   await expect(page.locator('#petition-action')).toHaveAccessibleName('Sign the petition');
   await expect(page.locator('#petition-action')).toHaveAttribute('href', 'https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249');
   await expect(page.locator('#top')).toContainText(/Richmond Council proposes closure, not yet decided/i);
-  await expect(page.locator('#top')).toContainText(/Supporters seek time to test a costed pupil-number recovery plan and sustainable alternatives/i);
+  await expect(page.locator('#top')).toContainText(/Supporters seek time to test costed recovery and sustainable alternatives/i);
   await expect(page.locator('#top .intro a')).toHaveCount(0);
   await expect(page.locator('#top')).toContainText(/16\s+October/i);
   for (const action of await page.locator('.actions .action:visible').all()) {
