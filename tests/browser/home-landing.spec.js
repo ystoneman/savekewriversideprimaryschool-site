@@ -76,3 +76,18 @@ test('Homepage countdown: return refreshes the active count without changing the
  await page.clock.setFixedTime(new Date('2026-10-12T23:00:00Z'));await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));
  await expect(page.locator('#action-note')).toContainText('3 days left');await expect(page.locator('#main-action')).toHaveAttribute('href',official);
 });
+
+const petition='https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249';
+for(const width of [320,390,1440])test(`Homepage petition: ${width}px keeps the response and Help alongside a working petition action`,async({page,hasTouch})=>{
+ await page.setViewportSize({width,height:width===320?568:844});await page.goto('/index.html');
+ const link=page.locator('#petition-action');await expect(link).toHaveAccessibleName('Sign the petition');await expect(link).toHaveAttribute('href',petition);
+ const bounds=await link.boundingBox(),help=await page.locator('.home-plan').boundingBox();expect(bounds.height).toBeGreaterThanOrEqual(44);expect(help.y).toBe(bounds.y);
+ await expect(page.locator('#main-action')).toBeInViewport({ratio:1});
+ await expect(page.locator('#petition-note')).toContainText('Signing does not replace your consultation response.');
+ await page.route(petition,r=>r.fulfill({contentType:'text/html',body:'<h1>Fictional petition destination</h1>'}));
+ if(hasTouch)await link.tap();else{await link.focus();await page.keyboard.press('Enter');}
+ await expect(page).toHaveURL(petition);await page.goBack();await expect(link).toBeVisible();
+});
+for(const [at,label] of [['2026-10-17T12:00:00Z','Sign the petition'],['2027-01-13T23:59:59Z','Sign the petition'],['2027-01-14T00:00:00Z','View the petition']])test(`Homepage petition: independent deadline at ${at}`,async({page})=>{
+ await page.clock.setFixedTime(new Date(at));await page.goto('/index.html');await expect(page.locator('#petition-action')).toHaveAccessibleName(label);await expect(page.locator('#petition-action')).toHaveAttribute('href',petition);
+});

@@ -9,9 +9,10 @@ function state(at) {
   const action={href:'council',textContent:'Check the council consultation',handlers:{},removeAttribute(){},replaceChildren(n){this.textContent=n.textContent},append(){},addEventListener:(type,fn)=>{events[type]=fn}};
   const note={textContent:'',replaceChildren(...nodes){this.textContent=nodes.map(n=>n.textContent).join('')}};const intro={textContent:'',replaceChildren(...nodes){this.textContent=nodes.map(n=>n.textContent).join('')}};
   class FakeDate extends Date {constructor(...args){super(...(args.length?args:[now]))}}
-  const document={hidden:false,getElementById:id=>id==='main-action'?action:note,querySelector:()=>intro,createTextNode:textContent=>({textContent}),createElement:()=>({setAttribute(){}}),addEventListener:(type,fn)=>{events[type]=fn}};
+  const petition={textContent:'',events:{},addEventListener(type,fn){this.events[type]=fn}};const petitionNote={textContent:''};
+  const document={hidden:false,getElementById:id=>({'main-action':action,'action-note':note,'petition-action':petition,'petition-note':petitionNote}[id]||null),querySelector:()=>intro,createTextNode:textContent=>({textContent}),createElement:()=>({setAttribute(){}}),addEventListener:(type,fn)=>{events[type]=fn}};
   vm.runInNewContext(code,{Date:FakeDate,Intl,document,window:{addEventListener:(type,fn)=>{events[type]=fn}},setInterval:fn=>{tick=fn}});
-  return {action,note,intro,document,events,advance:value=>{now=value},tick:()=>tick()};
+  return {action,note,intro,petition,petitionNote,document,events,advance:value=>{now=value},tick:()=>tick()};
 }
 test('current response goes directly to the official form',()=>{
  const s=state('2026-10-12T12:00:00Z');assert.match(s.action.href,/docs.google.com\/forms\/d\/e\/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ\/viewform$/);assert.equal(s.action.textContent,'Respond to the council');assert.match(s.note.textContent,/16 October 2026/);assert.match(s.intro.textContent,/No final decision/);
@@ -24,7 +25,7 @@ test('London 17 October retires both response link and current-stage claim',()=>
 });
 test('future dates never revive an expired response',()=>{const s=state('2027-09-01T12:00:00Z');assert.match(s.action.href,/www.richmond.gov.uk/);assert.match(s.note.textContent,/has passed/)});
 test('without JavaScript the fallback stays dated and links current council information',()=>{
- assert.match(html,/<p class="intro">On 12 October 2026, Richmond Council was consulting on proposed closure/);assert.match(html,/id="main-action" href="https:\/\/www.richmond.gov.uk/);assert.doesNotMatch(html,/href="https:\/\/docs.google.com/);
+ assert.match(html,/<p class="intro">On 12 October 2026, Richmond Council was consulting on proposed closure/);assert.match(html,/id="main-action" href="https:\/\/www.richmond.gov.uk/);assert.doesNotMatch(html.match(/<a[^>]*id="main-action"[^>]*>/)[0],/docs.google.com/);
 });
 for (const event of ['visibilitychange','pageshow','click','auxclick','contextmenu','keydown','pointerdown']) {
  test('already-open page retires form through '+event,()=>{
@@ -59,4 +60,14 @@ test('countdown midnight refresh does not move a pressed target before click',()
  const s=state('2026-10-15T22:59:59Z');s.advance('2026-10-15T23:00:00Z');s.events.pointerdown({type:'pointerdown'});
  assert.match(s.note.textContent,/1 day left/);assert.match(s.action.href,/docs.google.com/);
  s.events.click({type:'click'});assert.match(s.note.textContent,/Closes today/);
+});
+
+test('petition stays active after consultation closes and through its own final day',()=>{
+ for(const at of ['2026-10-17T12:00:00Z','2027-01-13T23:59:59Z']){
+  const s=state(at);assert.equal(s.petition.textContent,'Sign the petition');assert.match(s.petitionNote.textContent,/13 January 2027/);assert.match(s.action.href,/richmond.gov.uk/);
+ }
+});
+test('petition retires independently on London 14 January, including an already open page',()=>{
+ const s=state('2027-01-13T23:59:59Z');s.advance('2027-01-14T00:00:00Z');s.petition.events.click({type:'click'});
+ assert.equal(s.petition.textContent,'View the petition');assert.match(s.petitionNote.textContent,/closing date.*has passed/);
 });

@@ -11,7 +11,7 @@ from public_data import validate_board
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_FILES = frozenset('''
-sitemap.xml robots.txt home-stage.js home-actions.js home-landing.css
+sitemap.xml robots.txt home-stage.js home-actions.js home-landing.css footer-links.css
 simplify.js simplify.css
 images/school-discovery-480.jpg images/school-discovery-960.jpg images/school-project-480.jpg images/school-project-960.jpg
 rally.html rally.css rally-6-october.ics

@@ -5,7 +5,7 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026101301'
+VERSION = '2026101303'
 PREVIEW_VERSION = '2026100901'  # Shared images are unchanged by this curation.
 SITE_NAME = 'Save Kew Riverside Primary School Campaign'
 SITE_URL = 'https://savekewriversideprimaryschool.org/'
@@ -164,6 +164,18 @@ def render_identity(name, document):
     document = re.sub(r'<footer><div class="wrap footer-inner"><div>.*?</div>', footer, document, count=1, flags=re.S)
     return document
 
+def render_footer_discovery(document):
+    # Independent parent videos and school visits have distinct labels; this row
+    # never carries petition or closure-campaign requests.
+    youtube = '<svg width="28" height="20" viewBox="0 0 28 20" aria-hidden="true" focusable="false"><rect width="28" height="20" rx="5" fill="currentColor"/><path d="M11 5.5v9l8-4.5z" fill="var(--theme-background, var(--paper, #fbfaf6))"/></svg>'
+    row = '<!-- footer-discovery:start --><div class="wrap footer-discovery"><a class="footer-youtube" href="https://www.youtube.com/@KewParentVoices">'+youtube+'<span>Parent Voices on YouTube</span></a><a class="footer-open-days" href="https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform">Visit our Open Days <span aria-hidden="true">↗&#xFE0E;</span></a></div><!-- footer-discovery:end -->'
+    document = re.sub(r'<!-- footer-discovery:start -->.*?<!-- footer-discovery:end -->', '', document, flags=re.S)
+    document = document.replace('</footer>', row+'</footer>')
+    link = '<link rel="stylesheet" href="footer-links.css?v=2026101303">'
+    document = re.sub(r'<link rel="stylesheet" href="footer-links\.css(?:\?v=\d+)?">', '', document)
+    document = document.replace('<link rel="stylesheet"',link+'<link rel="stylesheet"',1)
+    return document
+
 def render_home_navigation(document):
     """Owner-approved compact homepage; other pages retain the shared shell.
     Its Menu lists exactly the same entries as every other page (13 October 2026)."""
@@ -177,7 +189,7 @@ def render_home_navigation(document):
     document = re.sub(r'<details class="mobile-menu" id="menu"[^>]*>.*?</details>', lambda _:menu, document, count=1, flags=re.S)
     footer = ''.join('<a href="'+html.escape(href, quote=True)+'"'+extra+'>'+html.escape(label)+'</a>' for href,label,extra in FOOTER_LINKS)
     document = re.sub(r'(<nav class="home-footer-links"[^>]*>).*?(</nav>)',lambda m:m.group(1)+footer+m.group(2),document,count=1,flags=re.S)
-    return document
+    return render_footer_discovery(document)
 
 def render_navigation(name, document):
     if name not in PAGE_LABELS or 'class="site-header"' not in document:
@@ -276,7 +288,7 @@ def render_navigation(name, document):
     document = document[:match.start()]+header+document[match.end():]
     footer_links = ''.join(f'<a href="{esc(href)}"{extra}>{esc(label)}</a>' for href, label, extra in FOOTER_LINKS)
     document = re.sub(r'(<footer><div class="wrap footer-inner"><div>.*?</div>)<div>.*?</div>(</div></footer>)', lambda m: m.group(1)+'<div>'+footer_links+'</div>'+m.group(2), document, count=1, flags=re.S)
-    return document
+    return render_footer_discovery(document)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

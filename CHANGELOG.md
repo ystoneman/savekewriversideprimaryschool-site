@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Homepage petition and visible footer links — 13 October 2026
+
+- Add Sign the petition as a main homepage action alongside Help, retaining the official response first. State Richmond borough eligibility, Richmond Account requirement, the separate consultation response and the petition’s published 13 January 2027 closing date. After that date, scripts label the same destination View the petition; the no-script invitation retains its dated qualification.
+- Add a visible Parent Voices YouTube icon/link and Visit our Open Days link to every public content-page footer, including Home outside the More pages disclosure. Label the parent-run channel explicitly and keep school-visit wording free of campaign participation requests.
+- Preserve the shared Menu, former anchors, forms and existing campaign routes. Review, checks and deployment evidence are recorded in the release pull request; this entry does not claim publication.
+
+
 - Replace the campaign contact email on the homepage, press route and About page with `savekrps@gmail.com`; keep the existing contact placements and campaign/recruitment separation. Verification and publication evidence will be recorded in the release pull request.
 
 ### One Menu, council dates and documents — 13 October 2026

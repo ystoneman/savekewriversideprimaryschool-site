@@ -1,5 +1,14 @@
 # Testing the website
 
+## Homepage petition and footer links — 13 October 2026
+
+Initial five-case homepage smoke passed before implementation. Final focused homepage, top-journey and no-JavaScript run passed all 211 cases across iPhone/desktop WebKit, Android/desktop Chromium and the no-script iPhone project. Added coverage checks petition activation/Back, keyboard footer handoffs, dated no-script access and independent October/January transitions. All 150 Python checks, 24 homepage date unit tests, seven backend tests, generator freshness, whitespace and 125-file staging pass.
+
+Independent campaign/evidence plan and actual-diff reviews found no remaining finding. UX plan concerns led to compact petition/Help spacing and explicit Parent Voices identity. Independent actual-diff WebKit review covered 320/390/1440px light/dark with a fresh production analytics notice, doubled root-font reflow, keyboard/no-script handoffs and Back. Help’s top position is unchanged at 320/390; Respond remains fully visible at 320. Petition/Help retain the baseline’s partial first-screen placement there; no claim that the petition is wholly on the 320px first screen. Footer links are outside disclosures with readable labels and 44px targets.
+
+Native iPhone 17 / iOS 26.5 Safari rendered the styled isolated HTTP homepage preview with readable petition/Help buttons and the closing-date/account note. The local-only fixture removed TLS upgrading and blocked external collectors; production CSP was unchanged. Subsequent native handoff verification did not establish the destination and is unverified. Browser emulation handoffs passed. No form or petition was submitted. Hosted gates and verified publication remain release checks.
+
+
 ## Countdown visual emphasis — 12 October 2026
 
 All 22 deadline unit tests, five homepage smoke cases, 34 iPhone/desktop WebKit homepage cases, 149 Python checks and seven backend tests pass; syntax/whitespace checks and fresh 124-file staging pass. The stage directory guard refused an existing preview directory; a fresh directory corrected the local setup. Independent actual-diff/rendered UX review compared baseline/current at 320/390/1440px in light/dark appearance with fresh analytics notice: same note height and Help position, one line and no overflow; expiry removes the emphasis. Native iPhone 17 / iOS 26.5 Safari inspected the current isolated preview with collectors blocked; bold countdown and underline readable without additional layout. No permissions reduced or form submitted. Hosted gates and live deployment evidence belong in the release pull request.

@@ -26,3 +26,9 @@
 
 /* The dated no-script council action also fits a 320 × 568 arrival. */
 @media(max-width:350px){.hero-grid{padding-top:20px}.intro{margin-top:18px}.actions{margin-top:18px}}
+
+/* Keep both campaign actions in the existing Help row at narrow widths. */
+.home-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch}
+.home-secondary-actions .action{justify-content:center;text-align:center;gap:0;padding:12px;font-size:17px;overflow-wrap:normal}
+.petition-note{margin-top:10px}
+@media(max-width:350px){.home-secondary-actions .action{padding:10px 8px;min-height:64px}}
