@@ -24,6 +24,8 @@ Moved the added “Why keep Kew Riverside open” section unchanged from Home to
 
 ### Petition details and school-discovery Menu — 13 October 2026
 
+- Add a concise first-time visitor introduction to every homepage deadline state: Richmond Council’s proposed 1 September 2027 closure remains undecided, and supporters seek time to test costed recovery and sustainable alternatives. Keep the no-JavaScript and post-deadline wording explicitly dated, preserve the link-free hero and four existing homepage actions, and leave the Open Day route separate.
+
 - Add the verified Richmond e-petition to the Parent action plan with borough eligibility, dates, petitioner attribution and a reminder that signing does not replace the official consultation response. Add a separate Discover the school Menu group; keep Parent Voices visible on the video page and route Open Day booking through the recruitment-only `/visit/` handoff, now pointed at the verified registration form.
 
 ### Mobile homepage menu width — 13 October 2026

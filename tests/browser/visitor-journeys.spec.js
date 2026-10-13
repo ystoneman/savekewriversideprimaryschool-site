@@ -28,7 +28,7 @@ async function activate(locator, hasTouch) {
 
 // Get involved replaced the Help shortcut (13 October 2026 slim-site decision).
 test('Homepage: responsive copy keeps words separated on mobile and desktop', async ({ page }) => {
- for (const [at, copy] of [[consultationWeek, '1 September 2027. No final decision has been made.'], [afterDeadline, 'Richmond Council proposes closing the school from 1 September 2027. Responses closed on 16 October 2026. If it proceeds in November 2026, it plans a final decision in April 2027.']]) {
+ for (const [at, copy] of [[consultationWeek, '1 September 2027; no decision yet. Supporters seek time to test costed recovery and sustainable alternatives.'], [afterDeadline, 'Richmond Council proposes closing the school from 1 September 2027. Responses closed on 16 October 2026. If it proceeds in November 2026, it plans a final decision in April 2027.']]) {
   for (const width of [390,1440]) {
    await page.clock.setFixedTime(new Date(at));
    await page.setViewportSize({width,height:1000});await page.goto('/index.html');

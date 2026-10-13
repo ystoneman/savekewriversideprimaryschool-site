@@ -697,7 +697,7 @@ test('No JavaScript: the Parent action plan opens with its own response button i
 test('No JavaScript: the homepage has a date-safe council link, Help and manual Share', async ({ page }) => {
  await page.goto('/index.html');await expect(page.locator('.home-plan')).toBeVisible();
  const respond=page.locator('#main-action');await expect(respond).toHaveAttribute('href',/richmond.gov.uk.*kew_riverside_consultation/);
- await expect(respond).toHaveAccessibleName(/Check the council consultation/);await expect(page.locator('.intro')).toContainText('On 12 October 2026');
+ await expect(respond).toHaveAccessibleName(/Check the council consultation/);await expect(page.locator('.intro')).toContainText('As of 12 October 2026');await expect(page.locator('.intro')).toContainText('Check the council’s latest position.');
  await page.locator('#share-fallback > summary').tap();await expect(page.getByLabel('Campaign link')).toHaveValue('https://savekewriversideprimaryschool.org/');
  await expect(page.locator('#share-trigger')).toBeHidden();
 });

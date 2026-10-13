@@ -15,7 +15,7 @@ function state(at) {
   return {action,note,intro,petition,petitionNote,document,events,advance:value=>{now=value},tick:()=>tick()};
 }
 test('current response goes directly to the official form',()=>{
- const s=state('2026-10-12T12:00:00Z');assert.equal(s.action.hidden,false);assert.match(s.petitionNote.textContent,/does not replace your consultation response/);assert.match(s.action.href,/docs.google.com\/forms\/d\/e\/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ\/viewform$/);assert.equal(s.action.textContent,'Respond to the council');assert.match(s.note.textContent,/16 October 2026/);assert.match(s.intro.textContent,/No final decision/);
+ const s=state('2026-10-12T12:00:00Z');assert.equal(s.action.hidden,false);assert.match(s.petitionNote.textContent,/does not replace your consultation response/);assert.match(s.action.href,/docs.google.com\/forms\/d\/e\/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ\/viewform$/);assert.equal(s.action.textContent,'Respond to the council');assert.match(s.note.textContent,/16 October 2026/);assert.match(s.intro.textContent,/no decision yet/);
 });
 test('London date boundary retains the response on 16 October',()=>{
  const s=state('2026-10-16T22:59:59Z');assert.match(s.action.href,/docs.google.com/);assert.equal(s.action.textContent,'Respond to the council');
@@ -25,7 +25,7 @@ test('London 17 October retires both response link and current-stage claim',()=>
 });
 test('future dates never revive an expired response',()=>{const s=state('2027-09-01T12:00:00Z');assert.match(s.action.href,/www.richmond.gov.uk/);assert.match(s.note.textContent,/has passed/)});
 test('without JavaScript the fallback stays dated and links current council information',()=>{
- assert.match(html,/<p class="intro">On 12 October 2026, Richmond Council was consulting on proposed closure/);assert.match(html,/id="main-action" href="https:\/\/www.richmond.gov.uk/);assert.doesNotMatch(html.match(/<a[^>]*id="main-action"[^>]*>/)[0],/docs.google.com/);
+ assert.match(html,/<p class="intro">As of 12 October 2026, closure was proposed/);assert.match(html,/Check the council’s latest position/);assert.match(html,/id="main-action" href="https:\/\/www.richmond.gov.uk/);assert.doesNotMatch(html.match(/<a[^>]*id="main-action"[^>]*>/)[0],/docs.google.com/);
 });
 for (const event of ['visibilitychange','pageshow','click','auxclick','contextmenu','keydown','pointerdown']) {
  test('already-open page retires form through '+event,()=>{

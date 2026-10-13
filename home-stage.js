@@ -33,10 +33,9 @@
     action.removeAttribute('aria-label');
     action.replaceChildren(document.createTextNode(active ? 'Respond to the council' : 'Check the council consultation'));
     const arrow = document.createElement('span'); arrow.setAttribute('aria-hidden','true'); arrow.textContent = '↗︎'; action.append(arrow);
+    const date = document.createElement('strong'); date.textContent = '1 September 2027';
     if (active) {
-      const date = document.createElement('strong'); date.textContent = '1 September 2027';
-      const decision = document.createElement('strong'); decision.textContent = 'No final decision has been made.';
-      intro.replaceChildren(document.createTextNode('Richmond Council proposes closing the school from '), date, document.createTextNode('. '), decision);
+      intro.replaceChildren(document.createTextNode('Richmond Council proposes closure on '), date, document.createTextNode('; no decision yet. Supporters seek time to test costed recovery and sustainable alternatives.'));
       // Compare calendar dates, not elapsed hours or the visitor's time zone.
       const days = Math.round((Date.UTC(2026, 9, 16) - Date.UTC(Number(part('year')), Number(part('month')) - 1, Number(part('day')))) / 86400000);
       const remaining = days === 0 ? 'Closes today' : `${days} ${days === 1 ? 'day' : 'days'} left`;
