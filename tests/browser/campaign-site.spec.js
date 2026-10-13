@@ -247,6 +247,12 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
   const petitionEntry = entries.filter({ has: page.getByRole('heading', { name: /petition/i }) });
   await expect(petitionEntry).toHaveCount(1);
   await expect(petitionEntry.locator('a[href="get-involved.html#petition"]')).toBeVisible();
+  const rally=page.locator('main ol.update-list > #update-york-house-rally');
+  await expect(rally.locator('time')).toHaveAttribute('datetime','2026-10-06');
+  const photo=rally.locator('img');
+  await photo.scrollIntoViewIfNeeded();await photo.evaluate(image=>image.decode());
+  await expect(photo).toHaveAttribute('alt',/Campaign members.*York House/);
+  const box=await photo.boundingBox();expect(box.width/box.height).toBeCloseTo(4/3,2);
 });
 
 test.describe('Archived pages', () => {

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Approved preview rally photo — 13 October 2026
+
+Bring the existing approved Sites preview's York House rally entry and original photograph into the production candidate. Date, conversations with council members and face permissions were confirmed during preview creation. Retain the full 4:3 photo and neutral caption without implying council endorsement or a turnout total. The home page remains concise. Source verification and checks are recorded in the release PR.
+
 ### Petition deadline countdown — 13 October 2026
 
 Add the same days-left styling as the council response to the existing Sign the petition note, counting London calendar days until 13 January 2027. Retain the fixed date and eligibility, final-day/expired states, no-script fallback and stable touch/keyboard handoff. The council's petition page was retrieved again and confirms 13/10/2026–13/01/2027. Petition-link opening analytics already exist in this PR; deploy the additive backend labels before releasing the site. The owner approved production deployment once required current-revision checks pass. Completed checks and release evidence are recorded in TESTING.md and the PR.

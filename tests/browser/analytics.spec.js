@@ -22,7 +22,7 @@ const types = {
   '.ico': 'image/x-icon',
 };
 const localAssets = new Set(readdirSync(root).filter(name => types[path.extname(name)]));
-for (const name of ['school-discovery-480.jpg', 'school-discovery-960.jpg', 'school-project-480.jpg', 'school-project-960.jpg']) {
+for (const name of ['school-discovery-480.jpg', 'school-discovery-960.jpg', 'school-project-480.jpg', 'school-project-960.jpg', 'york-house-rally.jpg']) {
   localAssets.add('images/' + name);
 }
 const emptyBoards = {
