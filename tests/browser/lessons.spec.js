@@ -39,9 +39,10 @@ test('Research: expanded paired findings keep their limits before the optional r
   await expect(page.locator('#lesson-decision-and-transition')).toContainText('extra term for transition');
   await expect(page.locator('#lesson-decision-and-transition .lesson-caveat')).toContainText('not an automatic right of appeal');
   await expect(page.locator('#lesson-petition-evidence')).toContainText('do not measure their effect');
-  await expect(page.locator('.lesson-next')).toContainText('does not reach the council');
+  await expect(page.locator('.lesson-next')).toContainText('suggested question, not an official requirement');
   await page.locator('#research-next-question > summary').click();
-  await expect(page.locator('.lesson-next a[href="proposal.html#take-part"]')).toBeVisible();
+  await expect(page.locator('.lesson-next')).toContainText('What evidence, budget assumptions and partner commitments');
+  await expect(page.locator('.lesson-next a'), 'Generic participation links stay off the research prompt').toHaveCount(0);
   expect(await page.locator('#key-lessons').evaluate(el => Boolean(el.compareDocumentPosition(document.querySelector('[aria-label="Research sections"]')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
   const boxes = await findings.evaluateAll(nodes => nodes.map(node => ({ top: node.getBoundingClientRect().top, bottom: node.getBoundingClientRect().bottom })));
   expect(boxes[1].top).toBeGreaterThanOrEqual(boxes[0].bottom);
