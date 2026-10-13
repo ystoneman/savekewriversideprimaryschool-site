@@ -57,7 +57,7 @@ for(const [at,href,name] of [['2026-10-16T22:59:59Z',official,'Respond to the co
  if(name){await expect(page.locator('#main-action')).toBeVisible();await expect(page.locator('#main-action')).toHaveAccessibleName(name);return;}
  await expect(page.locator('#main-action')).toBeHidden();await expect(page.locator('#action-note')).toBeHidden();
  await expect(page.locator(`#top a[href="${official}"]`)).toHaveCount(0);
- await expect(page.locator('.intro')).toHaveText('The published response deadline, 16 October 2026, has passed. The council’s timetable plans a final decision in April 2027.');
+ await expect(page.locator('.intro')).toHaveText('Richmond Council proposes closing the school from 1 September 2027. Responses closed on 16 October 2026. If it proceeds in November 2026, it plans a final decision in April 2027.');
  await expect(page.locator('.actions .action:visible').first()).toHaveAttribute('id','petition-action');
  await expect(page.locator('.home-plan')).toBeVisible();
  await expect(page.locator('#petition-note')).not.toContainText('Signing does not replace your consultation response.');

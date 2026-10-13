@@ -28,7 +28,7 @@ async function activate(locator, hasTouch) {
 
 // Get involved replaced the Help shortcut (13 October 2026 slim-site decision).
 test('Homepage: responsive copy keeps words separated on mobile and desktop', async ({ page }) => {
- for (const [at, copy] of [[consultationWeek, '1 September 2027. No final decision has been made.'], [afterDeadline, 'The published response deadline, 16 October 2026, has passed. The council’s timetable plans a final decision in April 2027.']]) {
+ for (const [at, copy] of [[consultationWeek, '1 September 2027. No final decision has been made.'], [afterDeadline, 'Richmond Council proposes closing the school from 1 September 2027. Responses closed on 16 October 2026. If it proceeds in November 2026, it plans a final decision in April 2027.']]) {
   for (const width of [390,1440]) {
    await page.clock.setFixedTime(new Date(at));
    await page.setViewportSize({width,height:1000});await page.goto('/index.html');
@@ -531,30 +531,37 @@ test('Parent plan: flyer makers can download the permanent homepage and visit QR
   }
 });
 
-// J9: Get involved now carries the homepage QR downloads for flyers (13 October 2026
-// slim-site decision); the archived plan's copies above keep working for old links.
-test('Get involved: flyer makers can download the permanent homepage QR code as PNG and SVG', async ({ page, hasTouch, request }) => {
+// J8/J9: Get involved now carries both flyer QR codes (13 October 2026 slim-site decision);
+// the archived plan's copies above keep working for old links.
+test('Get involved: flyer makers can download the permanent homepage and visit QR codes as PNG and SVG', async ({ page, hasTouch, request }) => {
   await page.goto('/index.html');
   await activate(page.locator('.home-plan'), hasTouch);
   await expect(page).toHaveURL(/get-involved\.html$/);
-  const share = page.locator('#spread-the-word');
-  await share.scrollIntoViewIfNeeded();
-  await expect(share).toBeVisible();
-  await expect(share).toContainText('in your own name');
-  await expect(share.getByRole('link')).toHaveCount(2);
-  for (const [kind, ext, type, start] of [['PNG image', 'png', 'image/png', '\x89PNG'], ['SVG', 'svg', 'image/svg+xml', '<?xml']]) {
-    const file = `savekewriverside-home-qr.${ext}`;
-    const link = share.getByRole('link', { name: kind, exact: true });
-    await expect(link).toHaveAttribute('href', 'qr/' + file);
-    await expect(link).toHaveAttribute('download', file);
-    const [download] = await Promise.all([page.waitForEvent('download'), link.click()]);
-    expect(download.suggestedFilename()).toBe(file);
-    expect(await download.failure()).toBeNull();
-    const body = await fs.readFile(await download.path());
-    expect(body.subarray(0, start.length).toString('latin1')).toBe(start);
-    if (ext === 'svg') expect(body.toString('utf8')).toContain('<title>QR code for the Kew Riverside Primary School website</title>');
-    const response = await request.get('/qr/' + file);
-    expect(response.status()).toBe(200);
-    expect(response.headers()['content-type']).toContain(type);
+  const section = page.locator('#spread-the-word');
+  await section.scrollIntoViewIfNeeded();
+  // Pin each filename to its own paragraph and link name so the two QR purposes cannot be swapped.
+  for (const [id, label, base, caveat, svgTitle] of [
+    ['share-qr', 'Homepage', 'savekewriverside-home-qr', 'in your own name', 'QR code for the Kew Riverside Primary School website'],
+    ['visit-qr', 'Visit', 'savekewriverside-visit-qr', 'Keep closure campaigning off Open Day flyers', 'QR code for Kew Riverside Primary School visit enquiries'],
+  ]) {
+    const share = section.locator('#' + id);
+    await expect(share).toBeVisible();
+    await expect(share).toContainText(caveat);
+    await expect(share.getByRole('link')).toHaveCount(2);
+    for (const [kind, ext, type, start] of [['PNG image', 'png', 'image/png', '\x89PNG'], ['SVG', 'svg', 'image/svg+xml', '<?xml']]) {
+      const file = `${base}.${ext}`;
+      const link = share.getByRole('link', { name: `${label} QR code, ${kind}`, exact: true });
+      await expect(link).toHaveAttribute('href', 'qr/' + file);
+      await expect(link).toHaveAttribute('download', file);
+      const [download] = await Promise.all([page.waitForEvent('download'), link.click()]);
+      expect(download.suggestedFilename()).toBe(file);
+      expect(await download.failure()).toBeNull();
+      const body = await fs.readFile(await download.path());
+      expect(body.subarray(0, start.length).toString('latin1')).toBe(start);
+      if (ext === 'svg') expect(body.toString('utf8')).toContain(`<title>${svgTitle}</title>`);
+      const response = await request.get('/qr/' + file);
+      expect(response.status()).toBe(200);
+      expect(response.headers()['content-type']).toContain(type);
+    }
   }
 });

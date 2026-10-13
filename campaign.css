@@ -7,6 +7,9 @@
 .campaign-section .simple-actions{margin:8px 0 14px}
 .campaign-section .simple-note{font-size:15px}
 .campaign-page a{overflow-wrap:anywhere}
+.campaign-page p{overflow-wrap:anywhere}
+/* Without scripts, section links jump straight there, as on the pages these replace. */
+html:has(.campaign-page){scroll-behavior:auto}
 .campaign-page .council-deadline{font-size:17px;line-height:1.55;max-width:62ch}
 .campaign-page .council-deadline a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
 .update-list{list-style:none;margin:0;padding:0;max-width:760px}

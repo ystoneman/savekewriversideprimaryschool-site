@@ -184,6 +184,8 @@ test('Learning: native data and method disclosures work by keyboard and download
 });
 
 test('Learning: narrow arrival protects action routes and the chart stays inside the page', async ({ page, hasTouch }) => {
+  // The response button retires from 17 October 2026, so check it during the consultation.
+  await page.clock.setFixedTime(new Date('2026-10-13T12:00:00+01:00'));
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/index.html');
   await expect(page.locator('#main-action')).toBeInViewport({ ratio: 1 });

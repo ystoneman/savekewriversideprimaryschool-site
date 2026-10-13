@@ -204,7 +204,7 @@ test.describe('Response deadline (London dates)', () => {
     await page.goto('/index.html');
     await expect(page.locator('#main-action')).toBeHidden();
     await expect(page.locator('#action-note')).toBeHidden();
-    await expect(page.locator('.hero .intro')).toHaveText('The published response deadline, 16 October 2026, has passed. The council’s timetable plans a final decision in April 2027.');
+    await expect(page.locator('.hero .intro')).toHaveText('Richmond Council proposes closing the school from 1 September 2027. Responses closed on 16 October 2026. If it proceeds in November 2026, it plans a final decision in April 2027.');
     const firstAction = await page.locator('.actions .action').evaluateAll(actions => actions.find(action => action.getClientRects().length && getComputedStyle(action).visibility !== 'hidden')?.id);
     expect(firstAction, 'The petition is the first visible homepage action').toBe('petition-action');
     await expect(page.locator('#petition-action')).toHaveAttribute('href', petition);
@@ -368,4 +368,89 @@ test('Homepage legacy routes to current pages land on sections that exist', asyn
     }
   }
   expect(checked.size, 'Live destinations were checked').toBeGreaterThanOrEqual(4);
+});
+
+// Implementation review (13 October 2026): after the deadline the petition leads on Get
+// involved, while links to #respond still land on the closed note.
+test.describe('Get involved order around the deadline', () => {
+  const order = page => page.locator('main section[id]').evaluateAll(sections => sections.map(section => section.id).slice(0, 2));
+
+  test('Respond leads until 16 October and the petition leads from 17 October', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-10-16T22:59:59Z'));
+    await page.goto('/get-involved.html');
+    expect(await order(page)).toEqual(['respond', 'petition']);
+    await page.clock.setFixedTime(new Date('2026-10-16T23:00:00Z'));
+    await page.goto('/get-involved.html');
+    expect(await order(page)).toEqual(['petition', 'respond']);
+    await expect(page.locator('#petition a[href="' + petition + '"]')).toBeVisible();
+    await page.goto('/get-involved.html#respond');
+    await expectScrollSettled(page, 'get-involved.html#respond');
+    await expect(page.locator('#respond [data-stage="closed"]')).toBeInViewport();
+  });
+
+  test('a page left open moves the petition up once and keeps keyboard focus', async ({ page }) => {
+    await page.clock.install({ time: new Date('2026-10-16T22:59:00Z') });
+    await page.goto('/get-involved.html');
+    expect(await order(page)).toEqual(['respond', 'petition']);
+    await page.clock.runFor(61_000);
+    expect(await order(page)).toEqual(['petition', 'respond']);
+    const link = page.locator('#petition a[href="' + petition + '"]');
+    await link.focus();
+    await page.clock.runFor(121_000);
+    expect(await order(page)).toEqual(['petition', 'respond']);
+    await expect(link).toBeFocused();
+  });
+
+  for (const size of phoneSizes) {
+    test(`the petition heading is on the first screen after the deadline at ${size.width}x${size.height}`, async ({ page }) => {
+      await page.clock.setFixedTime(new Date('2026-10-17T08:00:00Z'));
+      await page.setViewportSize(size);
+      await page.goto('/get-involved.html');
+      await expect(page.locator('#petition h2')).toBeInViewport({ ratio: 1 });
+      await expectNoHorizontalOverflow(page, `get-involved.html after the deadline at ${size.width}px`);
+    });
+  }
+});
+
+test('Home links its campaign case to Campaign updates and the council documents', async ({ page }) => {
+  await page.goto('/index.html');
+  const caseSection = page.locator('#our-case');
+  for (const [href, name] of [['dates.html', 'Read the council’s dates, leaflet and FAQs'], ['updates.html', 'See what the campaign has done']]) {
+    const link = caseSection.getByRole('link', { name, exact: true });
+    await expect(link).toHaveAttribute('href', href);
+    await link.scrollIntoViewIfNeeded();
+    await expect(link).toBeVisible();
+  }
+});
+
+test('Archived pages name the archive date in the wide-screen status strip', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  for (const file of archivedPages) {
+    await page.goto('/' + file);
+    const strip = page.locator('.independent-bar span').first();
+    await expect(strip, file).toHaveText('Archived 13 October 2026');
+    await expect(strip, file).toBeVisible();
+  }
+});
+
+test.describe('Archived deep links without JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+  for (const size of [...phoneSizes, { width: 1280, height: 800 }]) {
+    for (const link of ['faq.html#school-places', 'proposal.html#take-part', 'evidence.html#records']) {
+      test(`${link} keeps the Archived flag in view at ${size.width}x${size.height}`, async ({ page }) => {
+        await page.setViewportSize(size);
+        await page.goto('/' + link);
+        const flag = page.locator('.site-orientation .archive-flag');
+        await expect(flag).toBeInViewport({ ratio: 1 });
+        // The target lands below the sticky header once any smooth scrolling ends.
+        const id = link.split('#')[1];
+        await expect.poll(() => page.evaluate(id => {
+          const target = document.getElementById(id).getBoundingClientRect().top;
+          const header = document.querySelector('.site-header').getBoundingClientRect().bottom;
+          return target >= header - 1 && target < innerHeight;
+        }, id), { message: `${link} target clear of the header` }).toBe(true);
+        await expect(flag).toBeInViewport({ ratio: 1 });
+      });
+    }
+  }
 });

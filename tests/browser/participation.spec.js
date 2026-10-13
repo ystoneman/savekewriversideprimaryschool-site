@@ -614,6 +614,9 @@ for (const [day, reminder, open] of [['2026-10-12', true, true], ['2026-10-13', 
     await expect(page.locator('#reminder-line')).toBeVisible({ visible: reminder });
     await expect(page.locator('#official-closed')).toBeVisible({ visible: !open });
     if (!open) {
+      // After the deadline the closed note offers the petition first, then the council's timetable.
+      await expect(page.locator('#official-closed a').first()).toHaveAttribute('href', 'get-involved.html#petition');
+      await expect(page.locator('#official-closed a').nth(1)).toHaveAttribute('href', 'dates.html');
       await expect(page.locator('#share-card')).toBeVisible();
       await expect(page.locator('#share-card')).not.toContainText('respond to the consultation');
       expect(await page.locator('#share-whatsapp').getAttribute('href')).not.toContain('consultation');
