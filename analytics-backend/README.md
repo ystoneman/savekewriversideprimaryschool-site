@@ -64,7 +64,7 @@ Counts reflect eligible browser storage contexts, not exact people. Previous
 choices do not contribute until reviewed; interruption/blocking can undercount.
 See ANALYTICS.md and privacy.html for retention, purpose and accuracy limits.
 
-## Hourly page opens (v5 candidate)
+## Hourly page opens (v5)
 
 `page_hour` rows have UTC day and fixed `00`–`23` receipt-hour labels, all pages combined. The input is only the isolated fixed `{metric: "page_hour", label: "all"}`; arbitrary client hours and combinations are rejected. Earlier daily-only requests do not create hourly rows.
 
