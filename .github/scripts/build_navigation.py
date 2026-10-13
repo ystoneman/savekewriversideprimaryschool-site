@@ -5,60 +5,48 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026101303'
+VERSION = '2026101304'
 PREVIEW_VERSION = '2026100901'  # Shared images are unchanged by this curation.
 SITE_NAME = 'Save Kew Riverside Primary School Campaign'
 SITE_URL = 'https://savekewriversideprimaryschool.org/'
 PAGES = {
-    # Page identity labels only. The Menu and footer come from MENU_GROUPS and
-    # FOOTER_LINKS, so registering a page never adds a Menu row by itself.
-    'rally.html': 'Past rally', 'letters.html': 'Community letters', 'videos.html': 'Share a video', 'feedback.html': 'Share ideas',
-    'index.html': 'Home', 'about.html': 'About', 'proposal.html': 'Proposal & dates',
-    'faq.html': 'FAQ', 'understand.html': 'Our case for Kew', 'options.html': 'Ways to keep Kew open',
-    'lessons.html': 'Lessons', 'evidence.html': 'Evidence', 'supporters.html': 'Supporters',
-    'privacy.html': 'Privacy', 'corrections.html': 'Corrections',
-    'lessons-sources.html': 'Research citations', 'sent.html': 'Next steps',
+    # Live pages (13 October 2026: the slim five-page campaign site). Page identity
+    # labels only; the Menu and footer come from MENU_GROUPS and FOOTER_LINKS.
+    'index.html': 'Home', 'dates.html': 'Dates & council documents', 'get-involved.html': 'Get involved',
+    'updates.html': 'Campaign updates', 'about.html': 'About & contact',
+    'letters.html': 'Community letters', 'videos.html': 'Share a video', 'feedback.html': 'Share ideas',
+    'privacy.html': 'Privacy', 'corrections.html': 'Corrections', 'sent.html': 'Next steps',
 }
-# Direct-link briefs retain the shared shell without appearing in any menu.
-UNLISTED_PAGES = {
-    'fundraising-trustees.html': 'Trustee brief',
-    'fundraising-admin.html': 'Account setup brief',
+# Archived in place: still served for old links, never linked from a live page,
+# marked with an archive banner and kept out of search results (noindex).
+ARCHIVED_PAGES = {
+    'proposal.html': 'Proposal & dates', 'faq.html': 'FAQ', 'understand.html': 'Our case for Kew',
+    'evidence.html': 'Evidence', 'options.html': 'Ways to keep Kew open', 'lessons.html': 'Lessons',
+    'lessons-sources.html': 'Research citations', 'rally.html': 'Past rally', 'supporters.html': 'Supporters',
+    'fundraising-trustees.html': 'Trustee brief', 'fundraising-admin.html': 'Account setup brief',
 }
-PAGE_LABELS = PAGES | UNLISTED_PAGES
-# Curated Menu: (group heading, [(href, label, kind)]); kind 'plan' keeps the
-# Parent action plan style, 'sub' indents, and deep action links never claim the
-# current page. Labels match page names so the persistent page label is familiar.
+PAGE_LABELS = PAGES | ARCHIVED_PAGES
+# One Menu on every page: the five campaign pages. Adding an entry means removing one.
 MENU_GROUPS = [
-    ('Take part', [
-        ('proposal.html#take-part', 'Respond to the council', 'action'),
-        ('proposal.html#parent-plan', 'Parent action plan', 'plan'),
-        ('letters.html', 'Community letters', ''),
-        ('videos.html#upload', 'Share a video', ''),
-        ('feedback.html', 'Share ideas', ''),
-    ]),
-    ('Keep Kew open', [
-        ('proposal.html', 'Proposal & dates', ''),
-        ('proposal.html#council-documents', 'Council dates & documents', 'sub'),
-        ('faq.html', 'FAQ', ''),
-        ('options.html', 'Ways to keep Kew open', ''),
-        ('evidence.html#records', 'Evidence', ''),
-        ('understand.html#supporting-research', 'Supporting research', 'sub'),
-    ]),
-    ('This website', [
+    ('Campaign', [
         ('index.html', 'Home', ''),
+        ('dates.html', 'Dates & council documents', ''),
+        ('get-involved.html', 'Get involved', ''),
+        ('updates.html', 'Campaign updates', ''),
         ('about.html', 'About & contact', ''),
     ]),
 ]
-# Every page's footer, including the destinations kept out of the Menu.
+# Every page's footer: live pages only.
 FOOTER_LINKS = [
-    ('about.html', 'About & contact', ''), ('about.html#press', 'For journalists', ''), ('proposal.html', 'Proposal & dates', ''),
-    ('faq.html', 'FAQ', ''), ('evidence.html#records', 'Evidence', ''),
-    ('letters.html', 'Community letters', ''), ('feedback.html', 'Share ideas', ''),
-    ('videos.html#upload', 'Share a video', ''), ('understand.html', 'Our case for Kew', ''), ('lessons.html', 'Lessons', ''),
-    ('supporters.html', 'Supporters', ''), ('corrections.html', 'Corrections', ''),
-    ('lessons-sources.html', 'Research citations', ''), ('privacy.html', 'Privacy', ''),
+    ('about.html', 'About & contact', ''), ('about.html#press', 'For journalists', ''),
+    ('dates.html', 'Dates & council documents', ''), ('get-involved.html', 'Get involved', ''),
+    ('updates.html', 'Campaign updates', ''), ('letters.html', 'Community letters', ''),
+    ('videos.html#upload', 'Share a video', ''), ('feedback.html', 'Share ideas', ''),
+    ('corrections.html', 'Corrections', ''), ('privacy.html', 'Privacy', ''),
     ('privacy.html#analytics', 'Analytics choices', ' data-analytics-choices'),
 ]
+ARCHIVE_BANNER = ('<!-- archive:start --><aside class="archive-banner" aria-label="Archived page"><p><strong>Archived page.</strong> '
+                  'This page is no longer updated and may be out of date. <a href="index.html">Go to the current campaign site</a>.</p></aside><!-- archive:end -->')
 # Explicit destinations avoid navigation generated from hidden templates or every source card.
 SECTIONS = {
     'rally.html': [('when-and-where','Past event'),('schedule','Advertised schedule'),('attending','Original access notes'),('photos','Photo choices'),('council-and-response','Council and your response'),('updates','Questions or corrections')],
@@ -70,7 +58,6 @@ SECTIONS = {
     'faq.html': [('taking-part','Ways to help'),('decisions','Dates and decisions'),('money','Money'),('school-places','School places'),('learning','Learning and results')],
     'lessons.html': [('key-lessons','Key lessons'),('visual-guide','Visual guide'),('catalogue','All 16 schools'),('method','Method and limits')],
     'lessons-sources.html': [('source-register','Source register'),('claim-ledger','Evidence and interpretation')],
-    'about.html': [('our-story','Our family story'),('site-responsibility','Who is responsible'),('press','For journalists'),('updates','What has changed'),('contact','Contact Yann')],
     'letters.html': [('letters','Read community letters'),('letter-form','Write a letter'),('letter-guidelines','Letter guidelines')],
     'feedback.html': [('feedback-form','Share an idea or question'),('review-rules','How review works'),('suggestions','Read shared ideas')],
     # The short video page needs no section list beside the Menu.
@@ -84,7 +71,10 @@ def render_identity(name, document):
     titles = {
         'index.html': SITE_NAME,
         'letters.html': 'Community letters',
-        'about.html': 'Our story & contact',
+        'about.html': 'About & contact',
+        'dates.html': 'Kew Riverside Primary School closure proposal: council dates and documents',
+        'get-involved.html': 'Get involved: help keep Kew Riverside Primary School open',
+        'updates.html': 'Campaign updates',
         'proposal.html': 'Kew Riverside Primary School closure proposal: consultation and dates',
         'understand.html': 'The case for keeping Kew Riverside Primary School open',
         'faq.html': 'Kew Riverside closure proposal: answers for families',
@@ -103,7 +93,11 @@ def render_identity(name, document):
         'fundraising-admin.html': 'Account setup brief',
     }
     descriptions = {
-        'index.html': 'Help keep Kew Riverside Primary School open. Find the parent action plan, community letters, alternatives to closure and the official consultation response route.',
+        'index.html': 'Help keep Kew Riverside Primary School open. Respond to the council, sign the petition and find the council’s own dates and documents.',
+        'dates.html': 'The council’s own timetable for the proposed closure of Kew Riverside Primary School, with its consultation leaflet and FAQs. Closure is proposed, not decided.',
+        'get-involved.html': 'Ways to help keep Kew Riverside Primary School open: respond to the council, sign the petition, write to your representatives and share your story.',
+        'updates.html': 'News from the parent-led campaign to keep Kew Riverside Primary School open, newest first.',
+        'about.html': 'Who runs this independent parent-led campaign website, how to contact the campaign, and guidance for journalists.',
         'proposal.html': 'Understand the proposed closure of Kew Riverside Primary School, the consultation process, who decides and the parent action plan. Responses are due by 16 October 2026.',
         'faq.html': 'Answers for families about the Kew Riverside Primary School closure proposal, consultation, school places and how to respond, with links to official sources.',
         'understand.html': 'Our case for keeping Kew Riverside Primary School open: assess alternatives, compare the full costs and protect children’s continuity. Supporting research and sources are available to check.',
@@ -176,6 +170,20 @@ def render_footer_discovery(document):
     document = document.replace('<link rel="stylesheet"',link+'<link rel="stylesheet"',1)
     return document
 
+def render_archive(name, document):
+    """Archived pages carry a banner as the first child of <main> and noindex."""
+    # A distinct value, so pages that set their own noindex (sent.html) keep it.
+    robots = '<meta name="robots" content="noindex,follow">'
+    document = re.sub(r'<!-- archive:start -->.*?<!-- archive:end -->', '', document, flags=re.S)
+    document = document.replace(robots, '')
+    if name not in ARCHIVED_PAGES:
+        return document
+    document = re.sub(r'(<main\b[^>]*>)', lambda m: m.group(1)+ARCHIVE_BANNER, document, count=1)
+    # Keep an existing stricter policy (the fundraising briefs use noindex,nofollow).
+    if not re.search(r'<meta name="robots" content="[^"]*noindex', document.split('</head>', 1)[0]):
+        document = document.replace('</head>', robots+'</head>', 1)
+    return document
+
 def render_home_navigation(document):
     """Owner-approved compact homepage; other pages retain the shared shell.
     Its Menu lists exactly the same entries as every other page (13 October 2026)."""
@@ -183,7 +191,7 @@ def render_home_navigation(document):
     document = re.sub(r'navigation\.js\?v=\d+', 'navigation.js?v='+VERSION, document)
     groups = []
     for index, (heading, entries) in enumerate(MENU_GROUPS, 1):
-        links = ''.join('<a href="'+html.escape(href, quote=True)+'"'+(' aria-current="page"' if href == 'index.html' else '')+(' class="nav-respond"' if href == 'proposal.html#take-part' else '')+'>'+html.escape(label)+'</a>' for href,label,kind in entries)
+        links = ''.join('<a href="'+html.escape(href, quote=True)+'"'+(' aria-current="page"' if href == 'index.html' else '')+'>'+html.escape(label)+'</a>' for href,label,kind in entries)
         groups.append('<div class="menu-group" role="group" aria-labelledby="menu-group-'+str(index)+'"><p class="menu-group-label" id="menu-group-'+str(index)+'">'+html.escape(heading)+'</p>'+links+'</div>')
     menu = '<details class="mobile-menu" id="menu" name="site-navigation"><summary>Menu <span aria-hidden="true">⌄</span></summary><nav class="desktop-explore" aria-label="All website pages">'+''.join(groups)+'</nav></details>'
     document = re.sub(r'<details class="mobile-menu" id="menu"[^>]*>.*?</details>', lambda _:menu, document, count=1, flags=re.S)
@@ -197,6 +205,7 @@ def render_navigation(name, document):
     if name == 'index.html' and 'data-home-landing' in document:
         return render_home_navigation(document)
     document = render_identity(name, document)
+    document = render_archive(name, document)
     for asset in ('letters.js', 'contribute.css', 'feedback.css', 'community.css', 'discovery.css'):
         document = re.sub(re.escape(asset)+r'\?v=\d+', asset+'?v='+VERSION, document)
     esc = html.escape
@@ -245,28 +254,21 @@ def render_navigation(name, document):
     header = match.group()
     header = re.sub(r'<details class="mobile-menu">.*?</details>', '', header, flags=re.S)
     header = re.sub(r' aria-current="page"', '', header)
-    # Keep the short wide-screen exploration row. The full menu is available at every width.
-    desktop = [('proposal.html#parent-plan','Parent action plan')]
-    def link(href, label, parent=False):
-        current = ' aria-current="page"' if href.split('#')[0] == name and not parent else ''
-        cls = ' class="nav-parent-plan"' if parent else ''
-        return f'<a href="{esc(href)}"{cls}{current}>{esc(label)}</a>'
-    desktop_html = '<nav class="desktop-explore" aria-label="Explore the website">'+''.join(link(h,l,'#parent-plan' in h) for h,l in desktop)+'</nav>'
+    # One wide-screen shortcut to the main campaign actions; the Menu holds the rest.
+    current = ' aria-current="page"' if name == 'get-involved.html' else ''
+    desktop_html = '<nav class="desktop-explore" aria-label="Explore the website"><a href="get-involved.html" class="nav-primary"'+current+'>Get involved</a></nav>'
     header = re.sub(r'<nav class="desktop-explore".*?</nav>', desktop_html, header, flags=re.S)
-    # Participation tiles remain exposed on arrival and identify their own pages.
-    header = re.sub(r'<a href="(letters|feedback)\.html"', lambda m:m.group()+(' aria-current="page"' if m.group(1)+'.html' == name else ''), header)
-    # The Menu is chosen, not generated from every page label: three groups, with
-    # the official response first. Adding an entry means removing or merging one.
-    # Pages not listed here stay one tap away in every footer (FOOTER_LINKS).
+    # The header tiles (Community letters / Share ideas) were retired with the
+    # slim site; Get involved and the footer carry those routes.
+    header = re.sub(r'\n?<nav class="participation-nav".*?</nav>', '', header, flags=re.S)
+    # The Menu is chosen, not generated from every page label.
     def menu_link(href, label, kind=''):
-        base = href.split('#')[0]
-        current = ' aria-current="page"' if base == name and kind == '' else ''
-        cls = {'plan': ' class="nav-parent-plan"', 'action': ' class="nav-respond"', 'sub': ' class="nav-subitem"'}.get(kind, '')
-        return f'<a href="{esc(href)}"{cls}{current}>{esc(label)}</a>'
+        current = ' aria-current="page"' if href.split('#')[0] == name and kind == '' else ''
+        return f'<a href="{esc(href)}"{current}>{esc(label)}</a>'
     groups = []
     for index, (heading, entries) in enumerate(MENU_GROUPS, 1):
         entries = list(entries)
-        if heading == 'This website' and name == 'sent.html':
+        if index == len(MENU_GROUPS) and name == 'sent.html':
             entries.append(('sent.html', 'Next steps', ''))
         links = ''.join(menu_link(*entry) for entry in entries)
         groups.append(f'<div class="menu-group" role="group" aria-labelledby="menu-group-{index}"><p class="menu-group-label" id="menu-group-{index}">{esc(heading)}</p>{links}</div>')
@@ -287,6 +289,9 @@ def render_navigation(name, document):
     header = header.replace('</header>',orientation+'</header>')
     document = document[:match.start()]+header+document[match.end():]
     footer_links = ''.join(f'<a href="{esc(href)}"{extra}>{esc(label)}</a>' for href, label, extra in FOOTER_LINKS)
+    # The discovery row sits before </footer>; remove it so the link list can be
+    # rewritten, then render_footer_discovery restores it.
+    document = re.sub(r'<!-- footer-discovery:start -->.*?<!-- footer-discovery:end -->', '', document, flags=re.S)
     document = re.sub(r'(<footer><div class="wrap footer-inner"><div>.*?</div>)<div>.*?</div>(</div></footer>)', lambda m: m.group(1)+'<div>'+footer_links+'</div>'+m.group(2), document, count=1, flags=re.S)
     return render_footer_discovery(document)
 

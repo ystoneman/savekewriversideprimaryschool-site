@@ -10,7 +10,7 @@ CANONICAL = 'https://savekewriversideprimaryschool.org/'
 GENERATED = {'cutover-redirect.js', 'cutover.css', '404.html'}
 POLICY = "default-src 'none'; script-src 'self'; style-src 'self'; base-uri 'none'; object-src 'none'; frame-src 'none'; form-action 'none'; upgrade-insecure-requests"
 LINKS = {
- 'index.html': [('proposal.html#parent-plan', 'Parent action plan'), ('evidence.html#records', 'Evidence and sources'), ('letters.html', 'Community letters')],
+ 'index.html': [('get-involved.html', 'Get involved'), ('dates.html', 'Dates & council documents'), ('letters.html', 'Community letters')],
  'evidence.html': [('evidence.html#source-search', 'Search the sources'), ('evidence.html#records', 'Evidence and sources')],
  'feedback.html': [('feedback.html?kind=privacy#feedback-form', 'Corrections or removal requests'), ('feedback.html#feedback-form', 'Share an idea')],
  'videos.html': [('videos.html#upload', 'Video upload information')],

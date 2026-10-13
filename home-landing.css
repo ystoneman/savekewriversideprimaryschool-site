@@ -37,3 +37,6 @@
 @media(max-width:700px){.mobile-menu nav{width:calc(100vw - 40px)}}
 
 .home-secondary-actions .action>span{font-size:18px}
+/* Short campaign case below the hero (13 October 2026). */
+.home-case{border-top:1px solid var(--line);padding-block:26px 34px;max-width:760px}.home-case h2{font:400 30px/1.15 Georgia,'Times New Roman',serif;letter-spacing:-.02em;margin-bottom:14px}.home-case ul{margin:0 0 12px;padding-left:20px}.home-case li{font-size:17px;line-height:1.55;margin-bottom:10px}.home-case p{font-size:15px}.home-case p a{display:inline-flex;align-items:center;min-height:44px}
+@media(max-width:700px){.home-case h2{font-size:26px}.home-case li{font-size:16px}}

@@ -205,7 +205,9 @@ class CaseEvidenceTests(unittest.TestCase):
         from datetime import date
         checked = date.fromisoformat(json.loads((ROOT / 'sources.json').read_text())['researchChecked'])
         label = f'{checked.day} {checked:%B %Y}'
-        for name, prefix in [('index.html', 'Kew evidence updated'), ('understand.html', 'Kew evidence updated'),
+        # The homepage dropped its evidence date with the slim site (13 October 2026);
+        # the archived research pages keep their dated headers.
+        for name, prefix in [('understand.html', 'Kew evidence updated'),
                              ('evidence.html', 'Source library updated'), ('faq.html', 'Selected answers updated')]:
             self.assertIn(f'<span>{prefix} {label}</span>', (ROOT / name).read_text(), name)
 
