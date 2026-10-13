@@ -26,3 +26,6 @@
 
 /* The dated no-script council action also fits a 320 × 568 arrival. */
 @media(max-width:350px){.hero-grid{padding-top:20px}.intro{margin-top:18px}.actions{margin-top:18px}}
+
+/* The analytics notice positions the Menu wrapper at button width. Keep its panel as wide as the mobile header. */
+@media(max-width:700px){.mobile-menu nav{width:calc(100vw - 40px)}}
