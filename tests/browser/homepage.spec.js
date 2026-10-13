@@ -45,9 +45,9 @@ test('Short homepage: three large actions lead before optional detail', async ({
   }
   for (const [destination, target] of [['options.html', 'main h1'], ['evidence.html#records', '#records']]) {
     await activate(page.locator('.mobile-menu summary'), hasTouch);
-    await expect(page.locator('.mobile-menu a[href="lessons.html"]')).toBeVisible();
-    await expect(page.locator('.mobile-menu a[href="lessons-report.pdf"]')).toHaveAccessibleName(/44-page PDF/);
-    await expect(page.locator('.mobile-menu a[href="faq.html#school-places"]')).toBeVisible();
+    await expect(page.locator('.mobile-menu a[href="proposal.html"]')).toHaveAccessibleName('Proposal & dates');
+    await expect(page.locator('.mobile-menu a[href="proposal.html#council-documents"]')).toHaveAccessibleName('Council dates & documents');
+    await expect(page.locator('.mobile-menu a[href="faq.html"]')).toBeVisible();
     await activate(page.locator(`.mobile-menu a[href="${destination}"]`), hasTouch);
     await expect(page).toHaveURL(new RegExp(destination.replace('.', '\\.') + '$'));
     await expect(page.locator(target)).toBeInViewport();

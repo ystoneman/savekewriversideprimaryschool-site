@@ -9,14 +9,16 @@ const questions = {
   'taking-part': ['useful-response', 'letters-official', 'share-evidence'],
 };
 const questionIds = Object.values(questions).flat();
-// A child's school place is many parents' first question, so it leads the six routes.
+// Since 13 October 2026 the homepage uses the shared Menu; its Keep Kew open
+// group leads to dates, the council's documents, answers, options and evidence.
+// The family school-place route is checked from the Parent action plan instead.
 const entryRoutes = [
-  'faq.html#school-places',
+  'proposal.html',
+  'proposal.html#council-documents',
+  'faq.html',
   'options.html',
-  'proposal.html#timetable',
-  'understand.html',
   'evidence.html#records',
-  'feedback.html?kind=evidence#feedback-form',
+  'understand.html#supporting-research',
 ];
 
 async function activate(locator, hasTouch) {
@@ -120,12 +122,11 @@ test.describe('Past meeting stays retired independently of a visitor’s calenda
   }
 });
 
-test('Homepage: six clear Menu routes lead to answers, dates, evidence and participation', async ({ page, hasTouch, baseURL }) => {
+test('Homepage: six clear Menu routes lead to dates, council documents, answers and evidence', async ({ page, hasTouch, baseURL }) => {
  for (const href of entryRoutes) {
   await page.goto('/index.html');await activate(page.locator('.mobile-menu summary'),hasTouch);
   const link=page.locator(`.mobile-menu a[href="${href}"]`);await expect(link).toHaveAccessibleName(/\S/);
   await activate(link,hasTouch);await expectDestination(page,href,baseURL);
-  if(href.includes('kind=evidence')) {await expect(page.locator('input[name="kind"][value="evidence"]')).toBeChecked();await expect(page.locator('#message')).toHaveValue('');await expect(page.locator('#allow-public')).not.toBeChecked();}
  }
 });
 

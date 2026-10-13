@@ -4,6 +4,14 @@
 
 - Replace the campaign contact email on the homepage, press route and About page with `savekrps@gmail.com`; keep the existing contact placements and campaign/recruitment separation. Verification and publication evidence will be recorded in the release pull request.
 
+### One Menu, council dates and documents — 13 October 2026
+
+- Use the same Menu on the homepage as on every other page. Add Council dates & documents after Proposal & dates; remove Questions for the council from the Menu. Add Our case for Kew to every footer. Bump the shared navigation version.
+- Add a visible Council timetable and documents section to Proposal & dates: the response form's 16 October 2026 deadline and official response link, the consultation leaflet, both council FAQs and the council page, then the leaflet's timetable table reproduced verbatim (PDF page 7).
+- Retitle two options: "Help build a costed alternative to closure" and "Help plan fundraising" (summary keeps "No donations are being collected yet"). Replace remaining "keep teaching at Kew" wording on Options' intro.
+- Archive the early question list on Evidence in place: dated note, statuses labelled "Open at 8 Oct 2026", named once as Archived questions in the section chooser; every anchor retained. Point Evidence's top action, its introduction and About's press links at the council documents instead; start Our case's route list with them instead of the archived list. Rename the homepage footer disclosure "More pages, about & appearance" so its page links are discoverable.
+- Update protected-journey tests deliberately for the shared Menu and the new routes; add arrival, no-script, keyboard and option-title checks. Local and hosted results are recorded in the pull request. Not yet deployed.
+
 ### Campaign-led openings and deduplication — 12 October 2026
 
 - Lead Evidence with the keep-open position and let its findings add evidence. Replace repeated pitch text with source provenance and retain one exposed alternative-viability qualification.

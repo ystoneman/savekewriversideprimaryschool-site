@@ -137,3 +137,19 @@ test('Journalist guidance is linked from letters and About and provides a contac
   await page.locator('.page-sections summary').click();
   await expect(page.locator('.section-links a[href="#press"]')).toBeVisible();
 });
+
+// Option titles state the ask plainly (13 October 2026). The fundraising summary
+// keeps its honesty qualification visible while the card is closed.
+test('Ways to keep Kew open: retitled options read as plain asks with visible qualifications', async ({ page }) => {
+  await page.goto('/options.html');
+  const titles = page.locator('.option-card > summary .option-title');
+  await expect(titles.first()).toHaveText('Help build a costed alternative to closure');
+  const funding = page.locator('.option-card', { has: page.locator('.option-title', { hasText: 'Help plan fundraising' }) });
+  await expect(funding).toHaveCount(1);
+  await expect(funding).not.toHaveAttribute('open', '');
+  await expect(funding.locator('> summary .option-summary')).toBeVisible();
+  await expect(funding.locator('> summary .option-summary')).toContainText('No donations are being collected yet.');
+  await expect(page.locator('.options-intro .eyebrow')).toHaveText('Assess alternatives. Keep the school open.');
+  const asks = await page.locator('.options-intro, main > .simple-note, .option-card > summary').allTextContents();
+  expect(asks.join(' ')).not.toMatch(/teaching at Kew|See if fundraising could help/);
+});

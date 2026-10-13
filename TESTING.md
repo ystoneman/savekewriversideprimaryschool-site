@@ -34,6 +34,20 @@ All 22 deadline unit tests, five homepage smoke cases, 34 iPhone/desktop WebKit 
 
 ## Unreleased
 
+### One Menu, council dates and documents — 13 October 2026
+
+- Local checks on the final working tree: 149 Python checks, 22 deadline unit tests, seven backend tests, JavaScript syntax, `git diff --check`, builder freshness (`build_navigation.py`, `build_understand.py`, `build_sources.py --check`) and 124-file public staging pass.
+- Browser checks ran in a cloud container where only Chromium was available. All five Playwright projects were run on Chromium; iPhone and desktop WebKit projects therefore used Chromium emulation, not WebKit. No native iOS Safari check was run; hosted CI runs real WebKit.
+- First complete local run: 2,849 passed, 93 skipped, 20 failed. All but two failures were tests still using removed homepage Menu rows, or this change's own new tests before later wording fixes; those tests were then updated deliberately. Re-running the 14 affected spec files on the final tree: 1,272 passed, 2 failed.
+- The two remaining local failures are not caused by this change. `orientation.spec.js` “Back preserves a later reading position…” fails three times out of three on unchanged `main` (b5a1f55) in the same Chromium-for-iPhone harness. The desktop daily-browser count test passed four times out of four on both `main` and this branch when re-run on its own; it failed once under four-worker load. The Options optional-row test failed once in the first full run and passed three times out of three on both trees when re-run.
+- Rendered Chromium phone screenshots at 320 × 568 and 390 × 844 checked:
+  - the shared Menu on Home and FAQ;
+  - Council dates & documents arrival, with the deadline, respond link and first document visible, no horizontal overflow and no mid-word date breaks;
+  - archived-question arrival, with the dated note visible;
+  - the Options titles;
+  - the unchanged homepage first screen.
+- Independent read-only plan and diff reviews (UX, campaign, evidence) ran as subagents; their findings were applied before commit. No real form, upload or council response was submitted.
+
 ### Campaign-led openings and deduplication — 12 October 2026
 
 Independent campaign/evidence planning and actual-diff reviews completed. Rechecked the original Fletching and St John decision records, with Isle of Wight official follow-up/minutes supporting the newly exposed examples; the petition report was unavailable on fresh retrieval and its statement relies on the maintained source inspection. The lead directly inspected the council-linked official response form and its published 16 October 2026 deadline, and the council page still describes pre-statutory proposed closure. No fields were entered or forms submitted.

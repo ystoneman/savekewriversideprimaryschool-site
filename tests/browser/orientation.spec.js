@@ -59,21 +59,16 @@ const mainPages = [
   ['faq.html', 'FAQ'], ['understand.html', 'Our case for Kew'], ['options.html', 'Ways to keep Kew open'],
   ['lessons.html', 'Lessons'], ['evidence.html', 'Evidence'],
 ];
-// The curated Menu (27 September 2026): three labelled groups, official response
+// The curated Menu (27 September 2026; one Menu on every page including the
+// homepage since 13 October 2026): three labelled groups, official response
 // first. Pages outside it stay in every footer (footerLinks).
 const menuGroups = [
   ['Take part', [['Respond to the council', 'proposal.html#take-part'], ['Parent action plan', 'proposal.html#parent-plan'], ['Community letters', 'letters.html'], ['Share a video', 'videos.html#upload'], ['Share ideas', 'feedback.html']]],
-  ['Keep Kew open', [['Ways to keep Kew open', 'options.html'], ['Proposal & dates', 'proposal.html'], ['FAQ', 'faq.html'], ['Evidence', 'evidence.html#records'], ['Questions for the council', 'evidence.html#gaps'], ['Supporting research', 'understand.html#supporting-research']]],
+  ['Keep Kew open', [['Proposal & dates', 'proposal.html'], ['Council dates & documents', 'proposal.html#council-documents'], ['FAQ', 'faq.html'], ['Ways to keep Kew open', 'options.html'], ['Evidence', 'evidence.html#records'], ['Supporting research', 'understand.html#supporting-research']]],
   ['This website', [['Home', 'index.html'], ['About & contact', 'about.html']]],
 ];
 const menuNames = menuGroups.flatMap(([, links]) => links.map(([label]) => label));
-const homeMenuNames = ['Respond to the council','Parent action plan','Community letters','Share a video','Share ideas','I have something to add','Response checklist (PDF)','Ways to keep Kew open','What happens when?','My child’s next steps','Evidence','Questions for the council','Supporting research','Our case for Kew','Search the sources','Learning and results','Research report source','Research on other schools','Research report (44-page PDF)','Home','About & contact'];
-const homeMenuGroups = [
- ['Take part', [['Respond to the council','proposal.html#take-part'],['Parent action plan','proposal.html#parent-plan'],['Community letters','letters.html'],['Share a video','videos.html#upload'],['Share ideas','feedback.html'],['I have something to add','feedback.html?kind=evidence#feedback-form'],['Response checklist (PDF)','response-checklist.pdf']]],
- ['Keep Kew open', [['Ways to keep Kew open','options.html'],['What happens when?','proposal.html#timetable'],['My child’s next steps','faq.html#school-places'],['Evidence','evidence.html#records'],['Questions for the council','evidence.html#gaps'],['Supporting research','understand.html#supporting-research'],['Our case for Kew','understand.html'],['Search the sources','evidence.html#source-search'],['Learning and results','understand.html#learning-and-results'],['Research report source','evidence.html#source-lessons-report'],['Research on other schools','lessons.html'],['Research report (44-page PDF)','lessons-report.pdf']]],
- ['This website', [['Home','index.html'],['About & contact','about.html']]],
-];
-const footerLinks = ['about.html', 'about.html#press', 'proposal.html', 'faq.html', 'evidence.html#records', 'letters.html', 'feedback.html', 'videos.html#upload', 'lessons.html', 'supporters.html', 'corrections.html', 'lessons-sources.html', 'privacy.html', 'privacy.html#analytics'];
+const footerLinks = ['about.html', 'about.html#press', 'proposal.html', 'faq.html', 'evidence.html#records', 'letters.html', 'feedback.html', 'videos.html#upload', 'understand.html', 'lessons.html', 'supporters.html', 'corrections.html', 'lessons-sources.html', 'privacy.html', 'privacy.html#analytics'];
 
 async function activeSection(page) {
   return page.locator('.section-links a[aria-current="location"]').evaluateAll(links => links.length === 1 ? links[0].dataset.sectionId : null);
@@ -195,61 +190,62 @@ test('Orientation: each main page has a stable identity and the complete menu in
     const menu = page.locator('.mobile-menu');
     await activate(menu.locator(':scope > summary'), hasTouch);
     const names = await menu.locator('a').allTextContents();
-    expect(names.map(text => text.trim())).toEqual(file === 'index.html' ? homeMenuNames : menuNames);
+    expect(names.map(text => text.trim())).toEqual(menuNames);
     // A page outside the curated Menu is still one tap away in its footer.
     const label = name === 'About' ? 'About & contact' : name;
     if (menuNames.includes(label)) await expect(menu.getByRole('link', { name: label, exact: true })).toHaveAttribute('aria-current', 'page');
     else if (file === 'understand.html') await expect(menu.getByRole('link', { name: 'Supporting research', exact: true })).toHaveAttribute('href', 'understand.html#supporting-research');
     else await expect(page.locator('footer').getByRole('link', { name, exact: true })).toHaveCount(1);
-    const questions = menu.getByRole('link', { name: 'Questions for the council', exact: true });
-    await expect(questions).toBeVisible();
-    await expect(questions).toHaveAttribute('href', 'evidence.html#gaps');
-    await expect(questions).not.toHaveAttribute('aria-current', 'page');
+    const documents = menu.getByRole('link', { name: 'Council dates & documents', exact: true });
+    await expect(documents).toBeVisible();
+    await expect(documents).toHaveAttribute('href', 'proposal.html#council-documents');
+    await expect(documents).not.toHaveAttribute('aria-current', 'page');
+    await expect(menu.locator('a[href$="#gaps"]')).toHaveCount(0);
     for (const [label, href] of [['Community letters', 'letters.html'], ['Share ideas', 'feedback.html']]) {
       await expect(menu.getByRole('link', { name: label, exact: true })).toHaveAttribute('href', href);
     }
   }
 });
 
-test('Orientation: Questions for the council opens its named section and repeated menu visits return there', async ({ page, hasTouch }) => {
+test('Orientation: Council dates & documents opens its named section and repeated menu visits return there', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
   const menu = page.locator('.mobile-menu');
-  const questions = menu.getByRole('link', { name: 'Questions for the council', exact: true });
+  const documents = menu.getByRole('link', { name: 'Council dates & documents', exact: true });
   await activate(menu.locator(':scope > summary'), hasTouch);
-  await activate(questions, hasTouch);
-  await expect(page).toHaveURL(/evidence\.html#gaps$/);
-  const heading = page.locator('#gaps h2');
-  await expect(heading).toHaveText('What the council must explain before closing Kew.');
+  await activate(documents, hasTouch);
+  await expect(page).toHaveURL(/proposal\.html#council-documents$/);
+  const heading = page.locator('#council-documents h2');
+  await expect(heading).toHaveText('Council timetable and documents');
   await expectUncovered(page, heading);
-  await expect(page.locator('.page-name')).toHaveText('Evidence');
-  await expect(page.locator('.section-links a[data-section-id="gaps"]')).toHaveText('Questions for the council');
+  await expect(page.locator('.page-name')).toHaveText('Proposal & dates');
+  await expect(page.locator('.section-links a[data-section-id="council-documents"]')).toHaveText('Council timetable and documents');
   await expect(menu).not.toHaveAttribute('open', '');
 
   // Reading farther down leaves the hash unchanged; the same menu link must
-  // still return to the questions instead of doing nothing on a repeated hash.
-  await page.locator('#method').evaluate(node => { for (let parent=node.parentElement;parent;parent=parent.parentElement) if (parent.tagName==='DETAILS') parent.open=true; node.scrollIntoView({block:'start',behavior:'instant'}); });
+  // still return to the documents instead of doing nothing on a repeated hash.
+  await page.locator('#take-part').evaluate(node => { for (let parent=node.parentElement;parent;parent=parent.parentElement) if (parent.tagName==='DETAILS') parent.open=true; node.scrollIntoView({block:'start',behavior:'instant'}); });
   await expect(heading).not.toBeInViewport();
-  await expect(page).toHaveURL(/evidence\.html#gaps$/);
+  await expect(page).toHaveURL(/proposal\.html#council-documents$/);
   await activate(menu.locator(':scope > summary'), hasTouch);
-  await activate(questions, hasTouch);
+  await activate(documents, hasTouch);
   await expectUncovered(page, heading);
-  await expectScrollSettled(page, 'Repeated Questions for the council menu arrival');
+  await expectScrollSettled(page, 'Repeated Council dates & documents menu arrival');
   await expect(menu).not.toHaveAttribute('open', '');
 });
 
-test('Orientation: keyboard users reach Questions for the council directly after Evidence', async ({ page, browserName }) => {
+test('Orientation: keyboard users reach Council dates & documents directly after Proposal & dates', async ({ page, browserName }) => {
   await page.goto('/index.html');
   const menu = page.locator('.mobile-menu');
   const next = browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab';
   await menu.locator(':scope > summary').focus();
   await page.keyboard.press('Enter');
-  for (let i = 0; i <= homeMenuNames.indexOf('Evidence'); i++) await page.keyboard.press(next);
-  await expect(menu.getByRole('link', { name: 'Evidence', exact: true })).toBeFocused();
+  for (let i = 0; i <= menuNames.indexOf('Proposal & dates'); i++) await page.keyboard.press(next);
+  await expect(menu.getByRole('link', { name: 'Proposal & dates', exact: true })).toBeFocused();
   await page.keyboard.press(next);
-  await expect(menu.getByRole('link', { name: 'Questions for the council', exact: true })).toBeFocused();
+  await expect(menu.getByRole('link', { name: 'Council dates & documents', exact: true })).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/evidence\.html#gaps$/);
-  await expectUncovered(page, page.getByRole('heading', { name: 'What the council must explain before closing Kew.', exact: true }));
+  await expect(page).toHaveURL(/proposal\.html#council-documents$/);
+  await expectUncovered(page, page.getByRole('heading', { name: 'Council timetable and documents', exact: true }));
   await expect(menu).not.toHaveAttribute('open', '');
 });
 
@@ -460,8 +456,7 @@ test('Orientation: the curated Menu keeps its three groups and every footer keep
       group.querySelector('.menu-group-label').textContent.trim(),
       [...group.querySelectorAll('a')].map(link => [link.textContent.trim(), link.getAttribute('href')]),
     ]));
-    const selectedGroups = file === 'index.html' ? homeMenuGroups : menuGroups;
-    const expected = selectedGroups.map(([heading, links]) => [heading, file === 'sent.html' && heading === 'This website' ? [...links, ['Next steps', 'sent.html']] : links]);
+    const expected = menuGroups.map(([heading, links]) => [heading, file === 'sent.html' && heading === 'This website' ? [...links, ['Next steps', 'sent.html']] : links]);
     expect(groups, file).toEqual(expected);
     expect(await nav.locator(':scope > a').count(), `${file}: no link outside a group`).toBe(0);
     // The official response leads Take part with the Parent action plan's emphasis.

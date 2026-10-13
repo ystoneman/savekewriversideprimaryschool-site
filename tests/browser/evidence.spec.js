@@ -6,24 +6,6 @@ const unansweredQuestionIds = [
   'gap-alternatives', 'gap-recruitment', 'gap-forecasts', 'gap-answers',
 ];
 
-async function openQuestionFromSections(page, id, hasTouch) {
-  const sections = page.locator('.page-sections');
-  if (hasTouch) await sections.locator(':scope > summary').tap();
-  else await sections.locator(':scope > summary').click();
-  const link = sections.locator(`a[data-section-id="${id}"]`);
-  // Scroll the popup alone so activating a sticky control cannot move the
-  // document away from the reading position that this journey is testing.
-  await link.evaluate(node => {
-    const panel = node.closest('.section-panel');
-    const item = node.getBoundingClientRect(), bounds = panel.getBoundingClientRect();
-    if (item.top < bounds.top) panel.scrollTop -= bounds.top - item.top;
-    else if (item.bottom > bounds.bottom) panel.scrollTop += item.bottom - bounds.bottom;
-  });
-  const bounds = await link.boundingBox();
-  if (hasTouch) await page.touchscreen.tap(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
-  else await page.mouse.click(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
-}
-
 async function refine(page, label, value) {
   const filters = page.locator('#record-refinements');
   if (!await filters.evaluate(node => node.open)) await filters.locator('summary').click();
@@ -31,20 +13,29 @@ async function refine(page, label, value) {
 }
 
 
-test('Report discovery: homepage links reach the web research and download the 44-page report', async ({ page, hasTouch }) => {
+// The homepage Menu now matches every other page (13 October 2026). The research
+// stays reachable from the homepage footer and from Evidence, one Menu tap away.
+test('Report discovery: homepage routes reach the web research and download the 44-page report', async ({ page, hasTouch }) => {
+  const press = locator => hasTouch ? locator.tap() : locator.click();
   await page.goto('/index.html');
-  await page.locator('.mobile-menu summary').click();
-  const shortcut = page.locator('.mobile-menu');
-  await expect(shortcut).toContainText('44-page PDF');
-  const web = shortcut.locator('a[href="lessons.html"]');
-  if (hasTouch) await web.tap(); else await web.click();
+  await press(page.locator('#site-settings > summary'));
+  await press(page.locator('footer .home-footer-links a[href="lessons.html"]'));
   await expect(page).toHaveURL(/lessons\.html$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('What can other schools teach us?');
   await page.goBack();
-  await page.locator('.mobile-menu summary').click();
+  await expect(page).toHaveURL(/index\.html$/);
+  await press(page.locator('.mobile-menu summary'));
+  await press(page.locator('.mobile-menu').getByRole('link', { name: 'Evidence', exact: true }));
+  await expect(page).toHaveURL(/evidence\.html#records$/);
+  const explore = page.locator('#evidence-library-guide');
+  if (!await explore.evaluate(detail => detail.open)) await press(explore.locator(':scope > summary'));
+  await press(page.locator('#research-shortcut'));
+  await expect(page).toHaveURL(/#source-lessons-report$/);
+  const report = page.locator('#source-lessons-report');
+  await expect(report).toContainText('44-page PDF');
   const [download] = await Promise.all([
     page.waitForEvent('download'),
-    shortcut.locator('a[href="lessons-report.pdf"]').click(),
+    report.locator('a[href="lessons-report.pdf"]').first().click(),
   ]);
   expect(download.suggestedFilename()).toBe('lessons-report.pdf');
   expect(await download.failure()).toBeNull();
@@ -202,22 +193,29 @@ test('Evidence arrival leads with current Kew findings and retains historical ca
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
 });
 
-test('Unanswered questions overview presents eight priorities without opening one or mixing in resolved evidence', async ({ page }) => {
+test('Archived questions overview is dated on arrival, keeps eight priorities closed and separates resolved evidence', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/evidence.html#gaps');
   const questions = page.locator('#gaps .gaps-grid > article');
   expect(await questions.evaluateAll(nodes => nodes.map(node => node.id))).toEqual(unansweredQuestionIds);
   await expect(page.locator('#gaps .gap-detail[open]')).toHaveCount(0);
-  await expect(page.locator('#gaps h2')).toBeInViewport();
-  await expect(page.locator('#gaps .gaps-intro').first()).toContainText('compare the full costs');
+  await expect(page.locator('#evidence-questions-detail > summary')).toHaveText('Archived: our early questions for the council (September 2026)');
+  const note = page.locator('#gaps .archive-note');
+  await expect(note).toBeInViewport();
+  await expect(note).toContainText('statuses show the position on 8 October 2026 and are not updated here');
+  await expect(note.locator('a[href="#obtained-budget"]')).toHaveCount(1);
+  await expect(page.locator('#obtained-budget h3')).toHaveText('Final budget summary received');
+  await expect(page.locator('#gaps .gaps-intro').nth(1)).toContainText('compare the full costs');
   for (const question of await questions.all()) {
     await expect(question.locator('summary h3')).toBeVisible();
-    await expect(question.locator('summary .gap-state')).toBeVisible();
-    await expect(question.locator('summary .gap-state')).not.toHaveText('Evidence found');
+    await expect(question.locator('summary .gap-state')).toHaveText('Open at 8 Oct 2026');
   }
+  // The section chooser names the archive once, without listing each question; the Menu omits it.
+  await expect(page.locator('.section-links a[data-section-id="gaps"]')).toHaveText('Archived questions');
+  await expect(page.locator('.section-trail')).toContainText('Archived questions');
   const sectionIds = await page.locator('.section-links a[data-section-id]').evaluateAll(links => links.map(link => link.dataset.sectionId));
-  const questionSections = [...unansweredQuestionIds, 'evidence-found', 'gap-records'];
-  expect(sectionIds.filter(id => questionSections.includes(id))).toEqual(questionSections);
+  for (const id of [...unansweredQuestionIds, 'evidence-found', 'gap-records']) expect(sectionIds).not.toContain(id);
+  await expect(page.locator('.mobile-menu a[href$="#gaps"]')).toHaveCount(0);
   await expect(page.locator('#gaps .gaps-grid #evidence-found')).toHaveCount(0);
   const resolved = page.locator('#evidence-found');
   await expect(resolved.getByRole('heading', { name: 'The complete 2026 inspection report' })).toBeVisible();
@@ -241,27 +239,25 @@ for (const id of unansweredQuestionIds) {
   });
 }
 
-for (const id of ['gap-selection', 'gap-recruitment', 'gap-answers']) {
-  test(`Unanswered questions: ${id} supports section navigation, repeated activation and Back`, async ({ page, hasTouch }) => {
-    await page.goto('/evidence.html#gaps');
-    await openQuestionFromSections(page, id, hasTouch);
-    const detail = page.locator('#' + id + ' > .gap-detail');
-    await expect(page).toHaveURL(new RegExp('#' + id + '$'));
-    await expect(detail).toHaveAttribute('open', '');
-    await expect(page.locator('#gaps .gap-detail[open]')).toHaveCount(1);
-    await expect(detail.locator('summary')).toBeInViewport();
-    // Use the native disclosure control, including keyboard operation on desktop.
-    if (hasTouch) await detail.locator('summary').tap();
-    else { await detail.locator('summary').focus(); await page.keyboard.press('Enter'); }
-    await expect(detail).not.toHaveAttribute('open', '');
-    await openQuestionFromSections(page, id, hasTouch);
-    await expect(detail).toHaveAttribute('open', '');
-    await expect(detail.locator('summary')).toBeInViewport();
-    await page.goBack();
-    await expect(page).toHaveURL(/evidence\.html#gaps$/);
-    await expect(page.locator('#gaps h2')).toBeInViewport();
-  });
-}
+test('Archived questions: the Evidence directory link opens the dated archive and Back returns', async ({ page, hasTouch }) => {
+  await page.goto('/evidence.html#records');
+  const explore = page.locator('#evidence-library-guide');
+  if (!await explore.evaluate(detail => detail.open)) {
+    if (hasTouch) await explore.locator(':scope > summary').tap(); else await explore.locator(':scope > summary').click();
+  }
+  const link = page.locator('#evidence-navigation a[href="#gaps"]');
+  await expect(link).toHaveText('Early questions (archived)');
+  if (hasTouch) await link.tap(); else await link.click();
+  await expect(page).toHaveURL(/evidence\.html#gaps$/);
+  await expect(page.locator('#evidence-questions-detail')).toHaveAttribute('open', '');
+  await expect(page.locator('#gaps .archive-note')).toBeInViewport();
+  const detail = page.locator('#gap-selection > .gap-detail');
+  if (hasTouch) await detail.locator('summary').tap();
+  else { await detail.locator('summary').focus(); await page.keyboard.press('Enter'); }
+  await expect(detail).toHaveAttribute('open', '');
+  await page.goBack();
+  await expect(page).toHaveURL(/evidence\.html#records$/);
+});
 
 test('Evidence gaps show dated requests without treating dispatch as disclosure', async ({ page }) => {
   await page.goto('/evidence.html#gap-budget');
