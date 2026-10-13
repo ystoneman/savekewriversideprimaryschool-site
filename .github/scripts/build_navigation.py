@@ -5,7 +5,7 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026101303'
+VERSION = '2026101304'
 PREVIEW_VERSION = '2026100901'  # Shared images are unchanged by this curation.
 SITE_NAME = 'Save Kew Riverside Primary School Campaign'
 SITE_URL = 'https://savekewriversideprimaryschool.org/'
@@ -43,6 +43,11 @@ MENU_GROUPS = [
         ('options.html', 'Ways to keep Kew open', ''),
         ('evidence.html#records', 'Evidence', ''),
         ('understand.html#supporting-research', 'Supporting research', 'sub'),
+    ]),
+    # Recruitment routes stay in their own group, apart from campaign actions.
+    ('Discover the school', [
+        ('videos.html#watch-parent-voices', 'Watch Parent Voices', 'sub'),
+        ('visit/index.html', 'Book an Open Day', 'sub'),
     ]),
     ('This website', [
         ('index.html', 'Home', ''),

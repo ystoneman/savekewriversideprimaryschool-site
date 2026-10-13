@@ -2,11 +2,11 @@ const { test, expect, allPages, pages, redirectPages } = require('./fixtures');
 
 // Independently pin the intended school destination; changing the handoff needs
 // a deliberate update here as well as the HTML, never a URL from visitor input.
-const destination = 'https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us';
+const destination = 'https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform';
 async function interceptSchool(page) {
   await page.route(destination, route => route.fulfill({
     contentType: 'text/html',
-    body: '<!doctype html><title>Test school contact</title><main><h1>School contact intercepted locally</h1></main>',
+    body: '<!doctype html><title>Test Open Day booking</title><main><h1>Open Day booking intercepted locally</h1></main>',
   }));
 }
 
@@ -16,7 +16,7 @@ for (const entry of ['/visit', '/visit/', '/visit/index.html', '/kew-riverside-w
     await page.goto('/about.html');
     await page.goto(entry);
     await expect(page).toHaveURL(destination);
-    await expect(page.getByRole('heading')).toHaveText('School contact intercepted locally');
+    await expect(page.getByRole('heading')).toHaveText('Open Day booking intercepted locally');
     await page.goBack();
     await expect(page).toHaveURL(baseURL + '/about.html');
     await expect(page.locator('main')).toBeVisible();
@@ -45,12 +45,12 @@ test('QR: native fallback stays readable and usable if automatic refresh is disa
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/visit/');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-    const link = page.getByRole('link', { name: 'continue to the school’s contact page' });
+    const link = page.getByRole('link', { name: 'continue to Open Day booking' });
     await expect(link).toBeInViewport();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
   expect(requests.every(url => url.endsWith('/visit/')), 'No scripts, analytics or third-party resources').toBe(true);
-  const link = page.getByRole('link', { name: 'continue to the school’s contact page' });
+  const link = page.getByRole('link', { name: 'continue to Open Day booking' });
   if (hasTouch) {
     await link.tap();
   } else {
