@@ -30,7 +30,7 @@ test('Homepage: responsive copy keeps words separated on mobile and desktop', as
  for (const width of [390,1440]) {
   await page.setViewportSize({width,height:1000});await page.goto('/index.html');
   const text=(await page.locator('.intro').innerText()).replace(/\s+/g,' ');
-  expect(text).toContain('Richmond Council proposes closure, not yet decided, for 1 September 2027.');
+  expect(text).toContain('Richmond Council proposes closure on 1 September 2027; no decision yet.');
   expect(text).toContain('Supporters seek time to test costed recovery and sustainable alternatives.');
   await expect(page.locator('.home-plan')).toHaveAccessibleName(/Help the campaign/);
  }
