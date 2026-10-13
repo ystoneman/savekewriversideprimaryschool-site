@@ -91,3 +91,26 @@ for(const width of [320,390,1440])test(`Homepage petition: ${width}px keeps the 
 for(const [at,label] of [['2026-10-17T12:00:00Z','Sign the petition'],['2027-01-13T23:59:59Z','Sign the petition'],['2027-01-14T00:00:00Z','View the petition']])test(`Homepage petition: independent deadline at ${at}`,async({page})=>{
  await page.clock.setFixedTime(new Date(at));await page.goto('/index.html');await expect(page.locator('#petition-action')).toHaveAccessibleName(label);await expect(page.locator('#petition-action')).toHaveAttribute('href',petition);
 });
+
+for (const scripts of [true, false]) test.describe(`Homepage menu sizing, scripts ${scripts}`, () => {
+ test.use({ javaScriptEnabled: scripts });
+ test('Homepage: menu links fit without sideways scrolling', {tag:'@home-smoke'}, async ({page}) => {
+  for (const width of [320, 390, 700, 820, 1440]) {
+   await page.setViewportSize({width, height:width === 320 ? 568 : 844});
+   await page.goto('/index.html');
+   await page.locator('#menu > summary').click();
+   const menu = page.locator('#menu nav');
+   expect(await menu.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+   for (const link of await menu.locator('a').all()) {
+    await link.scrollIntoViewIfNeeded();
+    const bounds = await link.boundingBox();
+    const panel = await menu.boundingBox();
+    expect(bounds.x).toBeGreaterThanOrEqual(panel.x);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(panel.x + panel.width + 1);
+    await expect(link).toBeInViewport({ratio:0.99});
+   }
+   await menu.locator('a[href="about.html"]').click();
+   await expect(page).toHaveURL(/about\.html$/);
+  }
+ });
+});

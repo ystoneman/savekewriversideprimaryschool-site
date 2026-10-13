@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Mobile homepage menu width — 13 October 2026
+
+- Keep the homepage Menu panel as wide as its mobile header when the analytics notice positions its wrapper at button width. This fixes clipped links and sideways scrolling, including after dismissing the notice. Bump the homepage stylesheet version for cached visitors.
+- Add regressions for fresh/dismissed analytics, script/no-script, every menu link, keyboard Escape/focus and navigation at 320/390/700/820/1440px. The two analytics-state cases fail on the previous CSS; all 16 new cases pass across Chromium and WebKit. Chromium subpixel vertical scrolling has a 1% viewport tolerance; horizontal overflow and link bounds remain explicitly checked.
+- Independent UX planning and actual-diff/rendered review found no remaining issue. Local validation: 149 Python checks, 29 Node checks and 124-public-file staging pass. Full hosted checks and verified deployment are recorded in the release pull request.
+
 ### Homepage petition and visible footer links — 13 October 2026
 
 - Add Sign the petition as a main homepage action alongside Help, retaining the official response first. State Richmond borough eligibility, Richmond Account requirement, the separate consultation response and the petition’s published 13 January 2027 closing date. After that date, scripts label the same destination View the petition; the no-script invitation retains its dated qualification.
