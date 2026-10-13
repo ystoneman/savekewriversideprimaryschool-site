@@ -13,6 +13,10 @@
 - About: replace the request for existing organising efforts with a neutral contact line; other people's roles are described only with their agreement.
 - Add analytics labels for the new pages and the petition (deploy the worker's `labels.json` before the site). Update tests deliberately for the new shell and journeys; checks actually run are recorded in TESTING.md and the pull request. Not yet deployed.
 
+### Community letter — 13 October 2026
+
+- Add one eligible community letter with the author's submitted wording and display name, labelled AI screened. Publication and the optional one-time notice remain pending until the canonical and compatibility releases are verified.
+
 ### Petition details and school-discovery Menu — 13 October 2026
 
 - Add the verified Richmond e-petition to the Parent action plan with borough eligibility, dates, petitioner attribution and a reminder that signing does not replace the official consultation response. Add a separate Discover the school Menu group; keep Parent Voices visible on the video page and route Open Day booking through the recruitment-only `/visit/` handoff, now pointed at the verified registration form.
