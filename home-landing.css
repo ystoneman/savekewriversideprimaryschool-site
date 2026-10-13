@@ -29,9 +29,11 @@
 
 /* Keep both campaign actions in the existing Help row at narrow widths. */
 .home-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch}
-.home-secondary-actions .action{justify-content:center;text-align:center;gap:0;padding:12px;font-size:17px;overflow-wrap:normal}
+.home-secondary-actions .action{justify-content:center;text-align:center;gap:6px;padding:12px;font-size:17px;overflow-wrap:normal}
 .petition-note{margin-top:10px}
 @media(max-width:350px){.home-secondary-actions .action{padding:10px 8px;min-height:64px}}
 
 /* The analytics notice positions the Menu wrapper at button width. Keep its panel as wide as the mobile header. */
 @media(max-width:700px){.mobile-menu nav{width:calc(100vw - 40px)}}
+
+.home-secondary-actions .action>span{font-size:18px}

@@ -33,10 +33,12 @@ async function activate(locator, hasTouch) {
   else await locator.click();
 }
 
-test('Short homepage: three large actions lead before optional detail', async ({ page, hasTouch }) => {
+test('Short homepage: petition joins the response, Help and Share before optional detail', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
   await expect(page.locator('main .source-card, main .action-card, main .school-roll-chart')).toHaveCount(0);
-  await expect(page.locator('.actions .action:visible')).toHaveCount(3);
+  await expect(page.locator('.actions .action:visible')).toHaveCount(4);
+  await expect(page.locator('#petition-action')).toHaveAccessibleName('Sign the petition');
+  await expect(page.locator('#petition-action')).toHaveAttribute('href', 'https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249');
   await expect(page.locator('#top')).toContainText(/proposes closing/i);
   await expect(page.locator('#top')).toContainText('No final decision has been made.');
   await expect(page.locator('#top')).toContainText(/16\s+October/i);

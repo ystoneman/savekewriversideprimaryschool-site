@@ -1123,7 +1123,7 @@ for (const width of [320, 390, 1440]) {
     await expect(invitation).toBeInViewport({ ratio: 1 });
     // Baseline comparison confirms Help already starts below 568px; preserve
     // the primary response arrival rather than changing the approved homepage.
-    await expect(page.locator('.actions .primary')).toBeInViewport({ ratio: 1 });
+    await expect(page.locator('#main-action')).toBeInViewport({ ratio: 1 });
     if (process.env.KEW_ANALYTICS_CAPTURES) await page.screenshot({ path: process.env.KEW_ANALYTICS_CAPTURES + '/' + testInfo.project.name + '-' + width + '-arrival.png' });
     await invitation.getByRole('button', { name: 'Review analytics choices' }).click();
     const panel = page.locator('#analytics-panel');
