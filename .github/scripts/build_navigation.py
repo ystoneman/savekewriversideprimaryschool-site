@@ -5,7 +5,7 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026101304'
+VERSION = '2026101305'
 PREVIEW_VERSION = '2026100901'  # Shared images are unchanged by this curation.
 SITE_NAME = 'Save Kew Riverside Primary School Campaign'
 SITE_URL = 'https://savekewriversideprimaryschool.org/'
@@ -34,6 +34,11 @@ MENU_GROUPS = [
         ('get-involved.html', 'Get involved', ''),
         ('updates.html', 'Campaign updates', ''),
         ('about.html', 'About & contact', ''),
+    ]),
+    # Recruitment routes stay in their own group, apart from campaign actions.
+    ('Discover the school', [
+        ('videos.html#watch-parent-voices', 'Watch Parent Voices', 'sub'),
+        ('visit/index.html', 'Book an Open Day', 'sub'),
     ]),
 ]
 # Every page's footer: live pages only.
@@ -264,11 +269,12 @@ def render_navigation(name, document):
     # The Menu is chosen, not generated from every page label.
     def menu_link(href, label, kind=''):
         current = ' aria-current="page"' if href.split('#')[0] == name and kind == '' else ''
-        return f'<a href="{esc(href)}"{current}>{esc(label)}</a>'
+        cls = ' class="nav-subitem"' if kind == 'sub' else ''
+        return f'<a href="{esc(href)}"{cls}{current}>{esc(label)}</a>'
     groups = []
     for index, (heading, entries) in enumerate(MENU_GROUPS, 1):
         entries = list(entries)
-        if index == len(MENU_GROUPS) and name == 'sent.html':
+        if index == 1 and name == 'sent.html':
             entries.append(('sent.html', 'Next steps', ''))
         links = ''.join(menu_link(*entry) for entry in entries)
         groups.append(f'<div class="menu-group" role="group" aria-labelledby="menu-group-{index}"><p class="menu-group-label" id="menu-group-{index}">{esc(heading)}</p>{links}</div>')

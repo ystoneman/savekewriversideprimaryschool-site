@@ -60,11 +60,13 @@ const mainPages = [
   ['lessons.html', 'Lessons'], ['evidence.html', 'Evidence'],
 ];
 // The curated Menu (27 September 2026; one Menu on every page including the
-// homepage since 13 October 2026): three labelled groups, official response
-// first. Pages outside it stay in every footer (footerLinks).
+// homepage since 13 October 2026): labelled groups, official response first and
+// school discovery separate from closure-campaign actions. Pages outside it stay
+// in every footer (footerLinks).
 const menuGroups = [
   ['Take part', [['Respond to the council', 'proposal.html#take-part'], ['Parent action plan', 'proposal.html#parent-plan'], ['Community letters', 'letters.html'], ['Share a video', 'videos.html#upload'], ['Share ideas', 'feedback.html']]],
   ['Keep Kew open', [['Proposal & dates', 'proposal.html'], ['Council dates & documents', 'proposal.html#council-documents'], ['FAQ', 'faq.html'], ['Ways to keep Kew open', 'options.html'], ['Evidence', 'evidence.html#records'], ['Supporting research', 'understand.html#supporting-research']]],
+  ['Discover the school', [['Watch Parent Voices', 'videos.html#watch-parent-voices'], ['Book an Open Day', 'visit/index.html']]],
   ['This website', [['Home', 'index.html'], ['About & contact', 'about.html']]],
 ];
 const menuNames = menuGroups.flatMap(([, links]) => links.map(([label]) => label));

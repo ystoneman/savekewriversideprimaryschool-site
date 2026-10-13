@@ -293,7 +293,7 @@ test('Learning FAQ: remembered terms and incoming answer links recover from sear
   }
 });
 
-test('Recruitment: awareness channels retain direct school and normal-admissions routes', async ({ page, hasTouch }) => {
+test('Recruitment: awareness channels retain Open Day and normal-admissions routes', async ({ page, hasTouch }) => {
   await page.goto('/options.html#option-enrolment');
   const option = page.locator('#option-enrolment');
   await expect(option.locator('details.option-card > summary')).toHaveAccessibleName(/families.*school/i);
@@ -302,11 +302,11 @@ test('Recruitment: awareness channels retain direct school and normal-admissions
   for (const channel of ['nurseries', 'parent groups', 'community notices', 'word of mouth', 'social media']) {
     await expect(option).toContainText(new RegExp(channel, 'i'));
   }
-  const destination='https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us';
-  await page.route(destination, route => route.fulfill({ contentType: 'text/html', body: '<h1>Intercepted school contact</h1>' }));
+  const destination='https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform';
+  await page.route(destination, route => route.fulfill({ contentType: 'text/html', body: '<h1>Intercepted Open Day booking</h1>' }));
   await page.goto('/index.html#visit-school');
   await expect(page).toHaveURL(destination);
-  await expect(page.getByRole('heading')).toHaveText('Intercepted school contact');
+  await expect(page.getByRole('heading')).toHaveText('Intercepted Open Day booking');
 });
 
 test('Contributions: letters lead to contextual evidence and optional video without adding permissions', async ({ page, hasTouch }) => {

@@ -286,7 +286,8 @@ class SiteStructureTests(unittest.TestCase):
         # Menu on every page, a single Get involved shortcut and live-only footers.
         baseline = self.pages['about.html'].navigation
         expected_menu = [local_destination('about.html', href) for href in baseline['mobile-menu']]
-        self.assertEqual(expected_menu, [('index.html', ''), ('dates.html', ''), ('get-involved.html', ''), ('updates.html', ''), ('about.html', '')])
+        self.assertEqual(expected_menu, [('index.html', ''), ('dates.html', ''), ('get-involved.html', ''), ('updates.html', ''), ('about.html', ''),
+                                         ('videos.html', 'watch-parent-voices'), ('visit/index.html', '')])
         expected_desktop = navigation_destinations('about.html', baseline['desktop-explore'])
         self.assertEqual(expected_desktop, {('get-involved.html', '')})
         live_footer = {'about.html', 'dates.html', 'get-involved.html', 'updates.html', 'letters.html', 'videos.html', 'feedback.html', 'corrections.html', 'privacy.html'}
@@ -295,7 +296,8 @@ class SiteStructureTests(unittest.TestCase):
                 continue
             with self.subTest(page=name):
                 menu_routes = [local_destination(name, href) for href in page.navigation['mobile-menu']]
-                self.assertEqual(menu_routes, expected_menu + ([('sent.html', '')] if name == 'sent.html' else []),
+                expected = expected_menu[:5] + [('sent.html', '')] + expected_menu[5:] if name == 'sent.html' else expected_menu
+                self.assertEqual(menu_routes, expected,
                                  'Every page shows the same Menu entries in the same order')
                 self.assertEqual(page.navigation['participation-nav'], [], 'The header participation tiles were retired')
                 text = (ROOT / name).read_text()
@@ -336,7 +338,7 @@ class SiteStructureTests(unittest.TestCase):
         self.assertEqual(archived_links('index.html', '<aside class="legacy-route" id="x"><a href="evidence.html#records">y</a></aside>'), set())
 
     def test_printed_visit_route_has_matching_immediate_and_native_destinations(self):
-        destination = 'https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us'
+        destination = 'https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform'
         self.assertEqual(REDIRECT_PAGES, {'visit/index.html'})
         for name in REDIRECT_PAGES:
             page = self.pages[name]

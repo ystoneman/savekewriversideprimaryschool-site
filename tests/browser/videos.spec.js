@@ -41,6 +41,23 @@ test('Video: upload is a clear external handoff without embedded trackers or loc
   expect(requests).toEqual(['GET']);
 });
 
+test('Video: watching Parent Voices is exposed separately from upload', async ({ page, hasTouch }) => {
+  const youtube = 'https://www.youtube.com/@KewParentVoices';
+  await page.route(youtube, route => route.fulfill({ contentType: 'text/html', body: '<main><h1>Parent Voices</h1></main>' }));
+  await page.goto('/videos.html');
+  const discovery = page.getByRole('navigation', { name: 'Discover the school' });
+  const link = discovery.getByRole('link', { name: 'Watch Parent Voices on YouTube', exact: true });
+  await expect(link).toHaveAttribute('href', youtube);
+  if (hasTouch) await link.tap(); else await link.click();
+  await expect(page).toHaveURL(youtube);
+  await expect(page.getByRole('heading')).toHaveText('Parent Voices');
+  await page.goBack();
+  await expect(page).toHaveURL(/videos\.html$/);
+  await expect(discovery).toBeVisible();
+  await expect(page.locator('#video-upload-link')).toBeVisible();
+  await expect(page.locator('#upload-help')).not.toHaveAttribute('open', '');
+});
+
 test('Video: one native Help disclosure supports touch and keyboard', async ({ page, hasTouch }) => {
   await page.goto('/videos.html');
   await expect(page.locator('main details')).toHaveCount(1);
