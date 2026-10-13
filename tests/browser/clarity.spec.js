@@ -237,9 +237,9 @@ test('Proposal: optional research opens as a document while Lessons and existing
   await expect(page.getByRole('heading', { name: 'Research document test' })).toBeVisible();
   await page.goBack();
   await expect(research).toBeInViewport();
-  await page.goto('/index.html');
-  await page.locator('.mobile-menu summary').click();
-  await expect(page.locator('.mobile-menu a[href="lessons-report.pdf"]')).toHaveAttribute('download', 'lessons-report.pdf');
+  // The direct download moved from the homepage Menu to Evidence (13 October 2026).
+  await page.goto('/evidence.html#source-lessons-report');
+  await expect(page.locator('#source-lessons-report a[href="lessons-report.pdf"]').first()).toHaveAttribute('download', 'lessons-report.pdf');
 });
 
 test('Clarity pages: enlarged main text reflows at a narrow width', async ({ page }) => {

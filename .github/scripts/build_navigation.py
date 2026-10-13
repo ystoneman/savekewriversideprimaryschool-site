@@ -5,7 +5,7 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026101204'
+VERSION = '2026101301'
 PREVIEW_VERSION = '2026100901'  # Shared images are unchanged by this curation.
 SITE_NAME = 'Save Kew Riverside Primary School Campaign'
 SITE_URL = 'https://savekewriversideprimaryschool.org/'
@@ -37,11 +37,11 @@ MENU_GROUPS = [
         ('feedback.html', 'Share ideas', ''),
     ]),
     ('Keep Kew open', [
-        ('options.html', 'Ways to keep Kew open', ''),
         ('proposal.html', 'Proposal & dates', ''),
+        ('proposal.html#council-documents', 'Council dates & documents', 'sub'),
         ('faq.html', 'FAQ', ''),
+        ('options.html', 'Ways to keep Kew open', ''),
         ('evidence.html#records', 'Evidence', ''),
-        ('evidence.html#gaps', 'Questions for the council', 'sub'),
         ('understand.html#supporting-research', 'Supporting research', 'sub'),
     ]),
     ('This website', [
@@ -54,7 +54,7 @@ FOOTER_LINKS = [
     ('about.html', 'About & contact', ''), ('about.html#press', 'For journalists', ''), ('proposal.html', 'Proposal & dates', ''),
     ('faq.html', 'FAQ', ''), ('evidence.html#records', 'Evidence', ''),
     ('letters.html', 'Community letters', ''), ('feedback.html', 'Share ideas', ''),
-    ('videos.html#upload', 'Share a video', ''), ('lessons.html', 'Lessons', ''),
+    ('videos.html#upload', 'Share a video', ''), ('understand.html', 'Our case for Kew', ''), ('lessons.html', 'Lessons', ''),
     ('supporters.html', 'Supporters', ''), ('corrections.html', 'Corrections', ''),
     ('lessons-sources.html', 'Research citations', ''), ('privacy.html', 'Privacy', ''),
     ('privacy.html#analytics', 'Analytics choices', ' data-analytics-choices'),
@@ -63,9 +63,9 @@ FOOTER_LINKS = [
 SECTIONS = {
     'rally.html': [('when-and-where','Past event'),('schedule','Advertised schedule'),('attending','Original access notes'),('photos','Photo choices'),('council-and-response','Council and your response'),('updates','Questions or corrections')],
     'index.html': [('find-your-way','Find what you need'),('research-shortcut','Historical research','find-your-way'),('quick-answers','Before you respond'),('visit-school','Considering Kew Riverside Primary School?')],
-    'evidence.html': [('records','Current Kew findings'),('london-findings','Lessons from other schools','records'),('finding-st-john','St John the Divine','records'),('finding-linked-schools','Fenstanton & Holy Trinity','records'),('finding-pooles','Pooles Park','records'),('source-search','Find a source'),('source-library','Original sources','source-search'),('evidence','Numbers behind the proposal'),('timeline','Dates and next steps'),('earlier-record','Earlier public record'),('gaps','Questions for the council'),('gap-budget','Keeping Kew open','gaps'),('gap-pupil-impacts',"Children’s needs",'gaps'),('gap-selection','Why Kew?','gaps'),('gap-closure-costs','Closure costs and site','gaps'),('gap-alternatives','Costed alternatives','gaps'),('gap-recruitment','Recruitment support','gaps'),('gap-forecasts','Pupil and housing forecasts','gaps'),('gap-answers','Written answers','gaps'),('evidence-found','Evidence obtained','gaps'),('gap-records','Process and records','gaps'),('method','Method and limits')],
-    'options.html': [('option-7','Your official response'),('options-prep-title','Prepare together'),('options-findings-title','What an alternative needs'),('options-navigation','Ways to help'),('option-recovery-plan','A practical recovery plan','options-navigation'),('option-crowdfunding','Funding','options-navigation'),('option-demand','Pupil demand','options-navigation'),('option-enrolment','School enquiries','options-navigation'),('option-5','Closure costs','options-navigation'),('option-6',"Children’s needs",'options-navigation'),('option-8','Legal experience','options-navigation'),('options-sources-title','Evidence and next steps')],
-    'proposal.html': [('parent-plan','Parent action plan'),('plan-share','Evidence and letters','parent-plan'),('plan-respond','Your response','parent-plan'),('plan-keep-going','More ways to help','parent-plan'),('past-parent-events','Past events'),('timetable','Timeline'),('questions','Questions worth asking'),('question-continuity',"Your child’s next school",'questions'),('question-learning',"Your child’s learning",'questions'),('question-budget','The budget','questions'),('question-closure-costs','Closure costs','questions'),('question-demand','Pupil forecasts','questions'),('question-alternatives','Alternatives','questions'),('who-decides','Who decides'),('other-schools','Lessons from other schools'),('decision-record','Decision record'),('take-part','Official response routes')],
+    'evidence.html': [('records','Current Kew findings'),('london-findings','Lessons from other schools','records'),('finding-st-john','St John the Divine','records'),('finding-linked-schools','Fenstanton & Holy Trinity','records'),('finding-pooles','Pooles Park','records'),('source-search','Find a source'),('source-library','Original sources','source-search'),('evidence','Numbers behind the proposal'),('timeline','Dates and next steps'),('earlier-record','Earlier public record'),('gaps','Archived questions'),('method','Method and limits')],
+    'options.html': [('option-7','Your official response'),('options-prep-title','Prepare together'),('options-findings-title','What an alternative needs'),('options-navigation','Ways to help'),('option-recovery-plan','A costed alternative','options-navigation'),('option-crowdfunding','Funding','options-navigation'),('option-demand','Pupil demand','options-navigation'),('option-enrolment','School enquiries','options-navigation'),('option-5','Closure costs','options-navigation'),('option-6',"Children’s needs",'options-navigation'),('option-8','Legal experience','options-navigation'),('options-sources-title','Evidence and next steps')],
+    'proposal.html': [('council-documents','Council timetable and documents'),('parent-plan','Parent action plan'),('plan-share','Evidence and letters','parent-plan'),('plan-respond','Your response','parent-plan'),('plan-keep-going','More ways to help','parent-plan'),('past-parent-events','Past events'),('timetable','Timeline'),('questions','Questions worth asking'),('question-continuity',"Your child’s next school",'questions'),('question-learning',"Your child’s learning",'questions'),('question-budget','The budget','questions'),('question-closure-costs','Closure costs','questions'),('question-demand','Pupil forecasts','questions'),('question-alternatives','Alternatives','questions'),('who-decides','Who decides'),('other-schools','Lessons from other schools'),('decision-record','Decision record'),('take-part','Official response routes')],
     'understand.html': [('supporting-research','Supporting research'),('pupil-trends','Pupil numbers'),('forecast-checks','Forecast checks'),('school-places','Unfilled places'),('year-groups','Year groups'),('budget','School finances'),('closure-costs','Closure costs','budget'),('other-proposals','Other Richmond proposals'),('learning-and-results','Learning and results'),('inspection-summary','Inspection findings','learning-and-results'),('mixed-age-curriculum','Mixed-age learning','learning-and-results'),('methodology','Method and limits')],
     'faq.html': [('taking-part','Ways to help'),('decisions','Dates and decisions'),('money','Money'),('school-places','School places'),('learning','Learning and results')],
     'lessons.html': [('key-lessons','Key lessons'),('visual-guide','Visual guide'),('catalogue','All 16 schools'),('method','Method and limits')],
@@ -165,26 +165,13 @@ def render_identity(name, document):
     return document
 
 def render_home_navigation(document):
-    """Owner-approved compact homepage; other pages retain the shared shell."""
+    """Owner-approved compact homepage; other pages retain the shared shell.
+    Its Menu lists exactly the same entries as every other page (13 October 2026)."""
     document = render_identity('index.html', document)
     document = re.sub(r'navigation\.js\?v=\d+', 'navigation.js?v='+VERSION, document)
     groups = []
     for index, (heading, entries) in enumerate(MENU_GROUPS, 1):
-        entries = list(entries)
-        if heading == 'Take part':
-            entries += [('feedback.html?kind=evidence#feedback-form', 'I have something to add', ''),
-                        ('response-checklist.pdf', 'Response checklist (PDF)', '')]
-        elif heading == 'Keep Kew open':
-            entries = [(('faq.html#school-places', 'My child’s next steps', kind) if href == 'faq.html' else
-                        ('proposal.html#timetable', 'What happens when?', kind) if href == 'proposal.html' else
-                        (href, label, kind)) for href, label, kind in entries]
-            entries += [('understand.html', 'Our case for Kew', ''),
-                        ('evidence.html#source-search', 'Search the sources', ''),
-                        ('understand.html#learning-and-results', 'Learning and results', ''),
-                        ('evidence.html#source-lessons-report', 'Research report source', ''),
-                        ('lessons.html', 'Research on other schools', ''),
-                        ('lessons-report.pdf', 'Research report (44-page PDF)', '')]
-        links = ''.join('<a href="'+html.escape(href, quote=True)+'"'+(' aria-current="page"' if href == 'index.html' else '')+(' class="nav-respond"' if href == 'proposal.html#take-part' else '')+(' download="'+('kew-riverside-response-checklist.pdf' if href == 'response-checklist.pdf' else href)+'"' if href.endswith('.pdf') else '')+'>'+html.escape(label)+'</a>' for href,label,kind in entries)
+        links = ''.join('<a href="'+html.escape(href, quote=True)+'"'+(' aria-current="page"' if href == 'index.html' else '')+(' class="nav-respond"' if href == 'proposal.html#take-part' else '')+'>'+html.escape(label)+'</a>' for href,label,kind in entries)
         groups.append('<div class="menu-group" role="group" aria-labelledby="menu-group-'+str(index)+'"><p class="menu-group-label" id="menu-group-'+str(index)+'">'+html.escape(heading)+'</p>'+links+'</div>')
     menu = '<details class="mobile-menu" id="menu" name="site-navigation"><summary>Menu <span aria-hidden="true">⌄</span></summary><nav class="desktop-explore" aria-label="All website pages">'+''.join(groups)+'</nav></details>'
     document = re.sub(r'<details class="mobile-menu" id="menu"[^>]*>.*?</details>', lambda _:menu, document, count=1, flags=re.S)

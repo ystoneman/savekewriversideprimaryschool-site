@@ -425,9 +425,10 @@ test('An explicit detailed choice sends fixed events without a cookie', async ({
     await page.clock.runFor(30_000);
   }
   await expect.poll(() => events(sent, 'Active viewing')).toEqual([15, 30, 60, 120, 300].map(seconds => ({ seconds })));
-  await page.locator('.mobile-menu summary').click();
-  await analyticsDownloadClick(page, 'a[download][href="response-checklist.pdf"]');
-  await expect.poll(() => events(sent, 'Action opened')).toEqual([{ action: 'Download clicked: checklist' }]);
+  // The checklist download left the homepage Menu on 13 October 2026; named
+  // download actions under this detailed choice are checked on Options in
+  // 'A checklist download records a fixed click label once per page'.
+  expect(events(sent, 'Action opened')).toEqual([]);
   expect(pageViews(sent)).toHaveLength(1);
   expect(JSON.parse(await page.evaluate(key => localStorage.getItem(key), choiceKey)).choice).toBe('allow');
   expect(await context.cookies()).toEqual([]);
@@ -940,7 +941,7 @@ test('An official-form handoff records a fixed opening label, never a completed 
 test('A checklist download records a fixed click label once per page, without claiming completion', async ({ page, context }) => {
   const { sent } = await virtualProduction(context);
   await controlledAttention(page);
-  await page.goto(site);
+  await page.goto(site + 'options.html');
   await freezeAfterLoad(page);
   await allowAnalytics(page);
   for (let click = 0; click < 2; click += 1) {

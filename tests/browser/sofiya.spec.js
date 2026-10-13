@@ -15,18 +15,19 @@ async function activate(locator, hasTouch) {
   else await locator.click();
 }
 
-test('Learning: contextual homepage and evidence entries reach the results and support Back', async ({ page, hasTouch }) => {
+test('Learning: contextual FAQ and evidence entries reach the results and support Back', async ({ page, hasTouch }) => {
   for (const [path, entry] of [
     ['/evidence.html', page.getByRole('complementary', { name: 'How does Kew Riverside Primary School compare?' })],
-    ['/index.html', page.locator('.mobile-menu')],
+    ['/faq.html#learning', page.locator('#learning')],
   ]) {
     await page.goto(path);
     if (path === '/evidence.html') {
       const topic = page.locator('#evidence-numbers-detail');
       if (!await topic.evaluate(detail => detail.open)) await activate(topic.locator(':scope > summary'), hasTouch);
     }
-    if (path === '/index.html') await page.locator('.mobile-menu summary').click();
-    const link = entry.locator('a[href="understand.html#learning-and-results"]');
+    const link = entry.locator('a[href="understand.html#learning-and-results"]').first();
+    const answer = link.locator('xpath=ancestor::details[1]');
+    if (path === '/faq.html#learning' && !await answer.evaluate(detail => detail.open)) await activate(answer.locator(':scope > summary'), hasTouch);
     await expect(link).toBeVisible();
     await expect(link).toHaveAccessibleName(/learning|results/i);
     await activate(link, hasTouch);
@@ -34,8 +35,8 @@ test('Learning: contextual homepage and evidence entries reach the results and s
     await expect(page.locator('#learning-and-results')).toBeInViewport();
     await page.goBack();
     await expect(page).toHaveURL(new RegExp(path.replace('.', '\\.') + '$'));
-    if (path === '/index.html') await page.locator('.mobile-menu summary').click();
-    await expect(link).toBeVisible();
+    // The FAQ answer may be closed again after Back; its question stays in place.
+    await expect(path === '/faq.html#learning' ? answer.locator(':scope > summary') : link).toBeVisible();
   }
 });
 
@@ -199,8 +200,7 @@ test('Learning: narrow arrival protects action routes and the chart stays inside
     }
     await page.goBack();
   }
-  await activate(page.locator('.mobile-menu summary'),hasTouch);
-  await activate(page.locator('.mobile-menu a[href="understand.html#learning-and-results"]'), hasTouch);
+  await page.goto('/understand.html#learning-and-results');
   await activate(page.locator('#attainment-detail > summary'), hasTouch);
   const chart = page.locator('#attainment-chart');
   await expect(chart).toBeVisible();

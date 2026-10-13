@@ -53,28 +53,32 @@ test('No JavaScript: page identity and native section routes retain nested conte
   await expect(page.locator('#option-crowdfunding')).toBeInViewport();
 });
 
-test('No JavaScript: Questions for the council is a direct menu route with a matching section label', async ({ page }) => {
+test('No JavaScript: Council dates & documents is a direct menu route with a matching section label', async ({ page }) => {
   await page.goto('/index.html');
   const menu = page.locator('.mobile-menu');
-  const questions = menu.getByRole('link', { name: 'Questions for the council', exact: true });
+  const documents = menu.getByRole('link', { name: 'Council dates & documents', exact: true });
   await menu.locator(':scope > summary').tap();
-  await expect(questions).toBeVisible();
-  await expect(questions).toHaveAttribute('href', 'evidence.html#gaps');
-  await questions.tap();
-  await expect(page).toHaveURL(/evidence\.html#gaps$/);
-  const heading = page.locator('#gaps h2');
-  await expect(heading).toHaveText('What the council must explain before closing Kew.');
+  await expect(documents).toBeVisible();
+  await expect(documents).toHaveAttribute('href', 'proposal.html#council-documents');
+  await documents.tap();
+  await expect(page).toHaveURL(/proposal\.html#council-documents$/);
+  const heading = page.locator('#council-documents h2');
+  await expect(heading).toHaveText('Council timetable and documents');
   await expect(heading).toBeInViewport();
+  for (const href of ['kew_riverside_consultation_leaflet.pdf', 'school_organisation_kew_riverside_faq.pdf', 'school_organisation_consultation_faq.pdf']) {
+    await expect(page.locator(`#council-documents .council-document-list a[href$="${href}"]`)).toBeVisible();
+  }
+  await expect(page.locator('#council-documents .council-timetable tbody tr')).toHaveCount(8);
   const sections = page.locator('.page-sections');
   await sections.locator(':scope > summary').tap();
-  const section = sections.locator('a[data-section-id="gaps"]');
-  await expect(section).toHaveText('Questions for the council');
+  const section = sections.locator('a[data-section-id="council-documents"]');
+  await expect(section).toHaveText('Council timetable and documents');
   await section.tap();
   await expect(heading).toBeInViewport();
   // Native same-document menu navigation must work with the existing hash too.
   await menu.locator(':scope > summary').tap();
-  await questions.tap();
-  await expect(page).toHaveURL(/evidence\.html#gaps$/);
+  await documents.tap();
+  await expect(page).toHaveURL(/proposal\.html#council-documents$/);
   await expect(heading).toBeInViewport();
 });
 
@@ -158,15 +162,15 @@ test('No JavaScript: evidence is readable and council identity stays disabled', 
 
 test('No JavaScript: homepage and Evidence expose the full report and web research', async ({ page }) => {
   await page.goto('/index.html');
-  await page.locator('.mobile-menu summary').click();
-  const shortcut = page.locator('.mobile-menu');
-  await expect(shortcut).toContainText('44-page PDF');
-  await shortcut.locator('a[href="lessons.html"]').tap();
+  await page.locator('#site-settings > summary').tap();
+  await page.locator('footer .home-footer-links a[href="lessons.html"]').tap();
   await expect(page).toHaveURL(/lessons\.html$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('What can other schools teach us?');
   await page.goBack();
   await page.locator('.mobile-menu summary').click();
-  await shortcut.locator('a[href="evidence.html#source-lessons-report"]').tap();
+  await page.locator('.mobile-menu').getByRole('link', { name: 'Evidence', exact: true }).tap();
+  await expect(page).toHaveURL(/evidence\.html#records$/);
+  await page.locator('#research-shortcut').tap();
   const report = page.locator('#source-lessons-report');
   await expect(report).toBeInViewport();
   await expect(report).toContainText(/site research/i);
@@ -185,8 +189,8 @@ test('No JavaScript: homepage and Evidence expose the full report and web resear
 
 test('No JavaScript: budget and forecast answers, sources and optional data remain readable', async ({ page }) => {
   await page.goto('/index.html');
-  await page.locator('.mobile-menu summary').tap();
-  await page.locator('.mobile-menu a[href="understand.html"]').tap();
+  await page.locator('#site-settings > summary').tap();
+  await page.locator('footer .home-footer-links a[href="understand.html"]').tap();
   await expect(page).toHaveURL(/understand\.html$/);
   await expect(page.locator('#budget')).toContainText('£231,685');
   await expect(page.locator('#forecast-checks')).toContainText(/Kew planning area/i);
@@ -319,9 +323,9 @@ test('No JavaScript: Understand retains charts, underlying data and council cont
 });
 
 test('No JavaScript: contextual learning entry exposes the results, native tables and downloads', async ({ page }) => {
-  await page.goto('/index.html');
-  await page.locator('.mobile-menu summary').tap();
-  await page.locator('.mobile-menu a[href="understand.html#learning-and-results"]').tap();
+  // The homepage Menu shortcut left with the shared Menu (13 October 2026); Evidence keeps the contextual entry.
+  await page.goto('/evidence.html');
+  await page.getByRole('complementary', { name: 'How does Kew Riverside Primary School compare?' }).locator('a[href="understand.html#learning-and-results"]').tap();
   const section = page.locator('#learning-and-results');
   await expect(section).toBeInViewport();
   await expect(page.locator('svg#attainment-chart')).toBeVisible();
@@ -350,9 +354,9 @@ test('No JavaScript: prospective families can follow learning and open the sourc
   await page.goto('/index.html#visit-school');
   const visit = page.locator('#visit-school');
   await expect(visit.locator('a[href="visit/index.html"]')).toBeVisible();
-  await page.goto('/index.html');
-  await page.locator('.mobile-menu summary').tap();
-  await page.locator('.mobile-menu a[href="understand.html#learning-and-results"]').tap();
+  await page.goto('/faq.html#learning');
+  await page.locator('#school-results > summary').tap();
+  await page.locator('#school-results a[href="understand.html#learning-and-results"]').tap();
   await expect(page.locator('#learning-and-results')).toBeInViewport();
   await page.goto('/faq.html#learning');
   await expect(page.locator('#learning')).toBeInViewport();

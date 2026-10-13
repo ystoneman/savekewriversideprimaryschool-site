@@ -33,10 +33,12 @@ test('Homepage Share: a pending sheet cannot be launched twice',async({page})=>{
  expect(await page.evaluate(()=>window.shareCalls.length)).toBe(1);
  await page.evaluate(()=>window.finishShare());await expect(page.locator('#share-trigger')).toBeEnabled();
 });
-test('Homepage: old task chooser links open all six preserved destinations',{tag:'@home-smoke'},async({page})=>{
+// Since 13 October 2026 the homepage Menu matches every other page; the former
+// task chooser opens it, and each former task has its current page route there.
+test('Homepage: old task chooser links open the shared Menu with each former task route',{tag:'@home-smoke'},async({page})=>{
  for(const id of ['find-your-way','find-title']){
   await page.goto('/index.html#'+id);await expect(page).toHaveURL(/#menu$/);await expect(page.locator('#menu')).toHaveAttribute('open','');
-  for(const href of ['faq.html#school-places','options.html','proposal.html#timetable','understand.html','evidence.html#records','feedback.html?kind=evidence#feedback-form'])await expect(page.locator(`#menu a[href="${href}"]`)).toHaveCount(1);
+  for(const href of ['faq.html','options.html','proposal.html','proposal.html#council-documents','understand.html#supporting-research','evidence.html#records','feedback.html'])await expect(page.locator(`#menu a[href="${href}"]`)).toHaveCount(1);
   await page.keyboard.press('Escape');await expect(page.locator('#menu')).not.toHaveAttribute('open','');
  }
 });

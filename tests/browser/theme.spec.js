@@ -256,8 +256,8 @@ test('Narrow dark arrival retains the parent plan and touch navigation', async (
   await expect(page.locator('#main-action')).toBeInViewport();
   await page.locator('.mobile-menu summary').click();
   await expect(page.locator('.mobile-menu')).toHaveAttribute('open','');
-  await page.locator('.mobile-menu a[href="faq.html#school-places"]').click();
-  await expect(page).toHaveURL(/faq\.html#school-places$/); await appearance(page,dark);
+  await page.locator('.mobile-menu a[href="faq.html"]').click();
+  await expect(page).toHaveURL(/faq\.html$/); await appearance(page,dark);
   await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open','');
 });
 

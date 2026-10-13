@@ -272,14 +272,21 @@ class SiteStructureTests(unittest.TestCase):
         baseline = self.pages['about.html'].navigation
         expected_desktop = navigation_destinations('about.html', baseline['desktop-explore'])
         self.assertTrue(expected_desktop)
+        # One Menu on every page, homepage included (owner decision, 13 October 2026).
+        expected_menu = [local_destination('about.html', href) for href in baseline['mobile-menu']]
+        self.assertIn(('proposal.html', 'council-documents'), expected_menu)
+        self.assertEqual(expected_menu[expected_menu.index(('proposal.html', '')) + 1], ('proposal.html', 'council-documents'),
+                         'Council documents stay a direct Menu route immediately after Proposal & dates')
+        self.assertNotIn(('evidence.html', 'gaps'), expected_menu, 'The archived question list is not a Menu route')
         for name, page in self.pages.items():
             if name in REDIRECT_PAGES:
                 continue
             with self.subTest(page=name):
+                menu_routes = [local_destination(name, href) for href in page.navigation['mobile-menu']]
+                self.assertEqual(menu_routes, expected_menu + ([('sent.html', '')] if name == 'sent.html' else []),
+                                 'Every page shows the same Menu entries in the same order')
                 if name == 'index.html':
                     mobile = navigation_destinations(name, page.navigation['mobile-menu'])
-                    required = {('proposal.html','parent-plan'),('letters.html',''),('feedback.html',''),('videos.html','upload'),('faq.html','school-places'),('options.html',''),('proposal.html','timetable'),('understand.html',''),('understand.html','supporting-research'),('evidence.html','records'),('evidence.html','gaps'),('evidence.html','source-search'),('lessons.html',''),('lessons-report.pdf','')}
-                    self.assertTrue(required <= mobile, 'Compact home Menu lost a protected destination')
                     self.assertIn('data-home-landing', (ROOT/name).read_text())
                     self.assertEqual(mobile, navigation_destinations(name, page.navigation['desktop-explore']), 'Home uses the complete Menu at every width')
                     footer = re.search(r'<footer>.*?</footer>', (ROOT/name).read_text(), re.S)
@@ -292,10 +299,6 @@ class SiteStructureTests(unittest.TestCase):
                 participation = navigation_destinations(name, page.navigation['participation-nav'])
                 self.assertEqual(desktop, expected_desktop, 'Desktop destinations differ between pages')
                 self.assertTrue(desktop | {('index.html', '')} <= mobile, 'Full menu must retain every desktop destination and Home')
-                menu_routes = [local_destination(name, href) for href in page.navigation['mobile-menu']]
-                evidence_index = menu_routes.index(('evidence.html', 'records'))
-                self.assertEqual(menu_routes[evidence_index + 1], ('evidence.html', 'gaps'),
-                                 'Unanswered questions must remain a direct menu route immediately after Evidence')
                 # The curated Menu (27 September 2026) holds these pages; the rest of the
                 # agreed set moved to every footer rather than disappearing.
                 required_pages = {'index.html', 'about.html', 'proposal.html', 'faq.html', 'understand.html', 'options.html', 'evidence.html', 'letters.html', 'feedback.html', 'videos.html'}
