@@ -4,12 +4,20 @@
   const form = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform';
   const action = document.getElementById('main-action');
   const note = document.getElementById('action-note');
+  const petition = document.getElementById('petition-action');
+  const petitionNote = document.getElementById('petition-note');
   const intro = document.querySelector('.intro');
   let rendered = '';
   function refreshStage(event) {
     const parts = new Intl.DateTimeFormat('en-GB', {timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
     const part = type => parts.find(item => item.type === type).value;
     const today = `${part('year')}-${part('month')}-${part('day')}`;
+    // The petition runs beyond consultation week; use its own published date.
+    if (petition && event?.type !== 'pointerdown') {
+      const closed = today > '2027-01-13';
+      petition.textContent = closed ? 'View the petition' : 'Sign the petition';
+      petitionNote.textContent = closed ? 'The published petition closing date, 13 January 2027, has passed. Check the council’s petition page for its status.' : 'Petition closes 13 January 2027. For people who live, work or study in Richmond borough; a Richmond Account is required. Signing does not replace your consultation response.';
+    }
     const stage = today >= '2026-10-12' && today <= '2026-10-16' ? 'active' : today > '2026-10-16' ? 'expired' : 'dated';
     const active = stage === 'active';
     action.href = active ? form : council;
@@ -45,5 +53,8 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshStage(); });
   setInterval(() => { if (!document.hidden) refreshStage(); }, 60000);
   // Refresh before a click, keyboard activation, new-tab click or copied-link menu.
-  ['pointerdown','click','auxclick','contextmenu','keydown'].forEach(type => action.addEventListener(type, refreshStage, {capture:true}));
+  ['pointerdown','click','auxclick','contextmenu','keydown'].forEach(type => {
+    action.addEventListener(type, refreshStage, {capture:true});
+    if (petition) petition.addEventListener(type, refreshStage, {capture:true});
+  });
 })();

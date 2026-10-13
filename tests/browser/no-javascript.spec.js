@@ -685,3 +685,9 @@ test('No JavaScript: letters reading comes first and writing remains an ordinary
   await page.goBack();
   await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
 });
+
+test('No JavaScript: petition is a dated direct action and school footer links need no disclosure',async({page})=>{
+ await page.goto('/index.html');await expect(page.locator('#petition-action')).toHaveAccessibleName('Sign the petition');await expect(page.locator('#petition-note')).toContainText('13 January 2027');
+ const petition='https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249';await page.route(petition,r=>r.fulfill({contentType:'text/html',body:'<h1>Fictional petition</h1>'}));await page.locator('#petition-action').tap();await expect(page).toHaveURL(petition);
+ await page.goBack();const footer=page.locator('.footer-discovery');await footer.scrollIntoViewIfNeeded();await expect(footer.getByRole('link',{name:'Parent Voices on YouTube'})).toBeVisible();await expect(footer.getByRole('link',{name:'Visit our Open Days'})).toBeVisible();
+});

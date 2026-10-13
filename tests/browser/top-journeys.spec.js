@@ -92,3 +92,9 @@ test('Top journeys: a child’s school place is clearly named on the Parent acti
   await next.click();
   await expect(page).toHaveURL(/faq\.html#school-places$/);
 });
+
+// The footer links are direct external handoffs, visible without opening More pages.
+for(const file of ['index.html','faq.html','videos.html'])for(const [name,url] of [['Parent Voices on YouTube','https://www.youtube.com/@KewParentVoices'],['Visit our Open Days','https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform']])test(`Footer: ${file} ${name} is a direct accessible handoff with Back recovery`,async({page})=>{
+ await page.setViewportSize({width:320,height:568});await page.goto('/'+file);const link=page.locator('.footer-discovery').getByRole('link',{name,exact:true});await link.scrollIntoViewIfNeeded();await expect(link).toBeVisible();await expect(link).toHaveAttribute('href',url);
+ await page.route(url,r=>r.fulfill({contentType:'text/html',body:'<h1>Fictional external destination</h1>'}));await link.focus();await page.keyboard.press('Enter');await expect(page).toHaveURL(url);await page.goBack();await expect(link).toBeVisible();
+});

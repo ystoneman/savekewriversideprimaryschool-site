@@ -8,6 +8,13 @@
 - Add regressions for fresh/dismissed analytics, script/no-script, every menu link, keyboard Escape/focus and navigation at 320/390/700/820/1440px. The two analytics-state cases fail on the previous CSS; all 16 new cases pass across Chromium and WebKit. Chromium subpixel vertical scrolling has a 1% viewport tolerance; horizontal overflow and link bounds remain explicitly checked.
 - Independent UX planning and actual-diff/rendered review found no remaining issue. Local validation: 149 Python checks, 29 Node checks and 124-public-file staging pass. Full hosted checks and verified deployment are recorded in the release pull request.
 
+### Homepage petition and visible footer links — 13 October 2026
+
+- Add Sign the petition as a main homepage action alongside Help, retaining the official response first. State Richmond borough eligibility, Richmond Account requirement, the separate consultation response and the petition’s published 13 January 2027 closing date. After that date, scripts label the same destination View the petition; the no-script invitation retains its dated qualification.
+- Add a visible Parent Voices YouTube icon/link and Visit our Open Days link to every public content-page footer, including Home outside the More pages disclosure. Label the parent-run channel explicitly and keep school-visit wording free of campaign participation requests.
+- Preserve the shared Menu, former anchors, forms and existing campaign routes. Review, checks and deployment evidence are recorded in the release pull request; this entry does not claim publication.
+
+
 - Replace the campaign contact email on the homepage, press route and About page with `savekrps@gmail.com`; keep the existing contact placements and campaign/recruitment separation. Verification and publication evidence will be recorded in the release pull request.
 
 ### One Menu, council dates and documents — 13 October 2026

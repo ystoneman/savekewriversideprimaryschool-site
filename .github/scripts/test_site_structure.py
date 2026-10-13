@@ -268,6 +268,19 @@ class SiteStructureTests(unittest.TestCase):
                 actual = [src for src in page.scripts if urlsplit(src).path == 'navigation.js']
                 self.assertEqual(actual, baseline, 'Pages must load the same navigation release exactly once')
 
+    def test_public_content_footers_expose_parent_youtube_and_open_days(self):
+        for name in sorted(name for name in PUBLIC_FILES if name.endswith('.html') and name not in REDIRECT_PAGES):
+            with self.subTest(page=name):
+                document = (ROOT/name).read_text()
+                row = re.search(r'<!-- footer-discovery:start -->(.*?)<!-- footer-discovery:end -->', document, re.S)
+                self.assertIsNotNone(row)
+                self.assertIn('href="https://www.youtube.com/@KewParentVoices"',row.group())
+                self.assertIn('Parent Voices on YouTube',row.group())
+                self.assertIn('<svg',row.group())
+                self.assertIn('href="https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform"',row.group())
+                self.assertIn('Visit our Open Days',row.group())
+                self.assertNotIn('petition',row.group())
+
     def test_shared_navigation_destinations_stay_consistent(self):
         baseline = self.pages['about.html'].navigation
         expected_desktop = navigation_destinations('about.html', baseline['desktop-explore'])
@@ -305,7 +318,7 @@ class SiteStructureTests(unittest.TestCase):
                 self.assertEqual({file for file, fragment in mobile}, required_pages | ({'sent.html'} if name == 'sent.html' else set()), 'The curated Menu must expose the agreed page set')
                 footer = re.search(r'<footer>.*?</footer>', (ROOT / name).read_text(), re.S)
                 self.assertIsNotNone(footer, 'Pages with the shared shell keep a footer')
-                footer_pages = {local_destination(name, href)[0] for href in re.findall(r'href="([^"]+)"', footer.group())}
+                footer_pages = {local_destination(name, href)[0] for href in re.findall(r'href="([^"]+)"', footer.group()) if local_destination(name, href)}
                 self.assertTrue({'lessons.html', 'supporters.html', 'privacy.html', 'corrections.html', 'lessons-sources.html', 'about.html'} <= footer_pages, 'Routes moved out of the Menu must stay in every footer')
                 self.assertEqual(participation, {('letters.html', ''), ('feedback.html', '')})
 
