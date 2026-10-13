@@ -63,7 +63,7 @@
   let config, choice = null, storageOK = true, collecting = false;
   let timer, previousTick = 0, lastActivity = 0, seconds = 0, pageSent = false;
   let opener, panel, status, buttons, invitation;
-  let legacyBasic = false, expandedScope = true, dailyScope = true;
+  let legacyBasic = false, expandedScope = true, dailyScope = true, hourlyScope = true;
   let performanceSent = false, restoredPage = false, performanceTimer, performanceAttempts = 0;
   let configLoaded = false, noticePresented = false, observer;
   let umamiPageSent = false;
@@ -84,11 +84,12 @@
     const wasDetailed = choice === 'allow';
     try {
       const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
-      choice = saved && [1, 2, 3, 4].includes(saved.v) && ['allow', 'basic', 'deny'].includes(saved.choice) &&
+      choice = saved && [1, 2, 3, 4, 5].includes(saved.v) && ['allow', 'basic', 'deny'].includes(saved.choice) &&
         Number.isFinite(saved.until) && saved.until > Date.now() ? saved.choice : null;
       legacyBasic = choice === 'basic' && saved.v === 1;
       expandedScope = !choice || saved.v >= 3;
-      dailyScope = !choice || saved.v === 4;
+      dailyScope = !choice || saved.v >= 4;
+      hourlyScope = !choice || saved.v >= 5;
       if (choice === 'deny' || browserObjects()) localStorage.removeItem(BROWSER_DAY_KEY);
     } catch (_) { storageOK = false; choice = null; legacyBasic = false; }
     if (choice === 'allow' && !wasDetailed) resetDetailedAttention();
@@ -199,10 +200,10 @@
         // Check the latest persisted scope without changing this page's Umami
         // permission/timing state. Storage events own that separate transition.
         const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
-        const current = saved && [1, 2, 3, 4].includes(saved.v) &&
+        const current = saved && [1, 2, 3, 4, 5].includes(saved.v) &&
           ['allow', 'basic', 'deny'].includes(saved.choice) &&
           Number.isFinite(saved.until) && saved.until > Date.now() ? saved : null;
-        if ((current?.choice || null) !== choice || (current && current.v !== 4)) return;
+        if ((current?.choice || null) !== choice || (current && current.v < 4)) return;
         if (localStorage.getItem(BROWSER_DAY_KEY) === day) return;
         localStorage.setItem(BROWSER_DAY_KEY, day);
       } catch (_) { return; }
@@ -232,6 +233,8 @@
       counter(legacyBasic ? [{ metric: 'page', label: file }] :
         [{ metric: 'page', label: file }, { metric: 'source', label: bucket },
           { metric: 'viewport', label: innerWidth < 600 ? 'small' : innerWidth < 1000 ? 'medium' : 'large' }]);
+      // Independent total; no page label, client time or browser ID.
+      if (hourlyScope) counter([{ metric: 'page_hour', label: 'all' }]);
     } else {
       const metric = { 'Active viewing': 'active', 'Section reached': 'reached',
         'Section viewed 10s': 'viewed', 'Action opened': 'action' }[name];
@@ -308,7 +311,7 @@
   }
   function persist(value) {
     const newlyDetailed = value === 'allow' && choice !== 'allow';
-    try { localStorage.setItem(KEY, JSON.stringify({ v: 4, choice: value, until: Date.now() + LIFETIME[value] })); choice = value; legacyBasic = false; expandedScope = true; dailyScope = true;
+    try { localStorage.setItem(KEY, JSON.stringify({ v: 5, choice: value, until: Date.now() + LIFETIME[value] })); choice = value; legacyBasic = false; expandedScope = true; dailyScope = true; hourlyScope = true;
       if (value === 'deny') localStorage.removeItem(BROWSER_DAY_KEY); }
     catch (_) { storageOK = false; choice = null; }
     stop();
@@ -343,6 +346,7 @@
       current === 'allow' ? 'Current setting: aggregate statistics and detailed Umami usage.' :
       current === 'deny' ? 'Current setting: analytics off.' : legacyBasic ? 'Current setting: page-open totals only (earlier choice).' : 'Current setting: aggregate statistics only (the default).';
     if (!locked && !privateRoute && current !== 'deny' && !dailyScope) status.textContent += ' Earlier choice: daily browser count is off until you choose again.';
+    if (!locked && !privateRoute && current !== 'deny' && !hourlyScope) status.textContent += ' Hourly page totals are off until you choose again.';
     updateInvitation();
   }
   function updateInvitation() {
@@ -372,7 +376,7 @@
     const dismiss = button('×', close); dismiss.className = 'analytics-close'; dismiss.setAttribute('aria-label', 'Close analytics choices');
     panel.append(title, dismiss,
       node('p', 'Help us make useful information easier to find and fix pages that are slow or difficult to use.'),
-      node('p', 'Basic totals include a daily browser count using a saved date on this device, without visitor histories. Optional Umami analytics groups your activity into visits and derives device and approximate location. Turn analytics off stops both.'));
+      node('p', 'Basic totals include hourly page opens and a daily browser count using a saved date on this device, without visitor histories. Optional Umami analytics groups your activity into visits and derives device and approximate location. Turn analytics off stops both.'));
     // The choices come before the longer explanation so they fit a small phone screen.
     status = node('p'); status.setAttribute('role', 'status'); panel.append(status);
     const actions = node('div', '', 'analytics-actions');
@@ -400,7 +404,7 @@
   function buildInvitation() {
     invitation = node('section', '', 'analytics-invitation');
     invitation.setAttribute('aria-labelledby', 'analytics-invitation-title');
-    const title = node('p', 'Basic on: daily browser count uses a saved date. Umami off.');
+    const title = node('p', 'Basic on: hourly page totals; daily browsers use a saved date. Umami off.');
     title.id = 'analytics-invitation-title';
     const actions = node('div', '', 'analytics-actions');
     const review = button('Analytics', () => { open(review); });

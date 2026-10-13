@@ -1070,7 +1070,7 @@ test('Expanded aggregate metrics keep only fixed categories and never widen Umam
   expect(pageViews(sent)[0].body.payload.referrer).toBe('https://external.example/');
   expect(JSON.stringify(sent)).not.toContain('richmond-nub');
   expect(counters().filter(c => c.metric === 'device')).toHaveLength(1);
-  expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).v, choiceKey)).toBe(4);
+  expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).v, choiceKey)).toBe(5);
 });
 
 for (const from of ['proposal.html?private=secret#parent-plan', 'feedback.html', 'corrections.html', 'unknown.html']) {
@@ -1320,4 +1320,37 @@ for (const dismissed of [false, true]) test(`Homepage menu fits with analytics n
   await menu.locator('a[href="about.html"]').click();
   await expect(page).toHaveURL(/about\.html$/);
  }
+});
+
+for (const version of [4, 5]) {
+  test('Hourly page totals: saved v' + version + ' scope is preserved', async ({ page, context }) => {
+    const { aggregates, sent } = await virtualProduction(context);
+    await context.addInitScript(({ key, version }) => localStorage.setItem(key, JSON.stringify({ v: version, choice: 'basic', until: Date.now() + 86400000 })), { key: choiceKey, version });
+    await page.goto(site + 'faq.html');
+    await expect.poll(() => aggregates.filter(r=>r.body.counters.some(c=>c.metric==='page')).length).toBe(1);
+    await page.waitForTimeout(500);
+    const hourly = aggregates.filter(r=>r.body.counters.some(c=>c.metric==='page_hour'));
+    expect(hourly).toHaveLength(version === 5 ? 1 : 0);
+    if (version === 5) expect(hourly[0].body).toEqual({ counters: [{ metric: 'page_hour', label: 'all' }] });
+    expect(sent).toEqual([]);
+  });
+}
+test('Hourly page totals: updated visible notice enables one isolated increment', async ({ page, context }) => {
+  const { aggregates } = await virtualProduction(context);
+  await page.goto(site + 'faq.html');
+  await expect(page.locator('.analytics-invitation')).toContainText('hourly page totals');
+  if (process.env.KEW_HOURLY_CAPTURE) {
+    await page.setViewportSize({width:320,height:568});
+    await page.goto(site);
+    await page.screenshot({path:'/private/tmp/kew-hourly-notice-' + test.info().project.name + '.png'});
+    await page.getByRole('button',{name:'Review analytics choices'}).click();
+    await page.screenshot({path:'/private/tmp/kew-hourly-panel-' + test.info().project.name + '.png'});
+    await page.getByRole('button',{name:'Close analytics choices'}).click();
+  }
+  await expect.poll(() => aggregates.filter(r=>r.body.counters.some(c=>c.metric==='page_hour')).length).toBe(process.env.KEW_HOURLY_CAPTURE ? 2 : 1);
+  await page.getByRole('button', {name:'Turn analytics off',exact:true}).click();
+  const n=aggregates.length;
+  await page.reload();
+  await page.waitForTimeout(500);
+  expect(aggregates).toHaveLength(n);
 });

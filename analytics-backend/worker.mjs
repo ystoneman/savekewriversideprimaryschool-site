@@ -25,7 +25,7 @@ export function validate(value) {
     seen.add(key);
   }
   // Browser estimate is a standalone total, never combined with dimensions.
-  if (value.counters.some(row => row.metric === 'browser_day') && value.counters.length !== 1) return null;
+  if (value.counters.some(row => ['browser_day', 'page_hour'].includes(row.metric)) && value.counters.length !== 1) return null;
   return value.counters;
 }
 
@@ -60,12 +60,14 @@ export default {
       counters = validate(JSON.parse(new TextDecoder().decode(body)));
     } catch (_) { return reply(400, { accepted: false }); }
     if (!counters) return reply(400, { accepted: false });
-    const day = new Date().toISOString().slice(0, 10);
+    const receipt = new Date().toISOString();
+    const day = receipt.slice(0, 10);
+    const hour = receipt.slice(11, 13);
     try {
       // One atomic batch directly increments totals. No raw event is retained.
       await env.COUNTS.batch(counters.map(({ metric, label }) => env.COUNTS.prepare(
         'INSERT INTO counts(day,metric,label,total) VALUES(?,?,?,1) ON CONFLICT(day,metric,label) DO UPDATE SET total=total+1'
-      ).bind(day, metric, label)));
+      ).bind(day, metric, metric === 'page_hour' ? hour : label)));
       return reply(200, { accepted: true });
     } catch (_) { return reply(503, { accepted: false }); }
   },
