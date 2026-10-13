@@ -2,6 +2,8 @@ const { test, expect, pages, headerLinks, expectDestination } = require('./fixtu
 
 for (const file of pages) {
   test(`${file}: every mobile menu destination responds to a touch`, async ({ page, baseURL }) => {
+    const openDay = 'https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform';
+    await page.route(openDay, route => route.fulfill({ contentType: 'text/html', body: '<main><h1>Open Day booking intercepted locally</h1></main>' }));
     for (const href of headerLinks(file, 'mobile')) {
       await test.step(href, async () => {
         await page.goto('/' + file);
@@ -12,9 +14,14 @@ for (const file of pages) {
           expect(download.suggestedFilename()).toBe(href === 'response-checklist.pdf' ? 'kew-riverside-response-checklist.pdf' : href);expect(await download.failure()).toBeNull();
         } else {
           await page.locator(`.mobile-menu a[href="${href}"]`).tap();
-          await expectDestination(page, href, baseURL);
+          if (href === 'visit/index.html') {
+            await expect(page).toHaveURL(openDay);
+            await expect(page.getByRole('heading')).toHaveText('Open Day booking intercepted locally');
+          } else {
+            await expectDestination(page, href, baseURL);
+          }
         }
-        await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open', '');
+        if (href !== 'visit/index.html') await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open', '');
       });
     }
   });

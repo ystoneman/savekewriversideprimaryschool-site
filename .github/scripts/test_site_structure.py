@@ -314,7 +314,7 @@ class SiteStructureTests(unittest.TestCase):
                 self.assertTrue(desktop | {('index.html', '')} <= mobile, 'Full menu must retain every desktop destination and Home')
                 # The curated Menu (27 September 2026) holds these pages; the rest of the
                 # agreed set moved to every footer rather than disappearing.
-                required_pages = {'index.html', 'about.html', 'proposal.html', 'faq.html', 'understand.html', 'options.html', 'evidence.html', 'letters.html', 'feedback.html', 'videos.html'}
+                required_pages = {'index.html', 'about.html', 'proposal.html', 'faq.html', 'understand.html', 'options.html', 'evidence.html', 'letters.html', 'feedback.html', 'videos.html', 'visit/index.html'}
                 self.assertEqual({file for file, fragment in mobile}, required_pages | ({'sent.html'} if name == 'sent.html' else set()), 'The curated Menu must expose the agreed page set')
                 footer = re.search(r'<footer>.*?</footer>', (ROOT / name).read_text(), re.S)
                 self.assertIsNotNone(footer, 'Pages with the shared shell keep a footer')
@@ -323,7 +323,7 @@ class SiteStructureTests(unittest.TestCase):
                 self.assertEqual(participation, {('letters.html', ''), ('feedback.html', '')})
 
     def test_printed_visit_route_has_matching_immediate_and_native_destinations(self):
-        destination = 'https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us'
+        destination = 'https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform'
         self.assertEqual(REDIRECT_PAGES, {'visit/index.html'})
         for name in REDIRECT_PAGES:
             page = self.pages[name]

@@ -35,11 +35,11 @@ test('Homepage: responsive copy keeps words separated on mobile and desktop', as
  }
 });
 
-test('Prospective families retain the old direct school enquiry and Options routes', async ({ page }) => {
- const contact='https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us';
- await page.route(contact,route=>route.fulfill({contentType:'text/html',body:'<h1>Fictional school contact</h1>'}));
- await page.goto('/index.html#visit-school');await expect(page).toHaveURL(contact);
- await expect(page.getByRole('heading')).toHaveText('Fictional school contact');
+test('Prospective families retain the Open Day handoff and Options routes', async ({ page }) => {
+ const openDay='https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform';
+ await page.route(openDay,route=>route.fulfill({contentType:'text/html',body:'<h1>Fictional Open Day booking</h1>'}));
+ await page.goto('/index.html#visit-school');await expect(page).toHaveURL(openDay);
+ await expect(page.getByRole('heading')).toHaveText('Fictional Open Day booking');
  await page.goto('/options.html#option-enrolment');const option=page.locator('#option-enrolment');
  await option.locator('.option-evidence > summary').click();
  await expect(option).toContainText('Ask the school what visits are available now');
@@ -339,16 +339,23 @@ test('Parent plan: correct PTA dates, the video route for new families and offic
   await expect(page.getByRole('heading')).toHaveText('Intercepted official consultation');
 });
 
-test('Parent plan: additional actions are optional native details without an invented petition link', async ({ page, hasTouch }) => {
+test('Parent plan: petition is secondary, eligible people are named and the full details remain optional', async ({ page, hasTouch }) => {
   await page.goto('/proposal.html#plan-keep-going');
+  const step = page.locator('#plan-keep-going');
+  await expect(step).toContainText('Live, work or study in the London Borough of Richmond upon Thames?');
+  await expect(step).toContainText('does not replace your own official consultation response');
+  await expect(step.locator('a[href="https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249"]')).toHaveCount(3);
+  await expect(step.locator('a[href="https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249"]').first()).toBeVisible();
+  await expect(page.locator('#plan-respond .button.primary')).toHaveText(/Send your official response/);
   const more = page.locator('#more-parent-actions');
   await expect(more).not.toHaveAttribute('open', '');
   await activate(more.locator('summary'), hasTouch);
   await expect(more).toHaveAttribute('open', '');
   await expect(more.getByRole('heading', { level: 4 })).toHaveCount(4);
   await expect(more).toContainText('in their own words');
-  await expect(more).toContainText('A verified link and its wording are not yet available here');
-  await expect(more.getByRole('link', { name: /petition/i })).toHaveCount(0);
+  await expect(more).toContainText('started by Ewa Sarnowska and hosted on Richmond Council’s website');
+  await expect(more).toContainText('13 October 2026 to 13 January 2027');
+  await expect(more.getByRole('link', { name: /Keep Kew Riverside Primary School open/ })).toHaveAttribute('href', 'https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249');
   await more.locator('summary').focus();
   await page.keyboard.press('Enter');
   await expect(more).not.toHaveAttribute('open', '');

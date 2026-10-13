@@ -43,6 +43,12 @@ All 22 deadline unit tests, five homepage smoke cases, 34 iPhone/desktop WebKit 
 
 ## Unreleased
 
+### Petition details and school-discovery Menu — 13 October 2026
+
+- The official Richmond e-petition page was checked for its title, author, dates and live/work/study eligibility. The approved Open Day registration form was independently opened through the ordinary browser UI and confirmed active; no data was entered or submitted.
+- The change was first checked independently for campaign framing, evidence accuracy and rendered UX. UX review moved Open Day booking off the campaign video page and into the recruitment-only `/visit/` handoff. The pre-integration PR revision passed every hosted browser shard; subsequent integration preserves the separately released homepage petition and footer discovery links.
+- Local validation after integration passed 150 Python checks, seven backend tests, 24 deadline unit tests, builder freshness, public staging for 125 files and 358 focused browser checks across desktop Chromium, iPhone WebKit and iPhone without JavaScript. Complete final-revision hosted checks remain the release gate. No real form, upload or petition signature is submitted by the tests.
+
 ### One Menu, council dates and documents — 13 October 2026
 
 - Local checks on the final working tree: 149 Python checks, 22 deadline unit tests, seven backend tests, JavaScript syntax, `git diff --check`, builder freshness (`build_navigation.py`, `build_understand.py`, `build_sources.py --check`) and 124-file public staging pass.

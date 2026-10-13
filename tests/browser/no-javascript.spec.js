@@ -134,6 +134,8 @@ test('Clarity pages preserve findings, funding questions and native process deta
 
 for (const file of pages) {
   test(`${file}: every native mobile menu link works without JavaScript`, async ({ page, baseURL }) => {
+    const openDay = 'https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform';
+    await page.route(openDay, route => route.fulfill({ contentType: 'text/html', body: '<main><h1>Open Day booking intercepted locally</h1></main>' }));
     for (const href of headerLinks(file, 'mobile')) {
       await page.goto('/' + file);
       await page.locator('.mobile-menu summary').tap();
@@ -143,7 +145,12 @@ for (const file of pages) {
         expect(await download.failure()).toBeNull();
       } else {
         await page.locator(`.mobile-menu a[href="${href}"]`).tap();
-        await expectDestination(page, href, baseURL);
+        if (href === 'visit/index.html') {
+          await expect(page).toHaveURL(openDay);
+          await expect(page.getByRole('heading')).toHaveText('Open Day booking intercepted locally');
+        } else {
+          await expectDestination(page, href, baseURL);
+        }
       }
     }
   });
