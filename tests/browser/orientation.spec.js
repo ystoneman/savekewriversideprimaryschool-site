@@ -279,7 +279,7 @@ test('Orientation: passive reading updates location without changing URL, histor
     await page.locator('#' + id).evaluate(node => { for (let parent=node.parentElement;parent;parent=parent.parentElement) if (parent.tagName==='DETAILS') parent.open=true; node.scrollIntoView({block:'start',behavior:'instant'}); });
     await expect.poll(() => activeSection(page)).toBe(id);
     await expect(page.locator('.section-trail')).toContainText(await page.locator(`.section-links a[data-section-id="${id}"]`).textContent());
-    await expect(page.locator('.page-name')).toHaveText('Evidence');
+    await expect(page.locator('.page-name')).toHaveText('Evidence & sources');
     await expect(page.locator('.site-orientation')).toBeInViewport({ ratio: 1 });
     await expect(summary).toBeFocused();
     expect(await page.evaluate(() => ({ url: location.href, history: history.length }))).toEqual(initial);

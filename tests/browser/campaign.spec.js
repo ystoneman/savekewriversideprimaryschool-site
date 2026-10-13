@@ -162,11 +162,11 @@ test('Journalist guidance is linked from letters and About and provides a contac
 
 // Option titles state the ask plainly (13 October 2026). The fundraising summary
 // keeps its honesty qualification visible while the card is closed.
-test('Ways to keep Kew open: retitled options read as plain asks with visible qualifications', async ({ page }) => {
+test('Ways to keep Kew open: assessment titles retain visible qualifications', async ({ page }) => {
   await page.goto('/options.html');
   const titles = page.locator('.option-card > summary .option-title');
-  await expect(titles.first()).toHaveText('Help build a costed alternative to closure');
-  const funding = page.locator('.option-card', { has: page.locator('.option-title', { hasText: 'Help plan fundraising' }) });
+  await expect(titles.first()).toHaveText('A costed alternative to closure');
+  const funding = page.locator('.option-card', { has: page.locator('.option-title', { hasText: 'Funding a recovery plan' }) });
   await expect(funding).toHaveCount(1);
   await expect(funding).not.toHaveAttribute('open', '');
   await expect(funding.locator('> summary .option-summary')).toBeVisible();

@@ -958,9 +958,8 @@ test('An official-form handoff records a fixed opening label, never a completed 
   expect(JSON.stringify(sent)).not.toContain(officialForm);
 });
 
-// Since 13 October 2026 (slim site) the live checklist link is in Get involved's
-// Respond section; the archived Options page still offers it too.
-for (const file of ['get-involved.html', 'options.html']) {
+// Current action downloads belong to Get involved, keeping research focused.
+for (const file of ['get-involved.html']) {
   test(`A checklist download on ${file} records a fixed click label once per page, without claiming completion`, async ({ page, context }) => {
     const { sent } = await virtualProduction(context);
     await controlledAttention(page);
@@ -975,6 +974,15 @@ for (const file of ['get-involved.html', 'options.html']) {
     expect(JSON.stringify(sent)).not.toMatch(/downloaded|completed/i);
   });
 }
+
+test('Supporting Options retains funding questions without a duplicate checklist action', async ({ page, context }) => {
+  const { sent } = await virtualProduction(context);
+  await page.goto(site + 'options.html');
+  await allowAnalytics(page);
+  await expect(page.locator('a[href="response-checklist.pdf"]')).toHaveCount(0);
+  await expect(page.locator('.funding-questions ol a[href^="feedback.html?kind=crowdfunding"]')).toHaveCount(8);
+  expect(events(sent, 'Action opened')).toEqual([]);
+});
 
 test('A petition handoff from Get involved records a fixed opening label in aggregate and detailed analytics', async ({ page, context }) => {
   // 'Opened petition' joined the reviewed labels with the 13 October 2026 slim site.
