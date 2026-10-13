@@ -56,7 +56,10 @@ All 22 deadline unit tests, five homepage smoke cases, 34 iPhone/desktop WebKit 
 - **First complete run on the final pages:** 3,361 passed, 99 skipped and 5 failed in 34.7 minutes.
   - **Known pre-existing failure (1):** `orientation.spec.js` "Back preserves a later reading position…" in iPhone emulation. It also fails on unchanged `main` in this harness.
   - **Out-of-date test (4):** one top-journeys test, failing in four projects. It still expected the closed response note on the 320px first screen. After the implementation review, the petition leads Get involved after the deadline, so the test now checks the petition first and the dated note after it.
-- Targeted re-run after merging `main` and updating that test: in progress; results are added here when complete.
+- **Targeted re-run after merging `main` (one new community letter) and updating that test.** It covered 9 spec files: top journeys, campaign site, boards, mobile letters, simple participation, campaign, harness, no-JavaScript and analytics.
+  - **Results:** 1,085 passed and 1 failed in 9.6 minutes.
+  - **The failure:** the iPhone-emulation "Daily browser: fresh notice then reload, navigation and simultaneous tabs count once" test counted 3 browsers instead of 2 under four-worker load. The same test passed in the complete run, and 4 times out of 4 when re-run on its own. Earlier releases recorded the same load-related failure on unchanged `main`.
+  - **Homepage smoke** (`@home-smoke`, iPhone emulation with and without JavaScript): 9 of 9 pass.
 - **Reviews (independent, read-only subagents):**
   - **Plan stage:** UX, campaign and evidence reviews, a check that the plan covers each point in the team member's feedback, and public fact-checks of each proposed campaign update. The rally entry was dropped because it could not be verified publicly.
   - **Implementation stage:** UX (rendered in Chromium at 320/390/1440, light and dark, after the deadline and without JavaScript), campaign and evidence. Each of their 27 findings was then adversarially re-checked. 26 were confirmed and 1 was judged not an issue.
