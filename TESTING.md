@@ -43,6 +43,30 @@ All 22 deadline unit tests, five homepage smoke cases, 34 iPhone/desktop WebKit 
 
 ## Unreleased
 
+### Slim five-page campaign site — 13 October 2026
+
+- **Fast checks on the final tree, after merging `main` (cffd3d6):**
+  - 151 Python checks, 24 homepage deadline unit tests and 7 backend tests pass.
+  - Builder freshness passes for `build_navigation.py`, `build_understand.py`, `build_lessons.py`, `build_seo.py` and `build_sources.py`.
+  - JavaScript syntax and `git diff --check` pass, and public staging accepts 130 files.
+  - `check_site.py` now rejects live links to archived pages, from HTML pages and from `response-checklist.md`.
+  - The rebuilt `response-checklist.pdf` was rendered and inspected. It is still 2 pages, and its link annotations include no site pages.
+- **Browser engines:** the checks ran in a cloud container where only Chromium was available. All five Playwright projects ran on Chromium, so the iPhone and desktop WebKit projects used Chromium emulation, not WebKit. No native iOS Safari check was run. Hosted CI runs real WebKit and is the release gate.
+- **Test rewrite:** before the rewrite, the early full run failed wherever tests used the removed header tiles, Menu rows or homepage research links, or the new Menu order. Seven parallel groups then rewrote those specs against the new journeys, and a new `campaign-site.spec.js` was added. Each changed assertion names the 13 October 2026 slim-site decision or the implementation review. The header-tile touch loops were replaced with checks that the tiles are absent, plus footer and Get involved routes to letters and ideas. No assertion was weakened to get a pass.
+- **First complete run on the final pages:** 3,361 passed, 99 skipped and 5 failed in 34.7 minutes.
+  - **Known pre-existing failure (1):** `orientation.spec.js` "Back preserves a later reading position…" in iPhone emulation. It also fails on unchanged `main` in this harness.
+  - **Out-of-date test (4):** one top-journeys test, failing in four projects. It still expected the closed response note on the 320px first screen. After the implementation review, the petition leads Get involved after the deadline, so the test now checks the petition first and the dated note after it.
+- Targeted re-run after merging `main` and updating that test: in progress; results are added here when complete.
+- **Reviews (independent, read-only subagents):**
+  - **Plan stage:** UX, campaign and evidence reviews, a check that the plan covers each point in the team member's feedback, and public fact-checks of each proposed campaign update. The rally entry was dropped because it could not be verified publicly.
+  - **Implementation stage:** UX (rendered in Chromium at 320/390/1440, light and dark, after the deadline and without JavaScript), campaign and evidence. Each of their 27 findings was then adversarially re-checked. 26 were confirmed and 1 was judged not an issue.
+  - **Applied fixes:** email-address overflow; petition-first order on Get involved after the deadline; the post-deadline Home intro stating the proposal; the archived status strip; a no-script sticky Archived label; checklist links to archived pages; the restored Open Day QR; video wording as testimonials; small wording fixes on Dates, Updates, About, Letters and the thank-you page.
+  - **Not applied:** linking the budget-summary PDF from Updates (optional) and the About sentence describing the campaign team (left to the owner).
+  - **Lead recheck of the applied fixes:** rendered in Chromium at 320/390/1280. No horizontal overflow on live pages with or without scripts. The post-deadline petition is on the first screen at 390, and its heading at 320. The Archived label is in view on no-script deep links.
+- **Test-group findings fixed:** overflow of "September/November" at 200% text on Dates, and smooth scrolling of no-script section links on the new pages.
+- **Test-group findings left as they are:** footer links are 32px tall on pages other than Home. That is above the 24px minimum, and Get involved remains the main route. The archived supporters page's "Add my name" link now leads to the petition note.
+- No real form, letter, upload, petition signature or council response was submitted, and external submissions stayed intercepted. Nothing was deployed.
+
 ### Petition details and school-discovery Menu — 13 October 2026
 
 - The official Richmond e-petition page was checked for its title, author, dates and live/work/study eligibility. The approved Open Day registration form was independently opened through the ordinary browser UI and confirmed active; no data was entered or submitted.
