@@ -1,32 +1,35 @@
 'use strict';
 (() => {
   const form = document.getElementById('supporter-form');
-  const name = document.getElementById('public-name');
-  const button = form.querySelector('button[type="submit"]');
-  const reference = document.getElementById('supporter-reference');
-  if (globalThis.crypto && crypto.randomUUID) {
-    reference.value = 'KR-' + crypto.randomUUID();
-    document.getElementById('reference-display').textContent = reference.value;
-    document.getElementById('reference-note').hidden = false;
-  }
-  name.addEventListener('input', () => {
-    name.setCustomValidity('');
-    document.getElementById('preview-name').textContent = name.value.trim() || 'Your chosen public name';
-  });
-  form.addEventListener('submit', event => {
-    if (name.value.trim().length < 2) {
-      event.preventDefault();
-      name.setCustomValidity('Please enter at least two characters for your public name.');
-      name.reportValidity();
-      return;
+  // The page is archived (13 October 2026): the request form was replaced by a note.
+  if (form instanceof HTMLFormElement) {
+    const name = document.getElementById('public-name');
+    const button = form.querySelector('button[type="submit"]');
+    const reference = document.getElementById('supporter-reference');
+    if (globalThis.crypto && crypto.randomUUID) {
+      reference.value = 'KR-' + crypto.randomUUID();
+      document.getElementById('reference-display').textContent = reference.value;
+      document.getElementById('reference-note').hidden = false;
     }
-    button.disabled = true;
-    button.textContent = 'Continuing to Formspree…';
-  });
-  window.addEventListener('pageshow', () => {
-    button.disabled = false;
-    button.textContent = 'Request to add my name';
-  });
+    name.addEventListener('input', () => {
+      name.setCustomValidity('');
+      document.getElementById('preview-name').textContent = name.value.trim() || 'Your chosen public name';
+    });
+    form.addEventListener('submit', event => {
+      if (name.value.trim().length < 2) {
+        event.preventDefault();
+        name.setCustomValidity('Please enter at least two characters for your public name.');
+        name.reportValidity();
+        return;
+      }
+      button.disabled = true;
+      button.textContent = 'Continuing to Formspree…';
+    });
+    window.addEventListener('pageshow', () => {
+      button.disabled = false;
+      button.textContent = 'Request to add my name';
+    });
+  }
   const message = document.getElementById('supporter-message');
   const list = document.getElementById('supporter-list');
   fetch('supporters.json', {cache: 'no-store'})

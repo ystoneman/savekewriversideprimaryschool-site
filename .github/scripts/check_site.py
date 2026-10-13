@@ -31,7 +31,7 @@ understand.html understand.css understand.js understand-data.json richmond-schoo
 voice.css voice.js contribute.css sent.html sent.js private-form.js respond-reminder.ics
 og-home.png og-letters.png og-ideas.png og-videos.png
 og-fundraising-trustees-v1.png og-fundraising-admin-v1.png
-dates.html get-involved.html updates.html campaign.css
+dates.html get-involved.html updates.html campaign.css campaign.js
 '''.split())
 MAINTENANCE_FILES = frozenset('''
 tests/browser/mobile-header.spec.js tests/browser/mobile-feedback.spec.js tests/browser/mobile-letters.spec.js tests/browser/mobile-reading.spec.js tests/browser/mobile-contact-support.spec.js

@@ -122,3 +122,4 @@ html.has-orientation{scroll-behavior:auto}
 .archive-banner p{margin:0;font-size:15px;line-height:1.5;color:inherit}
 .archive-banner a{color:inherit;font-weight:700}
 .site-header .nav-primary{font-weight:700;color:var(--teal)}
+.archive-flag{flex:none;display:inline-flex;align-items:center;min-height:28px;padding:2px 9px;border:1px solid var(--teal);border-radius:999px;background:var(--theme-soft,#edf1e7);color:var(--theme-strong,var(--ink));font:700 12px/1.2 Arial,sans-serif;letter-spacing:.02em}

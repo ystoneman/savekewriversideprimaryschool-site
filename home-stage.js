@@ -16,7 +16,8 @@
     if (petition && event?.type !== 'pointerdown') {
       const closed = today > '2027-01-13';
       petition.textContent = closed ? 'View the petition' : 'Sign the petition';
-      petitionNote.textContent = closed ? 'The published petition closing date, 13 January 2027, has passed. Check the council’s petition page for its status.' : 'Petition closes 13 January 2027. For people who live, work or study in Richmond borough; a Richmond Account is required. Signing does not replace your consultation response.';
+      const consultationOpen = today <= '2026-10-16';
+      petitionNote.textContent = closed ? 'The published petition closing date, 13 January 2027, has passed. Check the council’s petition page for its status.' : 'Petition closes 13 January 2027. For people who live, work or study in Richmond borough; a Richmond Account is required.'+(consultationOpen ? ' Signing does not replace your consultation response.' : '');
     }
     const stage = today >= '2026-10-12' && today <= '2026-10-16' ? 'active' : today > '2026-10-16' ? 'expired' : 'dated';
     const active = stage === 'active';
@@ -43,10 +44,16 @@
       count.className = 'countdown';
       count.textContent = remaining;
       note.replaceChildren(count, document.createTextNode(' · Respond by 16 October 2026.'));
+    } else if (stage === 'expired') {
+      intro.textContent = 'The published response deadline, 16 October 2026, has passed. The council’s timetable plans a final decision in April 2027.';
+      note.textContent = 'The published 16 October deadline has passed. Check the council’s latest information before acting.';
     } else {
       intro.textContent = 'On 12 October 2026, Richmond Council was consulting on proposed closure from 1 September 2027. Check the council’s page for the current position.';
-      note.textContent = stage === 'expired' ? 'The published 16 October deadline has passed. Check the council’s latest information before acting.' : 'Published response deadline: 16 October 2026. Check the council’s page.';
+      note.textContent = 'Published response deadline: 16 October 2026. Check the council’s page.';
     }
+    // After the deadline the petition leads; the council's documents stay in Dates.
+    action.hidden = stage === 'expired';
+    note.hidden = stage === 'expired';
   }
   refreshStage();
   window.addEventListener('pageshow', refreshStage);

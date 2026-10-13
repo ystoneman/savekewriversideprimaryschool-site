@@ -15,13 +15,13 @@ function state(at) {
   return {action,note,intro,petition,petitionNote,document,events,advance:value=>{now=value},tick:()=>tick()};
 }
 test('current response goes directly to the official form',()=>{
- const s=state('2026-10-12T12:00:00Z');assert.match(s.action.href,/docs.google.com\/forms\/d\/e\/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ\/viewform$/);assert.equal(s.action.textContent,'Respond to the council');assert.match(s.note.textContent,/16 October 2026/);assert.match(s.intro.textContent,/No final decision/);
+ const s=state('2026-10-12T12:00:00Z');assert.equal(s.action.hidden,false);assert.match(s.petitionNote.textContent,/does not replace your consultation response/);assert.match(s.action.href,/docs.google.com\/forms\/d\/e\/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ\/viewform$/);assert.equal(s.action.textContent,'Respond to the council');assert.match(s.note.textContent,/16 October 2026/);assert.match(s.intro.textContent,/No final decision/);
 });
 test('London date boundary retains the response on 16 October',()=>{
  const s=state('2026-10-16T22:59:59Z');assert.match(s.action.href,/docs.google.com/);assert.equal(s.action.textContent,'Respond to the council');
 });
 test('London 17 October retires both response link and current-stage claim',()=>{
- const s=state('2026-10-16T23:00:00Z');assert.match(s.action.href,/www.richmond.gov.uk/);assert.equal(s.action.textContent,'Check the council consultation');assert.match(s.note.textContent,/has passed/);assert.match(s.intro.textContent,/On 12 October 2026/);assert.doesNotMatch(s.intro.textContent,/No final decision has/);
+ const s=state('2026-10-16T23:00:00Z');assert.match(s.action.href,/www.richmond.gov.uk/);assert.equal(s.action.textContent,'Check the council consultation');assert.match(s.note.textContent,/has passed/);assert.match(s.intro.textContent,/16 October 2026, has passed/);assert.equal(s.action.hidden,true);assert.equal(s.note.hidden,true);assert.doesNotMatch(s.intro.textContent,/No final decision has/);
 });
 test('future dates never revive an expired response',()=>{const s=state('2027-09-01T12:00:00Z');assert.match(s.action.href,/www.richmond.gov.uk/);assert.match(s.note.textContent,/has passed/)});
 test('without JavaScript the fallback stays dated and links current council information',()=>{
@@ -65,6 +65,8 @@ test('countdown midnight refresh does not move a pressed target before click',()
 test('petition stays active after consultation closes and through its own final day',()=>{
  for(const at of ['2026-10-17T12:00:00Z','2027-01-13T23:59:59Z']){
   const s=state(at);assert.equal(s.petition.textContent,'Sign the petition');assert.match(s.petitionNote.textContent,/13 January 2027/);assert.match(s.action.href,/richmond.gov.uk/);
+  // After the consultation closes the petition leads and drops the response reminder.
+  assert.doesNotMatch(s.petitionNote.textContent,/does not replace/);assert.equal(s.action.hidden,true);
  }
 });
 test('petition retires independently on London 14 January, including an already open page',()=>{

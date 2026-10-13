@@ -12,7 +12,7 @@ SITE_URL = 'https://savekewriversideprimaryschool.org/'
 PAGES = {
     # Live pages (13 October 2026: the slim five-page campaign site). Page identity
     # labels only; the Menu and footer come from MENU_GROUPS and FOOTER_LINKS.
-    'index.html': 'Home', 'dates.html': 'Dates & council documents', 'get-involved.html': 'Get involved',
+    'index.html': 'Home', 'dates.html': 'Dates, leaflet & FAQs', 'get-involved.html': 'Get involved',
     'updates.html': 'Campaign updates', 'about.html': 'About & contact',
     'letters.html': 'Community letters', 'videos.html': 'Share a video', 'feedback.html': 'Share ideas',
     'privacy.html': 'Privacy', 'corrections.html': 'Corrections', 'sent.html': 'Next steps',
@@ -30,7 +30,7 @@ PAGE_LABELS = PAGES | ARCHIVED_PAGES
 MENU_GROUPS = [
     ('Campaign', [
         ('index.html', 'Home', ''),
-        ('dates.html', 'Dates & council documents', ''),
+        ('dates.html', 'Dates, leaflet & FAQs', ''),
         ('get-involved.html', 'Get involved', ''),
         ('updates.html', 'Campaign updates', ''),
         ('about.html', 'About & contact', ''),
@@ -44,15 +44,19 @@ MENU_GROUPS = [
 # Every page's footer: live pages only.
 FOOTER_LINKS = [
     ('about.html', 'About & contact', ''), ('about.html#press', 'For journalists', ''),
-    ('dates.html', 'Dates & council documents', ''), ('get-involved.html', 'Get involved', ''),
+    ('dates.html', 'Dates, leaflet & FAQs', ''), ('get-involved.html', 'Get involved', ''),
     ('updates.html', 'Campaign updates', ''), ('letters.html', 'Community letters', ''),
     ('videos.html#upload', 'Share a video', ''), ('feedback.html', 'Share ideas', ''),
     ('corrections.html', 'Corrections', ''), ('privacy.html', 'Privacy', ''),
     ('privacy.html#analytics', 'Analytics choices', ' data-analytics-choices'),
 ]
-ARCHIVE_BANNER = ('<!-- archive:start --><aside class="archive-banner" aria-label="Archived page"><p><strong>Archived page.</strong> '
-                  'This page is no longer updated and may be out of date. <a href="index.html">Go to the current campaign site</a>.</p></aside><!-- archive:end -->')
+ARCHIVE_BANNER = ('<!-- archive:start --><aside class="archive-banner" aria-label="Archived page"><p><strong>Archived 13 October 2026.</strong> '
+                  'This page is no longer updated, so dates and actions here may be out of date. '
+                  '<a href="dates.html">Current dates</a> · <a href="get-involved.html">Get involved</a></p></aside><!-- archive:end -->')
+# Sticky-bar label, so arrivals at a deep link still see that the page is archived.
+ARCHIVE_FLAG = '<span class="archive-flag">Archived</span>'
 # Explicit destinations avoid navigation generated from hidden templates or every source card.
+# Live pages have no "On this page" chooser (13 October 2026); archived pages keep theirs.
 SECTIONS = {
     'rally.html': [('when-and-where','Past event'),('schedule','Advertised schedule'),('attending','Original access notes'),('photos','Photo choices'),('council-and-response','Council and your response'),('updates','Questions or corrections')],
     'index.html': [('find-your-way','Find what you need'),('research-shortcut','Historical research','find-your-way'),('quick-answers','Before you respond'),('visit-school','Considering Kew Riverside Primary School?')],
@@ -63,11 +67,8 @@ SECTIONS = {
     'faq.html': [('taking-part','Ways to help'),('decisions','Dates and decisions'),('money','Money'),('school-places','School places'),('learning','Learning and results')],
     'lessons.html': [('key-lessons','Key lessons'),('visual-guide','Visual guide'),('catalogue','All 16 schools'),('method','Method and limits')],
     'lessons-sources.html': [('source-register','Source register'),('claim-ledger','Evidence and interpretation')],
-    'letters.html': [('letters','Read community letters'),('letter-form','Write a letter'),('letter-guidelines','Letter guidelines')],
-    'feedback.html': [('feedback-form','Share an idea or question'),('review-rules','How review works'),('suggestions','Read shared ideas')],
     # The short video page needs no section list beside the Menu.
     'supporters.html': [('supporter-form','Supporter statement'),('supporter-list-section','Confirmed supporters')],
-    'privacy.html': [('public-roles','Public roles'),('funding-privacy','Funding ideas'),('supporters-privacy','Supporters'),('contact-privacy','Private contact'),('letters-privacy','Community letters'),('video-privacy','Videos'),('requests','Your choices'),('analytics','Analytics'),('device-storage','On-device storage')],
 }
 
 def render_identity(name, document):
@@ -77,7 +78,7 @@ def render_identity(name, document):
         'index.html': SITE_NAME,
         'letters.html': 'Community letters',
         'about.html': 'About & contact',
-        'dates.html': 'Kew Riverside Primary School closure proposal: council dates and documents',
+        'dates.html': 'Kew Riverside Primary School closure proposal: dates, leaflet and FAQs',
         'get-involved.html': 'Get involved: help keep Kew Riverside Primary School open',
         'updates.html': 'Campaign updates',
         'proposal.html': 'Kew Riverside Primary School closure proposal: consultation and dates',
@@ -279,7 +280,8 @@ def render_navigation(name, document):
         links = ''.join(menu_link(*entry) for entry in entries)
         groups.append(f'<div class="menu-group" role="group" aria-labelledby="menu-group-{index}"><p class="menu-group-label" id="menu-group-{index}">{esc(heading)}</p>{links}</div>')
     status = re.search(r'<div class="independent-bar"><div class="wrap">(.*?)</div></div>', document, re.S)
-    mobile_status = '<div class="mobile-page-note"><p class="menu-group-label">Page information</p>'+status.group(1)+'</div>' if status else ''
+    # Archived pages' dated status strips would contradict the archive banner.
+    mobile_status = '<div class="mobile-page-note"><p class="menu-group-label">Page information</p>'+status.group(1)+'</div>' if status and name not in ARCHIVED_PAGES else ''
     menu = '<details class="mobile-menu" name="site-navigation"><summary>Menu <span aria-hidden="true">⌄</span></summary><nav aria-label="All website pages">'+''.join(groups)+mobile_status+'</nav></details>'
     ids = set(re.findall(r'\bid="([^"]+)"', document))
     sections = [entry for entry in SECTIONS.get(name,[]) if entry[0] in ids]
@@ -291,7 +293,8 @@ def render_navigation(name, document):
             parent = f' data-parent="{esc(entry[2])}"' if len(entry)>2 else ''
             items.append(f'<a href="#{esc(ident)}" data-section-id="{esc(ident)}"{parent}>{esc(label)}</a>')
         section_html = '<details class="page-sections" name="site-navigation"><summary><span class="section-prompt">On this page</span><span class="section-trail">Choose a section</span><span class="section-chevron" aria-hidden="true">⌄</span></summary><div class="section-panel"><nav class="section-links" aria-label="On this page">'+''.join(items)+'<a href="#main" class="section-top">Back to top</a></nav><div class="section-share" hidden><button type="button" class="section-copy">Copy link to this section</button><input class="section-copy-fallback" aria-label="Section link" readonly hidden><span class="section-copy-status" role="status"></span></div></div></details>'
-    orientation = '<!-- orientation:start --><div class="site-orientation"><div class="wrap orientation-inner"><span class="page-name">'+esc(PAGE_LABELS[name])+'</span>'+section_html+menu+'</div></div><!-- orientation:end -->'
+    flag = ARCHIVE_FLAG if name in ARCHIVED_PAGES else ''
+    orientation = '<!-- orientation:start --><div class="site-orientation"><div class="wrap orientation-inner"><span class="page-name">'+esc(PAGE_LABELS[name])+'</span>'+flag+section_html+menu+'</div></div><!-- orientation:end -->'
     header = header.replace('</header>',orientation+'</header>')
     document = document[:match.start()]+header+document[match.end():]
     footer_links = ''.join(f'<a href="{esc(href)}"{extra}>{esc(label)}</a>' for href, label, extra in FOOTER_LINKS)

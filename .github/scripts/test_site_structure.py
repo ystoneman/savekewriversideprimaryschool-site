@@ -326,7 +326,12 @@ class SiteStructureTests(unittest.TestCase):
                 if name in ARCHIVED_PAGES:
                     main = text.split('<main', 1)[1].split('>', 1)[1]
                     self.assertTrue(main.startswith('<!-- archive:start --><aside class="archive-banner"'), 'Banner is the first thing in <main>')
-                    self.assertIn('<a href="index.html">Go to the current campaign site</a>', main.split('<!-- archive:end -->', 1)[0])
+                    banner = main.split('<!-- archive:end -->', 1)[0]
+                    self.assertIn('Archived 13 October 2026.', banner)
+                    self.assertIn('<a href="dates.html">Current dates</a>', banner)
+                    self.assertIn('<a href="get-involved.html">Get involved</a>', banner)
+                    self.assertIn('<span class="archive-flag">Archived</span>', text, 'Deep-link arrivals see the sticky archive label')
+                    self.assertNotIn('mobile-page-note', text, 'Dated status notes would contradict the archive banner')
                     self.assertTrue(robots and 'noindex' in robots.group(1))
                 else:
                     self.assertNotIn('archive-banner', text)
