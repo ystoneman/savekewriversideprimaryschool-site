@@ -48,7 +48,7 @@ test('Homepage: shared press and manual-copy links reveal their content',async({
 });
 for(const [at,href,name] of [['2026-10-16T22:59:59Z',official,'Respond to the council'],['2026-10-16T23:00:00Z',council,'Check the council consultation'],['2027-09-01T12:00:00Z',council,'Check the council consultation']])test(`Homepage deadline: London stage at ${at}`,async({page})=>{
  await page.clock.setFixedTime(new Date(at));await page.goto('/index.html');await expect(page.locator('#main-action')).toHaveAttribute('href',href);await expect(page.locator('#main-action')).toHaveAccessibleName(name);
- if(href===council){await expect(page.locator('#action-note')).toContainText('deadline has passed');await expect(page.locator('.intro')).toContainText('On 12 October 2026');}
+ if(href===council){await expect(page.locator('#action-note')).toContainText('deadline has passed');await expect(page.locator('.intro')).toContainText('On 12 October 2026');await expect(page.locator('.intro')).toContainText('Check the council’s latest position.');}
 });
 test('Homepage deadline: a page left open refreshes before an expired response click',{tag:'@home-smoke'},async({page})=>{
  await page.clock.setFixedTime(new Date('2026-10-16T22:59:59Z'));await page.goto('/index.html');await expect(page.locator('#main-action')).toHaveAttribute('href',official);
