@@ -4,7 +4,8 @@ const dropbox = 'https://www.dropbox.com/request/9uaa0fawrtdz6pv8b6hn';
 const legacy = 'https://docs.google.com/forms/d/e/1FAIpQLSfK3b8XtDJ5_mhKWTqxfZpZwPOJLGXjN1QIQYTKYlJ0dRAHHQ/viewform';
 const official = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform';
 
-for (const source of ['letters.html', 'feedback.html']) {
+// Get involved replaced the Menu's Share a video row (13 October 2026).
+for (const source of ['get-involved.html', 'letters.html', 'feedback.html']) {
   test(`Video: discover private upload from ${source}`, async ({ page, baseURL, hasTouch }) => {
     await page.goto('/' + source);
     if (source === 'feedback.html') await page.locator('#ideas-other-help > summary').click();

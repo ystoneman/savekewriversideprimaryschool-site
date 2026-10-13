@@ -42,7 +42,7 @@
   };
   const questionId = params.get('question');
   const fundingSubject = Object.prototype.hasOwnProperty.call(fundingQuestions, questionId)
-    ? fundingQuestions[questionId] : 'assessing whether community funding could work';
+    ? fundingQuestions[questionId] : 'a fundraising idea, contact or relevant experience';
   const fundingPrompt = 'Crowdfunding — ' + fundingSubject + '\n\nMy idea or relevant experience:\n\nSupporting public evidence, if available:\n';
   const isPrivateKind = () => ['privacy', 'crowdfunding'].includes(kind.value);
   function updateKind() {

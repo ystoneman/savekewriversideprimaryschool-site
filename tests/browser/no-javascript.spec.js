@@ -13,8 +13,10 @@ test('No JavaScript: campaign ownership, letter-data fallback and journalist gui
 });
 
 test('No JavaScript: page identity and native section routes retain nested content and recovery', async ({ page }) => {
+  // Supporting research remains outside the five-page Menu and keeps its section chooser.
   await page.goto('/options.html');
   await expect(page.locator('.page-name')).toHaveText('Ways to keep Kew open');
+  await expect(page.locator('.archive-flag, .archive-banner')).toHaveCount(0);
   await expect(page.locator('.section-copy')).toBeHidden();
   const sections = page.locator('.page-sections');
   await sections.locator(':scope > summary').tap();
@@ -24,22 +26,23 @@ test('No JavaScript: page identity and native section routes retain nested conte
   await expect(page.locator('#option-crowdfunding .option-first')).toBeVisible();
   await expect(page.locator('#option-crowdfunding')).toBeInViewport();
   // Leaving from the reading position should return to that section.
-  await page.locator('#option-crowdfunding .option-contribute').tap();
-  await expect(page).toHaveURL(/feedback\.html\?kind=crowdfunding#feedback-form$/);
+  const fundingQuestion = page.locator('#crowdfunding-funding-needed');
+  if (await fundingQuestion.locator('details').getAttribute('open') === null) await fundingQuestion.locator('summary').tap();
+  await expect(page.locator('.funding-questions')).toContainText('Funding ideas go privately to Yann, not the council.');
+  await fundingQuestion.locator('a').tap();
+  await expect(page).toHaveURL(/feedback\.html\?kind=crowdfunding&question=funding-needed#feedback-form$/);
   await page.goBack();
   await expect(page).toHaveURL(/options\.html#option-crowdfunding$/);
   await expect(page.locator('#option-crowdfunding')).toBeInViewport();
   const menu = page.locator('.mobile-menu');
   await menu.locator(':scope > summary').tap();
-  expect((await menu.locator('a').allTextContents()).slice(0, 5)).toEqual(['Respond to the council', 'Parent action plan', 'Community letters', 'Share a video', 'Share ideas']);
-  await expect(menu.getByRole('link', { name: 'Ways to keep Kew open', exact: true })).toHaveAttribute('aria-current', 'page');
-  await menu.getByRole('link', { name: 'FAQ', exact: true }).tap();
-  await expect(page.locator('h1')).toHaveText('FAQ');
-  await page.locator('.page-sections > summary').tap();
-  await page.locator('.section-links a[data-section-id="school-places"]').tap();
-  await expect(page).toHaveURL(/faq\.html#school-places$/);
-  await expect(page.locator('#school-places')).toBeInViewport();
-  await page.goBack();
+  // Supporting pages do not add Menu links or a misleading current-page highlight.
+  expect(await menu.locator('a').allTextContents()).toEqual(['Home', 'Dates, leaflet & FAQs', 'Get involved', 'Campaign updates', 'About & contact', 'Watch Parent Voices', 'Book an Open Day']);
+  await expect(menu.locator('[aria-current="page"]')).toHaveCount(0);
+  await expect(menu.locator('.mobile-page-note')).toContainText('Supporting research');
+  await menu.getByRole('link', { name: 'Dates, leaflet & FAQs', exact: true }).tap();
+  await expect(page).toHaveURL(/dates\.html$/);
+  await expect(page.locator('h1')).toHaveText('Dates, leaflet & FAQs');
   await page.goBack();
   await expect(page).toHaveURL(/options\.html#option-crowdfunding$/);
   await expect(page.locator('#option-crowdfunding > details.option-card')).toHaveAttribute('open', '');
@@ -53,33 +56,35 @@ test('No JavaScript: page identity and native section routes retain nested conte
   await expect(page.locator('#option-crowdfunding')).toBeInViewport();
 });
 
-test('No JavaScript: Council dates & documents is a direct menu route with a matching section label', async ({ page }) => {
+test('No JavaScript: Dates, leaflet & FAQs is a direct Menu route to the council documents and timetable', async ({ page }) => {
   await page.goto('/index.html');
   const menu = page.locator('.mobile-menu');
-  const documents = menu.getByRole('link', { name: 'Council dates & documents', exact: true });
+  const dates = menu.getByRole('link', { name: 'Dates, leaflet & FAQs', exact: true });
   await menu.locator(':scope > summary').tap();
-  await expect(documents).toBeVisible();
-  await expect(documents).toHaveAttribute('href', 'proposal.html#council-documents');
-  await documents.tap();
-  await expect(page).toHaveURL(/proposal\.html#council-documents$/);
-  const heading = page.locator('#council-documents h2');
-  await expect(heading).toHaveText('Council timetable and documents');
-  await expect(heading).toBeInViewport();
-  for (const href of ['kew_riverside_consultation_leaflet.pdf', 'school_organisation_kew_riverside_faq.pdf', 'school_organisation_consultation_faq.pdf']) {
+  await expect(dates).toBeVisible();
+  await expect(dates).toHaveAttribute('href', 'dates.html');
+  await dates.tap();
+  await expect(page).toHaveURL(/dates\.html$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Dates, leaflet & FAQs');
+  await expect(page.locator('.mobile-menu a[href="dates.html"]')).toHaveAttribute('aria-current', 'page');
+  // Without scripts the deadline is stated with its date, and everything is visible without a disclosure.
+  await expect(page.locator('#deadline')).toContainText('16 October 2026');
+  for (const href of ['kew_riverside_consultation_leaflet.pdf', 'school_organisation_kew_riverside_faq.pdf', 'school_organisation_consultation_faq.pdf', 'kew_riverside_consultation']) {
     await expect(page.locator(`#council-documents .council-document-list a[href$="${href}"]`)).toBeVisible();
   }
-  await expect(page.locator('#council-documents .council-timetable tbody tr')).toHaveCount(8);
-  const sections = page.locator('.page-sections');
-  await sections.locator(':scope > summary').tap();
-  const section = sections.locator('a[data-section-id="council-documents"]');
-  await expect(section).toHaveText('Council timetable and documents');
-  await section.tap();
-  await expect(heading).toBeInViewport();
-  // Native same-document menu navigation must work with the existing hash too.
-  await menu.locator(':scope > summary').tap();
-  await documents.tap();
-  await expect(page).toHaveURL(/proposal\.html#council-documents$/);
-  await expect(heading).toBeInViewport();
+  await expect(page.locator('#timetable .council-timetable tbody tr')).toHaveCount(8);
+  await expect(page.locator('#timetable .council-timetable')).toBeVisible();
+  // Slim-site decision (13 October 2026): live pages no longer have an "On this page" chooser.
+  await expect(page.locator('.page-sections')).toHaveCount(0);
+  // Former homepage fragments for the overview and dates reach the new page natively.
+  for (const [id, destination] of [['overview', 'dates.html#council-documents'], ['quick-answers', 'dates.html#council-documents'], ['next-dates', 'dates.html#timetable']]) {
+    await page.goto('/index.html#' + id);
+    const fallback = page.locator('.legacy-route#' + id);
+    await expect(fallback).toBeInViewport();
+    await fallback.locator(`a[href="${destination}"]`).tap();
+    await expect(page).toHaveURL(new RegExp(destination.replace('.', '\\.') + '$'));
+    await expect(page.locator(destination.slice(destination.indexOf('#')) + ' h2')).toBeInViewport();
+  }
 });
 
 test('No JavaScript: all eight unanswered questions expose known evidence and missing answers', async ({ page }) => {
@@ -108,11 +113,11 @@ test('No JavaScript: all eight unanswered questions expose known evidence and mi
 test('Clarity pages preserve findings, funding questions and native process details without scripts', async ({ page }) => {
   await page.goto('/options.html#options');
   await expect(page.locator('#options h1')).toBeInViewport();
-  await expect(page.locator('.options-response-button')).toBeVisible();
-  await expect(page.locator('.options-response')).toContainText('16 October 2026');
+  await expect(page.locator('.options-response-button')).toHaveCount(0);
+
   await expect(page.locator('#options-findings-title')).toBeVisible();
-  await expect(page.locator('.action-card > details.option-card[open]')).toHaveCount(7);
-  await expect(page.locator('.options-school-enquiry')).toBeVisible();
+  await expect(page.locator('.action-card > details.option-card[open]')).toHaveCount(6);
+  await expect(page.locator('.options-school-enquiry')).toHaveCount(0);
   await page.goto('/options.html#crowdfunding-recipient');
   await expect(page.locator('#option-crowdfunding > details.option-card')).toHaveAttribute('open', '');
   await expect(page.locator('.funding-questions details.question-detail[open]')).toHaveCount(8);
@@ -167,16 +172,12 @@ test('No JavaScript: evidence is readable and council identity stays disabled', 
   await expect(page.locator('#allow-council')).not.toBeChecked();
 });
 
-test('No JavaScript: homepage and Evidence expose the full report and web research', async ({ page }) => {
+test('No JavaScript: archived Evidence still exposes the full report and web research', async ({ page }) => {
+  // Owner correction: dated references return only within the optional Home footer.
   await page.goto('/index.html');
-  await page.locator('#site-settings > summary').tap();
-  await page.locator('footer .home-footer-links a[href="lessons.html"]').tap();
-  await expect(page).toHaveURL(/lessons\.html$/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('What can other schools teach us?');
-  await page.goBack();
-  await page.locator('.mobile-menu summary').click();
-  await page.locator('.mobile-menu').getByRole('link', { name: 'Evidence', exact: true }).tap();
-  await expect(page).toHaveURL(/evidence\.html#records$/);
+  await expect(page.locator('.mobile-menu a[href^="evidence.html"], .mobile-menu a[href^="lessons.html"], .mobile-menu a[href^="understand.html"]')).toHaveCount(0);
+  await page.locator('footer #supporting-research > summary').tap();
+  await page.locator('footer #supporting-research a[href="evidence.html#records"]').tap();
   await page.locator('#research-shortcut').tap();
   const report = page.locator('#source-lessons-report');
   await expect(report).toBeInViewport();
@@ -188,6 +189,9 @@ test('No JavaScript: homepage and Evidence expose the full report and web resear
   ]);
   expect(download.suggestedFilename()).toBe('lessons-report.pdf');
   expect(await download.failure()).toBeNull();
+  await report.locator('a[href="lessons.html"]').tap();
+  await expect(page).toHaveURL(/lessons\.html$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('What can other schools teach us?');
   await page.goto('/evidence.html?q=impossible-report-search&type=Inspection#source-lessons-report');
   await expect(report).toBeVisible();
   await expect(report).toBeInViewport();
@@ -195,10 +199,8 @@ test('No JavaScript: homepage and Evidence expose the full report and web resear
 });
 
 test('No JavaScript: budget and forecast answers, sources and optional data remain readable', async ({ page }) => {
-  await page.goto('/index.html');
-  await page.locator('#site-settings > summary').tap();
-  await page.locator('footer .home-footer-links a[href="understand.html"]').tap();
-  await expect(page).toHaveURL(/understand\.html$/);
+  // Understand left the homepage footer on 13 October 2026 (slim-site decision); the archived page opens directly.
+  await page.goto('/understand.html');
   await expect(page.locator('#budget')).toContainText('£231,685');
   await expect(page.locator('#forecast-checks')).toContainText(/Kew planning area/i);
   const source = page.locator('#budget a[href="evidence.html#source-school-balances-mar-2026"]');
@@ -283,15 +285,32 @@ for (const publish of [true, false]) {
   });
 }
 
-test('No JavaScript: the thank-you page and the participation tiles work without scripts', async ({ page }) => {
+test('No JavaScript: the thank-you page works without scripts and routes onward through Get involved', async ({ page }) => {
   await page.goto('/sent.html');
   await expect(page.locator('#sent-title')).toHaveText('Thank you.');
   await expect(page.locator('#sent-lead')).toBeVisible();
   for (const id of ['#official-card', '#share-card', '#sent-more']) await expect(page.locator(id), id).toBeHidden();
-  const nav = page.getByRole('navigation', { name: 'Take part' });
-  await expect(nav.getByRole('link', { name: /^Community letters/ })).toBeVisible();
-  await expect(nav.getByRole('link', { name: /^Share ideas/ })).toBeVisible();
-  await expect(page.locator('html')).not.toHaveClass(/voice-cue/);
+  // Slim-site decision (13 October 2026): the header participation tiles and their arrival cue were removed.
+  // Letters and ideas are reached through Get involved and every footer instead.
+  await expect(page.locator('.participation-nav')).toHaveCount(0);
+  await expect(page.getByRole('navigation', { name: 'Take part' })).toHaveCount(0);
+  const footer = page.locator('footer');
+  await expect(footer.getByRole('link', { name: 'Community letters', exact: true })).toHaveAttribute('href', 'letters.html');
+  await expect(footer.getByRole('link', { name: 'Share ideas', exact: true })).toHaveAttribute('href', 'feedback.html');
+  await expect(page.getByRole('link', { name: 'Back to the homepage' })).toBeVisible();
+  const menu = page.locator('.mobile-menu');
+  await menu.locator(':scope > summary').tap();
+  await expect(menu.getByRole('link', { name: 'Next steps', exact: true })).toHaveAttribute('aria-current', 'page');
+  await menu.getByRole('link', { name: 'Get involved', exact: true }).tap();
+  await expect(page).toHaveURL(/get-involved\.html$/);
+  await page.locator('#share-your-story a[href="letters.html#letter-form"]').tap();
+  await expect(page).toHaveURL(/letters\.html#letter-form$/);
+  await expect(page.locator('#message')).toBeInViewport();
+  await page.goBack();
+  await expect(page).toHaveURL(/get-involved\.html$/);
+  await page.locator('#help a[href="feedback.html"]').tap();
+  await expect(page).toHaveURL(/feedback\.html$/);
+  await expect(page.locator('#feedback-form')).toBeVisible();
 });
 
 test('No JavaScript: letter accepts a full 30000-character message including an emoji', async ({ page }) => {
@@ -424,9 +443,29 @@ test('No JavaScript: past meeting is absent on arrival and old links provide a r
   await expect(page.locator('#school-meeting')).toBeInViewport();
 });
 
-test('No JavaScript: the parent plan, session dates and additional actions are available', async ({ page }) => {
+test('No JavaScript: Get involved offers every action and the archived parent plan still opens directly', async ({ page }) => {
+  // Slim-site decision (13 October 2026): the homepage's secondary action now opens Get involved, not the parent plan.
   await page.goto('/index.html');
   await page.locator('.home-plan').tap();
+  await expect(page).toHaveURL(/get-involved\.html$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Get involved');
+  const respond = page.locator('#respond');
+  await expect(respond.getByRole('link', { name: /^Respond to the council/ })).toHaveAttribute('href', 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform');
+  await expect(respond).toContainText('16 October 2026');
+  await expect(respond.locator('a[href="mailto:schoolorganisation@achievingforchildren.org.uk"]')).toBeVisible();
+  await expect(respond).toContainText('Guildhall 2');
+  const [checklist] = await Promise.all([page.waitForEvent('download'), respond.locator('a[href="response-checklist.pdf"]').tap()]);
+  expect(checklist.suggestedFilename()).toBe('kew-riverside-response-checklist.pdf');
+  expect(await checklist.failure()).toBeNull();
+  await expect(page.locator('#petition a[href="https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249"]')).toBeVisible();
+  await expect(page.locator('#petition')).toContainText('13 January 2027');
+  for (const href of ['https://cabnet.richmond.gov.uk/mgMemberIndex.aspx?bcr=1', 'https://members.parliament.uk/FindYourMP']) await expect(page.locator(`#representatives a[href="${href}"]`)).toBeVisible();
+  for (const href of ['letters.html#letter-form', 'letters.html', 'videos.html#upload']) await expect(page.locator(`#share-your-story a[href="${href}"]`)).toBeVisible();
+  for (const href of ['feedback.html', 'mailto:savekrps@gmail.com']) await expect(page.locator(`#help a[href="${href}"]`)).toBeVisible();
+  for (const href of ['qr/savekewriverside-home-qr.png', 'qr/savekewriverside-home-qr.svg']) await expect(page.locator(`#spread-the-word a[href="${href}"][download]`)).toBeVisible();
+  await expect(page.locator('.page-sections')).toHaveCount(0);
+  // The parent plan was archived in place; its own steps still work from a direct link.
+  await page.goto('/proposal.html#parent-plan');
   await expect(page.locator('#parent-plan-title')).toBeInViewport();
   await expect(page.locator('#parent-plan #prep-sessions, #parent-plan #plan-attend')).toHaveCount(0);
   await page.locator('#prep-sessions > summary').tap();
@@ -488,15 +527,17 @@ test('No JavaScript: video guidance and external upload route remain available',
 });
 
 
-test('No JavaScript: the named parent action plan is visible on arrival', {tag:'@home-smoke'}, async ({ page }) => {
+test('No JavaScript: the named Get involved action is visible on arrival', {tag:'@home-smoke'}, async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/index.html');
-  const plan = page.locator('.home-plan');
-  await expect(plan).toBeVisible();
+  const involved = page.locator('.home-plan');
+  await expect(involved).toBeVisible();
+  await expect(involved).toHaveAccessibleName('Get involved');
   await expect(page.locator('#main-action')).toBeInViewport({ratio:1});
-  await plan.tap();
-  await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
-  await expect(page.locator('#parent-plan-title')).toBeInViewport();
+  // Since 13 October 2026 (slim-site decision) this action opens Get involved instead of the archived parent plan.
+  await involved.tap();
+  await expect(page).toHaveURL(/get-involved\.html$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Get involved' })).toBeInViewport();
 });
 
 test('No JavaScript: former homepage fragments offer an explicit route to the moved content', async ({ page }) => {
@@ -662,10 +703,18 @@ test('No JavaScript: the homepage has a date-safe council link, Help and manual 
  await expect(page.locator('#share-trigger')).toBeHidden();
 });
 
-test('No JavaScript: the Menu opens Share a video at its permission step', async ({ page }) => {
+test('No JavaScript: Get involved and the footer open Share a video at its permission step', async ({ page }) => {
+  // Slim-site decision (13 October 2026): Share a video left the Menu; Get involved and every footer link to it.
   await page.goto('/letters.html');
-  await page.locator('.mobile-menu > summary').tap();
-  await page.locator('.mobile-menu').getByRole('link', { name: 'Share a video', exact: true }).tap();
+  const menu = page.locator('.mobile-menu');
+  await menu.locator(':scope > summary').tap();
+  await expect(menu.getByRole('link', { name: 'Share a video', exact: true })).toHaveCount(0);
+  await menu.getByRole('link', { name: 'Get involved', exact: true }).tap();
+  await page.locator('#share-your-story a[href="videos.html#upload"]').tap();
+  await expect(page).toHaveURL(/videos\.html#upload$/);
+  await expect(page.locator('#video-upload-link')).toBeInViewport({ ratio: 1 });
+  await page.goto('/letters.html');
+  await page.locator('footer').getByRole('link', { name: 'Share a video', exact: true }).tap();
   await expect(page).toHaveURL(/videos\.html#upload$/);
   await expect(page.locator('#video-upload-link')).toBeInViewport({ ratio: 1 });
 });
@@ -686,15 +735,49 @@ test('No JavaScript: letters reading comes first and writing remains an ordinary
   await expect(page).toHaveURL(/letters\.html#letter-form$/);
   await expect(page.locator('#message')).toBeInViewport();
   await expect(page.locator('#step-choose')).toBeVisible();
-  await page.goto('/proposal.html#parent-plan');
-  await page.locator('#plan-share a[href="letters.html#letter-form"]').tap();
+  // Since 13 October 2026 (slim-site decision) the live letter entry is Get involved (Menu), not the archived parent plan.
+  await page.locator('.mobile-menu > summary').tap();
+  await page.locator('.mobile-menu').getByRole('link', { name: 'Get involved', exact: true }).tap();
+  await expect(page).toHaveURL(/get-involved\.html$/);
+  await page.locator('#share-your-story a[href="letters.html#letter-form"]').tap();
+  await expect(page).toHaveURL(/letters\.html#letter-form$/);
   await expect(page.locator('#message')).toBeInViewport();
   await page.goBack();
-  await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
+  await expect(page).toHaveURL(/get-involved\.html$/);
+  await expect(page.locator('#share-your-story a[href="letters.html#letter-form"]')).toBeInViewport();
 });
 
 test('No JavaScript: petition is a dated direct action and school footer links need no disclosure',async({page})=>{
  await page.goto('/index.html');await expect(page.locator('#petition-action')).toHaveAccessibleName('Sign the petition');await expect(page.locator('#petition-note')).toContainText('13 January 2027');
  const petition='https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249';await page.route(petition,r=>r.fulfill({contentType:'text/html',body:'<h1>Fictional petition</h1>'}));await page.locator('#petition-action').tap();await expect(page).toHaveURL(petition);
  await page.goBack();const footer=page.locator('.footer-discovery');await footer.scrollIntoViewIfNeeded();await expect(footer.getByRole('link',{name:'Parent Voices on YouTube'})).toBeVisible();await expect(footer.getByRole('link',{name:'Visit our Open Days'})).toBeVisible();
+});
+
+// Preview correction keeps saved homepage campaign-case links usable without scripts.
+for (const id of ['our-case', 'case-title']) {
+  test(`No JavaScript: old campaign-case anchor ${id} reaches About`, async ({ page }) => {
+    await page.goto('/index.html#' + id);
+    const link = page.locator('#' + id + ' a');
+    await expect(link).toBeVisible();
+    await link.click();
+    await expect(page.locator('#our-case')).toContainText('A funded, workable alternative has not yet been established.');
+    await expect(page.locator('#case-title')).toBeInViewport();
+  });
+}
+
+test('No JavaScript: optional research footer opens and its five references remain usable', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto('/index.html');
+  const group=page.locator('footer #supporting-research');
+  await expect(group).not.toHaveAttribute('open', '');
+  await group.locator('summary').click();
+  for (const [href, name] of [['questions.html#questions','Six questions worth asking'],['evidence.html#records','Evidence & original sources'],['understand.html#budget','School finances & closure costs'],['options.html#options','Ways to keep Kew open'],['lessons.html#key-lessons','Historical school cases']]) {
+    await group.getByRole('link', { name, exact: true }).click();
+    await expect(page.locator('.archive-flag, .archive-banner')).toHaveCount(0);
+    await expect(page.locator('#'+href.split('#')[1])).toBeInViewport();
+    await page.goBack();
+    // Native Back may reload the static page; its disclosure remains operable.
+    if (!(await group.evaluate(element => element.open))) await group.locator('summary').click();
+    await expect(group).toHaveAttribute('open', '');
+  }
 });

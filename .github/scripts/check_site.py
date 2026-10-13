@@ -31,6 +31,7 @@ understand.html understand.css understand.js understand-data.json richmond-schoo
 voice.css voice.js contribute.css sent.html sent.js private-form.js respond-reminder.ics
 og-home.png og-letters.png og-ideas.png og-videos.png
 og-fundraising-trustees-v1.png og-fundraising-admin-v1.png
+dates.html get-involved.html updates.html questions.html campaign.css campaign.js images/york-house-rally.jpg
 '''.split())
 MAINTENANCE_FILES = frozenset('''
 tests/browser/mobile-header.spec.js tests/browser/mobile-feedback.spec.js tests/browser/mobile-letters.spec.js tests/browser/mobile-reading.spec.js tests/browser/mobile-contact-support.spec.js
@@ -48,7 +49,7 @@ tests/browser/research-update.spec.js
 .github/scripts/build_old_site_redirect.py .github/scripts/old_site_redirect.js .github/scripts/old_site_redirect.css .github/scripts/test_old_site_redirect.py tests/browser/old-site-redirect.spec.js
 tests/browser/fundraising-briefs.spec.js
 .github/scripts/build_navigation.py tests/browser/orientation.spec.js
-tests/browser/clarity.spec.js tests/browser/rally.spec.js
+tests/browser/clarity.spec.js tests/browser/rally.spec.js tests/browser/campaign-site.spec.js
 tests/browser/qr.spec.js
 tests/browser/theme.spec.js
 VIDEO-PERMISSIONS.md CONTRIBUTING.md .github/CODEOWNERS .github/pull_request_template.md .github/branch-protection.json
@@ -78,6 +79,39 @@ SECRET_PATTERNS = [
 
 # Redirect entry points have dedicated journey tests instead of shared navigation.
 REDIRECT_PAGES = frozenset({'visit/index.html'})
+# Archived in place (13 October 2026): still served for old links, never linked
+# from a live page, and marked with a banner and noindex by build_navigation.py.
+ARCHIVED_PAGES = frozenset('''
+proposal.html faq.html rally.html supporters.html fundraising-trustees.html fundraising-admin.html
+'''.split())
+# The privacy notice must say where named public-role information is published.
+ARCHIVED_LINK_EXEMPTIONS = frozenset({('privacy.html', 'proposal.html#who-decides'), ('lessons-sources.html', 'https://savekewriversideprimaryschool.org/proposal.html')})
+
+
+
+def archived_links(name, data):
+    """Links from a live page to an archived page. Hidden homepage legacy routes,
+    which forward old shared fragments, are compatibility entries, not links."""
+    if name == 'index.html':
+        data = re.sub(r'<aside class="legacy-route\b.*?</aside>', '', data, flags=re.S)
+
+    found = set()
+    for href in re.findall(r'<a\b[^>]*\bhref="([^"]+)"', data):
+        url = urlsplit(href)
+        if not url.scheme and not url.netloc and url.path in ARCHIVED_PAGES and (name, href) not in ARCHIVED_LINK_EXEMPTIONS:
+            found.add(href)
+    return found
+
+
+def checklist_archived_links(text):
+    """Links from the response checklist Markdown (the source of the PDF linked
+    from Get involved) to archived pages, relative or on the canonical domain."""
+    found = set()
+    for href in re.findall(r'\]\(([^)\s]+)\)', text):
+        url = urlsplit(href)
+        if url.netloc in ('', 'savekewriversideprimaryschool.org') and url.path.lstrip('/') in ARCHIVED_PAGES:
+            found.add(href)
+    return found
 
 
 def require(ok, message):
@@ -149,6 +183,12 @@ def validate_site(root=ROOT):
         require(not any(re.search(pattern, data) for pattern in SECRET_PATTERNS), 'Possible credential in ' + name + ' (value withheld).')
         if name.endswith('.html'):
             page = Page(data)
+            if name in ARCHIVED_PAGES:
+                require('<!-- archive:start -->' in data and re.search(r'<meta name="robots" content="[^"]*noindex', data), 'Archived page lacks its banner or noindex: ' + name)
+            elif name in PUBLIC_FILES and name not in REDIRECT_PAGES:
+                require('<!-- archive:start -->' not in data, 'Live page carries the archive banner: ' + name)
+                links = archived_links(name, data)
+                require(not links, 'Live page links to archived pages: ' + name + ' -> ' + ', '.join(sorted(links)))
             if name == 'letters.html':
                 require(all('disabled' in page.inputs.get(field, {}) for field in ('council-name', 'council-postcode')), 'Council identity must be disabled before consent is checked.')
                 for field, value in {
@@ -163,6 +203,8 @@ def validate_site(root=ROOT):
                 require(all('required' not in page.named_inputs[field] for field in ('allow_public', 'allow_council', 'allow_quotes')), 'Letter sharing must remain optional.')
         if name.endswith('.js'):
             require(not re.search(r'\b(?:innerHTML|outerHTML|insertAdjacentHTML|eval)\b|document\.write\s*\(', data), 'Unsafe DOM/code execution sink in ' + name)
+    stale = checklist_archived_links((root / 'response-checklist.md').read_text())
+    require(not stale, 'Response checklist links to archived pages: ' + ', '.join(sorted(stale)))
     analytics = json.loads((root / 'analytics-config.json').read_text())
     require(set(analytics) == {'enabled', 'websiteId', 'counterEnabled'} and type(analytics['enabled']) is bool and type(analytics['counterEnabled']) is bool, 'Invalid analytics configuration.')
     require((analytics['enabled'] and isinstance(analytics['websiteId'], str) and re.fullmatch(r'[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}', analytics['websiteId'])) or (analytics['enabled'] is False and analytics['websiteId'] == ''), 'Analytics must have a valid public website ID or stay disabled.')

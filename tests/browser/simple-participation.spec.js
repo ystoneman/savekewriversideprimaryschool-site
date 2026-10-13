@@ -29,19 +29,20 @@ test('Short writing help: storage notice remains beside the field and old-draft 
   await expect(page.locator('#letter-guidelines')).toBeVisible();
 });
 
-test('Short supporters: reading and adding a name are distinct, and incoming form links retain every permission', async ({ page }) => {
+// 13 October 2026 slim-site decision: the archived supporters page no longer takes new names.
+// Old links to its form now land on a pointer to the council petition instead of the form.
+test('Short supporters: reading and adding a name are distinct, and incoming form links reach the petition pointer', async ({ page }) => {
   await page.goto('/supporters.html');
   await expect(page.locator('.support-statement')).toBeVisible();
   await expect(page.locator('#supporter-form')).toBeHidden();
   await expect(page.locator('#supporter-list-section')).toBeVisible();
   await page.getByRole('link', { name: 'Add my name', exact: true }).click();
   await expect(page.locator('#supporter-form')).toBeVisible();
-  const choices = page.locator('#supporter-form input[type="checkbox"]');
-  await expect(choices).toHaveCount(3);
-  for (const choice of await choices.all()) await expect(choice).not.toBeChecked();
+  await expect(page.locator('#supporter-form')).toContainText('New names are no longer being added.');
   await page.goto('/supporters.html#supporter-form');
-  await expect(page.locator('#public-name')).toBeVisible();
-  await expect(page.locator('#supporter-form')).toContainText('Nothing is published by submitting this form.');
+  await expect(page.locator('#supporter-form')).toBeInViewport();
+  await expect(page.locator('#supporter-form a[href="get-involved.html#petition"]')).toBeVisible();
+  await expect(page.locator('main form, #public-name')).toHaveCount(0);
 });
 
 test('Short sent page: the official action precedes optional instructions without claiming delivery', async ({ page }) => {

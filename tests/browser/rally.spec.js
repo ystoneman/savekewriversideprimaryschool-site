@@ -46,10 +46,15 @@ test('Rally: shared photo arrival preserves choice and formal response at narrow
   for (const width of [320, 390, 1101, 1250, 1440]) {
     await page.setViewportSize({ width, height: width === 1440 ? 1000 : 568 });
     await page.goto('/rally.html');
-    for (const action of await page.locator('.participation-nav a').all()) {
-      await expect(action).toBeVisible();
-      expect((await action.boundingBox()).height).toBeGreaterThanOrEqual(44);
-    }
+    // Slim-site decision (13 October 2026): the header participation tiles were
+    // removed. The archive banner and the header now route to Get involved.
+    await expect(page.locator('.participation-nav')).toHaveCount(0);
+    await expect(page.locator('main > :first-child')).toHaveClass(/\barchive-banner\b/);
+    await expect(page.locator('.archive-banner')).toBeInViewport();
+    await expect(page.locator('.archive-banner a[href="get-involved.html"]')).toBeVisible();
+    const choice = page.locator(width > 1100 ? '.desktop-explore a[href="get-involved.html"]' : '.mobile-menu summary');
+    await expect(choice).toBeVisible();
+    expect((await choice.boundingBox()).height).toBeGreaterThanOrEqual(44);
     if (width > 1100) {
       const brand = await page.locator('.brand').boundingBox();
       const navigation = await page.locator('.desktop-explore').boundingBox();
@@ -63,11 +68,13 @@ test('Rally: shared photo arrival preserves choice and formal response at narrow
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     const menu = page.locator('.mobile-menu summary');
     if (hasTouch) await menu.tap(); else await menu.click();
-    await expect(page.locator('.mobile-menu a[href="proposal.html#parent-plan"]')).toBeVisible();
-    const parentPlan = page.locator('.mobile-menu a[href="proposal.html#parent-plan"]');
-    if (hasTouch) await parentPlan.tap(); else await parentPlan.click();
-    await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
-    await expect(page.locator('#parent-plan-title')).toBeInViewport();
+    // The Menu's Parent action plan row became Get involved (13 October 2026).
+    const getInvolved = page.locator('.mobile-menu a[href="get-involved.html"]');
+    await expect(getInvolved).toBeVisible();
+    if (hasTouch) await getInvolved.tap(); else await getInvolved.click();
+    await expect(page).toHaveURL(/get-involved\.html$/);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Get involved');
+    await expect(page.getByRole('heading', { level: 1 })).toBeInViewport();
   }
   await page.goto('/rally.html#council-and-response');
   await expect(page.locator('#council-and-response')).toContainText('Coming to the rally does not submit a consultation response');

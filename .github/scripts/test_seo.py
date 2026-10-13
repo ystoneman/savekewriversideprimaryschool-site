@@ -15,8 +15,7 @@ class SEOTests(unittest.TestCase):
         tree = ET.fromstring(outputs()['sitemap.xml'])
         urls = [entry.find('{'+NAMESPACE+'}loc').text for entry in tree]
         expected = ['https://savekewriversideprimaryschool.org/'+name for name in
-                    ('', 'proposal.html', 'faq.html', 'understand.html', 'evidence.html',
-                     'options.html', 'lessons.html', 'lessons-sources.html', 'about.html', 'letters.html')]
+                    ('', 'dates.html', 'get-involved.html', 'updates.html', 'about.html', 'letters.html', 'questions.html', 'evidence.html', 'understand.html', 'options.html', 'lessons.html', 'lessons-sources.html')]
         self.assertEqual(urls, expected)
         self.assertEqual(len(urls), len(set(urls)))
         self.assertTrue(all(len(entry) == 1 for entry in tree))
@@ -25,6 +24,7 @@ class SEOTests(unittest.TestCase):
     def test_invalid_destinations_rejected(self):
         for pages in [('index.html', 'index.html'), ('sent.html',),
                       ('fundraising-trustees.html',), ('fundraising-admin.html',),
+                      ('proposal.html',), ('faq.html',),
                       ('private.html',), ('letters.json',)]:
             with self.subTest(pages=pages), self.assertRaises(ValueError):
                 outputs(pages=pages)

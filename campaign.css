@@ -1,0 +1,26 @@
+/* Slim campaign pages (13 October 2026): Dates & council documents, Get involved, Campaign updates. */
+.campaign-page{padding-bottom:40px}
+.campaign-page .simple-intro h1{margin-bottom:12px}
+.campaign-section{max-width:760px;margin:0;padding:22px 0 6px;border-top:1px solid var(--theme-border,var(--line))}
+.campaign-section h2{font:700 22px/1.3 Arial,sans-serif;margin:0 0 8px;color:var(--theme-strong,var(--ink))}
+.campaign-section p{font-size:17px;line-height:1.55;margin:0 0 12px}
+.campaign-section .simple-actions{margin:8px 0 14px}
+.campaign-section .simple-note{font-size:15px}
+.campaign-page a{overflow-wrap:anywhere}
+.campaign-page p{overflow-wrap:anywhere}
+/* Without scripts, section links jump straight there, as on the pages these replace. */
+html:has(.campaign-page){scroll-behavior:auto}
+.campaign-page .council-deadline{font-size:17px;line-height:1.55;max-width:62ch}
+.campaign-page .council-deadline a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
+.update-list{list-style:none;margin:0;padding:0;max-width:760px}
+.update-list>li{padding:18px 0 8px;border-top:1px solid var(--theme-border,var(--line))}
+.update-list h2{font:700 20px/1.35 Arial,sans-serif;margin:0 0 6px;color:var(--theme-strong,var(--ink))}
+.update-list p{font-size:17px;line-height:1.55;margin:0 0 10px}
+.update-date{font-size:13px!important;font-weight:700;letter-spacing:.04em;color:var(--theme-readable,var(--muted))!important;margin-bottom:4px!important}
+
+.home-case{padding-block:8px 32px}
+@media(max-width:700px){.campaign-section h2{font-size:20px}.update-list h2{font-size:18px}}
+
+.update-photo{margin:16px 0 14px}
+.update-photo img{display:block;width:100%;max-width:100%;height:auto;border-radius:8px}
+.update-photo figcaption{font-size:14px;line-height:1.5;color:var(--theme-readable,var(--muted));margin-top:8px}

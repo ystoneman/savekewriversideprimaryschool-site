@@ -3,29 +3,50 @@ const { test, expect } = require('./fixtures');
 for (const scripts of [true, false]) {
   test.describe(`Compact mobile header, scripts ${scripts}`, () => {
     test.use({ javaScriptEnabled: scripts });
-    test('participation and page navigation stay exposed while page status remains reachable', async ({ page }) => {
+    test('Menu stays exposed while page status remains reachable, and archived pages say so', async ({ page }) => {
       for (const width of [320, 390]) {
         await page.setViewportSize({ width, height: width === 320 ? 568 : 844 });
-        await page.goto('/evidence.html');
-        const header = page.locator('.site-header');
-        for (const href of ['letters.html', 'feedback.html']) {
-          const action = header.locator(`.participation-nav a[href="${href}"]`);
-          await expect(action).toBeInViewport({ ratio: 1 });
-          expect((await action.boundingBox()).height).toBeGreaterThanOrEqual(44);
-        }
+        await page.goto('/dates.html');
+        // The header participation tiles and live pages' "On this page" chooser were retired by the 13 October 2026 slim-site decision.
+        await expect(page.locator('.participation-nav, .page-sections')).toHaveCount(0);
+        const summary = page.locator('.mobile-menu > summary');
+        await expect(summary).toBeInViewport({ ratio: 1 });
+        expect((await summary.boundingBox()).height).toBeGreaterThanOrEqual(44);
+        await expect(page.locator('main h1')).toBeInViewport({ ratio: 1 });
+        // The dated status strip moves into the Menu on narrow screens.
+        const status = (await page.locator('.independent-bar span').textContent()).trim();
+        expect(status).not.toBe('');
+        await summary.click();
+        await expect(page.locator('.mobile-page-note')).toContainText(status);
+        await expect(page.locator('.mobile-page-note')).toBeVisible();
+        await summary.click();
+        await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open', '');
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+        // Archived pages keep their section chooser, show an Archived flag beside it and
+        // drop the dated Menu status note (13 October 2026 slim-site decision).
+        await page.goto('/proposal.html');
+        await expect(page.locator('.site-orientation .archive-flag')).toBeInViewport({ ratio: 1 });
+        await expect(page.locator('.mobile-menu > summary')).toBeInViewport({ ratio: 1 });
         const chooser = page.locator('.page-sections > summary');
         await expect(chooser).toBeInViewport({ ratio: 1 });
         await expect(chooser).toContainText('On this page');
-        await page.locator('.mobile-menu > summary').click();
-        await expect(page.locator('.mobile-page-note')).toContainText('Source library updated 8 October 2026');
-        await expect(page.locator('.mobile-page-note')).toBeVisible();
-        await page.locator('.mobile-menu > summary').click();
+        await expect(page.locator('.mobile-page-note')).toHaveCount(0);
         await chooser.click();
-        await page.locator('.section-links a[href="#gaps"]').click();
-        await expect(page).toHaveURL(/#gaps$/);
-        await expect(page.locator('#gaps')).toBeVisible();
+        await page.locator('.section-links a[href="#questions"]').click();
+        await expect(page).toHaveURL(/#questions$/);
+        await expect(page.locator('#questions')).toBeVisible();
         if (scripts) await expect(page.locator('.page-sections')).not.toHaveAttribute('open', '');
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        // Maintained research keeps its local navigation without a retirement label.
+        for (const file of ['evidence.html', 'questions.html']) {
+          await page.goto('/' + file);
+          await expect(page.locator('.archive-banner, .archive-flag')).toHaveCount(0);
+          await expect(page.locator('.mobile-menu > summary')).toBeInViewport({ ratio: 1 });
+          await page.locator('.mobile-menu > summary').click();
+          await expect(page.locator('.mobile-page-note')).toContainText('Supporting research');
+          expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        }
       }
     });
   });

@@ -22,7 +22,7 @@ const types = {
   '.ico': 'image/x-icon',
 };
 const localAssets = new Set(readdirSync(root).filter(name => types[path.extname(name)]));
-for (const name of ['school-discovery-480.jpg', 'school-discovery-960.jpg', 'school-project-480.jpg', 'school-project-960.jpg']) {
+for (const name of ['school-discovery-480.jpg', 'school-discovery-960.jpg', 'school-project-480.jpg', 'school-project-960.jpg', 'york-house-rally.jpg']) {
   localAssets.add('images/' + name);
 }
 const emptyBoards = {
@@ -146,6 +146,13 @@ async function controlledAttention(page) {
   await page.clock.pauseAt(new Date('2026-09-22T12:00:10Z'));
 }
 
+// From London date 17 October 2026 the homepage hides #main-action and the petition
+// leads (13 October 2026 slim-site decision); check the action for today's stage.
+async function leadHomeAction(page) {
+  const closed = await page.evaluate(() => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date()) > '2026-10-16');
+  return page.locator(closed ? '#petition-action' : '#main-action');
+}
+
 async function freezeAfterLoad(page) {
   // The choices panel is created but stays detached until someone opens it.
   await expect(page.locator('#analytics-panel')).toHaveCount(0);
@@ -180,7 +187,10 @@ test('First visit starts aggregate statistics without enabling Umami', async ({ 
   expect(events(sent, 'Section reached')).toEqual([]);
 });
 
-for (const target of ['proposal.html#parent-plan', 'letters.html#letter-form', 'evidence.html#gaps']) {
+// Since the 13 October 2026 slim-site decision, Help leads to get-involved.html
+// (letters, feedback and sent link #respond) and council dates live on dates.html.
+// evidence.html is archived but still served and linked from the old sites.
+for (const target of ['get-involved.html#respond', 'dates.html#timetable', 'letters.html#letter-form', 'evidence.html#gaps']) {
   for (const old of ['', 'https://savekewriverside.org/', 'https://ystoneman.github.io/kew-riverside-website/']) {
     test(`Fresh anchored arrival counts once without moving the visitor: ${old || 'direct'} ${target}`, async ({ page, context }) => {
       const { sent, aggregates } = await virtualProduction(context);
@@ -332,7 +342,8 @@ for (const width of [320, 390, 1440]) {
       await expect(page.locator('.analytics-invitation')).toBeVisible();
       await expect(field).toHaveValue('Fictional letter for invitation focus check');
       await page.goto(site);
-      const shortcut = page.locator('#main-action');
+      const shortcut = await leadHomeAction(page);
+      await expect(shortcut).toBeVisible();
       const box = await shortcut.boundingBox();
       expect(box.y + box.height).toBeLessThan(width === 320 ? 568 : width === 390 ? 844 : 1000);
     }
@@ -426,8 +437,8 @@ test('An explicit detailed choice sends fixed events without a cookie', async ({
   }
   await expect.poll(() => events(sent, 'Active viewing')).toEqual([15, 30, 60, 120, 300].map(seconds => ({ seconds })));
   // The checklist download left the homepage Menu on 13 October 2026; named
-  // download actions under this detailed choice are checked on Options in
-  // 'A checklist download records a fixed click label once per page'.
+  // download actions under this detailed choice are checked on Get involved and
+  // Options in 'A checklist download ... records a fixed click label once per page'.
   expect(events(sent, 'Action opened')).toEqual([]);
   expect(pageViews(sent)).toHaveLength(1);
   expect(JSON.parse(await page.evaluate(key => localStorage.getItem(key), choiceKey)).choice).toBe('allow');
@@ -681,9 +692,13 @@ for (const file of ['feedback.html?kind=privacy', 'corrections.html']) {
       await expect(panel.getByRole('status')).toContainText(file.startsWith('feedback') ? 'Share ideas page' : 'private request page');
       await expect(panel.locator('[aria-pressed="true"]')).toHaveCount(0);
       await panel.getByRole('button', { name: 'Close analytics choices' }).click();
-      await page.getByRole('link', { name: 'FAQ', exact: true }).last().click();
+      // faq.html was archived on 13 October 2026 (slim site) and left the Menu
+      // and footer; FAQs now sit on the dates page, linked from every footer.
+      await page.locator('footer').getByRole('link', { name: 'Dates, leaflet & FAQs', exact: true }).click();
+      await expect(page).toHaveURL(site + 'dates.html');
       if (saved) {
         await expect.poll(() => sent.length).toBe(1);
+        expect(sent[0].body.payload.url).toBe(prefix + 'dates.html');
         expect(sent[0].body.payload.referrer).toBe('');
       } else expect(sent).toEqual([]);
       expect(events(sent, 'Action opened')).toEqual([]);
@@ -702,10 +717,12 @@ for (const saved of ['allow', null]) {
     await freezeAfterLoad(page);
     await page.clock.runFor(30_000);
     expect(sent).toEqual([]);
-    await page.getByRole('link', { name: 'FAQ', exact: true }).last().click();
+    // faq.html was archived on 13 October 2026 (slim site) and left the Menu and footer.
+    await page.locator('footer').getByRole('link', { name: 'Dates, leaflet & FAQs', exact: true }).click();
+    await expect(page).toHaveURL(site + 'dates.html');
     if (saved) {
       await expect.poll(() => sent.length).toBe(1);
-      expect(sent[0].body.payload.url).toBe(prefix + 'faq.html');
+      expect(sent[0].body.payload.url).toBe(prefix + 'dates.html');
       expect(sent[0].body.payload.referrer).toBe('');
     } else expect(sent).toEqual([]);
   });
@@ -791,19 +808,22 @@ test('Visitors choosing detailed analytics report Evidence and Options sections,
 test('Jumps within a page are not counted as opening it; links to another page are', async ({ page, context }) => {
   const { sent } = await virtualProduction(context);
   await savedChoice(page);
-  await page.goto(site + 'proposal.html');
+  // Since the 13 October 2026 slim-site decision the live pages have no section
+  // chooser and the header shortcut is Get involved, not the Parent action plan.
+  await page.goto(site + 'about.html');
   await expect.poll(() => pageViews(sent).length).toBe(1);
   // Programmatic clicks exercise the collector's handler for links that may sit in closed menus.
-  for (const selector of ['a[href="#timetable"]', 'a[href="#main"]', 'a[href="proposal.html#parent-plan"]']) {
+  for (const selector of ['a[href="#contact"]', 'a[href="#press"]', 'a[href="#main"]', 'a[href="about.html#press"]']) {
     await page.locator(selector).first().evaluate(link => link.click());
   }
   await page.waitForTimeout(300);
+  expect(pageViews(sent)).toHaveLength(1);
   expect(events(sent, 'Action opened')).toEqual([]);
-  await page.goto(site + 'lessons.html');
+  await page.goto(site + 'dates.html');
   await expect.poll(() => pageViews(sent).length).toBe(2);
-  await page.locator('a.nav-parent-plan').first().evaluate(link => link.click());
-  await expect(page).toHaveURL(site + 'proposal.html#parent-plan');
-  await expect.poll(() => events(sent, 'Action opened')).toEqual([{ action: 'Opened Proposal & action plan' }]);
+  await page.locator('nav.desktop-explore a.nav-primary').evaluate(link => link.click());
+  await expect(page).toHaveURL(site + 'get-involved.html');
+  await expect.poll(() => events(sent, 'Action opened')).toEqual([{ action: 'Opened Get involved' }]);
 });
 
 // The notice says section timing pauses in a form field but page viewing time does not.
@@ -938,18 +958,52 @@ test('An official-form handoff records a fixed opening label, never a completed 
   expect(JSON.stringify(sent)).not.toContain(officialForm);
 });
 
-test('A checklist download records a fixed click label once per page, without claiming completion', async ({ page, context }) => {
+// Current action downloads belong to Get involved, keeping research focused.
+for (const file of ['get-involved.html']) {
+  test(`A checklist download on ${file} records a fixed click label once per page, without claiming completion`, async ({ page, context }) => {
+    const { sent } = await virtualProduction(context);
+    await controlledAttention(page);
+    await page.goto(site + file);
+    await freezeAfterLoad(page);
+    await allowAnalytics(page);
+    for (let click = 0; click < 2; click += 1) {
+      expect(await page.locator('a[download][href="response-checklist.pdf"]').getAttribute('download')).toBe('kew-riverside-response-checklist.pdf');
+      await analyticsDownloadClick(page, 'a[download][href="response-checklist.pdf"]');
+    }
+    await expect.poll(() => events(sent, 'Action opened')).toEqual([{ action: 'Download clicked: checklist' }]);
+    expect(JSON.stringify(sent)).not.toMatch(/downloaded|completed/i);
+  });
+}
+
+test('Supporting Options retains funding questions without a duplicate checklist action', async ({ page, context }) => {
   const { sent } = await virtualProduction(context);
-  await controlledAttention(page);
   await page.goto(site + 'options.html');
-  await freezeAfterLoad(page);
   await allowAnalytics(page);
-  for (let click = 0; click < 2; click += 1) {
-    expect(await page.locator('a[download][href="response-checklist.pdf"]').getAttribute('download')).toBe('kew-riverside-response-checklist.pdf');
-    await analyticsDownloadClick(page, 'a[download][href="response-checklist.pdf"]');
-  }
-  await expect.poll(() => events(sent, 'Action opened')).toEqual([{ action: 'Download clicked: checklist' }]);
-  expect(JSON.stringify(sent)).not.toMatch(/downloaded|completed/i);
+  await expect(page.locator('a[href="response-checklist.pdf"]')).toHaveCount(0);
+  await expect(page.locator('.funding-questions ol a[href^="feedback.html?kind=crowdfunding"]')).toHaveCount(8);
+  expect(events(sent, 'Action opened')).toEqual([]);
+});
+
+test('A petition handoff from Get involved records a fixed opening label in aggregate and detailed analytics', async ({ page, context }) => {
+  // 'Opened petition' joined the reviewed labels with the 13 October 2026 slim site.
+  const petition = 'https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249';
+  const { sent, aggregates } = await virtualProduction(context);
+  const handoffs = [];
+  await context.route(petition, async route => {
+    handoffs.push(route.request().url());
+    await route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Fictional petition destination</title><p>Locally intercepted. No council service contacted.</p>' });
+  });
+  await page.goto(site + 'get-involved.html#petition');
+  await expect.poll(() => aggregates.filter(r => r.body.counters.some(c => c.metric === 'page')).length).toBe(1);
+  await allowAnalytics(page);
+  await expect.poll(() => pageViews(sent).length).toBe(1);
+  await page.locator('#petition').getByRole('link', { name: /Sign the petition/ }).click();
+  await expect.poll(() => handoffs.length).toBe(1);
+  await expect.poll(() => events(sent, 'Action opened')).toEqual([{ action: 'Opened petition' }]);
+  await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'action' && c.label === 'Opened petition'))).toBe(true);
+  const allowed = JSON.parse(readFileSync(path.join(root, 'analytics-backend/labels.json')));
+  for (const c of aggregates.flatMap(r => r.body.counters)) expect(allowed[c.metric], c.metric).toContain(c.label);
+  expect(JSON.stringify(sent) + JSON.stringify(aggregates)).not.toMatch(/ePetition|richmond\.gov|signed|completed/i);
 });
 
 test('Opening consent controls and private request links adds no action label', async ({ page, context }) => {
@@ -1123,7 +1177,7 @@ for (const width of [320, 390, 1440]) {
     await expect(invitation).toBeInViewport({ ratio: 1 });
     // Baseline comparison confirms Help already starts below 568px; preserve
     // the primary response arrival rather than changing the approved homepage.
-    await expect(page.locator('#main-action')).toBeInViewport({ ratio: 1 });
+    await expect(await leadHomeAction(page)).toBeInViewport({ ratio: 1 });
     if (process.env.KEW_ANALYTICS_CAPTURES) await page.screenshot({ path: process.env.KEW_ANALYTICS_CAPTURES + '/' + testInfo.project.name + '-' + width + '-arrival.png' });
     await invitation.getByRole('button', { name: 'Review analytics choices' }).click();
     const panel = page.locator('#analytics-panel');

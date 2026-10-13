@@ -2,12 +2,52 @@
 
 ## Unreleased
 
+### Approved preview rally photo — 13 October 2026
+
+Bring the existing approved Sites preview's York House rally entry and original photograph into the production candidate. Date, conversations with council members and face permissions were confirmed during preview creation. Retain the full 4:3 photo and neutral caption without implying council endorsement or a turnout total. The home page remains concise. Source verification and checks are recorded in the release PR.
+
+### Petition deadline countdown — 13 October 2026
+
+Add the same days-left styling as the council response to the existing Sign the petition note, counting London calendar days until 13 January 2027. Retain the fixed date and eligibility, final-day/expired states, no-script fallback and stable touch/keyboard handoff. The council's petition page was retrieved again and confirms 13/10/2026–13/01/2027. Petition-link opening analytics already exist in this PR; deploy the additive backend labels before releasing the site. The owner approved production deployment once required current-revision checks pass. Completed checks and release evidence are recorded in TESTING.md and the PR.
+
+### Supporting research without duplicated campaign actions — 13 October 2026
+
+Keep useful research as maintained secondary pages below the concise landing page, removing blanket archive warnings from those destinations. Add a focused six-question page with the original sourced articles; retain financial figures, alternatives, historical cases and their source dates/limits. Remove repeated campaign introductions and generic response/preparation/contribution blocks from research, using Dates and Get involved for current actions. Keep eight contextual funding feedback routes with one privacy/routing explanation. Old Options anchors reveal only their current handoffs, and recruitment remains separate.
+
+Update navigation/SEO/public-file validation for six maintained supporting pages and six actual archives. Extend automatic all-page coverage to the new Questions page; preserve source controls, full-page/print state, native no-script details and old-link recovery. Add the Questions analytics label, which must be deployed to the backend with a future live release. Independent campaign/evidence implementation findings are resolved; actual rendered UX and verification are recorded in TESTING.md. This updates PR #47 and its separate Sites mockup; it does not publish to the campaign domain.
+
+### Optional supporting research restored — 13 October 2026
+
+Added a closed Supporting research & alternatives footer section after press and About/appearance. Restored dated-reference access to the six council questions, evidence and sources, finances and closure costs, ways to keep Kew open and historical school cases. The hero, main actions and five-page Menu are unchanged. Destination archive notices remain; the publication guard allows only five declared reference routes in this homepage footer. Verification is recorded in TESTING.md.
+
+
+### Retain the concise landing page — 13 October 2026
+
+Moved the added “Why keep Kew Riverside open” section unchanged from Home to About after owner feedback on the team preview. Retained the five-page Menu and homepage actions. Old homepage case anchors continue to About. This is a PR and Sites-preview correction, not a live campaign-domain deployment. Verification is recorded in TESTING.md.
+
+
+### Slim five-page campaign site — 13 October 2026
+
+- Reduce the live site to five Menu pages: Home, Dates, leaflet & FAQs (`dates.html`), Get involved (`get-involved.html`), Campaign updates (`updates.html`) and a shorter About & contact, plus the existing Discover the school group. Retire the header participation tiles and live-page "On this page" choosers; the wide-screen header shortcut is Get involved.
+- Home: rename Help the campaign to Get involved (now `get-involved.html`) and add a three-point "Why keep Kew Riverside open" section with its caveat. From 17 October 2026 (London date) hide the Respond button and its note so the petition leads; the intro still states the proposal and the conditional next steps, and the petition note drops its consultation reminder.
+- Dates, leaflet & FAQs moves the response deadline, the council's leaflet and two FAQs and the leaflet's verbatim timetable onto a live page. Get involved gathers Respond (form, leaflet email and postal routes, checklist), the petition, councillors and MP, letters, parent testimonial videos for families choosing a school, ideas, and the homepage and Open Day visit QR codes; `campaign.js` swaps both pages' open and closed consultation blocks after the deadline and moves the petition above the closed note on Get involved.
+- Campaign updates lists six dated entries verified against public sources or the site's own records (petition, news coverage, records received, Full Council questions, Parent Voices, community letters).
+- Archive `proposal`, `faq`, `understand`, `evidence`, `options`, `lessons`, `lessons-sources`, `rally`, `supporters` and the fundraising briefs in place: generated dated banner, an Archived label that stays in view on deep links (also without scripts), an archive date in the wide-screen status strip and `noindex,follow`; removed from the sitemap and footers; `check_site.py` rejects live links to them, including from the response checklist's source. Rebuild the response checklist PDF without its six links to archived evidence pages. Replace the archived supporter form with a pointer to the petition. Retarget live task-page links and four homepage legacy routes to the new pages.
+- Fix footer link regeneration, which had stopped matching after the footer discovery row was added.
+- About: replace the request for existing organising efforts with a neutral contact line; other people's roles are described only with their agreement.
+- Add analytics labels for the new pages and the petition (deploy the worker's `labels.json` before the site). Update tests deliberately for the new shell and journeys; checks actually run are recorded in TESTING.md and the pull request. Not yet deployed.
+
+### Community letter — 13 October 2026
+
+
 ### Hourly statistics and mobile operator dashboard — 13 October 2026
 
 - Hourly page-open totals: independent all-page receipt-hour counters, updated first-visit notice, v5 scope with v1–v4 choices preserved, and no hourly browser/device/referral breakdown. Private dashboard adds a narrow Mobile tab with in-cell bars; daily chart/data sources remain. Eight SQLite backend checks and 150 Python validation checks pass. All 368 analytics cases are verified across four browser engines (364 initially passed; four exact choice-version expectations were updated and rechecked). Independent privacy/evidence and rendered 320×568 WebKit UX reviews have no remaining findings. [PR #49](https://github.com/ystoneman/savekewriversideprimaryschool-site/pull/49) passed every current-revision hosted browser batch and required gate. The merged production run also passes, reusing verified browser evidence. All 19 changed public assets match the checked release. The existing Cloudflare collector was deployed with logs disabled and unchanged retention. A controlled ordinary-Chrome visit and reload each incremented the hourly/page counters while the daily browser estimate stayed unchanged; the native Sheet’s counts, timestamp and populated bars match the fresh source. The three-hour automation retains its existing interval and sharing. Native iOS Simulator verification was attempted but its window became unavailable; phone WebKit emulation and Google-rendered desktop Sheet checks are recorded separately.
 
 
 - Add one eligible community letter with the author's submitted wording and display name, labelled AI screened. Publication and the optional one-time notice remain pending until the canonical and compatibility releases are verified.
+
+### Petition details and school-discovery Menu — 13 October 2026
 
 - Add a concise first-time visitor introduction to every homepage deadline state: Richmond Council’s proposed 1 September 2027 closure remains undecided, and supporters seek time to test costed recovery and sustainable alternatives. Keep the no-JavaScript and post-deadline wording explicitly dated, preserve the link-free hero and four existing homepage actions, and leave the Open Day route separate.
 

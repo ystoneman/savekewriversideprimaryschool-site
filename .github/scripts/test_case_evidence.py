@@ -205,14 +205,21 @@ class CaseEvidenceTests(unittest.TestCase):
         from datetime import date
         checked = date.fromisoformat(json.loads((ROOT / 'sources.json').read_text())['researchChecked'])
         label = f'{checked.day} {checked:%B %Y}'
-        for name, prefix in [('index.html', 'Kew evidence updated'), ('understand.html', 'Kew evidence updated'),
-                             ('evidence.html', 'Source library updated'), ('faq.html', 'Selected answers updated')]:
-            self.assertIn(f'<span>{prefix} {label}</span>', (ROOT / name).read_text(), name)
+        # The homepage dropped its evidence date with the slim site (13 October 2026).
+        # The research pages are archived: their status strip names the archive date
+        # instead of an update, while the page body keeps the collection date.
+        for name in ('faq.html',):
+            page = (ROOT / name).read_text()
+            bar = page.split('<div class="independent-bar">', 1)[1].split('</div>', 1)[0]
+            self.assertIn('<span>Archived 13 October 2026</span>', bar, name)
+            self.assertNotIn('updated', bar.lower(), name)
+        self.assertIn(label, (ROOT / 'evidence.html').read_text())
 
     def test_received_budget_is_not_still_described_as_missing_on_arrival(self):
         html = (ROOT / 'understand.html').read_text()
         hero = html.split('id="top"', 1)[1].split('</section>', 1)[0]
-        self.assertIn('Our position:', hero)
+        self.assertIn('Check the dated figures, forecasts and educational evidence', hero)
+        self.assertNotIn('Our position:', hero)
         budget = html.split('<section class="data-section" id="budget"', 1)[1].split('<section class="data-section" id="other-proposals"', 1)[0]
         self.assertIn('approved summary has now been received', budget)
         self.assertIn('current monitoring and assumptions are still needed', budget)

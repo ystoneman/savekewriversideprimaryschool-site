@@ -7,6 +7,16 @@
   const url = document.getElementById('share-url');
   const status = document.getElementById('share-status');
   const copy = document.getElementById('copy-link');
+  // Preserve this entry's optional reading choice on Back without browser storage.
+  const research = document.getElementById('supporting-research');
+  if (research) {
+    const restoreResearch = () => { research.open = location.hash === '#supporting-research' || history.state?.homeResearchOpen === true; };
+    restoreResearch();
+    window.addEventListener('pageshow', restoreResearch);
+    research.addEventListener('toggle', () => {
+      try { history.replaceState({ ...history.state, homeResearchOpen: research.open }, ''); } catch {}
+    });
+  }
   let busy = false;
   trigger.hidden = false;
   fallback.hidden = true;

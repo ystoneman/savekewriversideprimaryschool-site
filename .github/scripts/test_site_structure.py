@@ -9,7 +9,7 @@ import struct
 import unittest
 from urllib.parse import parse_qs, unquote, urlsplit
 
-from check_site import PUBLIC_FILES, REDIRECT_PAGES, ROOT
+from check_site import PUBLIC_FILES, REDIRECT_PAGES, ROOT, ARCHIVED_PAGES, ARCHIVED_LINK_EXEMPTIONS, archived_links, checklist_archived_links
 
 
 # Snapshot of the moved homepage IDs before the September 2026 page split.
@@ -282,45 +282,75 @@ class SiteStructureTests(unittest.TestCase):
                 self.assertNotIn('petition',row.group())
 
     def test_shared_navigation_destinations_stay_consistent(self):
+        # The slim campaign site (owner decision, 13 October 2026): one five-page
+        # Menu on every page, a single Get involved shortcut and live-only footers.
         baseline = self.pages['about.html'].navigation
-        expected_desktop = navigation_destinations('about.html', baseline['desktop-explore'])
-        self.assertTrue(expected_desktop)
-        # One Menu on every page, homepage included (owner decision, 13 October 2026).
         expected_menu = [local_destination('about.html', href) for href in baseline['mobile-menu']]
-        self.assertIn(('proposal.html', 'council-documents'), expected_menu)
-        self.assertEqual(expected_menu[expected_menu.index(('proposal.html', '')) + 1], ('proposal.html', 'council-documents'),
-                         'Council documents stay a direct Menu route immediately after Proposal & dates')
-        self.assertNotIn(('evidence.html', 'gaps'), expected_menu, 'The archived question list is not a Menu route')
+        self.assertEqual(expected_menu, [('index.html', ''), ('dates.html', ''), ('get-involved.html', ''), ('updates.html', ''), ('about.html', ''),
+                                         ('videos.html', 'watch-parent-voices'), ('visit/index.html', '')])
+        expected_desktop = navigation_destinations('about.html', baseline['desktop-explore'])
+        self.assertEqual(expected_desktop, {('get-involved.html', '')})
+        live_footer = {'about.html', 'dates.html', 'get-involved.html', 'updates.html', 'letters.html', 'videos.html', 'feedback.html', 'corrections.html', 'privacy.html'}
         for name, page in self.pages.items():
             if name in REDIRECT_PAGES:
                 continue
             with self.subTest(page=name):
                 menu_routes = [local_destination(name, href) for href in page.navigation['mobile-menu']]
-                self.assertEqual(menu_routes, expected_menu + ([('sent.html', '')] if name == 'sent.html' else []),
+                expected = expected_menu[:5] + [('sent.html', '')] + expected_menu[5:] if name == 'sent.html' else expected_menu
+                self.assertEqual(menu_routes, expected,
                                  'Every page shows the same Menu entries in the same order')
-                if name == 'index.html':
-                    mobile = navigation_destinations(name, page.navigation['mobile-menu'])
-                    self.assertIn('data-home-landing', (ROOT/name).read_text())
-                    self.assertEqual(mobile, navigation_destinations(name, page.navigation['desktop-explore']), 'Home uses the complete Menu at every width')
-                    footer = re.search(r'<footer>.*?</footer>', (ROOT/name).read_text(), re.S)
-                    self.assertIsNotNone(footer)
-                    footer_pages = {local_destination(name, href)[0] for href in re.findall(r'href="([^"]+)"', footer.group()) if local_destination(name, href)}
-                    self.assertTrue({'lessons.html','supporters.html','privacy.html','corrections.html','lessons-sources.html','about.html'} <= footer_pages, 'Compact footer must retain all supporting routes')
-                    continue
-                desktop = navigation_destinations(name, page.navigation['desktop-explore'])
-                mobile = navigation_destinations(name, page.navigation['mobile-menu'])
-                participation = navigation_destinations(name, page.navigation['participation-nav'])
-                self.assertEqual(desktop, expected_desktop, 'Desktop destinations differ between pages')
-                self.assertTrue(desktop | {('index.html', '')} <= mobile, 'Full menu must retain every desktop destination and Home')
-                # The curated Menu (27 September 2026) holds these pages; the rest of the
-                # agreed set moved to every footer rather than disappearing.
-                required_pages = {'index.html', 'about.html', 'proposal.html', 'faq.html', 'understand.html', 'options.html', 'evidence.html', 'letters.html', 'feedback.html', 'videos.html', 'visit/index.html'}
-                self.assertEqual({file for file, fragment in mobile}, required_pages | ({'sent.html'} if name == 'sent.html' else set()), 'The curated Menu must expose the agreed page set')
-                footer = re.search(r'<footer>.*?</footer>', (ROOT / name).read_text(), re.S)
+                self.assertEqual(page.navigation['participation-nav'], [], 'The header participation tiles were retired')
+                text = (ROOT / name).read_text()
+                footer = re.search(r'<footer>.*?</footer>', text, re.S)
                 self.assertIsNotNone(footer, 'Pages with the shared shell keep a footer')
                 footer_pages = {local_destination(name, href)[0] for href in re.findall(r'href="([^"]+)"', footer.group()) if local_destination(name, href)}
-                self.assertTrue({'lessons.html', 'supporters.html', 'privacy.html', 'corrections.html', 'lessons-sources.html', 'about.html'} <= footer_pages, 'Routes moved out of the Menu must stay in every footer')
-                self.assertEqual(participation, {('letters.html', ''), ('feedback.html', '')})
+                self.assertTrue(live_footer <= footer_pages, 'Every footer keeps the live campaign and task pages')
+                self.assertEqual(footer_pages & ARCHIVED_PAGES, set(), 'Only Home’s dated research footer restores these references')
+                if name == 'index.html':
+                    self.assertIn('data-home-landing', text)
+                    self.assertEqual(navigation_destinations(name, page.navigation['mobile-menu']),
+                                     navigation_destinations(name, page.navigation['desktop-explore']), 'Home uses the complete Menu at every width')
+                    continue
+                self.assertEqual(navigation_destinations(name, page.navigation['desktop-explore']), expected_desktop, 'Desktop destinations differ between pages')
+
+    def test_archived_pages_are_marked_and_unlinked_from_live_pages(self):
+        # Archived pages stay served for old links but carry a banner and noindex,
+        # and no live page links to them outside hidden homepage legacy routes.
+        self.assertEqual(ARCHIVED_PAGES, {'proposal.html', 'faq.html', 'rally.html', 'supporters.html', 'fundraising-trustees.html', 'fundraising-admin.html'})
+        self.assertTrue(ARCHIVED_PAGES <= PUBLIC_FILES, 'Archived pages must stay published for old links')
+        for name in sorted(n for n in PUBLIC_FILES if n.endswith('.html') and n not in REDIRECT_PAGES):
+            text = (ROOT / name).read_text()
+            with self.subTest(page=name):
+                robots = re.search(r'<meta name="robots" content="([^"]*)"', text)
+                if name in ARCHIVED_PAGES:
+                    main = text.split('<main', 1)[1].split('>', 1)[1]
+                    self.assertTrue(main.startswith('<!-- archive:start --><aside class="archive-banner"'), 'Banner is the first thing in <main>')
+                    banner = main.split('<!-- archive:end -->', 1)[0]
+                    self.assertIn('Archived 13 October 2026.', banner)
+                    self.assertIn('<a href="dates.html">Current dates</a>', banner)
+                    self.assertIn('<a href="get-involved.html">Get involved</a>', banner)
+                    self.assertIn('<span class="archive-flag">Archived</span>', text, 'Deep-link arrivals see the sticky archive label')
+                    self.assertNotIn('mobile-page-note', text, 'Dated status notes would contradict the archive banner')
+                    self.assertTrue(robots and 'noindex' in robots.group(1))
+                else:
+                    self.assertNotIn('archive-banner', text)
+                    self.assertEqual(archived_links(name, text), set(), 'Live pages must not link to archived pages')
+        self.assertEqual(ARCHIVED_LINK_EXEMPTIONS, {('privacy.html', 'proposal.html#who-decides'), ('lessons-sources.html', 'https://savekewriversideprimaryschool.org/proposal.html')})
+        allowed = '<a href="proposal.html#questions">questions</a>'
+        self.assertEqual(archived_links('index.html', allowed), {'proposal.html#questions'})
+        self.assertEqual(archived_links('index.html', '<footer>'+allowed+'<details id="supporting-research">'+allowed+'</details></footer>'), {'proposal.html#questions'})
+        self.assertEqual(archived_links('index.html', '<footer><details id="supporting-research">'+allowed+'</details></footer>'), {'proposal.html#questions'})
+        self.assertEqual(archived_links('dates.html', '<footer><details id="supporting-research">'+allowed+'</details></footer>'), {'proposal.html#questions'})
+        self.assertEqual(archived_links('index.html', '<footer><details id="supporting-research"><a href="fundraising-admin.html">x</a></details></footer>'), {'fundraising-admin.html'})
+
+        self.assertIn('href="proposal.html#who-decides"', (ROOT / 'privacy.html').read_text())
+        # A planted link on a live page is caught.
+        self.assertEqual(archived_links('dates.html', '<a href="faq.html#school-places">x</a>'), {'faq.html#school-places'})
+        self.assertEqual(archived_links('index.html', '<aside class="legacy-route" id="x"><a href="evidence.html#records">y</a></aside>'), set())
+        # The response checklist PDF is linked from Get involved, so its source follows the same rule.
+        self.assertEqual(checklist_archived_links((ROOT / 'response-checklist.md').read_text()), set())
+        self.assertEqual(checklist_archived_links('[a](understand.html#budget) [b](https://savekewriversideprimaryschool.org/faq.html#school-places) [c](dates.html) [d](https://example.org/faq.html)'),
+                         {'https://savekewriversideprimaryschool.org/faq.html#school-places'})
 
     def test_printed_visit_route_has_matching_immediate_and_native_destinations(self):
         destination = 'https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform'

@@ -23,12 +23,14 @@ for (const file of pages) {
         }
       });
     }
+    // The header participation tiles were retired by the 13 October 2026 slim-site decision;
+    // every footer (Home's inside its settings disclosure) now carries letters and ideas.
     for (const [href, label] of [['letters.html', 'Community letters'], ['feedback.html', 'Share ideas']]) {
       await page.goto('/' + file);
-      if (file === 'index.html') await page.locator('.mobile-menu summary').click();
-      const link = page.locator(`${file === 'index.html' ? '.mobile-menu' : '.participation-nav'} a[href="${href}"]`);
-      await expect(link).toHaveAccessibleName(new RegExp(label));
-      if (file !== 'index.html') await expect(link.locator('svg')).toHaveAttribute('aria-hidden', 'true');
+      await expect(page.locator('.participation-nav')).toHaveCount(0);
+      if (file === 'index.html') await page.locator('#site-settings > summary').click();
+      const link = page.locator(`footer a[href="${href}"]`);
+      await expect(link).toHaveAccessibleName(label);
       await link.click();
       await expectDestination(page, href, baseURL);
     }
@@ -59,8 +61,8 @@ for (const file of pages) {
     await expect(menu).not.toHaveAttribute('open', '');
     await summary.focus();
     await page.keyboard.press('Enter');
-    // The menu now follows the participation links. Its next control is a section
-    // summary or page content, depending on whether this page has local navigation.
+    // Its next control is an archived page's section summary or page content,
+    // depending on whether this page has local navigation.
     const followingControl = await menu.evaluateHandle(menu => [...document.querySelectorAll('a[href],button,input,select,textarea,summary,[tabindex]')].find(node => {
       if (menu.contains(node) || !(menu.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING) || node.tabIndex < 0 || node.matches(':disabled,[type="hidden"]')) return false;
       for (let ancestor = node; ancestor; ancestor = ancestor.parentElement) {

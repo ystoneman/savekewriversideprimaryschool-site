@@ -4,7 +4,7 @@ const compactPages = [
   ['evidence.html', '#evidence-kew-detail', 550],
   ['lessons.html', '#research-takeaways', 250],
   ['lessons-sources.html', '#citation-sources', 240],
-  ['understand.html', '#campaign-case-detail', 150],
+  ['understand.html', '#supporting-research', 150],
 ];
 
 test('Short research entries expose the next task while keeping complete material available', async ({ page }) => {
@@ -109,7 +109,7 @@ test('Full research printing restores the reader’s prior disclosure choices', 
   await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
   expect(await page.locator('main details').evaluateAll(nodes => nodes.map(node => node.open))).toEqual(before);
   await expect(page.locator('#budget-forecast table')).toBeVisible();
-  await expect(page.locator('#campaign-case-detail')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#supporting-research')).toHaveAttribute('open', '');
 });
 
 test.describe('Complete research with JavaScript unavailable', () => {

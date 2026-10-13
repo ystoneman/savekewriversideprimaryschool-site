@@ -1,4 +1,4 @@
-const { test, expect, pages, expectStillArrival, expectScrollSettled } = require('./fixtures');
+const { test, expect, pages, menuPages, taskPages, supportingPages, archivedPages, expectStillArrival, expectScrollSettled } = require('./fixtures');
 
 test('Orientation: delayed final styles settle before the initial Options fragment jump', async ({ page }) => {
   await page.goto('/proposal.html#plan-keep-going');
@@ -54,23 +54,22 @@ async function activate(locator, hasTouch) {
   } else if (hasTouch) await locator.tap();
   else await locator.click();
 }
+// The five campaign pages of the slim site (13 October 2026), with their page names.
 const mainPages = [
-  ['index.html', 'Home'], ['about.html', 'About'], ['proposal.html', 'Proposal & dates'],
-  ['faq.html', 'FAQ'], ['understand.html', 'Our case for Kew'], ['options.html', 'Ways to keep Kew open'],
-  ['lessons.html', 'Lessons'], ['evidence.html', 'Evidence'],
+  ['index.html', 'Home'], ['dates.html', 'Dates, leaflet & FAQs'], ['get-involved.html', 'Get involved'],
+  ['updates.html', 'Campaign updates'], ['about.html', 'About & contact'],
 ];
-// The curated Menu (27 September 2026; one Menu on every page including the
-// homepage since 13 October 2026): labelled groups, official response first and
-// school discovery separate from closure-campaign actions. Pages outside it stay
-// in every footer (footerLinks).
+// The curated Menu (one Menu on every page including the homepage; slim five-page
+// campaign site since 13 October 2026): the campaign pages, then school discovery kept
+// separate from closure-campaign actions. Task pages (letters, videos, ideas) are
+// reached from Get involved and every footer; archived pages from neither.
 const menuGroups = [
-  ['Take part', [['Respond to the council', 'proposal.html#take-part'], ['Parent action plan', 'proposal.html#parent-plan'], ['Community letters', 'letters.html'], ['Share a video', 'videos.html#upload'], ['Share ideas', 'feedback.html']]],
-  ['Keep Kew open', [['Proposal & dates', 'proposal.html'], ['Council dates & documents', 'proposal.html#council-documents'], ['FAQ', 'faq.html'], ['Ways to keep Kew open', 'options.html'], ['Evidence', 'evidence.html#records'], ['Supporting research', 'understand.html#supporting-research']]],
+  ['Campaign', [['Home', 'index.html'], ['Dates, leaflet & FAQs', 'dates.html'], ['Get involved', 'get-involved.html'], ['Campaign updates', 'updates.html'], ['About & contact', 'about.html']]],
   ['Discover the school', [['Watch Parent Voices', 'videos.html#watch-parent-voices'], ['Book an Open Day', 'visit/index.html']]],
-  ['This website', [['Home', 'index.html'], ['About & contact', 'about.html']]],
 ];
 const menuNames = menuGroups.flatMap(([, links]) => links.map(([label]) => label));
-const footerLinks = ['about.html', 'about.html#press', 'proposal.html', 'faq.html', 'evidence.html#records', 'letters.html', 'feedback.html', 'videos.html#upload', 'understand.html', 'lessons.html', 'supporters.html', 'corrections.html', 'lessons-sources.html', 'privacy.html', 'privacy.html#analytics'];
+const footerLinks = ['about.html', 'about.html#press', 'dates.html', 'get-involved.html', 'updates.html', 'letters.html', 'videos.html#upload', 'feedback.html', 'corrections.html', 'privacy.html', 'privacy.html#analytics'];
+const openDay = 'https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform';
 
 async function activeSection(page) {
   return page.locator('.section-links a[aria-current="location"]').evaluateAll(links => links.length === 1 ? links[0].dataset.sectionId : null);
@@ -189,82 +188,86 @@ test('Orientation: each main page has a stable identity and the complete menu in
     await page.goto('/' + file);
     await expect(page.locator('.site-orientation .page-name')).toHaveText(name);
     await expect(page.locator('.mobile-menu')).toHaveCount(1);
+    // The header participation tiles and live pages' "On this page" chooser were retired by the 13 October 2026 slim-site decision.
+    await expect(page.locator('.participation-nav, .page-sections')).toHaveCount(0);
     const menu = page.locator('.mobile-menu');
     await activate(menu.locator(':scope > summary'), hasTouch);
     const names = await menu.locator('a').allTextContents();
     expect(names.map(text => text.trim())).toEqual(menuNames);
-    // A page outside the curated Menu is still one tap away in its footer.
-    const label = name === 'About' ? 'About & contact' : name;
-    if (menuNames.includes(label)) await expect(menu.getByRole('link', { name: label, exact: true })).toHaveAttribute('aria-current', 'page');
-    else if (file === 'understand.html') await expect(menu.getByRole('link', { name: 'Supporting research', exact: true })).toHaveAttribute('href', 'understand.html#supporting-research');
-    else await expect(page.locator('footer').getByRole('link', { name, exact: true })).toHaveCount(1);
-    const documents = menu.getByRole('link', { name: 'Council dates & documents', exact: true });
-    await expect(documents).toBeVisible();
-    await expect(documents).toHaveAttribute('href', 'proposal.html#council-documents');
-    await expect(documents).not.toHaveAttribute('aria-current', 'page');
-    await expect(menu.locator('a[href$="#gaps"]')).toHaveCount(0);
+    await expect(menu.getByRole('link', { name, exact: true })).toHaveAttribute('aria-current', 'page');
+    await expect(menu.locator('a[aria-current="page"]')).toHaveCount(1);
+    // The council's dates and documents are one Menu choice away, on dates.html.
+    const dates = menu.getByRole('link', { name: 'Dates, leaflet & FAQs', exact: true });
+    await expect(dates).toBeVisible();
+    await expect(dates).toHaveAttribute('href', 'dates.html');
+    if (file !== 'dates.html') await expect(dates).not.toHaveAttribute('aria-current', 'page');
+    // Letters and ideas left the Menu (13 October 2026 slim-site decision); Get involved and every footer carry them.
+    await expect(menu.locator('a[href^="letters.html"], a[href^="feedback.html"]')).toHaveCount(0);
     for (const [label, href] of [['Community letters', 'letters.html'], ['Share ideas', 'feedback.html']]) {
-      await expect(menu.getByRole('link', { name: label, exact: true })).toHaveAttribute('href', href);
+      await expect(page.locator(`footer a[href="${href}"]`)).toHaveText(label);
     }
   }
 });
 
-test('Orientation: Council dates & documents opens its named section and repeated menu visits return there', async ({ page, hasTouch }) => {
+test('Orientation: Dates, leaflet & FAQs opens uncovered from the Menu and a repeated fragment Menu visit returns there', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
   const menu = page.locator('.mobile-menu');
-  const documents = menu.getByRole('link', { name: 'Council dates & documents', exact: true });
   await activate(menu.locator(':scope > summary'), hasTouch);
-  await activate(documents, hasTouch);
-  await expect(page).toHaveURL(/proposal\.html#council-documents$/);
-  const heading = page.locator('#council-documents h2');
-  await expect(heading).toHaveText('Council timetable and documents');
+  await activate(menu.getByRole('link', { name: 'Dates, leaflet & FAQs', exact: true }), hasTouch);
+  await expect(page).toHaveURL(/\/dates\.html$/);
+  const heading = page.locator('main h1');
+  await expect(heading).toHaveText('Dates, leaflet & FAQs');
   await expectUncovered(page, heading);
-  await expect(page.locator('.page-name')).toHaveText('Proposal & dates');
-  await expect(page.locator('.section-links a[data-section-id="council-documents"]')).toHaveText('Council timetable and documents');
+  await expect(page.locator('.page-name')).toHaveText('Dates, leaflet & FAQs');
+  await expect(page.locator('#council-documents h2')).toHaveText('The council’s documents and FAQs');
   await expect(menu).not.toHaveAttribute('open', '');
 
-  // Reading farther down leaves the hash unchanged; the same menu link must
-  // still return to the documents instead of doing nothing on a repeated hash.
-  await page.locator('#take-part').evaluate(node => { for (let parent=node.parentElement;parent;parent=parent.parentElement) if (parent.tagName==='DETAILS') parent.open=true; node.scrollIntoView({block:'start',behavior:'instant'}); });
-  await expect(heading).not.toBeInViewport();
-  await expect(page).toHaveURL(/proposal\.html#council-documents$/);
+  // Watch Parent Voices is the Menu's fragment route. Reading farther down leaves the
+  // hash unchanged; the same Menu link must still return there instead of doing nothing.
+  await page.goto('/videos.html#watch-parent-voices');
+  const watch = page.locator('#watch-parent-voices');
+  await expectUncovered(page, watch);
+  await page.locator('#upload-help summary').click();
+  await page.locator('#legacy-google-upload-link').evaluate(node => node.scrollIntoView({ block: 'start', behavior: 'instant' }));
+  await expect(watch).not.toBeInViewport();
+  await expect(page).toHaveURL(/videos\.html#watch-parent-voices$/);
   await activate(menu.locator(':scope > summary'), hasTouch);
-  await activate(documents, hasTouch);
-  await expectUncovered(page, heading);
-  await expectScrollSettled(page, 'Repeated Council dates & documents menu arrival');
+  await activate(menu.getByRole('link', { name: 'Watch Parent Voices', exact: true }), hasTouch);
+  await expectUncovered(page, watch);
+  await expectScrollSettled(page, 'Repeated Watch Parent Voices menu arrival');
   await expect(menu).not.toHaveAttribute('open', '');
 });
 
-test('Orientation: keyboard users reach Council dates & documents directly after Proposal & dates', async ({ page, browserName }) => {
+test('Orientation: keyboard users reach Dates, leaflet & FAQs directly after Home', async ({ page, browserName }) => {
   await page.goto('/index.html');
   const menu = page.locator('.mobile-menu');
   const next = browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab';
   await menu.locator(':scope > summary').focus();
   await page.keyboard.press('Enter');
-  for (let i = 0; i <= menuNames.indexOf('Proposal & dates'); i++) await page.keyboard.press(next);
-  await expect(menu.getByRole('link', { name: 'Proposal & dates', exact: true })).toBeFocused();
   await page.keyboard.press(next);
-  await expect(menu.getByRole('link', { name: 'Council dates & documents', exact: true })).toBeFocused();
+  await expect(menu.getByRole('link', { name: 'Home', exact: true })).toBeFocused();
+  await page.keyboard.press(next);
+  await expect(menu.getByRole('link', { name: 'Dates, leaflet & FAQs', exact: true })).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/proposal\.html#council-documents$/);
-  await expectUncovered(page, page.getByRole('heading', { name: 'Council timetable and documents', exact: true }));
+  await expect(page).toHaveURL(/\/dates\.html$/);
+  await expectUncovered(page, page.getByRole('heading', { level: 1, name: 'Dates, leaflet & FAQs', exact: true }));
   await expect(menu).not.toHaveAttribute('open', '');
 });
 
 test('Orientation: the complete menu works on desktop and retains a return to the current section', async ({ page, hasTouch }) => {
-  await page.goto('/evidence.html#method');
+  await page.goto('/about.html#press');
   const menu = page.locator('.mobile-menu');
   await activate(menu.locator(':scope > summary'), hasTouch);
-  await activate(menu.getByRole('link', { name: 'About & contact', exact: true }), hasTouch);
-  await expect(page).toHaveURL(/about\.html$/);
-  await expect(page.locator('.page-name')).toHaveText('About');
+  await activate(menu.getByRole('link', { name: 'Dates, leaflet & FAQs', exact: true }), hasTouch);
+  await expect(page).toHaveURL(/\/dates\.html$/);
+  await expect(page.locator('.page-name')).toHaveText('Dates, leaflet & FAQs');
   await page.goBack();
-  await expect(page).toHaveURL(/evidence\.html#method$/);
-  await expect(page.locator('#method')).toBeInViewport();
+  await expect(page).toHaveURL(/about\.html#press$/);
+  await expect(page.locator('#press')).toBeInViewport();
   await activate(menu.locator(':scope > summary'), hasTouch);
-  await activate(menu.getByRole('link', { name: 'Ways to keep Kew open', exact: true }), hasTouch);
-  await expect(page).toHaveURL(/options\.html$/);
-  await expect(page.locator('.page-name')).toHaveText('Ways to keep Kew open');
+  await activate(menu.getByRole('link', { name: 'Get involved', exact: true }), hasTouch);
+  await expect(page).toHaveURL(/\/get-involved\.html$/);
+  await expect(page.locator('.page-name')).toHaveText('Get involved');
 });
 
 test('Orientation: passive reading updates location without changing URL, history or keyboard focus', async ({ page }) => {
@@ -276,7 +279,7 @@ test('Orientation: passive reading updates location without changing URL, histor
     await page.locator('#' + id).evaluate(node => { for (let parent=node.parentElement;parent;parent=parent.parentElement) if (parent.tagName==='DETAILS') parent.open=true; node.scrollIntoView({block:'start',behavior:'instant'}); });
     await expect.poll(() => activeSection(page)).toBe(id);
     await expect(page.locator('.section-trail')).toContainText(await page.locator(`.section-links a[data-section-id="${id}"]`).textContent());
-    await expect(page.locator('.page-name')).toHaveText('Evidence');
+    await expect(page.locator('.page-name')).toHaveText('Evidence & sources');
     await expect(page.locator('.site-orientation')).toBeInViewport({ ratio: 1 });
     await expect(summary).toBeFocused();
     expect(await page.evaluate(() => ({ url: location.href, history: history.length }))).toEqual(initial);
@@ -396,6 +399,15 @@ test('Orientation: clipboard rejection exposes a selectable link instead of losi
 
 test('Orientation: failed navigation enhancement leaves native page and section routes available', async ({ page, hasTouch }) => {
   await page.route('**/navigation.js*', route => route.fulfill({ status: 503, contentType: 'application/javascript', headers: { 'x-test-fixture': 'intentional-error' }, body: '' }));
+  // A live page has no section chooser since the 13 October 2026 slim site; its native Menu still works.
+  await page.goto('/get-involved.html');
+  await expect(page.locator('.page-name')).toHaveText('Get involved');
+  const menu = page.locator('.mobile-menu');
+  await activate(menu.locator(':scope > summary'), hasTouch);
+  await activate(menu.getByRole('link', { name: 'Dates, leaflet & FAQs', exact: true }), hasTouch);
+  await expect(page).toHaveURL(/\/dates\.html$/);
+  await expect(page.locator('.page-name')).toHaveText('Dates, leaflet & FAQs');
+  // Archived pages keep their native section routes.
   await page.goto('/options.html');
   await expect(page.locator('.page-name')).toHaveText('Ways to keep Kew open');
   const sections = page.locator('.page-sections');
@@ -404,27 +416,32 @@ test('Orientation: failed navigation enhancement leaves native page and section 
   await expect(page).toHaveURL(/#option-crowdfunding$/);
   await expect(page.locator('#option-crowdfunding > details.option-card')).toHaveAttribute('open', '');
   if (await sections.getAttribute('open') !== null) await activate(sections.locator(':scope > summary'), hasTouch);
-  const menu = page.locator('.mobile-menu');
   await activate(menu.locator(':scope > summary'), hasTouch);
   await activate(menu.getByRole('link', { name: 'About & contact', exact: true }), hasTouch);
   await expect(page).toHaveURL(/about\.html$/);
-  await expect(page.locator('.page-name')).toHaveText('About');
+  await expect(page.locator('.page-name')).toHaveText('About & contact');
 });
 
 test('Orientation: short screens keep the complete menu scrollable and its last route reachable', async ({ page, hasTouch }) => {
+  await page.route(openDay, route => route.fulfill({ contentType: 'text/html', body: '<main><h1>Open Day booking intercepted locally</h1></main>' }));
   await page.setViewportSize({ width: 667, height: 375 });
-  await page.goto('/options.html#option-crowdfunding');
+  // A live page's Menu also carries its page-information note, after the last route.
+  await page.goto('/dates.html#timetable');
   await activate(page.locator('.mobile-menu > summary'), hasTouch);
   const panel = page.locator('.mobile-menu nav');
-  const last = panel.getByRole('link', { name: 'About & contact', exact: true });
+  const note = panel.locator('.mobile-page-note');
+  await note.scrollIntoViewIfNeeded();
+  await expect(note).toBeInViewport({ ratio: 1 });
+  const last = panel.locator('a').last();
+  await expect(last).toHaveText('Book an Open Day');
   await last.scrollIntoViewIfNeeded();
   const bounds = await panel.boundingBox();
   expect(bounds.y).toBeGreaterThanOrEqual(0);
   expect(bounds.y + bounds.height).toBeLessThanOrEqual(376);
   await expect(last).toBeInViewport({ ratio: 1 });
   await activate(last, hasTouch);
-  await expect(page).toHaveURL(/about\.html$/);
-  await expect(page.locator('.page-name')).toHaveText('About');
+  await expect(page).toHaveURL(openDay);
+  await expect(page.getByRole('heading')).toHaveText('Open Day booking intercepted locally');
 });
 
 test('Orientation: enlarged text retains readable controls and an uncovered section destination', async ({ page, hasTouch }) => {
@@ -449,8 +466,10 @@ test('Orientation: enlarged text retains readable controls and an uncovered sect
 });
 
 // The Menu is chosen, not generated: its groups, labels and order are fixed, adding
-// a page never adds a row, and every moved destination stays in every footer.
-test('Orientation: the curated Menu keeps its three groups and every footer keeps the moved routes', async ({ page }) => {
+// a page never adds a row, and every footer lists live pages only (13 October 2026).
+test('Orientation: the curated Menu keeps its two groups and every footer lists only live pages', async ({ page }) => {
+  // Every public page has one deliberate role; supporting research adds no Menu row.
+  expect([...menuPages, ...taskPages, ...supportingPages, ...archivedPages].sort()).toEqual(pages);
   for (const file of pages) {
     await page.goto('/' + file);
     const nav = page.locator('.mobile-menu nav');
@@ -458,15 +477,35 @@ test('Orientation: the curated Menu keeps its three groups and every footer keep
       group.querySelector('.menu-group-label').textContent.trim(),
       [...group.querySelectorAll('a')].map(link => [link.textContent.trim(), link.getAttribute('href')]),
     ]));
-    const expected = menuGroups.map(([heading, links]) => [heading, file === 'sent.html' && heading === 'This website' ? [...links, ['Next steps', 'sent.html']] : links]);
+    const expected = menuGroups.map(([heading, links]) => [heading, file === 'sent.html' && heading === 'Campaign' ? [...links, ['Next steps', 'sent.html']] : links]);
     expect(groups, file).toEqual(expected);
     expect(await nav.locator(':scope > a').count(), `${file}: no link outside a group`).toBe(0);
-    // The official response leads Take part with the Parent action plan's emphasis.
-    await expect(nav.locator('a[href="proposal.html#take-part"]')).toHaveClass(/\bnav-respond\b/);
+    // The emphasised "Respond to the council" Menu row went with the 13 October 2026 slim-site decision.
+    await expect(nav.locator('.nav-respond')).toHaveCount(0);
     const footer = await page.locator('footer .footer-inner > div:last-child a, footer .home-footer-links a').evaluateAll(links => links.map(link => link.getAttribute('href')));
     expect(footer, `${file} footer`).toEqual(footerLinks);
+    // One wide-screen header shortcut on every page but Home, whose Menu is its navigation.
+    if (file !== 'index.html') {
+      expect(await page.locator('.desktop-explore a').evaluateAll(links => links.map(link => [link.textContent.trim(), link.getAttribute('href'), link.className])), `${file} header shortcut`).toEqual([['Get involved', 'get-involved.html', 'nav-primary']]);
+    }
+    // Header tiles and live pages' section choosers were retired (13 October 2026 slim-site decision).
+    await expect(page.locator('.participation-nav'), `${file} has no header tiles`).toHaveCount(0);
+    if (archivedPages.includes(file)) {
+      // Archived pages say so on arrival and in the persistent bar, and drop their dated Menu status note.
+      await expect(page.locator('main > :first-child')).toHaveClass('archive-banner');
+      await expect(page.locator('.archive-banner a')).toHaveText(['Current dates', 'Get involved']);
+      await expect(page.locator('.site-orientation .archive-flag')).toHaveText('Archived');
+      await expect(nav.locator('.mobile-page-note'), `${file} has no Menu status note`).toHaveCount(0);
+    } else {
+      await expect(page.locator('.archive-banner, .archive-flag'), `${file} is live`).toHaveCount(0);
+      if (!supportingPages.includes(file)) {
+        await expect(page.locator('.page-sections'), `${file} has no section chooser`).toHaveCount(0);
+      } else {
+        await expect(nav.locator('.mobile-page-note')).toContainText('Supporting research');
+      }
+    }
   }
-  // The longer footer must wrap on every page, not run off landscape phones.
+  // The footer must wrap on every page, not run off landscape phones.
   await page.setViewportSize({ width: 667, height: 375 });
   for (const file of pages) {
     await page.goto('/' + file);

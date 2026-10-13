@@ -33,27 +33,33 @@ async function activate(locator, hasTouch) {
   else await locator.click();
 }
 
-test('Short homepage: petition joins the response, Help and Share before optional detail', async ({ page, hasTouch }) => {
+test('Short homepage: petition joins the response, Get involved and Share before optional detail', async ({ page, hasTouch }) => {
+  // Consultation week: the response action still leads (the deadline stages are in home-landing.spec.js).
+  await page.clock.setFixedTime(new Date('2026-10-13T12:00:00Z'));
   await page.goto('/index.html');
   await expect(page.locator('main .source-card, main .action-card, main .school-roll-chart')).toHaveCount(0);
   await expect(page.locator('.actions .action:visible')).toHaveCount(4);
   await expect(page.locator('#petition-action')).toHaveAccessibleName('Sign the petition');
   await expect(page.locator('#petition-action')).toHaveAttribute('href', 'https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249');
-  await expect(page.locator('#top')).toContainText(/Richmond Council proposes closure on/i);
-  await expect(page.locator('#top')).toContainText(/no decision yet/i);
-  await expect(page.locator('#top')).toContainText(/Supporters seek time to test costed recovery and sustainable alternatives/i);
-  await expect(page.locator('#top .intro a')).toHaveCount(0);
+  await expect(page.locator('.home-plan')).toHaveAccessibleName('Get involved');
+  await expect(page.locator('#top')).toContainText(/proposes closure/i);
+  await expect(page.locator('#top')).toContainText('no decision yet.');
   await expect(page.locator('#top')).toContainText(/16\s+October/i);
   for (const action of await page.locator('.actions .action:visible').all()) {
     expect((await action.boundingBox()).height).toBeGreaterThanOrEqual(64);
   }
-  for (const [destination, target] of [['options.html', 'main h1'], ['evidence.html#records', '#records']]) {
+  // 13 October 2026 slim-site decision: the Menu names the five campaign pages; the archived
+  // proposal, FAQ, options and evidence pages have no Menu entry.
+  for (const [destination, target] of [['dates.html', '#deadline'], ['get-involved.html', '#respond']]) {
     await activate(page.locator('.mobile-menu summary'), hasTouch);
-    await expect(page.locator('.mobile-menu a[href="proposal.html"]')).toHaveAccessibleName('Proposal & dates');
-    await expect(page.locator('.mobile-menu a[href="proposal.html#council-documents"]')).toHaveAccessibleName('Council dates & documents');
-    await expect(page.locator('.mobile-menu a[href="faq.html"]')).toBeVisible();
+    for (const [href, name] of [['dates.html', 'Dates, leaflet & FAQs'], ['get-involved.html', 'Get involved'], ['updates.html', 'Campaign updates'], ['about.html', 'About & contact']]) {
+      await expect(page.locator(`.mobile-menu a[href="${href}"]`)).toHaveAccessibleName(name);
+      await expect(page.locator(`.mobile-menu a[href="${href}"]`)).toBeVisible();
+    }
+    await expect(page.locator('.mobile-menu a[href="proposal.html"], .mobile-menu a[href="proposal.html#council-documents"], .mobile-menu a[href="faq.html"], .mobile-menu a[href="options.html"], .mobile-menu a[href="evidence.html#records"]')).toHaveCount(0);
     await activate(page.locator(`.mobile-menu a[href="${destination}"]`), hasTouch);
     await expect(page).toHaveURL(new RegExp(destination.replace('.', '\\.') + '$'));
+    await expect(page.locator('main h1')).toBeInViewport();
     await expect(page.locator(target)).toBeInViewport();
     await page.goBack();
     await expect(page).toHaveURL(/index\.html$/);
@@ -74,9 +80,9 @@ test('Dedicated pages: local navigation exposes depth and retains a homepage rec
   }
   await page.goto('/options.html#options');
   await expect(page.locator('#options-navigation')).toBeVisible();
-  await expect(page.locator('#options .action-card')).toHaveCount(7);
-  await expect(page.locator('#option-7 .options-response-button')).toBeVisible();
-  for (const id of ['option-recovery-plan', 'option-crowdfunding', 'option-demand', 'option-enrolment']) {
+  await expect(page.locator('#options .action-card')).toHaveCount(6);
+  await expect(page.locator('.options-response-button')).toHaveCount(0);
+  for (const id of ['option-recovery-plan', 'option-crowdfunding', 'option-demand']) {
     const detail = page.locator('#' + id + ' > details.option-card');
     const summary = detail.locator(':scope > summary');
     await expect(summary).toHaveAccessibleName(/\S/);

@@ -26,7 +26,9 @@
     'about.html': 'Our story', 'videos.html': 'Parent videos',
     'supporters.html': 'Named supporters', 'privacy.html': 'Privacy',
     'evidence.html': 'Evidence & sources', 'options.html': 'Options to keep the school open',
-    'corrections.html': 'Corrections'
+    'corrections.html': 'Corrections',
+    'dates.html': 'Dates & council documents', 'get-involved.html': 'Get involved',
+    'updates.html': 'Campaign updates', 'questions.html': 'Council questions'
   };
   // Broad editorial sections only: no individual letters, questions or form fields.
   // Each ID is an entry in the page's own "On this page" list (top level, plus the
@@ -47,7 +49,8 @@
     'https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us': 'Opened school enquiry',
     'https://docs.google.com/forms/d/e/1FAIpQLScJZ8ZnZWTaPUIoM9l2Vjir7TgNNTHuUyDEF5uLRJolm8iccg/viewform': 'Opened video permissions',
     'https://www.dropbox.com/request/9uaa0fawrtdz6pv8b6hn': 'Opened video upload',
-    'https://docs.google.com/forms/d/e/1FAIpQLSfK3b8XtDJ5_mhKWTqxfZpZwPOJLGXjN1QIQYTKYlJ0dRAHHQ/viewform': 'Opened Google video upload'
+    'https://docs.google.com/forms/d/e/1FAIpQLSfK3b8XtDJ5_mhKWTqxfZpZwPOJLGXjN1QIQYTKYlJ0dRAHHQ/viewform': 'Opened Google video upload',
+    'https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249': 'Opened petition'
   };
   const DOWNLOADS = {
     'response-checklist.pdf': 'Download clicked: checklist', 'sources.csv': 'Download clicked: source index',
