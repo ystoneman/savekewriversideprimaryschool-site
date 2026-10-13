@@ -102,6 +102,17 @@ def archived_links(name, data):
     return found
 
 
+def checklist_archived_links(text):
+    """Links from the response checklist Markdown (the source of the PDF linked
+    from Get involved) to archived pages, relative or on the canonical domain."""
+    found = set()
+    for href in re.findall(r'\]\(([^)\s]+)\)', text):
+        url = urlsplit(href)
+        if url.netloc in ('', 'savekewriversideprimaryschool.org') and url.path.lstrip('/') in ARCHIVED_PAGES:
+            found.add(href)
+    return found
+
+
 def require(ok, message):
     if not ok: raise ValueError(message)
 
@@ -191,6 +202,8 @@ def validate_site(root=ROOT):
                 require(all('required' not in page.named_inputs[field] for field in ('allow_public', 'allow_council', 'allow_quotes')), 'Letter sharing must remain optional.')
         if name.endswith('.js'):
             require(not re.search(r'\b(?:innerHTML|outerHTML|insertAdjacentHTML|eval)\b|document\.write\s*\(', data), 'Unsafe DOM/code execution sink in ' + name)
+    stale = checklist_archived_links((root / 'response-checklist.md').read_text())
+    require(not stale, 'Response checklist links to archived pages: ' + ', '.join(sorted(stale)))
     analytics = json.loads((root / 'analytics-config.json').read_text())
     require(set(analytics) == {'enabled', 'websiteId', 'counterEnabled'} and type(analytics['enabled']) is bool and type(analytics['counterEnabled']) is bool, 'Invalid analytics configuration.')
     require((analytics['enabled'] and isinstance(analytics['websiteId'], str) and re.fullmatch(r'[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}', analytics['websiteId'])) or (analytics['enabled'] is False and analytics['websiteId'] == ''), 'Analytics must have a valid public website ID or stay disabled.')

@@ -185,6 +185,8 @@ def render_archive(name, document):
     if name not in ARCHIVED_PAGES:
         return document
     document = re.sub(r'(<main\b[^>]*>)', lambda m: m.group(1)+ARCHIVE_BANNER, document, count=1)
+    # The wide-screen status strip would otherwise still say 'updated' above the banner.
+    document = re.sub(r'(<div class="independent-bar"><div class="wrap">)<span>[^<]*</span>', r'\1<span>Archived 13 October 2026</span>', document, count=1)
     # Keep an existing stricter policy (the fundraising briefs use noindex,nofollow).
     if not re.search(r'<meta name="robots" content="[^"]*noindex', document.split('</head>', 1)[0]):
         document = document.replace('</head>', robots+'</head>', 1)

@@ -19,22 +19,22 @@ The form gives 16 October. The leaflet and general FAQ describe different initia
 ## Build a concise case
 
 ### 1. The budget bridge
-The received final budget summary forecasts a £212,417 annual gap in 2026/27, about £19,268 left at March 2027, and a £457,702 accumulated deficit by 2028/29. Ask for the ledger, current monitoring and assumptions; other reserve-exhaustion wording conflicts. [Budget explanation](understand.html#budget).
+The received final budget summary forecasts a £212,417 annual gap in 2026/27, about £19,268 left at March 2027, and a £457,702 accumulated deficit by 2028/29. Ask for the ledger, current monitoring and assumptions; other reserve-exhaustion wording conflicts.
 
 ### 2. A deliverable alternative
-Which costed arrangements could retain education at Kew? Ask about the delivery body, premises, three-year budget and reasons for rejecting each option. A possible legal route alone is not a viable plan. [Alternatives](options.html#option-recovery-plan).
+Which costed arrangements could retain education at Kew? Ask about the delivery body, premises, three-year budget and reasons for rejecting each option. A possible legal route alone is not a viable plan.
 
 ### 3. Net closure costs
-Ask which PFI and other costs stop, continue or arise because of closure, including transition, receiving-school support and travel. Compare annual net costs, not the school deficit alone. [Closure costs](understand.html#closure-costs).
+Ask which PFI and other costs stop, continue or arise because of closure, including transition, receiving-school support and travel. Compare annual net costs, not the school deficit alone.
 
 ### 4. Local pupil demand
-Ask which cohort and housing assumptions changed between forecast versions, and what is forecast after 2031/32. A key test in government guidance is whether the need for places is forecast to rise over the medium to long term ([Closing maintained schools, May 2026, page 8](https://assets.publishing.service.gov.uk/media/6a034409e71c4cdf4026bab8/Closing_maintained_schools_guidance_-_May_2026.pdf#page=8)). Compare forecasts with actuals for the same year and area; the earlier 2025/26 Kew-area total was close to actual, while the separate borough check found overprediction. [Forecast check](understand.html#forecast-checks).
+Ask which cohort and housing assumptions changed between forecast versions, and what is forecast after 2031/32. A key test in government guidance is whether the need for places is forecast to rise over the medium to long term ([Closing maintained schools, May 2026, page 8](https://assets.publishing.service.gov.uk/media/6a034409e71c4cdf4026bab8/Closing_maintained_schools_guidance_-_May_2026.pdf#page=8)). Compare forecasts with actuals for the same year and area; the earlier 2025/26 Kew-area total was close to actual, while the separate borough check found overprediction.
 
 ### 5. Continuity and equality
-Ask for staffed places by year group, the Kew-specific equality assessment, SEND support, safe journeys, effects on disadvantaged pupils and funded transition arrangements. Decision-makers should consider travel, extra car use and the quality of alternative places, balanced against the need to reduce surplus places ([same guidance, pages 21-22](https://assets.publishing.service.gov.uk/media/6a034409e71c4cdf4026bab8/Closing_maintained_schools_guidance_-_May_2026.pdf#page=21)). Use anonymised public examples; share a child's individual needs privately through official services. [School-place answers](faq.html#school-places).
+Ask for staffed places by year group, the Kew-specific equality assessment, SEND support, safe journeys, effects on disadvantaged pupils and funded transition arrangements. Decision-makers should consider travel, extra car use and the quality of alternative places, balanced against the need to reduce surplus places ([same guidance, pages 21-22](https://assets.publishing.service.gov.uk/media/6a034409e71c4cdf4026bab8/Closing_maintained_schools_guidance_-_May_2026.pdf#page=21)). Use anonymised public examples; share a child's individual needs privately through official services.
 
 ### 6. Learning
-Ask what each option would preserve or change about teaching, relationships, curriculum and support. Current results and inspection describe existing provision, not the effects of a future option. [Learning evidence](understand.html#learning-and-results).
+Ask what each option would preserve or change about teaching, relationships, curriculum and support. Current results and inspection describe existing provision, not the effects of a future option.
 
 ## Response structure
 

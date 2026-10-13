@@ -123,3 +123,9 @@ html.has-orientation{scroll-behavior:auto}
 .archive-banner a{color:inherit;font-weight:700}
 .site-header .nav-primary{font-weight:700;color:var(--teal)}
 .archive-flag{flex:none;display:inline-flex;align-items:center;min-height:28px;padding:2px 9px;border:1px solid var(--teal);border-radius:999px;background:var(--theme-soft,#edf1e7);color:var(--theme-strong,var(--ink));font:700 12px/1.2 Arial,sans-serif;letter-spacing:.02em}
+/* Without scripts, keep the Archived label in view for deep-link arrivals. */
+@media screen{
+  html:not(.has-orientation) .site-header:has(.archive-flag){position:sticky;top:0;z-index:30}
+  html:not(.has-orientation):has(.archive-flag){scroll-padding-top:120px}
+}
+@media screen and (min-width:701px){html:not(.has-orientation):has(.archive-flag){scroll-padding-top:156px}}

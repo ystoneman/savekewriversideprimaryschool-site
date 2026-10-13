@@ -9,7 +9,7 @@ import struct
 import unittest
 from urllib.parse import parse_qs, unquote, urlsplit
 
-from check_site import PUBLIC_FILES, REDIRECT_PAGES, ROOT, ARCHIVED_PAGES, ARCHIVED_LINK_EXEMPTIONS, archived_links
+from check_site import PUBLIC_FILES, REDIRECT_PAGES, ROOT, ARCHIVED_PAGES, ARCHIVED_LINK_EXEMPTIONS, archived_links, checklist_archived_links
 
 
 # Snapshot of the moved homepage IDs before the September 2026 page split.
@@ -341,6 +341,10 @@ class SiteStructureTests(unittest.TestCase):
         # A planted link on a live page is caught.
         self.assertEqual(archived_links('dates.html', '<a href="faq.html#school-places">x</a>'), {'faq.html#school-places'})
         self.assertEqual(archived_links('index.html', '<aside class="legacy-route" id="x"><a href="evidence.html#records">y</a></aside>'), set())
+        # The response checklist PDF is linked from Get involved, so its source follows the same rule.
+        self.assertEqual(checklist_archived_links((ROOT / 'response-checklist.md').read_text()), set())
+        self.assertEqual(checklist_archived_links('[a](understand.html#budget) [b](https://savekewriversideprimaryschool.org/faq.html#school-places) [c](dates.html) [d](https://example.org/faq.html)'),
+                         {'understand.html#budget', 'https://savekewriversideprimaryschool.org/faq.html#school-places'})
 
     def test_printed_visit_route_has_matching_immediate_and_native_destinations(self):
         destination = 'https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform'
