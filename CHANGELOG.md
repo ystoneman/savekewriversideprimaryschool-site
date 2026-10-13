@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Retain the concise landing page — 13 October 2026
+
+Moved the added “Why keep Kew Riverside open” section unchanged from Home to About after owner feedback on the team preview. Retained the five-page Menu and homepage actions. Old homepage case anchors continue to About. This is a PR and Sites-preview correction, not a live campaign-domain deployment. Verification is recorded in TESTING.md.
+
+
 ### Slim five-page campaign site — 13 October 2026
 
 - Reduce the live site to five Menu pages: Home, Dates, leaflet & FAQs (`dates.html`), Get involved (`get-involved.html`), Campaign updates (`updates.html`) and a shorter About & contact, plus the existing Discover the school group. Retire the header participation tiles and live-page "On this page" choosers; the wide-screen header shortcut is Get involved.

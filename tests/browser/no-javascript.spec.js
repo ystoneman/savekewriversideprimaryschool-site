@@ -751,3 +751,15 @@ test('No JavaScript: petition is a dated direct action and school footer links n
  const petition='https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249';await page.route(petition,r=>r.fulfill({contentType:'text/html',body:'<h1>Fictional petition</h1>'}));await page.locator('#petition-action').tap();await expect(page).toHaveURL(petition);
  await page.goBack();const footer=page.locator('.footer-discovery');await footer.scrollIntoViewIfNeeded();await expect(footer.getByRole('link',{name:'Parent Voices on YouTube'})).toBeVisible();await expect(footer.getByRole('link',{name:'Visit our Open Days'})).toBeVisible();
 });
+
+// Preview correction keeps saved homepage campaign-case links usable without scripts.
+for (const id of ['our-case', 'case-title']) {
+  test(`No JavaScript: old campaign-case anchor ${id} reaches About`, async ({ page }) => {
+    await page.goto('/index.html#' + id);
+    const link = page.locator('#' + id + ' a');
+    await expect(link).toBeVisible();
+    await link.click();
+    await expect(page.locator('#our-case')).toContainText('A funded, workable alternative has not yet been established.');
+    await expect(page.locator('#case-title')).toBeInViewport();
+  });
+}

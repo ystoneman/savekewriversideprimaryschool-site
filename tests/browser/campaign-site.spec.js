@@ -412,8 +412,10 @@ test.describe('Get involved order around the deadline', () => {
   }
 });
 
-test('Home links its campaign case to Campaign updates and the council documents', async ({ page }) => {
+test('About links its campaign case to Campaign updates and the council documents', async ({ page }) => {
   await page.goto('/index.html');
+  await expect(page.locator('section#our-case')).toHaveCount(0);
+  await page.goto('/about.html');
   const caseSection = page.locator('#our-case');
   for (const [href, name] of [['dates.html', 'Read the council’s dates, leaflet and FAQs'], ['updates.html', 'See what the campaign has done']]) {
     const link = caseSection.getByRole('link', { name, exact: true });
@@ -454,3 +456,17 @@ test.describe('Archived deep links without JavaScript', () => {
     }
   }
 });
+
+// Owner correction after the team preview: Home stays concise; old case links survive.
+for (const id of ['our-case', 'case-title']) {
+  test(`Home campaign-case anchor ${id} reaches About`, async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto('/index.html#' + id);
+    await expect(page).toHaveURL(new RegExp('about\\.html#' + id + '$'));
+    await expect(page.locator('#' + id)).toBeInViewport();
+    const heading = await page.locator('#case-title').boundingBox();
+    const header = await page.locator('header').boundingBox();
+    expect(heading.y).toBeGreaterThanOrEqual(header.y + header.height - 1);
+    await expect(page.locator('#our-case')).toContainText('A funded, workable alternative has not yet been established.');
+  });
+}

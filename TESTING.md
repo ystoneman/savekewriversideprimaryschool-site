@@ -1,5 +1,12 @@
 # Testing the website
 
+## Concise homepage after team preview — 13 October 2026
+
+The unchanged campaign-case text moved from Home to About; Menu and homepage actions are retained. Initial and final homepage smoke each passed 9/9. The affected About/archived-route/legacy-anchor checks passed 16/16 across Chromium and WebKit; explicit 320×568 heading-below-header regressions passed 8/8. Both no-script handoffs passed 2/2. All 151 Python checks and 31 deadline/backend Node tests pass; generator freshness and artifact privacy validation pass.
+
+Sites preview artifact: 13/13 browser cases pass across 320/390/1440, light/dark, scripts/no scripts, full rally image, no overflow, old anchors and disabled submissions/collectors. Published version 2 after the owner explicitly requested preview publication before the broader suite completed. Independent UX reviewed actual diff and rendered screenshots; explicit bounds checks resolve the full-page capture overlay observation. Native iPhone 17 / iOS 26.5 Safari inspected the deployed Home and About #our-case arrival: styled, readable and heading clear of the sticky header. No external form was submitted. Complete local browser suite is running; hosted PR checks remain release gates, and the campaign domain has not been deployed.
+
+
 ## Homepage petition and footer links — 13 October 2026
 
 Initial five-case homepage smoke passed before implementation. Final focused homepage, top-journey and no-JavaScript run passed all 211 cases across iPhone/desktop WebKit, Android/desktop Chromium and the no-script iPhone project. Added coverage checks petition activation/Back, keyboard footer handoffs, dated no-script access and independent October/January transitions. All 150 Python checks, 24 homepage date unit tests, seven backend tests, generator freshness, whitespace and 125-file staging pass. After incorporating the concurrent mobile-menu release, all 132 homepage cases and 56 targeted petition/menu/analytics/motion cases pass. The first hosted run identified the old three-action count, an ambiguous primary-button selector and missing Help-arrow expectations; the count now pins the additional petition, the response selector is specific, and the non-animated Help arrow is retained. Existing viewport and motion assertions remain intact. Independent UX rechecked the final arrow/layout against the merged baseline with no remaining finding.

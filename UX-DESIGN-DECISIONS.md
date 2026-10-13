@@ -1,11 +1,16 @@
 # UX design decisions
 
+## Concise homepage retained after team preview — 13 October 2026
+
+J1–J3/J6: the owner reports that the added campaign-case section confused people sharing the staging link and asks to keep the concise landing page with the improved five-page Menu. Move the three unchanged points, qualification and council/update links to About immediately after its introduction and contact shortcuts. Keep the position exposed there; preserve old Home #our-case and #case-title links through the existing legacy handoffs, including no-script fallback links. Homepage actions, image, deadline and Menu are unchanged. Independent UX planning review shaped placement and anchor preservation; verification is recorded in TESTING.md.
+
+
 ## Slim five-page campaign site — 13 October 2026
 
 J1–J9: a campaign team member's phone review (12 October) found the site convoluted and unclear in purpose: it began as a research hub but is now the campaign's public face, so most of it should go. The owner chose five pages, "less, less, less":
 
 - **One Menu:** Home · Dates, leaflet & FAQs · Get involved · Campaign updates · About & contact, plus the separate Discover the school group. The header tiles and live-page "On this page" choosers were retired; Get involved is the single header shortcut.
-- **Home** keeps its hero, countdown, petition and Share. "Help the campaign" became "Get involved". A three-point "Why keep Kew Riverside open" section adapts the reviewed Our case for Kew copy, with its caveat, and names the council's published reasons for rejecting alternatives. From 17 October (London date) the Respond button hides so the petition leads.
+- **Home** keeps its hero, countdown, petition and Share. "Help the campaign" became "Get involved". On About, a three-point "Why keep Kew Riverside open" section adapts the reviewed Our case for Kew copy, with its caveat, and names the council's published reasons for rejecting alternatives. From 17 October (London date) the Respond button hides so the petition leads.
 - **Dates, leaflet & FAQs** carries the response deadline, the council's three documents and the leaflet's timetable verbatim.
 - **Get involved** lists Respond (with the leaflet's email and postal routes until the deadline), the petition, writing to councillors and the MP, letters and videos, ideas and flyer QR codes.
 - **Campaign updates** lists only dated entries verified against public sources or the site's own records. A rally on 6 October is not yet listed because no public record confirms it.
@@ -200,7 +205,7 @@ Priority allocates attention; every existing task retains usable access. Visitor
 | J3 · Prominent action | Give my views to the decision-maker | `get-involved.html#respond` and `dates.html#deadline`: the official form, the leaflet's email and postal routes and the verified deadline while open; a dated closed-stage note afterwards. A website letter, idea, video or petition does not replace an official response. |
 | J4 · Participation | Read community experience or write a letter | Get involved (Share your story) and every footer link to `letters.html`; preserve newest-first reading before the form, reading/writing shortcuts and independent permissions (optional quoting only on top of publication). |
 | J5 · Participation | Offer an idea, evidence, question or correction | Get involved (Offer an idea or help) and every footer link to `feedback.html`; retain visible category cards and clear private/public choices. |
-| J6 · Campaign position and progress | Understand what the campaign wants and what it has done | The homepage's short "Why keep Kew Riverside open" section and `updates.html` (Campaign updates): dated, publicly verifiable entries only, newest first. The former research pages are archived (below), not deleted. |
+| J6 · Campaign position and progress | Understand what the campaign wants and what it has done | `about.html#our-case` (About & contact in Menu), with the three campaign priorities and their caveat and `updates.html` (Campaign updates): dated, publicly verifiable entries only, newest first. The former research pages are archived (below), not deleted. |
 | J7 · Family questions | Find the council's own answers | No family-guidance section (owner decision, 13 October 2026: a campaign site, not a school or council site). The council's Kew Riverside FAQ, which covers school places, is listed on `dates.html` with a one-line description saying so. |
 | J8 · Contextual recruitment | Decide whether to enquire about the school | The separate Discover the school Menu group (Parent Voices and the recruitment-only `/visit/` handoff to the Open Day booking form) and the footer Visit our Open Days link. Historical `index.html#visit-school` continues to reach that handoff. Keep recruitment communications separate from the closure campaign. |
 | J9 · Contextual participation | Contribute in another format | Get involved links to `videos.html#upload` (the fixed shared QR address, described as a testimonial for families choosing a school) and the homepage and visit QR downloads (the visit QR for Open Day flyers only, without campaign wording); every footer exposes the parent-run Parent Voices channel. |
