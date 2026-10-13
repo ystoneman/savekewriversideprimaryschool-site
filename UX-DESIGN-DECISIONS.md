@@ -732,3 +732,10 @@ J1–J9: direct both previous website addresses to the matching Primary School d
 ## Legacy compatibility consolidation — 7 October 2026
 
 J4/J5 and incoming routes across J1–J9: maintain one full website. Legacy addresses use small forwarding pages and origin-bound Copy/Clear/Continue recovery instead of duplicate forms. Preserve distinct draft/pending copies, unconfirmed receipt wording, blocked-storage recovery, expiry and Back. Without JavaScript, offer corresponding current-page and protected-section links; storage recovery requires scripts. Direct downloads and JSON remain real automatically generated files. Removal is not complete until every retained copy is verified. Independent planning UX concerns were incorporated; rendered implementation review and release checks remain pending.
+
+
+### Hourly statistics notice — candidate, 13 October 2026
+
+Operators need a phone-width dashboard and coarse activity timing for website maintenance and content checks. A separate hourly all-page total is narrower than page/device/source-by-hour breakdowns. The compact first-visit notice names hourly page totals separately from daily browser estimates; older saved choices preserve prior scope until renewed. Existing Analytics/Off/Why controls and notice-before-default counting remain. Private reporting uses a316px Mobile tab with stacked counts, numerical data and in-cell bars because native Sheets floating charts were absent in supplied iPhone screenshots.
+
+The four-engine analytics suite, independent actual-diff review and rendered320×568 WebKit notice/panel review verify readable choices and visible Respond action. Native iOS and production receipt verification pending. No protected journey priority changes.

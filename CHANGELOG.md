@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Candidate hourly page-open totals: independent all-page receipt-hour counters, updated first-visit notice, v5 scope with v1–v4 choices preserved, and no hourly browser/device/referral breakdown. Private dashboard adds a narrow Mobile tab with in-cell bars; daily chart/data sources remain. Eight SQLite backend checks and 150 Python validation checks pass. All 368 analytics cases are verified across four browser engines (364 initially passed; four exact choice-version expectations were updated and rechecked). Independent planning and rendered 320×568 WebKit UX review has no remaining findings; production deployment is pending.
+
+
 - Add one eligible community letter with the author's submitted wording and display name, labelled AI screened. Publication and the optional one-time notice remain pending until the canonical and compatibility releases are verified.
 
 - Add a concise first-time visitor introduction to every homepage deadline state: Richmond Council’s proposed 1 September 2027 closure remains undecided, and supporters seek time to test costed recovery and sustainable alternatives. Keep the no-JavaScript and post-deadline wording explicitly dated, preserve the link-free hero and four existing homepage actions, and leave the Open Day route separate.
