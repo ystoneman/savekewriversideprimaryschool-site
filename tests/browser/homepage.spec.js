@@ -80,9 +80,9 @@ test('Dedicated pages: local navigation exposes depth and retains a homepage rec
   }
   await page.goto('/options.html#options');
   await expect(page.locator('#options-navigation')).toBeVisible();
-  await expect(page.locator('#options .action-card')).toHaveCount(7);
-  await expect(page.locator('#option-7 .options-response-button')).toBeVisible();
-  for (const id of ['option-recovery-plan', 'option-crowdfunding', 'option-demand', 'option-enrolment']) {
+  await expect(page.locator('#options .action-card')).toHaveCount(6);
+  await expect(page.locator('.options-response-button')).toHaveCount(0);
+  for (const id of ['option-recovery-plan', 'option-crowdfunding', 'option-demand']) {
     const detail = page.locator('#' + id + ' > details.option-card');
     const summary = detail.locator(':scope > summary');
     await expect(summary).toHaveAccessibleName(/\S/);

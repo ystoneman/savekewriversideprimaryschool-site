@@ -18,8 +18,9 @@ const campaignLinks = [
 ];
 const menuNames = [...campaignLinks.map(([, name]) => name), 'Watch Parent Voices', 'Book an Open Day'];
 const menuPages = campaignLinks.map(([file]) => file);
-const livePages = [...menuPages, 'letters.html', 'videos.html', 'feedback.html', 'privacy.html', 'corrections.html', 'sent.html'];
-const archivedPages = ['proposal.html', 'faq.html', 'understand.html', 'evidence.html', 'options.html', 'lessons.html', 'lessons-sources.html', 'rally.html', 'supporters.html', 'fundraising-trustees.html', 'fundraising-admin.html'];
+const supportingPages = ['questions.html', 'understand.html', 'evidence.html', 'options.html', 'lessons.html', 'lessons-sources.html'];
+const livePages = [...menuPages, ...supportingPages, 'letters.html', 'videos.html', 'feedback.html', 'privacy.html', 'corrections.html', 'sent.html'];
+const archivedPages = ['proposal.html', 'faq.html', 'rally.html', 'supporters.html', 'fundraising-trustees.html', 'fundraising-admin.html'];
 const phoneSizes = [{ width: 320, height: 568 }, { width: 390, height: 844 }];
 
 function menu(page) {
@@ -293,7 +294,7 @@ test.describe('Archived pages', () => {
   }
 
   for (const size of phoneSizes) {
-    for (const link of ['faq.html#school-places', 'proposal.html#parent-plan', 'proposal.html#take-part', 'evidence.html#records']) {
+    for (const link of ['faq.html#school-places', 'proposal.html#parent-plan', 'proposal.html#take-part']) {
       test(`${link} shows the Archived flag on arrival at ${size.width}x${size.height}`, async ({ page }) => {
         await page.setViewportSize(size);
         await page.goto('/' + link);
@@ -312,18 +313,18 @@ test.describe('Archived pages', () => {
     const response = await page.request.get(baseURL + '/sitemap.xml');
     expect(response.ok()).toBe(true);
     const locations = [...(await response.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
-    expect(locations).toEqual(['/', '/dates.html', '/get-involved.html', '/updates.html', '/about.html', '/letters.html'].map(path => 'https://savekewriversideprimaryschool.org' + path));
+    expect(locations).toEqual(['/', '/dates.html', '/get-involved.html', '/updates.html', '/about.html', '/letters.html', '/questions.html', '/evidence.html', '/understand.html', '/options.html', '/lessons.html', '/lessons-sources.html'].map(path => 'https://savekewriversideprimaryschool.org' + path));
   });
 });
 
 test('Live pages link to archived pages only through the dated Home research footer', async ({ page, baseURL }) => {
   // privacy.html explains who is named on the archived proposal page and links to that section.
-  const allowed = { 'privacy.html': ['proposal.html#who-decides'] };
+  const allowed = { 'privacy.html': ['proposal.html#who-decides'], 'lessons-sources.html': ['proposal.html'] };
   for (const file of livePages) {
     await page.goto('/' + file);
     const hrefs = await page.locator('a[href]').evaluateAll(links => links
       .filter(link => !link.closest('aside.legacy-route'))
-      .filter(link => !(document.body.hasAttribute('data-home-landing') && link.closest('footer #supporting-research') && ['proposal.html#questions', 'evidence.html#records', 'understand.html#budget', 'options.html#options', 'lessons.html#key-lessons'].includes(link.getAttribute('href'))))
+      .filter(link => !(document.body.hasAttribute('data-home-landing') && link.closest('footer #supporting-research') && ['questions.html#questions', 'understand.html#budget', 'options.html#options', 'lessons.html#key-lessons'].includes(link.getAttribute('href'))))
       .map(link => link.href));
     const archived = hrefs.map(href => new URL(href)).filter(url => [new URL(baseURL).origin, 'https://savekewriversideprimaryschool.org'].includes(url.origin)
       && archivedPages.includes(url.pathname.replace(/^\//, '')))
@@ -439,7 +440,7 @@ test('Archived pages name the archive date in the wide-screen status strip', asy
 test.describe('Archived deep links without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
   for (const size of [...phoneSizes, { width: 1280, height: 800 }]) {
-    for (const link of ['faq.html#school-places', 'proposal.html#take-part', 'evidence.html#records']) {
+    for (const link of ['faq.html#school-places', 'proposal.html#take-part']) {
       test(`${link} keeps the Archived flag in view at ${size.width}x${size.height}`, async ({ page }) => {
         await page.setViewportSize(size);
         await page.goto('/' + link);
@@ -487,18 +488,17 @@ for (const width of [320, 390, 1440]) {
     await group.locator('summary').focus();
     await group.locator('summary').press('Enter');
     await expect(group).toHaveAttribute('open', '');
-    await expect(group).toContainText('archived 13 October 2026');
-    await expect(group.locator('a[href="dates.html"]')).toBeVisible();
-    await expect(group.locator('a[href="get-involved.html"]')).toBeVisible();
-    for (const [href, name] of [['proposal.html#questions','Six questions worth asking'],['evidence.html#records','Evidence & original sources'],['understand.html#budget','School finances & closure costs'],['options.html#options','Ways to keep Kew open'],['lessons.html#key-lessons','Historical school cases']]) {
+    await expect(group).not.toContainText('archived');
+    await expect(group.locator('a[href="dates.html"], a[href="get-involved.html"]')).toHaveCount(0);
+    for (const [href, name] of [['questions.html#questions','Six questions worth asking'],['evidence.html#records','Evidence & original sources'],['understand.html#budget','School finances & closure costs'],['options.html#options','Ways to keep Kew open'],['lessons.html#key-lessons','Historical school cases']]) {
       const link = group.getByRole('link', { name, exact: true });
       await expect(link).toHaveAttribute('href', href);
       await link.click();
-      await expect(page.locator('.archive-flag')).toBeVisible();
+      await expect(page.locator('.archive-flag, .archive-banner')).toHaveCount(0);
       const id = href.split('#')[1];
       await expect(page.locator('#'+id)).toBeInViewport();
       if (id === 'questions') {
-        await expect(page.locator('#proposal-question-details')).toHaveAttribute('open', '');
+        await expect(page.getByRole('heading', { level: 1 })).toHaveText('Six questions worth asking');
         await expect(page.locator('#questions')).toContainText('You can respond without waiting for answers.');
         await expect(page.locator('#questions')).toContainText('If Kew closed, where would my child go?');
       }

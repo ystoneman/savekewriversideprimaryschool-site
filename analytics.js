@@ -28,7 +28,7 @@
     'evidence.html': 'Evidence & sources', 'options.html': 'Options to keep the school open',
     'corrections.html': 'Corrections',
     'dates.html': 'Dates & council documents', 'get-involved.html': 'Get involved',
-    'updates.html': 'Campaign updates'
+    'updates.html': 'Campaign updates', 'questions.html': 'Council questions'
   };
   // Broad editorial sections only: no individual letters, questions or form fields.
   // Each ID is an entry in the page's own "On this page" list (top level, plus the

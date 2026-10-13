@@ -13,12 +13,10 @@ test('No JavaScript: campaign ownership, letter-data fallback and journalist gui
 });
 
 test('No JavaScript: page identity and native section routes retain nested content and recovery', async ({ page }) => {
-  // Options was archived in place on 13 October 2026 (slim-site decision); it keeps its own section chooser.
+  // Supporting research remains outside the five-page Menu and keeps its section chooser.
   await page.goto('/options.html');
   await expect(page.locator('.page-name')).toHaveText('Ways to keep Kew open');
-  await expect(page.locator('.archive-flag')).toHaveText('Archived');
-  await expect(page.locator('main > :first-child')).toHaveClass(/\barchive-banner\b/);
-  await expect(page.locator('.archive-banner')).toBeInViewport();
+  await expect(page.locator('.archive-flag, .archive-banner')).toHaveCount(0);
   await expect(page.locator('.section-copy')).toBeHidden();
   const sections = page.locator('.page-sections');
   await sections.locator(':scope > summary').tap();
@@ -28,17 +26,20 @@ test('No JavaScript: page identity and native section routes retain nested conte
   await expect(page.locator('#option-crowdfunding .option-first')).toBeVisible();
   await expect(page.locator('#option-crowdfunding')).toBeInViewport();
   // Leaving from the reading position should return to that section.
-  await page.locator('#option-crowdfunding .option-contribute').tap();
-  await expect(page).toHaveURL(/feedback\.html\?kind=crowdfunding#feedback-form$/);
+  const fundingQuestion = page.locator('#crowdfunding-funding-needed');
+  if (await fundingQuestion.locator('details').getAttribute('open') === null) await fundingQuestion.locator('summary').tap();
+  await expect(page.locator('.funding-questions')).toContainText('Funding ideas go privately to Yann, not the council.');
+  await fundingQuestion.locator('a').tap();
+  await expect(page).toHaveURL(/feedback\.html\?kind=crowdfunding&question=funding-needed#feedback-form$/);
   await page.goBack();
   await expect(page).toHaveURL(/options\.html#option-crowdfunding$/);
   await expect(page.locator('#option-crowdfunding')).toBeInViewport();
   const menu = page.locator('.mobile-menu');
   await menu.locator(':scope > summary').tap();
-  // Slim-site Menu (13 October 2026): an archived page is not listed, so nothing is current and no status note shows.
+  // Supporting pages do not add Menu links or a misleading current-page highlight.
   expect(await menu.locator('a').allTextContents()).toEqual(['Home', 'Dates, leaflet & FAQs', 'Get involved', 'Campaign updates', 'About & contact', 'Watch Parent Voices', 'Book an Open Day']);
   await expect(menu.locator('[aria-current="page"]')).toHaveCount(0);
-  await expect(menu.locator('.mobile-page-note')).toHaveCount(0);
+  await expect(menu.locator('.mobile-page-note')).toContainText('Supporting research');
   await menu.getByRole('link', { name: 'Dates, leaflet & FAQs', exact: true }).tap();
   await expect(page).toHaveURL(/dates\.html$/);
   await expect(page.locator('h1')).toHaveText('Dates, leaflet & FAQs');
@@ -112,11 +113,11 @@ test('No JavaScript: all eight unanswered questions expose known evidence and mi
 test('Clarity pages preserve findings, funding questions and native process details without scripts', async ({ page }) => {
   await page.goto('/options.html#options');
   await expect(page.locator('#options h1')).toBeInViewport();
-  await expect(page.locator('.options-response-button')).toBeVisible();
-  await expect(page.locator('.options-response')).toContainText('16 October 2026');
+  await expect(page.locator('.options-response-button')).toHaveCount(0);
+
   await expect(page.locator('#options-findings-title')).toBeVisible();
-  await expect(page.locator('.action-card > details.option-card[open]')).toHaveCount(7);
-  await expect(page.locator('.options-school-enquiry')).toBeVisible();
+  await expect(page.locator('.action-card > details.option-card[open]')).toHaveCount(6);
+  await expect(page.locator('.options-school-enquiry')).toHaveCount(0);
   await page.goto('/options.html#crowdfunding-recipient');
   await expect(page.locator('#option-crowdfunding > details.option-card')).toHaveAttribute('open', '');
   await expect(page.locator('.funding-questions details.question-detail[open]')).toHaveCount(8);
@@ -770,9 +771,9 @@ test('No JavaScript: optional research footer opens and its five references rema
   const group=page.locator('footer #supporting-research');
   await expect(group).not.toHaveAttribute('open', '');
   await group.locator('summary').click();
-  for (const [href, name] of [['proposal.html#questions','Six questions worth asking'],['evidence.html#records','Evidence & original sources'],['understand.html#budget','School finances & closure costs'],['options.html#options','Ways to keep Kew open'],['lessons.html#key-lessons','Historical school cases']]) {
+  for (const [href, name] of [['questions.html#questions','Six questions worth asking'],['evidence.html#records','Evidence & original sources'],['understand.html#budget','School finances & closure costs'],['options.html#options','Ways to keep Kew open'],['lessons.html#key-lessons','Historical school cases']]) {
     await group.getByRole('link', { name, exact: true }).click();
-    await expect(page.locator('.archive-flag')).toBeVisible();
+    await expect(page.locator('.archive-flag, .archive-banner')).toHaveCount(0);
     await expect(page.locator('#'+href.split('#')[1])).toBeInViewport();
     await page.goBack();
     // Native Back may reload the static page; its disclosure remains operable.

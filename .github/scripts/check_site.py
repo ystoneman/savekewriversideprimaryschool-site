@@ -31,7 +31,7 @@ understand.html understand.css understand.js understand-data.json richmond-schoo
 voice.css voice.js contribute.css sent.html sent.js private-form.js respond-reminder.ics
 og-home.png og-letters.png og-ideas.png og-videos.png
 og-fundraising-trustees-v1.png og-fundraising-admin-v1.png
-dates.html get-involved.html updates.html campaign.css campaign.js
+dates.html get-involved.html updates.html questions.html campaign.css campaign.js
 '''.split())
 MAINTENANCE_FILES = frozenset('''
 tests/browser/mobile-header.spec.js tests/browser/mobile-feedback.spec.js tests/browser/mobile-letters.spec.js tests/browser/mobile-reading.spec.js tests/browser/mobile-contact-support.spec.js
@@ -82,17 +82,11 @@ REDIRECT_PAGES = frozenset({'visit/index.html'})
 # Archived in place (13 October 2026): still served for old links, never linked
 # from a live page, and marked with a banner and noindex by build_navigation.py.
 ARCHIVED_PAGES = frozenset('''
-proposal.html faq.html understand.html evidence.html options.html lessons.html lessons-sources.html
-rally.html supporters.html fundraising-trustees.html fundraising-admin.html
+proposal.html faq.html rally.html supporters.html fundraising-trustees.html fundraising-admin.html
 '''.split())
 # The privacy notice must say where named public-role information is published.
-ARCHIVED_LINK_EXEMPTIONS = frozenset({('privacy.html', 'proposal.html#who-decides')})
+ARCHIVED_LINK_EXEMPTIONS = frozenset({('privacy.html', 'proposal.html#who-decides'), ('lessons-sources.html', 'https://savekewriversideprimaryschool.org/proposal.html')})
 
-# Owner-authorized dated-reference links, only within Home's research footer.
-RESEARCH_FOOTER_DESTINATIONS = frozenset({
-    'proposal.html#questions', 'evidence.html#records', 'understand.html#budget',
-    'options.html#options', 'lessons.html#key-lessons',
-})
 
 
 def archived_links(name, data):
@@ -100,12 +94,6 @@ def archived_links(name, data):
     which forward old shared fragments, are compatibility entries, not links."""
     if name == 'index.html':
         data = re.sub(r'<aside class="legacy-route\b.*?</aside>', '', data, flags=re.S)
-        def reference_footer(match):
-            # Keep all undeclared archived targets visible to the normal guard.
-            def permitted_link(link):
-                return link.group().replace(link[1], '#reference') if link[1] in RESEARCH_FOOTER_DESTINATIONS else link.group()
-            return match[1]+re.sub(r'<a\b[^>]*\bhref="([^"]+)"', permitted_link, match[2])+match[3]
-        data = re.sub(r'(<footer>.*?)(<details id="supporting-research">.*?)(</details>)', reference_footer, data, flags=re.S)
 
     found = set()
     for href in re.findall(r'<a\b[^>]*\bhref="([^"]+)"', data):

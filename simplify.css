@@ -75,3 +75,6 @@
   .simple-detail>summary::after{display:none}
   .simple-detail-body{padding:0}
 }
+
+/* Retired action anchors remain recoverable without duplicating participation blocks. */
+.research-legacy{display:none}.research-legacy:target{display:block;padding:16px 0}.research-legacy a{display:inline-flex;align-items:center;min-height:44px}

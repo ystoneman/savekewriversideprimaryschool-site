@@ -25,7 +25,7 @@ for (const scripts of [true, false]) {
 
         // Archived pages keep their section chooser, show an Archived flag beside it and
         // drop the dated Menu status note (13 October 2026 slim-site decision).
-        await page.goto('/evidence.html');
+        await page.goto('/proposal.html');
         await expect(page.locator('.site-orientation .archive-flag')).toBeInViewport({ ratio: 1 });
         await expect(page.locator('.mobile-menu > summary')).toBeInViewport({ ratio: 1 });
         const chooser = page.locator('.page-sections > summary');
@@ -33,11 +33,20 @@ for (const scripts of [true, false]) {
         await expect(chooser).toContainText('On this page');
         await expect(page.locator('.mobile-page-note')).toHaveCount(0);
         await chooser.click();
-        await page.locator('.section-links a[href="#gaps"]').click();
-        await expect(page).toHaveURL(/#gaps$/);
-        await expect(page.locator('#gaps')).toBeVisible();
+        await page.locator('.section-links a[href="#questions"]').click();
+        await expect(page).toHaveURL(/#questions$/);
+        await expect(page.locator('#questions')).toBeVisible();
         if (scripts) await expect(page.locator('.page-sections')).not.toHaveAttribute('open', '');
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        // Maintained research keeps its local navigation without a retirement label.
+        for (const file of ['evidence.html', 'questions.html']) {
+          await page.goto('/' + file);
+          await expect(page.locator('.archive-banner, .archive-flag')).toHaveCount(0);
+          await expect(page.locator('.mobile-menu > summary')).toBeInViewport({ ratio: 1 });
+          await page.locator('.mobile-menu > summary').click();
+          await expect(page.locator('.mobile-page-note')).toContainText('Supporting research');
+          expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        }
       }
     });
   });

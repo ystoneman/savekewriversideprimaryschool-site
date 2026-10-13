@@ -23,10 +23,10 @@ test('Report discovery: archived research links still reach the web research and
   await press(page.locator('footer #supporting-research > summary'));
   await press(page.locator('footer #supporting-research a[href="lessons.html#key-lessons"]'));
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('What can other schools teach us?');
-  await expect(page.locator('main > :first-child')).toHaveClass(/\barchive-banner\b/);
-  await expect(page.locator('.archive-banner')).toContainText('Archived 13 October 2026');
+  await expect(page.locator('.archive-banner, .archive-flag')).toHaveCount(0);
+  await expect(page.locator('meta[name="robots"][content*="noindex"]')).toHaveCount(0);
   await page.goto('/evidence.html#records');
-  await expect(page.locator('main > :first-child')).toHaveClass(/\barchive-banner\b/);
+  await expect(page.locator('.archive-banner, .archive-flag')).toHaveCount(0);
   const explore = page.locator('#evidence-library-guide');
   if (!await explore.evaluate(detail => detail.open)) await press(explore.locator(':scope > summary'));
   await press(page.locator('#research-shortcut'));
@@ -309,7 +309,6 @@ test('Checklist downloads as PDF and source index as CSV', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-10-13T12:00:00Z'));
   for (const [entry, name, filename, signature] of [
     ['/get-involved.html#respond', 'Response checklist (PDF)', 'kew-riverside-response-checklist.pdf', '%PDF-'],
-    ['/options.html#options', 'Printable question checklist (PDF)', 'kew-riverside-response-checklist.pdf', '%PDF-'],
     ['/evidence.html#records', 'Download the source index (CSV)', 'kew-riverside-source-index.csv', '"Title","Publisher"'],
   ]) {
     await page.goto(entry);
@@ -335,14 +334,8 @@ test('Charts and option details provide usable nonvisual alternatives', async ({
     expect(await details.locator('tbody tr').count()).toBeGreaterThan(0);
   }
   await page.goto('/options.html#option-enrolment');
-  const campaign = page.locator('#option-enrolment');
-  await expect(campaign.locator('.option-first')).toBeVisible();
-  await expect(campaign.locator('.option-first .option-step')).toContainText('Suggest one local group or place');
-  await campaign.locator('.option-evidence > summary').click();
-  await expect(campaign.getByRole('heading', { name: 'What a full assessment needs' })).toBeVisible();
-  await campaign.getByRole('link', { name: /Offer campaign help/ }).click();
-  await expect(page).toHaveURL(/about.html#contact$/);
-  await expect(page.locator('#contact')).toBeInViewport();
+  await expect(page.locator('#option-enrolment a')).toHaveAttribute('href', 'visit/index.html');
+  await expect(page.locator('.options-school-enquiry, #option-enrolment .option-evidence')).toHaveCount(0);
 });
 
 test('Evidence starts with explanations and optional detail, then opens the complete library by keyboard or touch', async ({ page, hasTouch }) => {

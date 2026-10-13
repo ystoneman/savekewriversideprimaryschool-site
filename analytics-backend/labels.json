@@ -15,7 +15,8 @@
     "options.html",
     "dates.html",
     "get-involved.html",
-    "updates.html"
+    "updates.html",
+    "questions.html"
   ],
   "source": [
     "direct",
@@ -58,7 +59,8 @@
     "Opened Dates & council documents",
     "Opened Get involved",
     "Opened Campaign updates",
-    "Opened petition"
+    "Opened petition",
+    "Opened Council questions"
   ],
   "active": [
     "15",

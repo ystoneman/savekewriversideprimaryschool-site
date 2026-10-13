@@ -48,14 +48,17 @@
     setInterval(() => { if (!document.hidden) refresh(); }, 60000);
     responses.forEach(link => ['pointerdown','click','auxclick','contextmenu','keydown'].forEach(type => link.addEventListener(type, refresh, {capture:true})));
   }
-  const details = [...main.querySelectorAll('details[data-simple-detail]')];
+  const details = [...main.querySelectorAll('details[data-simple-detail], details[data-overview-detail]')];
   const button = main.querySelector('[data-simple-toggle]');
   if (!details.length) return;
   let restoring = true;
   let saved;
   try { saved = history.state?.kewSimpleDetails; } catch { /* Keep a short readable default. */ }
   details.forEach(detail => {
-    detail.open = Boolean(saved && detail.id && saved[detail.id]);
+    // Overview defaults belong to their page script; keep static depth open if it fails.
+    if (detail.hasAttribute('data-simple-detail') || (saved && detail.id && Object.hasOwn(saved, detail.id))) {
+      detail.open = Boolean(saved && detail.id && saved[detail.id]);
+    }
   });
   restoring = false;
   let fullState;

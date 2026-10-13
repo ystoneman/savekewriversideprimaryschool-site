@@ -1,59 +1,37 @@
 const { test, expect, expectStillArrival } = require('./fixtures');
 async function activate(locator, hasTouch) { if (hasTouch) await locator.tap(); else await locator.click(); }
 const officialResponse = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform';
-const optionIds = ['option-recovery-plan', 'option-crowdfunding', 'option-demand', 'option-enrolment', 'option-5', 'option-6', 'option-8'];
+const optionIds = ['option-recovery-plan', 'option-crowdfunding', 'option-demand', 'option-5', 'option-6', 'option-8'];
 const fundingQuestions = ['funding-needed', 'council-assessment', 'sustainability', 'recipient', 'outreach', 'examples', 'appeal-terms', 'expertise'];
 
-test('Options: the Parent plan arrives at the response, useful answer and optional ways to help', async ({ page, hasTouch }) => {
-  await page.goto('/proposal.html#plan-keep-going');
-  await activate(page.locator('#plan-keep-going a[href="options.html#options"]'), hasTouch);
-  await page.waitForURL('**/options.html#options', { waitUntil: 'load' });
+// Supporting research owns assessments; participation lives on Get involved.
+test('Options: the research arrival exposes requirements and optional assessments', async ({ page, hasTouch }) => {
+  await page.goto('/options.html#options');
   await expectStillArrival(page, '#options');
   await expect(page.locator('#options h1')).toBeInViewport();
-  await expect(page.locator('#option-7 .options-response-button')).toHaveAttribute('href', officialResponse);
-  await expect(page.locator('#option-7')).toContainText('16 October 2026');
-  expect(await page.locator('#option-7').evaluate(el => el.closest('details') === null)).toBe(true);
-  await expect(page.locator('#options-preparation-detail')).not.toHaveAttribute('open','');
-  await page.locator('#options-preparation-detail > summary').click();
+  await expect(page.locator('.options-response, .options-prep')).toHaveCount(0);
   await expect(page.locator('.options-insight')).toBeVisible();
-  await expect(page.locator('#options-findings-title')).toBeVisible();
   await expect(page.locator('.options-insight')).toContainText(/budget|costed/i);
-  expect(await page.locator('.options-insight').evaluate(el => Boolean(el.compareDocumentPosition(document.getElementById('options-navigation')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
   expect(await page.locator('#options .action-card').evaluateAll(cards => cards.map(card => card.id))).toEqual(optionIds);
   await expect(page.locator('.action-card > details.option-card[open]')).toHaveCount(0);
-  await expect(page.locator('.options-prep a[href="evidence.html#records"]')).toBeVisible();
-  await expect(page.locator('.options-prep a[href="proposal.html#questions"]')).toBeVisible();
-  const enquiry = page.locator('.options-school-enquiry');
-  await expect(enquiry).toBeVisible();
-  expect(await enquiry.evaluate(el => el.closest('details') === null)).toBe(true);
-  await expect(enquiry.locator('a[href="https://www.kewriverside.richmond.sch.uk/page/?pid=525&title=Contact+Us"]')).toBeVisible();
-  await expect(enquiry).toContainText(/closure is proposed/i);
-  for (const [target, destination] of [['records', 'evidence'], ['questions', 'proposal']]) {
-    await activate(page.locator(`.options-prep a[href="${destination}.html#${target}"]`), hasTouch);
-    await expect(page).toHaveURL(new RegExp(`${destination}\\.html#${target}$`));
-    await expect(page.locator('#' + target)).toBeInViewport();
-    await page.goBack();
-    await expect(page).toHaveURL(/options\.html#options$/);
-  }
-  await page.route(officialResponse, route => route.fulfill({ contentType: 'text/html', body: '<h1>Fictional official response handoff</h1><p>No form was submitted.</p>' }));
-  await activate(page.locator('.options-response-button'), hasTouch);
-  await expect(page).toHaveURL(officialResponse);
-  await expect(page.getByRole('heading')).toHaveText('Fictional official response handoff');
-  await page.goBack();
-  await expect(page).toHaveURL(/options\.html#options$/);
-  const checklist = page.locator('.options-response a[href="response-checklist.pdf"]');
-  await expect(checklist).toBeVisible();
-  const download = page.waitForEvent('download');
-  await activate(checklist, hasTouch);
-  expect((await download).suggestedFilename()).toBe('kew-riverside-response-checklist.pdf');
+  const questions=page.locator('main a[href="questions.html#questions"]').first();
+  await activate(questions, hasTouch);
+  await expect(page.getByRole('heading',{level:1})).toHaveText('Six questions worth asking');
+  await expect(page.locator('#questions .question-list > article')).toHaveCount(6);
+  await page.goto('/options.html#option-7');
+  const recovery=page.locator('#option-7 a[href="get-involved.html#respond"]');
+  await expect(recovery).toBeVisible();
+  await activate(recovery, hasTouch);
+  await expect(page).toHaveURL(/get-involved\.html#respond$/);
+  await expect(page.locator('#respond')).toBeInViewport();
 });
 
-test('Options: a phone arrival exposes the title, response date and button with a short reading layer', async ({ page }) => {
+test('Options: a phone arrival exposes the title and assessment with a short reading layer', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/options.html');
   await expect(page.locator('#options h1')).toBeInViewport({ ratio: 1 });
-  await expect(page.locator('.options-response .response-date')).toBeInViewport({ ratio: 1 });
-  await expect(page.locator('.options-response-button')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('.options-insight')).toBeVisible();
+  await expect(page.locator('.options-response-button')).toHaveCount(0);
   const visibleWords = await page.locator('main').evaluate(main => {
     const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
     const text = [];
@@ -75,7 +53,7 @@ test('Options: a phone arrival exposes the title, response date and button with 
   expect(visibleWords, 'The initial reading layer stays within the agreed 450-word budget').toBeLessThanOrEqual(450);
 });
 
-test('Options: every optional row exposes a bounded contribution before deeper evidence', async ({ page, hasTouch }) => {
+test('Options: every optional assessment exposes its limits before deeper evidence', async ({ page, hasTouch }) => {
   await page.goto('/options.html');
   for (const id of optionIds) {
     const card = page.locator('#' + id);
@@ -85,7 +63,7 @@ test('Options: every optional row exposes a bounded contribution before deeper e
     await activate(summary, hasTouch);
     await expect(detail).toHaveAttribute('open', '');
     await expect(card.locator('.option-first')).toBeVisible();
-    await expect(card.locator('.option-first a[href^="feedback.html?"]')).toBeVisible();
+    await expect(card.locator('.option-limit')).toBeVisible();
     const evidence = card.locator('.option-evidence');
     await expect(evidence).not.toHaveAttribute('open', '');
     await activate(evidence.locator(':scope > summary'), hasTouch);
@@ -100,7 +78,7 @@ test('Options: every optional row exposes a bounded contribution before deeper e
     await expect(summary).toBeFocused();
     await activate(summary, hasTouch);
   }
-  await expect(page.locator('.options-school-enquiry')).toBeVisible();
+  await expect(page.locator('.options-school-enquiry')).toHaveCount(0);
 });
 
 test('Options: old option and nested question links reveal the requested detail', async ({ page }) => {
@@ -173,12 +151,15 @@ test('Options: repeating a real cross-reference reopens its row and Back returns
 test('Options: a failed enhancement leaves all optional rows and funding questions available', async ({ page }) => {
   await page.route('**/options.js*', route => route.fulfill({ status: 503, contentType: 'application/javascript', headers: { 'x-test-fixture': 'intentional-error' }, body: '' }));
   await page.goto('/options.html#crowdfunding-recipient');
-  await expect(page.locator('.action-card > details.option-card[open]')).toHaveCount(7);
+  for (const row of await page.locator('.action-card > details.option-card').all()) {
+    if (!(await row.evaluate(el => el.open))) await row.locator(':scope > summary').click();
+    await expect(row.locator('.option-limit')).toBeVisible();
+  }
   await expect(page.locator('.funding-questions details.question-detail[open]')).toHaveCount(8);
   await expect(page.locator('#crowdfunding-recipient')).toBeVisible();
   await expect(page.locator('#crowdfunding-recipient a')).toBeVisible();
-  await expect(page.locator('.options-response-button')).toBeVisible();
-  await expect(page.locator('.options-school-enquiry')).toBeVisible();
+  await expect(page.locator('.options-response-button')).toHaveCount(0);
+  await expect(page.locator('.options-school-enquiry')).toHaveCount(0);
 });
 
 test('Proposal: immediate actions stay exposed and full stage dates open on demand', async ({ page }) => {

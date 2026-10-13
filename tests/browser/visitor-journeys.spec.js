@@ -45,10 +45,9 @@ test('Prospective families retain the Open Day handoff and Options routes', asyn
  await page.goto('/index.html#visit-school');await expect(page).toHaveURL(openDay);
  await expect(page.getByRole('heading')).toHaveText('Fictional Open Day booking');
  await page.goto('/options.html#option-enrolment');const option=page.locator('#option-enrolment');
- await option.locator('.option-evidence > summary').click();
- await expect(option).toContainText('Ask the school what visits are available now');
- await expect(option).toContainText('applications and admissions can continue');
- await expect(option.locator('a[href^="https://www.kewriverside.richmond.sch.uk/page/"]').filter({hasText:'Ask the school about visits and places'})).toBeVisible();
+ await expect(option.locator('.option-evidence')).toHaveCount(0);
+ await expect(option.locator('a')).toHaveAttribute('href','visit/index.html');
+ await option.locator('a').click();await expect(page).toHaveURL(openDay);
 });
 
 test('Proposal presents six plain questions with children first and the official response independent', async ({ page }) => {
@@ -89,8 +88,8 @@ test('Government closure guidance is cited at the point of use without adding re
   await expect(page.locator(`#question-demand a[href="${guidance}#page=8"]`)).toBeVisible();
   await expect(page.locator(`#question-alternatives a[href="${guidance}#page=8"]`)).toBeVisible();
   await page.goto('/options.html#options');
-  await page.locator('.response-detail > summary').click();
-  await expect(page.locator(`.response-detail a[href="${guidance}#page=6"]`)).toBeVisible();
+  await expect(page.locator('.response-detail')).toHaveCount(0);
+  await expect(page.locator('main a[href="questions.html#questions"]').first()).toBeVisible();
 });
 
 test('Options ranking links to the council’s published alternatives rather than site questions', async ({ page }) => {

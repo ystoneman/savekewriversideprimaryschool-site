@@ -1,4 +1,4 @@
-const { test, expect, pages, menuPages, taskPages, archivedPages, expectStillArrival, expectScrollSettled } = require('./fixtures');
+const { test, expect, pages, menuPages, taskPages, supportingPages, archivedPages, expectStillArrival, expectScrollSettled } = require('./fixtures');
 
 test('Orientation: delayed final styles settle before the initial Options fragment jump', async ({ page }) => {
   await page.goto('/proposal.html#plan-keep-going');
@@ -468,8 +468,8 @@ test('Orientation: enlarged text retains readable controls and an uncovered sect
 // The Menu is chosen, not generated: its groups, labels and order are fixed, adding
 // a page never adds a row, and every footer lists live pages only (13 October 2026).
 test('Orientation: the curated Menu keeps its two groups and every footer lists only live pages', async ({ page }) => {
-  // Every public page is a Menu page, a live task page or an archived page.
-  expect([...menuPages, ...taskPages, ...archivedPages].sort()).toEqual(pages);
+  // Every public page has one deliberate role; supporting research adds no Menu row.
+  expect([...menuPages, ...taskPages, ...supportingPages, ...archivedPages].sort()).toEqual(pages);
   for (const file of pages) {
     await page.goto('/' + file);
     const nav = page.locator('.mobile-menu nav');
@@ -498,7 +498,11 @@ test('Orientation: the curated Menu keeps its two groups and every footer lists 
       await expect(nav.locator('.mobile-page-note'), `${file} has no Menu status note`).toHaveCount(0);
     } else {
       await expect(page.locator('.archive-banner, .archive-flag'), `${file} is live`).toHaveCount(0);
-      await expect(page.locator('.page-sections'), `${file} has no section chooser`).toHaveCount(0);
+      if (!supportingPages.includes(file)) {
+        await expect(page.locator('.page-sections'), `${file} has no section chooser`).toHaveCount(0);
+      } else {
+        await expect(nav.locator('.mobile-page-note')).toContainText('Supporting research');
+      }
     }
   }
   // The footer must wrap on every page, not run off landscape phones.

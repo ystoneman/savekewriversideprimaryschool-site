@@ -85,11 +85,11 @@ test('Understand: archived numbers route reaches dated finances and forecast che
   await page.goto('/about.html#our-case');
   await expect(page.locator('#our-case')).toContainText('Compare the full costs');
   await page.goto('/understand.html');
-  await expect(page.locator('main > :first-child')).toHaveClass(/\barchive-banner\b/);
-  await expect(page.locator('.campaign-route a').first()).toHaveAttribute('href', 'proposal.html#council-documents');
+  await expect(page.locator('.archive-banner, .archive-flag')).toHaveCount(0);
+  await expect(page.locator('.campaign-route')).toHaveCount(0);
   await expect(page.locator('.campaign-route a[href$="#gaps"]')).toHaveCount(0);
   await expect(page.locator('#supporting-research')).not.toHaveAttribute('open', '');
-  await activate(page.locator('.campaign-route a[href="#supporting-research"]'), hasTouch);
+  await activate(page.locator('#supporting-research > summary'), hasTouch);
   const budgetLink = page.locator('.visual-route a[href="#budget"]');
   const forecastLink = page.locator('.visual-route a[href="#forecast-checks"]');
   await expect(budgetLink).toBeVisible();
@@ -344,7 +344,7 @@ test('Understand: questions, source references and proposal comparison lead to t
   await expect(comparison.locator('.section-lead')).toContainText('neither is a final decision');
   await openComparison(page, 'other-proposals-detail');
   await activate(comparison.getByRole('link', { name: /Read the Kew proposal/ }), hasTouch);
-  await expect(page).toHaveURL(/proposal.html$/);
+  await expect(page).toHaveURL(/dates.html$/);
 });
 
 test('Understand: published data keeps dated measurements and school-level totals consistent', async ({ page }) => {
@@ -458,15 +458,15 @@ test('Understand: the short-answer view reflows with text enlarged to 200 percen
   await expect(page.locator('#pupil-trends-detail > summary')).toBeVisible();
 });
 
-test('Curation: campaign arrivals lead with advocacy and keep numeric research optional', async ({ page, hasTouch }) => {
+test('Supporting research starts with its purpose and keeps numeric detail optional', async ({ page, hasTouch }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/understand.html');
-  await expect(page.locator('#top')).toContainText('Our position:');
-  await expect(page.locator('.number-findings article')).toHaveCount(3);
+  await expect(page.locator('#top')).toContainText('School finances & pupil numbers');
+  await expect(page.locator('.number-findings article')).toHaveCount(0);
   await expect(page.locator('#top')).not.toContainText(/36\.6%|£212,417|651 pupils/);
   await expect(page.locator('#supporting-research')).not.toHaveAttribute('open', '');
   for (const id of ['pupil-trends', 'budget', 'learning-and-results']) await expect(page.locator('#' + id)).toBeHidden();
-  await activate(page.locator('.campaign-route a[href="#supporting-research"]'), hasTouch);
+  await activate(page.locator('#supporting-research > summary'), hasTouch);
   await expect(page.locator('#supporting-research')).toHaveAttribute('open', '');
   await expect(page.locator('.visual-route a[href="#budget"]')).toBeVisible();
   await activate(page.locator('.visual-route a[href="#budget"]'), hasTouch);

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Supporting research without duplicated campaign actions — 13 October 2026
+
+Keep useful research as maintained secondary pages below the concise landing page, removing blanket archive warnings from those destinations. Add a focused six-question page with the original sourced articles; retain financial figures, alternatives, historical cases and their source dates/limits. Remove repeated campaign introductions and generic response/preparation/contribution blocks from research, using Dates and Get involved for current actions. Keep eight contextual funding feedback routes with one privacy/routing explanation. Old Options anchors reveal only their current handoffs, and recruitment remains separate.
+
+Update navigation/SEO/public-file validation for six maintained supporting pages and six actual archives. Extend automatic all-page coverage to the new Questions page; preserve source controls, full-page/print state, native no-script details and old-link recovery. Add the Questions analytics label, which must be deployed to the backend with a future live release. Independent campaign/evidence implementation findings are resolved; actual rendered UX and verification are recorded in TESTING.md. This updates PR #47 and its separate Sites mockup; it does not publish to the campaign domain.
+
 ### Optional supporting research restored — 13 October 2026
 
 Added a closed Supporting research & alternatives footer section after press and About/appearance. Restored dated-reference access to the six council questions, evidence and sources, finances and closure costs, ways to keep Kew open and historical school cases. The hero, main actions and five-page Menu are unchanged. Destination archive notices remain; the publication guard allows only five declared reference routes in this homepage footer. Verification is recorded in TESTING.md.

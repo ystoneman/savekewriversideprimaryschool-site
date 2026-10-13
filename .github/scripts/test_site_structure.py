@@ -305,7 +305,7 @@ class SiteStructureTests(unittest.TestCase):
                 self.assertIsNotNone(footer, 'Pages with the shared shell keep a footer')
                 footer_pages = {local_destination(name, href)[0] for href in re.findall(r'href="([^"]+)"', footer.group()) if local_destination(name, href)}
                 self.assertTrue(live_footer <= footer_pages, 'Every footer keeps the live campaign and task pages')
-                self.assertEqual(footer_pages & ARCHIVED_PAGES, {'proposal.html', 'evidence.html', 'understand.html', 'options.html', 'lessons.html'} if name == 'index.html' else set(), 'Only Home’s dated research footer restores these references')
+                self.assertEqual(footer_pages & ARCHIVED_PAGES, set(), 'Only Home’s dated research footer restores these references')
                 if name == 'index.html':
                     self.assertIn('data-home-landing', text)
                     self.assertEqual(navigation_destinations(name, page.navigation['mobile-menu']),
@@ -316,8 +316,7 @@ class SiteStructureTests(unittest.TestCase):
     def test_archived_pages_are_marked_and_unlinked_from_live_pages(self):
         # Archived pages stay served for old links but carry a banner and noindex,
         # and no live page links to them outside hidden homepage legacy routes.
-        self.assertEqual(ARCHIVED_PAGES, {'proposal.html', 'faq.html', 'understand.html', 'evidence.html', 'options.html', 'lessons.html',
-                                          'lessons-sources.html', 'rally.html', 'supporters.html', 'fundraising-trustees.html', 'fundraising-admin.html'})
+        self.assertEqual(ARCHIVED_PAGES, {'proposal.html', 'faq.html', 'rally.html', 'supporters.html', 'fundraising-trustees.html', 'fundraising-admin.html'})
         self.assertTrue(ARCHIVED_PAGES <= PUBLIC_FILES, 'Archived pages must stay published for old links')
         for name in sorted(n for n in PUBLIC_FILES if n.endswith('.html') and n not in REDIRECT_PAGES):
             text = (ROOT / name).read_text()
@@ -336,11 +335,11 @@ class SiteStructureTests(unittest.TestCase):
                 else:
                     self.assertNotIn('archive-banner', text)
                     self.assertEqual(archived_links(name, text), set(), 'Live pages must not link to archived pages')
-        self.assertEqual(ARCHIVED_LINK_EXEMPTIONS, {('privacy.html', 'proposal.html#who-decides')})
+        self.assertEqual(ARCHIVED_LINK_EXEMPTIONS, {('privacy.html', 'proposal.html#who-decides'), ('lessons-sources.html', 'https://savekewriversideprimaryschool.org/proposal.html')})
         allowed = '<a href="proposal.html#questions">questions</a>'
         self.assertEqual(archived_links('index.html', allowed), {'proposal.html#questions'})
         self.assertEqual(archived_links('index.html', '<footer>'+allowed+'<details id="supporting-research">'+allowed+'</details></footer>'), {'proposal.html#questions'})
-        self.assertEqual(archived_links('index.html', '<footer><details id="supporting-research">'+allowed+'</details></footer>'), set())
+        self.assertEqual(archived_links('index.html', '<footer><details id="supporting-research">'+allowed+'</details></footer>'), {'proposal.html#questions'})
         self.assertEqual(archived_links('dates.html', '<footer><details id="supporting-research">'+allowed+'</details></footer>'), {'proposal.html#questions'})
         self.assertEqual(archived_links('index.html', '<footer><details id="supporting-research"><a href="fundraising-admin.html">x</a></details></footer>'), {'fundraising-admin.html'})
 
@@ -351,7 +350,7 @@ class SiteStructureTests(unittest.TestCase):
         # The response checklist PDF is linked from Get involved, so its source follows the same rule.
         self.assertEqual(checklist_archived_links((ROOT / 'response-checklist.md').read_text()), set())
         self.assertEqual(checklist_archived_links('[a](understand.html#budget) [b](https://savekewriversideprimaryschool.org/faq.html#school-places) [c](dates.html) [d](https://example.org/faq.html)'),
-                         {'understand.html#budget', 'https://savekewriversideprimaryschool.org/faq.html#school-places'})
+                         {'https://savekewriversideprimaryschool.org/faq.html#school-places'})
 
     def test_printed_visit_route_has_matching_immediate_and_native_destinations(self):
         destination = 'https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform'

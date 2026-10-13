@@ -11,11 +11,12 @@ const redirectPages = ['visit/index.html'];
 const allPages = publicFiles.filter(name => name.endsWith('.html')).sort();
 const pages = allPages.filter(name => !redirectPages.includes(name));
 // The slim campaign site (13 October 2026): the five Menu pages, the live task pages
-// they route to, and archived pages that are still served but no longer linked.
+// they route to, supporting research outside the Menu, and retained archives.
 // orientation.spec.js checks that together they are exactly `pages`.
 const menuPages = ['index.html', 'dates.html', 'get-involved.html', 'updates.html', 'about.html'];
 const taskPages = ['letters.html', 'videos.html', 'feedback.html', 'privacy.html', 'corrections.html', 'sent.html'];
-const archivedPages = ['proposal.html', 'faq.html', 'understand.html', 'evidence.html', 'options.html', 'lessons.html', 'lessons-sources.html', 'rally.html', 'supporters.html', 'fundraising-trustees.html', 'fundraising-admin.html'];
+const supportingPages = ['questions.html', 'understand.html', 'evidence.html', 'options.html', 'lessons.html', 'lessons-sources.html'];
+const archivedPages = ['proposal.html', 'faq.html', 'rally.html', 'supporters.html', 'fundraising-trustees.html', 'fundraising-admin.html'];
 function headerLinks(file, selector) {
   const html = readFileSync(path.join(root, file), 'utf8');
   const className = selector === 'mobile' ? 'mobile-menu' : 'desktop-explore';
@@ -163,4 +164,4 @@ async function revealLetterChoices(page) {
   await expect(page.locator('#letter-consent')).toBeVisible();
 }
 
-module.exports = { test, expect, pages, allPages, redirectPages, menuPages, taskPages, archivedPages, headerLinks, expectDestination, expectScrollSettled, expectStillArrival, captureSubmissions, chooseKind, revealLetterChoices };
+module.exports = { test, expect, pages, allPages, redirectPages, menuPages, taskPages, supportingPages, archivedPages, headerLinks, expectDestination, expectScrollSettled, expectStillArrival, captureSubmissions, chooseKind, revealLetterChoices };

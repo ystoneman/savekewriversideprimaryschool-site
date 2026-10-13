@@ -299,20 +299,16 @@ test('Learning FAQ: remembered terms and incoming answer links recover from sear
   }
 });
 
-test('Recruitment: awareness channels retain Open Day and normal-admissions routes', async ({ page, hasTouch }) => {
-  await page.goto('/options.html#option-enrolment');
-  const option = page.locator('#option-enrolment');
-  await expect(option.locator('details.option-card > summary')).toHaveAccessibleName(/families.*school/i);
-  await activate(option.locator('.option-evidence > summary'), hasTouch);
-  await expect(option.locator('.option-evidence')).toHaveAttribute('open', '');
-  for (const channel of ['nurseries', 'parent groups', 'community notices', 'word of mouth', 'social media']) {
-    await expect(option).toContainText(new RegExp(channel, 'i'));
-  }
+test('Recruitment: old Options anchor retains a separate school enquiry handoff', async ({ page, hasTouch }) => {
   const destination='https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform';
   await page.route(destination, route => route.fulfill({ contentType: 'text/html', body: '<h1>Intercepted Open Day booking</h1>' }));
-  await page.goto('/index.html#visit-school');
+  await page.goto('/options.html#option-enrolment');
+  await expect(page.locator('#option-enrolment .option-card')).toHaveCount(0);
+  await activate(page.locator('#option-enrolment a[href="visit/index.html"]'), hasTouch);
   await expect(page).toHaveURL(destination);
   await expect(page.getByRole('heading')).toHaveText('Intercepted Open Day booking');
+  await page.goto('/index.html#visit-school');
+  await expect(page).toHaveURL(destination);
 });
 
 test('Contributions: letters lead to contextual evidence and optional video without adding permissions', async ({ page, hasTouch }) => {
