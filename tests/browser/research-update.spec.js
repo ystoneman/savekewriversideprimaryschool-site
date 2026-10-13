@@ -36,11 +36,12 @@ test('Research refresh: borough forecast stays qualified and links to its origin
   await expect(borough).toBeVisible();
 });
 
-test('Research update: homepage evidence leads to current findings, annual table and Back', async ({ page, hasTouch }) => {
+// Slim-site decision (13 October 2026): Evidence is archived and has left the
+// homepage Menu; a saved Evidence link still leads to the dated findings.
+test('Research update: archived Evidence link leads to current findings, annual table and Back', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
-  await page.locator('.mobile-menu summary').click();
-  const evidence = page.locator('.mobile-menu a[href="evidence.html#records"]');
-  if (hasTouch) await evidence.tap(); else await evidence.click();
+  await expect(page.locator('.mobile-menu a[href^="evidence.html"]')).toHaveCount(0);
+  await page.goto('/evidence.html#records');
   await expect(page.locator('#kew-findings-title')).toBeInViewport();
   await page.locator('#evidence-kew-detail > summary').click();
   await expect(page.locator('#kew-finance')).toContainText('indicative forecast');

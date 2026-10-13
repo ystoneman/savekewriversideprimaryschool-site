@@ -187,18 +187,22 @@ test('Learning: narrow arrival protects action routes and the chart stays inside
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/index.html');
   await expect(page.locator('#main-action')).toBeInViewport({ ratio: 1 });
-  await expect(page.locator('.home-plan')).toHaveAttribute('href','proposal.html#parent-plan');
+  await expect(page.locator('.home-plan')).toHaveAttribute('href','get-involved.html');
   await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open', '');
-  for (const href of ['letters.html', 'feedback.html']) {
-    await activate(page.locator('.mobile-menu summary'),hasTouch);
-    const link = page.locator(`.mobile-menu a[href="${href}"]`);
+  // Slim-site decision (13 October 2026): letters and ideas left the Menu; Help
+  // (Get involved) now leads to both participation routes.
+  await activate(page.locator('.home-plan'), hasTouch);
+  await expect(page).toHaveURL(/get-involved\.html$/);
+  for (const href of ['letters.html#letter-form', 'feedback.html']) {
+    const link = page.locator(`main a[href="${href}"]`);
     await expect(link).toBeVisible();
     await activate(link, hasTouch);
     await expect(page).toHaveURL(new RegExp(`${href.replace('.', '\\.')}$`));
-    for (const consent of ['#allow-public', ...(href === 'letters.html' ? ['#allow-council', '#letter-consent'] : [])]) {
+    for (const consent of ['#allow-public', ...(href.startsWith('letters.html') ? ['#allow-council', '#letter-consent'] : [])]) {
       await expect(page.locator(consent)).not.toBeChecked();
     }
     await page.goBack();
+    await expect(page).toHaveURL(/get-involved\.html$/);
   }
   await page.goto('/understand.html#learning-and-results');
   await activate(page.locator('#attainment-detail > summary'), hasTouch);
@@ -310,9 +314,12 @@ test('Recruitment: awareness channels retain Open Day and normal-admissions rout
 });
 
 test('Contributions: letters lead to contextual evidence and optional video without adding permissions', async ({ page, hasTouch }) => {
+  // Slim-site decision (13 October 2026): Community letters left the Menu; the
+  // homepage reaches them through the footer's "More pages" disclosure.
   await page.goto('/index.html');
-  await activate(page.locator('.mobile-menu summary'),hasTouch);
-  await activate(page.locator('.mobile-menu a[href="letters.html"]'),hasTouch);
+  await activate(page.locator('#site-settings > summary'),hasTouch);
+  await activate(page.locator('footer .home-footer-links a[href="letters.html"]'),hasTouch);
+  await expect(page).toHaveURL(/letters\.html$/);
   await expect(page.locator('#allow-public')).not.toBeChecked();
   await expect(page.locator('#allow-council')).not.toBeChecked();
   await activate(page.locator('main .form-route a[href="feedback.html?kind=evidence#feedback-form"]'), hasTouch);

@@ -1,4 +1,4 @@
-const { test, expect, captureSubmissions } = require('./fixtures');
+const { test, expect } = require('./fixtures');
 
 for (const width of [320, 390]) {
   for (const appearance of ['light', 'dark']) {
@@ -15,7 +15,8 @@ for (const width of [320, 390]) {
       await expect(intro.getByRole('link', { name: 'For journalists', exact: true })).toHaveAttribute('href', '#press');
       await expect(page.locator('#about-responsibility-details')).not.toHaveAttribute('open', /.*/);
       await page.locator('#about-responsibility-details > summary').click();
-      await expect(page.locator('#about-responsibility-details')).toContainText('It brings together the case for keeping Kew Riverside Primary School open, community experiences and original sources.');
+      // Reworded by the 13 October 2026 slim-site decision: research pages are archived, so About no longer offers original sources.
+      await expect(page.locator('#about-responsibility-details')).toContainText('It brings together the campaign to keep Kew Riverside Primary School open, the council’s own documents and community experiences.');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     });
     test(`Supporters: compact exact statement and scope stay before participation at ${width}px ${appearance}`, async ({ page }) => {
@@ -36,28 +37,15 @@ for (const width of [320, 390]) {
       await expect(page.locator('#supporter-scope-details')).not.toHaveAttribute('open', /.*/);
       await page.locator('#supporter-scope-details > summary').click();
       await expect(page.locator('#supporter-scope-details')).toContainText('does not mean you run this website, speak for all parents or agree with every part of the analysis');
+      // 13 October 2026 slim-site decision: Add my name now reveals a pointer to the petition, not a request form.
       await add.click();
       await expect(page.locator('#supporter-form')).toBeVisible();
-      const choices = page.locator('#supporter-form input[type="checkbox"]');
-      await expect(choices).toHaveCount(3);
-      for (const choice of await choices.all()) await expect(choice).not.toBeChecked();
+      await expect(page.locator('#supporter-form')).toBeInViewport();
+      await expect(page.locator('#supporter-form a[href="get-involved.html#petition"]')).toBeVisible();
+      await expect(page.locator('#supporter-form input[type="checkbox"]')).toHaveCount(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     });
   }
 }
 
-test('Supporters: compact arrival keeps the exact statement version and independent confirmation consent', async ({ page }) => {
-  const submissions = await captureSubmissions(page);
-  await page.setViewportSize({ width: 320, height: 568 });
-  await page.goto('/supporters.html#supporter-form');
-  await page.locator('#public-name').fill('Fictional supporter');
-  await page.locator('#supporter-email').fill('fictional@example.invalid');
-  for (const checkbox of await page.locator('#supporter-form input[type="checkbox"]').all()) await checkbox.check();
-  await page.locator('#supporter-form button[type="submit"]').click();
-  await expect.poll(() => submissions.length).toBe(1);
-  expect(submissions[0].get('statement_version')).toBe('keep-open-2026-09-21');
-  expect(submissions[0].get('message')).toBe('We support keeping Kew Riverside Primary School open.');
-  expect(submissions[0].get('allow_supporter')).toBe('yes-publish-name-and-statement-v1');
-  expect(submissions[0].get('supporter_consent')).toBe('yes-process-support-request-v1');
-  expect(submissions[0].get('adult_self')).toBe('yes-adult-own-support-v1');
-});
+// Removed by the 13 October 2026 slim-site decision: the supporter request form (and its compact submission check) was retired.

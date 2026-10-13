@@ -9,9 +9,14 @@ async function feed(page, letters = [first, second]) {
   await page.route('**/letters.json', route => route.fulfill({ json: { version: 1, letters } }));
 }
 
+// Slim campaign site (13 October 2026): letters and ideas left the Menu. Home routes
+// participation through Get involved (with letters and ideas also in its footer), and the
+// petition leads the first screen once the published response deadline has passed.
 for (const width of [320, 390, 700, 701, 1100, 1101, 1440]) {
   for (const appearance of ['light', 'dark']) {
     test(`Campaign identity stays readable and participation remains exposed at ${width}px in ${appearance}`, async ({ page }) => {
+      // Consultation week: the response button, petition and Get involved share the hero.
+      await page.clock.setSystemTime(new Date('2026-10-13T09:00:00Z'));
       await page.setViewportSize({ width, height: width === 320 ? 568 : 844 });
       await page.emulateMedia({ colorScheme: appearance });
       await page.goto('/index.html');
@@ -20,13 +25,28 @@ for (const width of [320, 390, 700, 701, 1100, 1101, 1440]) {
       await expect(label).toBeInViewport({ ratio: 1 });
       expect(await label.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(14);
       await expect(page.locator('#main-action')).toBeVisible();
+      await expect(page.locator('#petition-action')).toBeVisible();
       await expect(page.locator('.home-plan')).toBeVisible();
+      await expect(page.locator('.home-plan')).toHaveAttribute('href', 'get-involved.html');
       await expect(page.locator('#share-trigger')).toBeVisible();
       await page.locator('.mobile-menu summary').click();
-      for (const href of ['letters.html', 'feedback.html']) await expect(page.locator(`.mobile-menu a[href="${href}"]`)).toBeVisible();
+      await expect(page.locator('.mobile-menu a[href="get-involved.html"]')).toBeVisible();
+      // Removed from the Menu by the 13 October 2026 slim-site decision; still one tap from Get involved and the footer.
+      for (const href of ['letters.html', 'feedback.html']) {
+        await expect(page.locator(`.mobile-menu a[href="${href}"]`)).toHaveCount(0);
+        await expect(page.locator(`#site-settings .home-footer-links a[href="${href}"]`)).toHaveCount(1);
+      }
       await page.locator('.mobile-menu summary').click();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      if (width <= 390) await expect(page.locator('#main-action')).toBeInViewport({ ratio: 1 });
+      if (width <= 390) {
+        await expect(page.locator('#main-action')).toBeInViewport({ ratio: 1 });
+        // After the published deadline the petition takes the response button's place.
+        await page.clock.setSystemTime(new Date('2026-10-17T09:00:00Z'));
+        await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
+        await expect(page.locator('#main-action')).toBeHidden();
+        await expect(page.locator('#petition-action')).toBeInViewport({ ratio: 1 });
+        await expect(page.locator('.home-plan')).toBeVisible();
+      }
     });
   }
 }
@@ -134,8 +154,10 @@ test('Journalist guidance is linked from letters and About and provides a contac
   await expect(page.locator('#press')).toContainText('does not grant further reuse permission');
   await page.locator('#press a[href="#contact"]').click();
   await expect(page.locator('#contact > h2')).toBeInViewport();
-  await page.locator('.page-sections summary').click();
-  await expect(page.locator('.section-links a[href="#press"]')).toBeVisible();
+  // About's "On this page" chooser was removed by the 13 October 2026 slim-site decision;
+  // its intro actions now lead to the briefing.
+  await expect(page.locator('.page-sections')).toHaveCount(0);
+  await expect(page.getByRole('navigation', { name: 'About and contact' }).getByRole('link', { name: 'For journalists' })).toHaveAttribute('href', '#press');
 });
 
 // Option titles state the ask plainly (13 October 2026). The fundraising summary

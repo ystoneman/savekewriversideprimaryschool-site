@@ -74,15 +74,15 @@ test('Understand: the existing comparisons and new case questions are readable o
   await expect(page.locator('#forecast-checks > .data-context')).toContainText('one forecast vintage and one period');
 });
 
-// Since 13 October 2026 the homepage reaches Our case through its named footer
-// disclosure (the shared Menu goes straight to Supporting research).
-test('Understand: homepage numbers route reaches dated finances and forecast checks', async ({ page, hasTouch }) => {
+// Slim-site decision (13 October 2026): Our case is archived, so neither the
+// homepage Menu nor its footer links to it; the case summary is #our-case on Home.
+// A saved link to the archived page still reaches the dated finances.
+test('Understand: archived numbers route reaches dated finances and forecast checks', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
-  const more = page.locator('#site-settings > summary');
-  await expect(more).toContainText('More pages');
-  await activate(more, hasTouch);
-  await activate(page.locator('footer .home-footer-links a[href="understand.html"]'), hasTouch);
-  await expect(page).toHaveURL(/understand\.html$/);
+  await expect(page.locator('.mobile-menu a[href^="understand"], footer a[href^="understand"]')).toHaveCount(0);
+  await expect(page.locator('#our-case')).toContainText('Compare the full costs');
+  await page.goto('/understand.html');
+  await expect(page.locator('main > :first-child')).toHaveClass(/\barchive-banner\b/);
   await expect(page.locator('.campaign-route a').first()).toHaveAttribute('href', 'proposal.html#council-documents');
   await expect(page.locator('.campaign-route a[href$="#gaps"]')).toHaveCount(0);
   await expect(page.locator('#supporting-research')).not.toHaveAttribute('open', '');

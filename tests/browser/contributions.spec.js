@@ -7,18 +7,25 @@ async function openPublicationOptions(page, hasTouch) {
   await expect(page.locator('#publication-options')).toHaveAttribute('open', '');
 }
 
-test('Share ideas offers distinct routes for letters, named support and private contact', async ({ page }) => {
-  for (const [name, destination, form] of [
-    ['Add my name as a supporter', /supporters.html$/, '#supporter-form'],
+// 13 October 2026 slim-site decision: the named-supporter route (now an archived page) was
+// replaced by the council petition on Get involved; live pages no longer link to supporters.html.
+test('Share ideas offers distinct routes for letters, the petition and private contact', async ({ page }) => {
+  await page.goto('/feedback.html');
+  await expect(page.locator('a[href^="supporters.html"]')).toHaveCount(0);
+  for (const [name, destination, target] of [
+    ['Sign the petition', /get-involved.html#petition$/, '#petition'],
     ['Write a community letter', /letters.html#letter-form$/, '#letter-form'],
     ['Send a private message', /about.html#contact$/, '#contact form'],
   ]) {
     await page.goto('/feedback.html');
     await page.getByRole('link', { name: new RegExp(name, 'i') }).click();
     await expect(page).toHaveURL(destination);
-    if (form === '#supporter-form') await page.getByRole('link', { name: 'Add my name', exact: true }).click();
-    await expect(page.locator(form)).toBeVisible();
-    if (form === '#letter-form') await expect(page.locator('#message')).toBeInViewport();
+    await expect(page.locator(target)).toBeVisible();
+    if (target === '#petition') {
+      await expect(page.locator('#petition-title')).toBeInViewport();
+      await expect(page.locator('#petition a[href^="https://www2.richmond.gov.uk/"]')).toBeVisible();
+    }
+    if (target === '#letter-form') await expect(page.locator('#message')).toBeInViewport();
   }
 });
 
@@ -275,40 +282,20 @@ test('Revoking council sharing excludes previously entered private details', asy
   for (const field of ['allow_council', 'council_name', 'council_postcode']) expect(submissions[0].has(field)).toBe(false);
 });
 
-test('Supporter requests require all three independent consent statements', async ({ page, hasTouch }) => {
+// 13 October 2026 slim-site decision: the archived supporters page stopped taking new names.
+// Its request form and three consents were replaced by a pointer to the council petition.
+test('Supporters (archived): no request form or consent fields remain, and Add my name points to the petition', async ({ page, hasTouch }) => {
   const submissions = await captureSubmissions(page);
   await page.goto('/supporters.html');
-  await page.getByRole('link', { name: 'Add my name', exact: true }).click();
-  await page.locator('#public-name').fill('Test supporter');
-  await page.locator('#supporter-email').fill('test@example.invalid');
-  const choices = page.locator('#supporter-form input[type="checkbox"]');
-  const labels = page.locator('#supporter-form .feedback-permission');
-  const submit = page.locator('button[type="submit"]');
-  expect(await choices.count()).toBe(3);
-  for (let index = 0; index < await choices.count(); index++) {
-    const choice = choices.nth(index);
-    await expect(choice).not.toBeChecked();
-    if (hasTouch) await submit.tap();
-    else await submit.click();
-    // Wait for native validation to identify the missing consent before responding.
-    await expect(choice).toBeFocused();
-    await expect(choice).toBeInViewport();
-    await expect(choice).not.toBeChecked();
-    expect(submissions).toHaveLength(0);
-    // Desktop WebKit's native validation bubble can consume the next click.
-    // Dismiss it with the ordinary keyboard action before selecting the label;
-    // retain the focus, unchecked, blocked-submit and checked-state assertions.
-    if (!hasTouch) await page.keyboard.press('Escape');
-    if (hasTouch) await labels.nth(index).tap();
-    else await labels.nth(index).click();
-    await expect(choice).toBeChecked();
-  }
-  if (hasTouch) await submit.tap();
-  else await submit.click();
-  await expect.poll(() => submissions.length).toBe(1);
-  expect(submissions[0].get('kind')).toBe('supporter');
-  expect(submissions[0].get('email')).toBe('test@example.invalid');
-  for (const name of ['adult_self', 'supporter_consent', 'allow_supporter']) expect(submissions[0].has(name)).toBe(true);
+  const add = page.getByRole('link', { name: 'Add my name', exact: true });
+  if (hasTouch) await add.tap(); else await add.click();
+  const note = page.locator('#supporter-form');
+  await expect(note).toBeVisible();
+  await expect(note).toContainText('New names are no longer being added.');
+  await expect(note.getByRole('link', { name: 'sign the council petition' })).toHaveAttribute('href', 'get-involved.html#petition');
+  await expect(page.locator('main form')).toHaveCount(0);
+  await expect(page.locator('main input, main button[type="submit"]')).toHaveCount(0);
+  expect(submissions).toHaveLength(0);
 });
 
 for (const [file, kind] of [['about.html', 'contact'], ['corrections.html', 'privacy']]) {

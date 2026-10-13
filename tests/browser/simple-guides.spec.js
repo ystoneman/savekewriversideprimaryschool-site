@@ -2,7 +2,11 @@ const { test, expect, expectScrollSettled } = require('./fixtures');
 
 const official = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform';
 
-test('Short guides: homepage Help arrives at usable actions without opening the long plan', async ({ page }) => {
+// Home's Help shortcut is Get involved (13 October 2026 slim-site decision), replacing
+// the Parent action plan on the archived proposal page.
+test('Short guides: homepage Help arrives at usable actions on Get involved', async ({ page }) => {
+  // Consultation week, when the official response leads Get involved.
+  await page.clock.setSystemTime(new Date('2026-10-13T09:00:00Z'));
   await page.setViewportSize({ width: 320, height: 568 });
   // A destination URL can commit before its stylesheet and deferred setup finish.
   await page.route('**/simplify.css*', async route => {
@@ -11,17 +15,21 @@ test('Short guides: homepage Help arrives at usable actions without opening the 
   });
   await page.goto('/index.html');
   await page.locator('a.home-plan').click();
-  await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
+  await expect(page).toHaveURL(/get-involved\.html$/);
   await page.waitForLoadState('load');
-  await expectScrollSettled(page, 'compact Parent action plan');
-  await expect(page.locator('#parent-plan-title')).toBeInViewport({ ratio: 1 });
-  await expect(page.locator('.parent-plan-respond a')).toBeInViewport({ ratio: 1 });
-  await expect(page.locator('.parent-plan-respond a')).toHaveAttribute('href', official);
-  await expect(page.locator('#parent-plan-full')).not.toHaveAttribute('open', '');
-  const actions = page.getByRole('navigation', { name: 'Choose a parent action' });
-  await expect(actions.getByRole('link', { name: 'Write a community letter' })).toBeVisible();
-  await expect(actions.getByRole('link', { name: 'Offer an idea or help' })).toBeVisible();
-  await expect(page.locator('#parent-plan > .simple-note a[href="faq.html#school-places"]')).toBeVisible();
+  await expectScrollSettled(page, 'compact Get involved');
+  await expect(page.getByRole('heading', { level: 1, name: 'Get involved' })).toBeInViewport({ ratio: 1 });
+  const respond = page.locator('#respond a[data-current-response]');
+  await expect(respond).toBeInViewport({ ratio: 1 });
+  await expect(respond).toHaveAttribute('href', official);
+  await expect(page.locator('main details')).toHaveCount(0);
+  await expect(page.locator('#petition a[href="https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249"]')).toBeVisible();
+  const letter = page.locator('#share-your-story').getByRole('link', { name: 'Write a community letter' });
+  await expect(letter).toBeVisible();
+  await expect(letter).toHaveAttribute('href', 'letters.html#letter-form');
+  const idea = page.locator('#help').getByRole('link', { name: 'Send an idea, a question or an offer of help' });
+  await expect(idea).toBeVisible();
+  await expect(idea).toHaveAttribute('href', 'feedback.html');
 });
 
 test('Short guides: old proposal links reveal their exact original guidance and sources', async ({ page }) => {

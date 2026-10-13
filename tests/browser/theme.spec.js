@@ -39,11 +39,19 @@ for (const file of pages) {
     await expect(page.getByLabel('Appearance', { exact: true })).toHaveCSS('min-height','44px');
     if (file === 'index.html') {
       await page.locator('.mobile-menu summary').click();
-      await expect(page.locator('.mobile-menu a[href="letters.html"]')).toBeVisible();
-      await expect(page.locator('.mobile-menu a[href="feedback.html"]')).toBeVisible();
+      await expect(page.locator('.mobile-menu a[href="get-involved.html"]')).toBeVisible();
+      await expect(page.locator('.mobile-menu a[href="dates.html"]')).toBeVisible();
     } else {
-      await expect(page.locator('.participation-nav .nav-letters')).toBeVisible();
-      await expect(page.locator('.participation-nav .nav-contribute')).toBeVisible();
+      // The header participation tiles were removed by the 13 October 2026 slim-site decision.
+      // Get involved is the header shortcut on wide screens and a Menu row on narrow ones.
+      await expect(page.locator('.participation-nav')).toHaveCount(0);
+      if (page.viewportSize().width > 1100) await expect(page.locator('.desktop-explore a[href="get-involved.html"]')).toBeVisible();
+      else {
+        await page.locator('.mobile-menu summary').click();
+        await expect(page.locator('.mobile-menu a[href="get-involved.html"]')).toBeVisible();
+        await page.locator('.mobile-menu summary').click();
+        await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open', '');
+      }
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     // Measure only after the complete document has been painted.
@@ -126,7 +134,9 @@ test('Manual choices persist across pages and Back; System resumes live device c
   await page.getByLabel('Appearance', { exact:true }).selectOption('light');
   await appearance(page, light);
   await page.reload(); await appearance(page, light);
-  await page.locator('.mobile-menu summary').click(); await page.locator('.mobile-menu a[href="letters.html"]').click(); await appearance(page, light);
+  // Letters left the Menu (13 October 2026 slim-site decision); cross pages through Get involved.
+  await page.locator('.mobile-menu summary').click(); await page.locator('.mobile-menu a[href="get-involved.html"]').click();
+  await expect(page).toHaveURL(/get-involved\.html$/); await appearance(page, light);
   await page.getByLabel('Appearance', { exact:true }).selectOption('dark');
   await page.goBack(); await appearance(page, dark);
   if (await page.locator('#site-settings').getAttribute('open') === null) await page.locator('#site-settings > summary').click();
@@ -251,13 +261,16 @@ test('Dark system with a manual override still prints in light colours', async (
 });
 
 test('Narrow dark arrival retains the parent plan and touch navigation', async ({page}) => {
+  // Consultation week, when the response button leads the first screen.
+  await page.clock.setSystemTime(new Date('2026-10-13T09:00:00Z'));
   await page.setViewportSize({width:320,height:568});
   await page.emulateMedia({colorScheme:'dark'}); await page.goto('/index.html');
   await expect(page.locator('#main-action')).toBeInViewport();
   await page.locator('.mobile-menu summary').click();
   await expect(page.locator('.mobile-menu')).toHaveAttribute('open','');
-  await page.locator('.mobile-menu a[href="faq.html"]').click();
-  await expect(page).toHaveURL(/faq\.html$/); await appearance(page,dark);
+  // FAQ left the Menu (13 October 2026 slim-site decision); the council's FAQs are on Dates.
+  await page.locator('.mobile-menu a[href="dates.html"]').click();
+  await expect(page).toHaveURL(/dates\.html$/); await appearance(page,dark);
   await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open','');
 });
 
@@ -270,7 +283,8 @@ test('Primary buttons stand out at least 3:1 from their background in both appea
     // Two states appear only after a fictional letter: the letters return panel
     // and the next-steps card. Both hold an official-response button.
     const visits = [
-      ['index.html'], ['proposal.html'], ['letters.html'], ['feedback.html'], ['videos.html'], ['options.html'], ['faq.html'],
+      ['index.html'], ['dates.html'], ['get-involved.html'], ['updates.html'], ['about.html'],
+      ['proposal.html'], ['letters.html'], ['feedback.html'], ['videos.html'], ['options.html'], ['faq.html'],
       ['letters.html', () => localStorage.setItem('kr-letter-draft', JSON.stringify({ v: 1, text: 'A fictional letter for a colour check.', name: '', saved: Date.now(), pending: true }))],
       ['sent.html', () => { sessionStorage.setItem('kr-sent-kind', JSON.stringify({ kind: 'letter', at: Date.now() })); sessionStorage.setItem('kr-sent-letter', JSON.stringify({ text: 'A fictional letter.', at: Date.now() })); }],
     ];

@@ -32,71 +32,50 @@ async function sendFictionalLetter(page, options = {}) {
   await page.locator('#letter-form button[type="submit"]').click();
 }
 
-// ---------- Header tiles ----------
+// ---------- Routes to letters and ideas (J4/J5) ----------
 
+// 13 October 2026 slim-site decision: the header participation tiles (and their 320px
+// row) were removed from every page. Letters and ideas are now reached from every
+// footer (Home: the "More pages, about & appearance" disclosure) and from Get involved.
 for (const file of pages) {
-  test(`${file}: both participation tiles are visible, labelled and easy to tap`, async ({ page }) => {
+  test(`${file}: Community letters and Share ideas are in the footer, with no header tiles`, async ({ page }) => {
     await page.goto('/' + file);
-    if (file === 'index.html') await page.locator('.mobile-menu summary').click();
-    const nav = file === 'index.html' ? page.locator('.mobile-menu') : page.getByRole('navigation', { name: 'Take part' });
-    const letters = nav.getByRole('link', { name: /^Community letters/ });
-    const ideas = nav.getByRole('link', { name: /^Share ideas/ });
-    await expect(letters).toBeVisible();
-    await expect(ideas).toBeVisible();
-    if (file !== 'index.html') {
-      await expect(letters).toContainText('Read & add yours');
-      await expect(ideas).toContainText('Ask or suggest');
-    }
+    await expect(page.locator('.participation-nav')).toHaveCount(0);
+    await expect(page.getByRole('navigation', { name: 'Take part' })).toHaveCount(0);
+    if (file === 'index.html') await page.locator('#site-settings > summary').click();
+    const footer = file === 'index.html' ? page.locator('#site-settings') : page.locator('footer');
+    const letters = footer.getByRole('link', { name: 'Community letters', exact: true });
+    const ideas = footer.getByRole('link', { name: 'Share ideas', exact: true });
     await expect(letters).toHaveAttribute('href', 'letters.html');
     await expect(ideas).toHaveAttribute('href', 'feedback.html');
-    for (const tile of [letters, ideas]) {
-      const box = await tile.boundingBox();
-      expect(box.height).toBeGreaterThanOrEqual(44);
-      expect(box.width).toBeGreaterThanOrEqual(44);
+    for (const link of [letters, ideas]) {
+      await link.scrollIntoViewIfNeeded();
+      await expect(link).toBeVisible();
+      // At least the WCAG 2.2 minimum target size.
+      expect((await link.boundingBox()).height).toBeGreaterThanOrEqual(24);
     }
-    // The medallions are decoration; the words carry the meaning.
-    await expect(nav.locator('.voice-medallion[aria-hidden="true"]')).toHaveCount(file === 'index.html' ? 0 : 2);
-    if (file === 'letters.html') await expect(letters).toHaveAttribute('aria-current', 'page');
-    else await expect(letters).not.toHaveAttribute('aria-current', /.*/);
-    if (file === 'feedback.html') await expect(ideas).toHaveAttribute('aria-current', 'page');
-    else await expect(ideas).not.toHaveAttribute('aria-current', /.*/);
   });
 }
 
-test('At 320px the two tiles sit side by side within the page', async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 568 });
-  for (const file of ['letters.html', 'feedback.html', 'faq.html', 'sent.html']) {
-    await page.goto('/' + file);
-    const first = await page.locator('.participation-nav .nav-letters').boundingBox();
-    const second = await page.locator('.participation-nav .nav-contribute').boundingBox();
-    expect(Math.abs(first.y - second.y), `${file}: tiles share a row`).toBeLessThan(2);
-    expect(first.x, `${file}: letters tile starts inside the page`).toBeGreaterThanOrEqual(0);
-    expect(second.x + second.width, `${file}: ideas tile ends inside the page`).toBeLessThanOrEqual(320);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth), `${file}: no sideways scrolling`).toBeLessThanOrEqual(320);
-  }
+test('Get involved leads to Share ideas with its categories ready', async ({ page, hasTouch }) => {
+  await page.goto('/get-involved.html');
+  const ideas = page.locator('#help').getByRole('link', { name: 'Send an idea, a question or an offer of help', exact: true });
+  await ideas.scrollIntoViewIfNeeded();
+  if (hasTouch) await ideas.tap(); else await ideas.click();
+  await expect(page).toHaveURL(/\/feedback\.html$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Share ideas' })).toBeInViewport();
+  await expect(page.locator('#kind-cards .kind-card').first()).toBeVisible();
+  await expect(page.locator('input[name="kind"][value="suggestion"]')).toBeChecked();
+  await expect(page.locator('#allow-public')).not.toBeChecked();
 });
 
-test('The tile cue plays once on arrival from elsewhere, never on internal navigation, the homepage, its own page or reduced motion', async ({ page }) => {
+// 13 October 2026 slim-site decision: the tiles' one-time arrival cue went with them.
+test('No tile arrival cue plays any more, and a shared fragment still lands on its content', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/faq.html');
-  await expect(page.locator('html')).toHaveClass(/\bvoice-cue\b/);
-  // It runs once: nothing loops.
-  expect(await page.locator('.nav-letters .v-sheet').evaluate(el => getComputedStyle(el).animationIterationCount)).toBe('1');
-  expect(await page.locator('.nav-contribute .v-rays').evaluate(el => getComputedStyle(el).animationIterationCount)).toBe('1');
-  await page.locator('footer a[href="about.html"]').click();
-  await expect(page).toHaveURL(/\/about\.html$/);
-  await expect(page.locator('html')).not.toHaveClass(/\bvoice-cue\b/);
-  for (const file of ['index.html', 'letters.html', 'feedback.html']) {
+  for (const file of ['faq.html', 'get-involved.html', 'letters.html']) {
     await page.goto('/' + file);
     await expect(page.locator('html'), file).not.toHaveClass(/\bvoice-cue\b/);
   }
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/faq.html');
-  await expect(page.locator('html')).not.toHaveClass(/\bvoice-cue\b/);
-});
-
-test('A shared fragment skips the tile cue and lands on its intended content', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/videos.html#upload');
   await expect(page.locator('html')).not.toHaveClass(/\bvoice-cue\b/);
   await expect(page.locator('#upload')).toBeInViewport();
@@ -308,7 +287,9 @@ test('Letters: explicit removal on next-steps page clears both copies and a rest
   expect(await readDraft(page)).toBeNull();
 });
 
-for (const file of ['about.html', 'corrections.html', 'supporters.html']) {
+// 13 October 2026 slim-site decision: the archived supporters page no longer has a request
+// form (it points to the petition), so only About and Corrections take private submissions.
+for (const file of ['about.html', 'corrections.html']) {
   test(`${file}: a private submission clears an earlier participation marker`, async ({ page }) => {
     const submissions = await captureSubmissions(page);
     await page.goto('/' + file);
@@ -320,15 +301,8 @@ for (const file of ['about.html', 'corrections.html', 'supporters.html']) {
       await page.goto('/about.html#contact');
       await page.locator('#contact-message').fill('A fictional private contact request for testing.');
       await page.locator('input[name="contact_consent"]').check();
-    } else if (file === 'corrections.html') {
-      await page.locator('#message').fill('A fictional private correction request for testing.');
     } else {
-      await page.getByRole('link', { name: 'Add my name', exact: true }).click();
-      await page.locator('#public-name').fill('Fictional Adult');
-      await page.locator('#supporter-email').fill('fictional@example.invalid');
-      await page.locator('input[name="adult_self"]').check();
-      await page.locator('input[name="supporter_consent"]').check();
-      await page.locator('#allow-supporter').check();
+      await page.locator('#message').fill('A fictional private correction request for testing.');
     }
     await page.locator('form[action="https://formspree.io/f/xnpnenzy"] button[type="submit"]').click();
     await expect.poll(() => submissions.length).toBe(1);

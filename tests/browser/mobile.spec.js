@@ -26,13 +26,15 @@ for (const file of pages) {
     }
   });
 
-  test(`${file}: clear participation actions work on touch`, async ({ page, baseURL }) => {
+  // The header participation tiles and the Menu's letters and ideas rows were retired by the
+  // 13 October 2026 slim-site decision; every footer (Home's inside its settings disclosure) carries them.
+  test(`${file}: footer routes to letters and ideas work on touch`, async ({ page, baseURL }) => {
     for (const [href, label] of [['letters.html', 'Community letters'], ['feedback.html', 'Share ideas']]) {
       await page.goto('/' + file);
-      if (file === 'index.html') await page.locator('.mobile-menu summary').click();
-      const link = page.locator(`${file === 'index.html' ? '.mobile-menu' : '.participation-nav'} a[href="${href}"]`);
-      await expect(link).toHaveAccessibleName(new RegExp(label));
-      if (file !== 'index.html') await expect(link.locator('svg')).toHaveAttribute('aria-hidden', 'true');
+      await expect(page.locator('.participation-nav')).toHaveCount(0);
+      if (file === 'index.html') await page.locator('#site-settings > summary').tap();
+      const link = page.locator(`footer a[href="${href}"]`);
+      await expect(link).toHaveAccessibleName(label);
       await link.tap();
       await expectDestination(page, href, baseURL);
     }
@@ -52,6 +54,18 @@ for (const file of pages) {
     }
   });
 }
+
+// Home's Get involved shortcut leads to the letters, video and ideas routes the header tiles used to carry.
+test('Get involved: Home shortcut, letters, video and ideas routes respond to a touch', async ({ page, baseURL }) => {
+  await page.goto('/index.html');
+  await page.locator('a.home-plan').tap();
+  await expectDestination(page, 'get-involved.html', baseURL);
+  for (const href of ['letters.html#letter-form', 'letters.html', 'videos.html#upload', 'feedback.html']) {
+    await page.goto('/get-involved.html');
+    await page.locator(`main a[href="${href}"]`).tap();
+    await expectDestination(page, href, baseURL);
+  }
+});
 
 test('Share ideas: a focused menu summary must not swallow a following touch', async ({ page, baseURL }) => {
   await page.goto('/feedback.html');

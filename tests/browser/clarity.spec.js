@@ -244,14 +244,16 @@ test('Proposal: optional research opens as a document while Lessons and existing
 
 test('Clarity pages: enlarged main text reflows at a narrow width', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
-  for (const url of ['/options.html#options', '/proposal.html#timetable', '/lessons.html#key-lessons']) {
+  // The slim site's new pages (13 October 2026) join the archived clarity pages.
+  for (const url of ['/dates.html#timetable', '/get-involved.html', '/updates.html', '/options.html#options', '/proposal.html#timetable', '/lessons.html#key-lessons']) {
     await page.goto(url);
     await page.evaluate(() => {
       const nodes = [...document.querySelectorAll('main h1,main h2,main h3,main h4,main p,main summary,main a,main span,main dt,main dd')];
       const sizes = nodes.map(el => parseFloat(getComputedStyle(el).fontSize));
       nodes.forEach((el, i) => el.style.fontSize = `${sizes[i] * 2}px`);
     });
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    // Compare with the 320px viewport: mobile emulation widens innerWidth to fit overflowing content.
+    expect.soft(await page.evaluate(() => document.documentElement.scrollWidth), `${url} reflows without sideways scrolling`).toBeLessThanOrEqual(321);
     await expect(page.locator('main h2').first()).toBeVisible();
   }
 });

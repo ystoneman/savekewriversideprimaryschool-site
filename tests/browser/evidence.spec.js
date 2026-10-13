@@ -13,20 +13,19 @@ async function refine(page, label, value) {
 }
 
 
-// The homepage Menu now matches every other page (13 October 2026). The research
-// stays reachable from the homepage footer and from Evidence, one Menu tap away.
-test('Report discovery: homepage routes reach the web research and download the 44-page report', async ({ page, hasTouch }) => {
+// Slim-site decision (13 October 2026): Lessons and Evidence are archived, so the
+// homepage Menu and footer no longer route to them. Saved and shared links still
+// reach the research, under the archive banner, and the report still downloads.
+test('Report discovery: archived research links still reach the web research and download the 44-page report', async ({ page, hasTouch }) => {
   const press = locator => hasTouch ? locator.tap() : locator.click();
   await page.goto('/index.html');
-  await press(page.locator('#site-settings > summary'));
-  await press(page.locator('footer .home-footer-links a[href="lessons.html"]'));
-  await expect(page).toHaveURL(/lessons\.html$/);
+  await expect(page.locator('.mobile-menu a[href^="lessons"], .mobile-menu a[href^="evidence"], footer a[href^="lessons"], footer a[href^="evidence"]')).toHaveCount(0);
+  await page.goto('/lessons.html');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('What can other schools teach us?');
-  await page.goBack();
-  await expect(page).toHaveURL(/index\.html$/);
-  await press(page.locator('.mobile-menu summary'));
-  await press(page.locator('.mobile-menu').getByRole('link', { name: 'Evidence', exact: true }));
-  await expect(page).toHaveURL(/evidence\.html#records$/);
+  await expect(page.locator('main > :first-child')).toHaveClass(/\barchive-banner\b/);
+  await expect(page.locator('.archive-banner')).toContainText('Archived 13 October 2026');
+  await page.goto('/evidence.html#records');
+  await expect(page.locator('main > :first-child')).toHaveClass(/\barchive-banner\b/);
   const explore = page.locator('#evidence-library-guide');
   if (!await explore.evaluate(detail => detail.open)) await press(explore.locator(':scope > summary'));
   await press(page.locator('#research-shortcut'));
@@ -304,7 +303,11 @@ test('Each source filter independently updates visible records', async ({ page }
 });
 
 test('Checklist downloads as PDF and source index as CSV', async ({ page }) => {
+  // Since 13 October 2026 the live checklist sits in Get involved's response step,
+  // which shows only while responses are open: fix the date before the deadline.
+  await page.clock.setFixedTime(new Date('2026-10-13T12:00:00Z'));
   for (const [entry, name, filename, signature] of [
+    ['/get-involved.html#respond', 'Response checklist (PDF)', 'kew-riverside-response-checklist.pdf', '%PDF-'],
     ['/options.html#options', 'Printable question checklist (PDF)', 'kew-riverside-response-checklist.pdf', '%PDF-'],
     ['/evidence.html#records', 'Download the source index (CSV)', 'kew-riverside-source-index.csv', '"Title","Publisher"'],
   ]) {

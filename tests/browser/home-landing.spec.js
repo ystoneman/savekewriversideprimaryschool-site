@@ -34,11 +34,15 @@ test('Homepage Share: a pending sheet cannot be launched twice',async({page})=>{
  await page.evaluate(()=>window.finishShare());await expect(page.locator('#share-trigger')).toBeEnabled();
 });
 // Since 13 October 2026 the homepage Menu matches every other page; the former
-// task chooser opens it, and each former task has its current page route there.
-test('Homepage: old task chooser links open the shared Menu with each former task route',{tag:'@home-smoke'},async({page})=>{
+// task chooser opens it. Under the 13 October 2026 slim-site decision it lists only the
+// five campaign pages and Discover the school; former tasks start from Dates or Get involved.
+const menuRoutes=['index.html','dates.html','get-involved.html','updates.html','about.html','videos.html#watch-parent-voices','visit/index.html'];
+test('Homepage: old task chooser links open the shared Menu with the five campaign pages',{tag:'@home-smoke'},async({page})=>{
  for(const id of ['find-your-way','find-title']){
   await page.goto('/index.html#'+id);await expect(page).toHaveURL(/#menu$/);await expect(page.locator('#menu')).toHaveAttribute('open','');
-  for(const href of ['faq.html','options.html','proposal.html','proposal.html#council-documents','understand.html#supporting-research','evidence.html#records','feedback.html'])await expect(page.locator(`#menu a[href="${href}"]`)).toHaveCount(1);
+  expect(await page.locator('#menu a').evaluateAll(links=>links.map(link=>link.getAttribute('href')))).toEqual(menuRoutes);
+  // Archived pages keep their URLs but have no Menu entry (13 October 2026 slim-site decision).
+  for(const href of ['faq.html','options.html','proposal.html','proposal.html#council-documents','understand.html#supporting-research','evidence.html#records'])await expect(page.locator(`#menu a[href="${href}"]`)).toHaveCount(0);
   await page.keyboard.press('Escape');await expect(page.locator('#menu')).not.toHaveAttribute('open','');
  }
 });
@@ -46,9 +50,17 @@ test('Homepage: shared press and manual-copy links reveal their content',async({
  await page.goto('/index.html#press');await expect(page.locator('#press')).toHaveAttribute('open','');await expect(page.locator('#press')).toContainText('savekrps@gmail.com');
  await page.goto('/index.html#share');await expect(page.locator('#share-fallback')).toHaveAttribute('open','');await expect(page.getByLabel('Campaign link')).toHaveValue(canonical);
 });
-for(const [at,href,name] of [['2026-10-16T22:59:59Z',official,'Respond to the council'],['2026-10-16T23:00:00Z',council,'Check the council consultation'],['2027-09-01T12:00:00Z',council,'Check the council consultation']])test(`Homepage deadline: London stage at ${at}`,async({page})=>{
- await page.clock.setFixedTime(new Date(at));await page.goto('/index.html');await expect(page.locator('#main-action')).toHaveAttribute('href',href);await expect(page.locator('#main-action')).toHaveAccessibleName(name);
- if(href===council){await expect(page.locator('#action-note')).toContainText('deadline has passed');await expect(page.locator('.intro')).toContainText('On 12 October 2026');}
+// From the London date 17 October 2026 the petition leads: the response action and its
+// note are hidden (13 October 2026 slim-site decision) and no hidden link keeps the form.
+for(const [at,href,name] of [['2026-10-16T22:59:59Z',official,'Respond to the council'],['2026-10-16T23:00:00Z',council,null],['2027-09-01T12:00:00Z',council,null]])test(`Homepage deadline: London stage at ${at}`,async({page})=>{
+ await page.clock.setFixedTime(new Date(at));await page.goto('/index.html');await expect(page.locator('#main-action')).toHaveAttribute('href',href);
+ if(name){await expect(page.locator('#main-action')).toBeVisible();await expect(page.locator('#main-action')).toHaveAccessibleName(name);return;}
+ await expect(page.locator('#main-action')).toBeHidden();await expect(page.locator('#action-note')).toBeHidden();
+ await expect(page.locator(`#top a[href="${official}"]`)).toHaveCount(0);
+ await expect(page.locator('.intro')).toHaveText('The published response deadline, 16 October 2026, has passed. The council’s timetable plans a final decision in April 2027.');
+ await expect(page.locator('.actions .action:visible').first()).toHaveAttribute('id','petition-action');
+ await expect(page.locator('.home-plan')).toBeVisible();
+ await expect(page.locator('#petition-note')).not.toContainText('Signing does not replace your consultation response.');
 });
 test('Homepage deadline: a page left open refreshes before an expired response click',{tag:'@home-smoke'},async({page})=>{
  await page.clock.setFixedTime(new Date('2026-10-16T22:59:59Z'));await page.goto('/index.html');await expect(page.locator('#main-action')).toHaveAttribute('href',official);
@@ -69,6 +81,8 @@ test('Homepage countdown: visible timer refreshes through midnight and expiry',{
  await expect(page.locator('#action-note')).toContainText('Closes today');await page.clock.runFor(60000);
  await expect(page.locator('#main-action')).toHaveAttribute('href',council);await expect(page.locator('#action-note')).toContainText('deadline has passed');
  await expect(page.locator('#action-note')).not.toContainText('days left');
+ // A page left open retires the response action in place; the petition then leads.
+ await expect(page.locator('#main-action')).toBeHidden();await expect(page.locator('#action-note')).toBeHidden();await expect(page.locator('#petition-action')).toBeVisible();
 });
 test('Homepage countdown: return refreshes the active count without changing the response destination',async({page})=>{
  await page.clock.setFixedTime(new Date('2026-10-12T22:59:59Z'));await page.goto('/index.html');
@@ -78,9 +92,12 @@ test('Homepage countdown: return refreshes the active count without changing the
 });
 
 const petition='https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249';
-for(const width of [320,390,1440])test(`Homepage petition: ${width}px keeps the response and Help alongside a working petition action`,async({page,hasTouch})=>{
+// During consultation week. Get involved replaced Help in the petition's row (13 October 2026 slim-site decision).
+for(const width of [320,390,1440])test(`Homepage petition: ${width}px keeps the response and Get involved alongside a working petition action`,async({page,hasTouch})=>{
+ await page.clock.setFixedTime(new Date('2026-10-13T12:00:00Z'));
  await page.setViewportSize({width,height:width===320?568:844});await page.goto('/index.html');
  const link=page.locator('#petition-action');await expect(link).toHaveAccessibleName('Sign the petition');await expect(link).toHaveAttribute('href',petition);
+ await expect(page.locator('.home-plan')).toHaveAccessibleName('Get involved');await expect(page.locator('.home-plan')).toHaveAttribute('href','get-involved.html');
  const bounds=await link.boundingBox(),help=await page.locator('.home-plan').boundingBox();expect(bounds.height).toBeGreaterThanOrEqual(44);expect(help.y).toBe(bounds.y);
  await expect(page.locator('#main-action')).toBeInViewport({ratio:1});
  await expect(page.locator('#petition-note')).toContainText('Signing does not replace your consultation response.');

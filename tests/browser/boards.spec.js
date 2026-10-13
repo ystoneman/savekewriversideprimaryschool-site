@@ -1,19 +1,37 @@
 const { test, expect } = require('./fixtures');
 
+// The archived supporters page keeps its list, but since the 13 October 2026 slim-site decision
+// it takes no new names: its next step is a pointer to the petition rather than a form.
 const boards = [
-  { file: 'feedback.html', resource: 'suggestions', list: '#suggestions-list', status: '#board-message', prefix: 'idea', review: 'AI reviewed', extra: { status: 'Received' } },
-  { file: 'letters.html', resource: 'letters', list: '#letters-list', status: '#letters-message', prefix: 'letter', review: 'Human reviewed' },
-  { file: 'supporters.html', resource: 'supporters', list: '#supporter-list', status: '#supporter-message', prefix: 'supporter', review: 'Confirmed with contributor; human reviewed' },
+  { file: 'feedback.html', resource: 'suggestions', list: '#suggestions-list', status: '#board-message', prefix: 'idea', review: 'AI reviewed', extra: { status: 'Received' }, next: 'the form', intake: 'private intake' },
+  { file: 'letters.html', resource: 'letters', list: '#letters-list', status: '#letters-message', prefix: 'letter', review: 'Human reviewed', next: 'the form', intake: 'private intake' },
+  { file: 'supporters.html', resource: 'supporters', list: '#supporter-list', status: '#supporter-message', prefix: 'supporter', review: 'Confirmed with contributor; human reviewed', next: 'the petition pointer', intake: 'the petition pointer' },
 ];
 
+async function expectNextStep(page, board) {
+  if (board.resource !== 'supporters') {
+    await expect(page.locator('form button[type="submit"]')).toBeEnabled();
+    return;
+  }
+  await expect(page.locator('main form')).toHaveCount(0);
+  await expect(page.locator('#supporter-form a[href="get-involved.html#petition"]')).toHaveCount(1);
+}
+
+// 13 October 2026 slim-site decision: Community letters left the Menu; readers now arrive
+// from Home's Get involved button and its Share your story section (or any footer).
 for (const [width, height] of [[390, 844], [1440, 1000]]) {
-  test(`Letters: ${width}px arrival leads with reading and provides a direct writing route`, async ({ page, hasTouch }) => {
+  test(`Letters: ${width}px arrival from Get involved leads with reading and provides a direct writing route`, async ({ page, hasTouch }) => {
     await page.setViewportSize({ width, height });
     const sample = { id: 'letter-aaaaaaaaaaaa', date: '2026-10-08', review: 'Human reviewed', displayName: 'Fictional local parent', body: 'This is a fictional letter for browser checks. We value the everyday discoveries, creativity and friendships that make a school a community.' };
     await page.route('**/letters.json', route => route.fulfill({ json: { version: 1, letters: [sample] } }));
     await page.goto('/index.html');
-    await page.locator('.mobile-menu summary').click();
-    await page.locator('.mobile-menu a[href="letters.html"]').click();
+    const involved = page.locator('a.home-plan');
+    if (hasTouch) await involved.tap(); else await involved.click();
+    await expect(page).toHaveURL(/\/get-involved\.html$/);
+    const read = page.locator('#share-your-story').getByRole('link', { name: 'read letters from other families', exact: true });
+    await read.scrollIntoViewIfNeeded();
+    if (hasTouch) await read.tap(); else await read.click();
+    await expect(page).toHaveURL(/\/letters\.html$/);
     await expect(page.locator('#letters-list .public-author')).toBeInViewport();
     expect(await page.locator('#letters').evaluate(el => Boolean(el.compareDocumentPosition(document.getElementById('letter-form')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
     const write = page.locator('.invite-hero a[href="#letter-form"]');
@@ -29,19 +47,21 @@ for (const [width, height] of [[390, 844], [1440, 1000]]) {
   });
 }
 
-test('Parent plan: writing link opens the composer and Back returns to current actions', async ({ page, hasTouch }) => {
-  await page.goto('/proposal.html#parent-plan');
-  const write = page.locator('#parent-plan > nav.simple-actions a[href="letters.html#letter-form"]');
+// 13 October 2026 slim-site decision: Help leads to Get involved, not the archived Parent action plan.
+test('Get involved: the writing link opens the composer and Back returns to Share your story', async ({ page, hasTouch }) => {
+  await page.goto('/get-involved.html');
+  const write = page.locator('#share-your-story a[href="letters.html#letter-form"]');
+  await expect(write).toHaveText('Write a community letter');
   await write.scrollIntoViewIfNeeded();
-  const planPosition = await page.evaluate(() => scrollY);
+  const storyPosition = await page.evaluate(() => scrollY);
   if (hasTouch) await write.tap(); else await write.click();
   await expect(page).toHaveURL(/letters\.html#letter-form$/);
   await expect(page.locator('#letter-form-title')).toBeInViewport();
   await expect(page.locator('#message')).toBeInViewport();
   await page.goBack();
-  await expect(page).toHaveURL(/proposal\.html#parent-plan$/);
+  await expect(page).toHaveURL(/\/get-involved\.html$/);
   await expect(write).toBeInViewport();
-  await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - planPosition)).toBeLessThan(5);
+  await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - storyPosition)).toBeLessThan(5);
 });
 
 function boardData(board, entries) {
@@ -67,12 +87,12 @@ async function readBoard(page, board, hasTouch) {
 }
 
 for (const board of boards) {
-  test(`${board.resource}: empty board explains its state without blocking the form`, async ({ page, hasTouch }) => {
+  test(`${board.resource}: empty board explains its state without blocking ${board.next}`, async ({ page, hasTouch }) => {
     await page.route(`**/${board.resource}.json`, route => route.fulfill({ json: boardData(board, []) }));
     await page.goto('/' + board.file);
     await readBoard(page, board, hasTouch);
     await expect(page.locator(board.status)).toContainText(/No .*published yet/);
-    await expect(page.locator('form button[type="submit"]')).toBeEnabled();
+    await expectNextStep(page, board);
   });
 
   test(`${board.resource}: approved entry renders with a removal route`, async ({ page, hasTouch }) => {
@@ -93,15 +113,15 @@ for (const board of boards) {
     await expect(page.locator(board.status)).toContainText('could not be loaded');
     await expect(page.locator(board.list)).toBeEmpty();
     await expect(page.locator('body')).not.toContainText('private@example.invalid');
-    await expect(page.locator('form button[type="submit"]')).toBeEnabled();
+    await expectNextStep(page, board);
   });
 
-  test(`${board.resource}: server failure leaves private intake usable`, async ({ page, hasTouch }) => {
+  test(`${board.resource}: server failure leaves ${board.intake} usable`, async ({ page, hasTouch }) => {
     await page.route(`**/${board.resource}.json`, route => route.fulfill({ status: 503, body: 'Intentional test outage', headers: { 'X-Test-Fixture': 'intentional-error' } }));
     await page.goto('/' + board.file);
     await readBoard(page, board, hasTouch);
     await expect(page.locator(board.status)).toContainText('could not be loaded');
-    await expect(page.locator('form button[type="submit"]')).toBeEnabled();
+    await expectNextStep(page, board);
   });
 }
 
