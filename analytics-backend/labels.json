@@ -797,5 +797,8 @@
   ],
   "browser_day": [
     "all"
+  ],
+  "page_hour": [
+    "all"
   ]
 }

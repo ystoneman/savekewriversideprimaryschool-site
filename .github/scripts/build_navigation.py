@@ -50,6 +50,15 @@ FOOTER_LINKS = [
     ('corrections.html', 'Corrections', ''), ('privacy.html', 'Privacy', ''),
     ('privacy.html#analytics', 'Analytics choices', ' data-analytics-choices'),
 ]
+# Optional homepage footer only; these dated references never enter Menu.
+RESEARCH_FOOTER_LINKS = [
+    ('proposal.html#questions', 'Six questions worth asking'),
+    ('evidence.html#records', 'Evidence & original sources'),
+    ('understand.html#budget', 'School finances & closure costs'),
+    ('options.html#options', 'Ways to keep Kew open'),
+    ('lessons.html#key-lessons', 'Historical school cases'),
+]
+
 ARCHIVE_BANNER = ('<!-- archive:start --><aside class="archive-banner" aria-label="Archived page"><p><strong>Archived 13 October 2026.</strong> '
                   'This page is no longer updated, so dates and actions here may be out of date. '
                   '<a href="dates.html">Current dates</a> · <a href="get-involved.html">Get involved</a></p></aside><!-- archive:end -->')
@@ -205,6 +214,12 @@ def render_home_navigation(document):
     document = re.sub(r'<details class="mobile-menu" id="menu"[^>]*>.*?</details>', lambda _:menu, document, count=1, flags=re.S)
     footer = ''.join('<a href="'+html.escape(href, quote=True)+'"'+extra+'>'+html.escape(label)+'</a>' for href,label,extra in FOOTER_LINKS)
     document = re.sub(r'(<nav class="home-footer-links"[^>]*>).*?(</nav>)',lambda m:m.group(1)+footer+m.group(2),document,count=1,flags=re.S)
+    research_links = ''.join('<a href="'+html.escape(href, quote=True)+'">'+html.escape(label)+'</a>' for href, label in RESEARCH_FOOTER_LINKS)
+    research = '<details id="supporting-research"><summary>Supporting research &amp; alternatives <span aria-hidden="true">＋</span></summary><div class="disclosure-content"><p>Earlier research and questions, archived 13 October 2026. Dates and actions on these reference pages may be out of date.</p><p>For current information:</p><div class="research-current"><a href="dates.html">Dates, leaflet &amp; FAQs</a><a href="get-involved.html">Get involved</a></div><nav aria-label="Supporting research and alternatives">'+research_links+'</nav></div></details>'
+    document = re.sub(r'\n? *<details id="supporting-research">.*?</details>', '', document, flags=re.S)
+    settings = re.search(r'<details id="site-settings">.*?</details>', document, re.S)
+    if settings:
+        document = document[:settings.end()]+'\n      '+research+document[settings.end():]
     return render_footer_discovery(document)
 
 def render_navigation(name, document):

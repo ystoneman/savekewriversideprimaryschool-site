@@ -101,3 +101,18 @@ test('Daily browser accepts only an isolated fixed total, retaining no browser i
     day: new Date().toISOString().slice(0, 10), metric: 'browser_day', label: 'all', total: 1,
   });
 });
+
+test('Hourly page opens are isolated all-page receipt buckets, with no client hour or browser identity', async () => {
+  const env = environment();
+  const hour = { metric: 'page_hour', label: 'all' };
+  for (const counters of [[hour, valid.counters[0]], [{ ...hour, label: '18' }], [{ ...hour, time: '18:12' }]]) {
+    assert.equal((await worker.fetch(request({ counters }), env)).status, 400);
+  }
+  for (const extra of [{ DNT: '1' }, { 'Sec-GPC': '1' }]) {
+    assert.equal((await worker.fetch(request({ counters: [hour] }, extra), env)).status, 403);
+  }
+  for (let n=0; n<3; n++) assert.equal((await worker.fetch(request({ counters: [hour] }), env)).status, 200);
+  const row = env.sql.prepare('SELECT * FROM counts').get();
+  assert.deepEqual({ ...row }, { day: new Date().toISOString().slice(0,10), metric: 'page_hour', label: new Date().toISOString().slice(11,13), total: 3 });
+  assert.equal(env.sql.prepare("SELECT COUNT(*) AS n FROM counts WHERE metric='browser_day'").get().n, 0);
+});

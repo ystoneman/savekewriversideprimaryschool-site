@@ -88,12 +88,25 @@ rally.html supporters.html fundraising-trustees.html fundraising-admin.html
 # The privacy notice must say where named public-role information is published.
 ARCHIVED_LINK_EXEMPTIONS = frozenset({('privacy.html', 'proposal.html#who-decides')})
 
+# Owner-authorized dated-reference links, only within Home's research footer.
+RESEARCH_FOOTER_DESTINATIONS = frozenset({
+    'proposal.html#questions', 'evidence.html#records', 'understand.html#budget',
+    'options.html#options', 'lessons.html#key-lessons',
+})
+
 
 def archived_links(name, data):
     """Links from a live page to an archived page. Hidden homepage legacy routes,
     which forward old shared fragments, are compatibility entries, not links."""
     if name == 'index.html':
         data = re.sub(r'<aside class="legacy-route\b.*?</aside>', '', data, flags=re.S)
+        def reference_footer(match):
+            # Keep all undeclared archived targets visible to the normal guard.
+            def permitted_link(link):
+                return link.group().replace(link[1], '#reference') if link[1] in RESEARCH_FOOTER_DESTINATIONS else link.group()
+            return match[1]+re.sub(r'<a\b[^>]*\bhref="([^"]+)"', permitted_link, match[2])+match[3]
+        data = re.sub(r'(<footer>.*?)(<details id="supporting-research">.*?)(</details>)', reference_footer, data, flags=re.S)
+
     found = set()
     for href in re.findall(r'<a\b[^>]*\bhref="([^"]+)"', data):
         url = urlsplit(href)

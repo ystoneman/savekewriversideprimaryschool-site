@@ -305,7 +305,7 @@ class SiteStructureTests(unittest.TestCase):
                 self.assertIsNotNone(footer, 'Pages with the shared shell keep a footer')
                 footer_pages = {local_destination(name, href)[0] for href in re.findall(r'href="([^"]+)"', footer.group()) if local_destination(name, href)}
                 self.assertTrue(live_footer <= footer_pages, 'Every footer keeps the live campaign and task pages')
-                self.assertFalse(footer_pages & ARCHIVED_PAGES, 'Footers link only to live pages')
+                self.assertEqual(footer_pages & ARCHIVED_PAGES, {'proposal.html', 'evidence.html', 'understand.html', 'options.html', 'lessons.html'} if name == 'index.html' else set(), 'Only Home’s dated research footer restores these references')
                 if name == 'index.html':
                     self.assertIn('data-home-landing', text)
                     self.assertEqual(navigation_destinations(name, page.navigation['mobile-menu']),
@@ -337,6 +337,13 @@ class SiteStructureTests(unittest.TestCase):
                     self.assertNotIn('archive-banner', text)
                     self.assertEqual(archived_links(name, text), set(), 'Live pages must not link to archived pages')
         self.assertEqual(ARCHIVED_LINK_EXEMPTIONS, {('privacy.html', 'proposal.html#who-decides')})
+        allowed = '<a href="proposal.html#questions">questions</a>'
+        self.assertEqual(archived_links('index.html', allowed), {'proposal.html#questions'})
+        self.assertEqual(archived_links('index.html', '<footer>'+allowed+'<details id="supporting-research">'+allowed+'</details></footer>'), {'proposal.html#questions'})
+        self.assertEqual(archived_links('index.html', '<footer><details id="supporting-research">'+allowed+'</details></footer>'), set())
+        self.assertEqual(archived_links('dates.html', '<footer><details id="supporting-research">'+allowed+'</details></footer>'), {'proposal.html#questions'})
+        self.assertEqual(archived_links('index.html', '<footer><details id="supporting-research"><a href="fundraising-admin.html">x</a></details></footer>'), {'fundraising-admin.html'})
+
         self.assertIn('href="proposal.html#who-decides"', (ROOT / 'privacy.html').read_text())
         # A planted link on a live page is caught.
         self.assertEqual(archived_links('dates.html', '<a href="faq.html#school-places">x</a>'), {'faq.html#school-places'})

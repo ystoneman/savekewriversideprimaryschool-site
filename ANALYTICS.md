@@ -83,3 +83,12 @@ Checked 9–10 October 2026: [ICO conditions](https://ico.org.uk/for-organisatio
 Engineering and source reviews, not professional legal certification.
 
 Audit sources rechecked 12 October 2026: ICO exceptions (statistical purposes, necessary transient processing, aggregation and objections) and [consent mechanisms](https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guidance-on-the-use-of-storage-and-access-technologies/how-do-we-manage-consent-in-practice/); [MDN navigation timing](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Navigation_and_resource_timings) and [paint timing](https://developer.mozilla.org/en-US/docs/Web/API/PerformancePaintTiming). Independent evidence/privacy and UX planning reviews informed these decisions. Implementation verification is recorded in TESTING.md.
+
+
+## Hourly all-page totals — 13 October 2026
+
+A v5 eligible page open sends one separate fixed `page_hour/all` increment. The server selects the UTC hour of receipt, and immediately updates only day/metric/hour/total in the existing private counter table. No exact receipt time, page, referral, browser identity or individual event is retained with that hour. Browser estimates remain daily only. Older v1–v4 choices retain their prior scope until renewed. The visible notice describes hourly page totals before default collection; Off/DNT/GPC/private-route gates remain.
+
+Purpose and minimisation: identify busier website-use periods to schedule disruptive maintenance and content checks with less inconvenience. All-page volumes are sufficient; no page-by-hour or audience-by-hour breakdown, outreach timing, supporter profiling or advertising use is authorised. The ICO statistical-purpose guidance says hourly aggregation may be appropriate but requires non-identifiable datasets: https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guidance-on-the-use-of-storage-and-access-technologies/what-are-the-exceptions/ . This bounded assessment is not regulator certification. Database access and 365-day aggregate retention remain.
+
+Reporting converts UTC buckets through Europe/London (including DST). Old hours cannot be reconstructed; missing rows remain unavailable rather than being imputed as zero. Current/rollout hours and earlier saved-scope undercoverage are explicit. No hourly unique-browser claim or daily-browser sum is made.

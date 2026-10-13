@@ -316,13 +316,14 @@ test.describe('Archived pages', () => {
   });
 });
 
-test('Live pages never link to archived pages', async ({ page, baseURL }) => {
+test('Live pages link to archived pages only through the dated Home research footer', async ({ page, baseURL }) => {
   // privacy.html explains who is named on the archived proposal page and links to that section.
   const allowed = { 'privacy.html': ['proposal.html#who-decides'] };
   for (const file of livePages) {
     await page.goto('/' + file);
     const hrefs = await page.locator('a[href]').evaluateAll(links => links
       .filter(link => !link.closest('aside.legacy-route'))
+      .filter(link => !(document.body.hasAttribute('data-home-landing') && link.closest('footer #supporting-research') && ['proposal.html#questions', 'evidence.html#records', 'understand.html#budget', 'options.html#options', 'lessons.html#key-lessons'].includes(link.getAttribute('href'))))
       .map(link => link.href));
     const archived = hrefs.map(href => new URL(href)).filter(url => [new URL(baseURL).origin, 'https://savekewriversideprimaryschool.org'].includes(url.origin)
       && archivedPages.includes(url.pathname.replace(/^\//, '')))
@@ -470,3 +471,45 @@ for (const id of ['our-case', 'case-title']) {
     await expect(page.locator('#our-case')).toContainText('A funded, workable alternative has not yet been established.');
   });
 }
+
+// Owner-authorized optional depth: Home remains concise and Menu stays unchanged.
+for (const width of [320, 390, 1440]) {
+  test(`Home research footer restores dated references at ${width}px`, async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-10-13T12:00:00Z'));
+    await page.setViewportSize({ width, height: width === 320 ? 568 : 1000 });
+    await page.goto('/index.html');
+    const group = page.locator('footer #supporting-research');
+    await expect(group).not.toHaveAttribute('open', '');
+    await expect(page.locator('section#our-case')).toHaveCount(0);
+    await expect(page.locator('.mobile-menu a[href^="proposal"], .mobile-menu a[href^="understand"], .mobile-menu a[href^="evidence"], .mobile-menu a[href^="options"], .mobile-menu a[href^="lessons"]')).toHaveCount(0);
+    expect(await page.locator('.footer-details > details').evaluateAll(items => items.map(item => item.id))).toEqual(['press', 'site-settings', 'supporting-research']);
+    await group.locator('summary').scrollIntoViewIfNeeded();
+    await group.locator('summary').focus();
+    await group.locator('summary').press('Enter');
+    await expect(group).toHaveAttribute('open', '');
+    await expect(group).toContainText('archived 13 October 2026');
+    await expect(group.locator('a[href="dates.html"]')).toBeVisible();
+    await expect(group.locator('a[href="get-involved.html"]')).toBeVisible();
+    for (const [href, name] of [['proposal.html#questions','Six questions worth asking'],['evidence.html#records','Evidence & original sources'],['understand.html#budget','School finances & closure costs'],['options.html#options','Ways to keep Kew open'],['lessons.html#key-lessons','Historical school cases']]) {
+      const link = group.getByRole('link', { name, exact: true });
+      await expect(link).toHaveAttribute('href', href);
+      await link.click();
+      await expect(page.locator('.archive-flag')).toBeVisible();
+      const id = href.split('#')[1];
+      await expect(page.locator('#'+id)).toBeInViewport();
+      if (id === 'questions') {
+        await expect(page.locator('#proposal-question-details')).toHaveAttribute('open', '');
+        await expect(page.locator('#questions')).toContainText('You can respond without waiting for answers.');
+        await expect(page.locator('#questions')).toContainText('If Kew closed, where would my child go?');
+      }
+      await page.goBack();
+      await expect(group).toHaveAttribute('open', '');
+    }
+    await expectNoHorizontalOverflow(page, `research footer at ${width}px`);
+  });
+}
+
+test('Shared research-footer link opens the optional section', async ({ page }) => {
+  await page.goto('/index.html#supporting-research');
+  await expect(page.locator('footer #supporting-research')).toHaveAttribute('open', '');
+});

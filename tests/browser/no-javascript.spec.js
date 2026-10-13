@@ -172,11 +172,11 @@ test('No JavaScript: evidence is readable and council identity stays disabled', 
 });
 
 test('No JavaScript: archived Evidence still exposes the full report and web research', async ({ page }) => {
-  // Slim-site decision (13 October 2026): Evidence, research and Understand left the homepage footer and the Menu.
-  // Their archived pages stay readable by direct link.
+  // Owner correction: dated references return only within the optional Home footer.
   await page.goto('/index.html');
-  await expect(page.locator('.mobile-menu a[href^="evidence.html"], .mobile-menu a[href^="lessons.html"], footer a[href^="evidence.html"], footer a[href^="lessons.html"], footer a[href^="understand.html"]')).toHaveCount(0);
-  await page.goto('/evidence.html#records');
+  await expect(page.locator('.mobile-menu a[href^="evidence.html"], .mobile-menu a[href^="lessons.html"], .mobile-menu a[href^="understand.html"]')).toHaveCount(0);
+  await page.locator('footer #supporting-research > summary').tap();
+  await page.locator('footer #supporting-research a[href="evidence.html#records"]').tap();
   await page.locator('#research-shortcut').tap();
   const report = page.locator('#source-lessons-report');
   await expect(report).toBeInViewport();
@@ -763,3 +763,20 @@ for (const id of ['our-case', 'case-title']) {
     await expect(page.locator('#case-title')).toBeInViewport();
   });
 }
+
+test('No JavaScript: optional research footer opens and its five references remain usable', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto('/index.html');
+  const group=page.locator('footer #supporting-research');
+  await expect(group).not.toHaveAttribute('open', '');
+  await group.locator('summary').click();
+  for (const [href, name] of [['proposal.html#questions','Six questions worth asking'],['evidence.html#records','Evidence & original sources'],['understand.html#budget','School finances & closure costs'],['options.html#options','Ways to keep Kew open'],['lessons.html#key-lessons','Historical school cases']]) {
+    await group.getByRole('link', { name, exact: true }).click();
+    await expect(page.locator('.archive-flag')).toBeVisible();
+    await expect(page.locator('#'+href.split('#')[1])).toBeInViewport();
+    await page.goBack();
+    // Native Back may reload the static page; its disclosure remains operable.
+    if (!(await group.evaluate(element => element.open))) await group.locator('summary').click();
+    await expect(group).toHaveAttribute('open', '');
+  }
+});

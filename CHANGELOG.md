@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Optional supporting research restored — 13 October 2026
+
+Added a closed Supporting research & alternatives footer section after press and About/appearance. Restored dated-reference access to the six council questions, evidence and sources, finances and closure costs, ways to keep Kew open and historical school cases. The hero, main actions and five-page Menu are unchanged. Destination archive notices remain; the publication guard allows only five declared reference routes in this homepage footer. Verification is recorded in TESTING.md.
+
+
 ### Retain the concise landing page — 13 October 2026
 
 Moved the added “Why keep Kew Riverside open” section unchanged from Home to About after owner feedback on the team preview. Retained the five-page Menu and homepage actions. Old homepage case anchors continue to About. This is a PR and Sites-preview correction, not a live campaign-domain deployment. Verification is recorded in TESTING.md.
@@ -19,6 +24,12 @@ Moved the added “Why keep Kew Riverside open” section unchanged from Home to
 - Add analytics labels for the new pages and the petition (deploy the worker's `labels.json` before the site). Update tests deliberately for the new shell and journeys; checks actually run are recorded in TESTING.md and the pull request. Not yet deployed.
 
 ### Community letter — 13 October 2026
+
+
+### Hourly statistics and mobile operator dashboard — 13 October 2026
+
+- Hourly page-open totals: independent all-page receipt-hour counters, updated first-visit notice, v5 scope with v1–v4 choices preserved, and no hourly browser/device/referral breakdown. Private dashboard adds a narrow Mobile tab with in-cell bars; daily chart/data sources remain. Eight SQLite backend checks and 150 Python validation checks pass. All 368 analytics cases are verified across four browser engines (364 initially passed; four exact choice-version expectations were updated and rechecked). Independent privacy/evidence and rendered 320×568 WebKit UX reviews have no remaining findings. [PR #49](https://github.com/ystoneman/savekewriversideprimaryschool-site/pull/49) passed every current-revision hosted browser batch and required gate. The merged production run also passes, reusing verified browser evidence. All 19 changed public assets match the checked release. The existing Cloudflare collector was deployed with logs disabled and unchanged retention. A controlled ordinary-Chrome visit and reload each incremented the hourly/page counters while the daily browser estimate stayed unchanged; the native Sheet’s counts, timestamp and populated bars match the fresh source. The three-hour automation retains its existing interval and sharing. Native iOS Simulator verification was attempted but its window became unavailable; phone WebKit emulation and Google-rendered desktop Sheet checks are recorded separately.
+
 
 - Add one eligible community letter with the author's submitted wording and display name, labelled AI screened. Publication and the optional one-time notice remain pending until the canonical and compatibility releases are verified.
 

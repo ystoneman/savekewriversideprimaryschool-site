@@ -75,11 +75,12 @@ test('Understand: the existing comparisons and new case questions are readable o
 });
 
 // Slim-site decision (13 October 2026): Our case is archived, so neither the
-// homepage Menu nor its footer links to it; the case summary is #our-case on About after preview feedback.
+// homepage Menu does not link to it; the optional footer now does; the case summary is #our-case on About after preview feedback.
 // A saved link to the archived page still reaches the dated finances.
 test('Understand: archived numbers route reaches dated finances and forecast checks', async ({ page, hasTouch }) => {
   await page.goto('/index.html');
-  await expect(page.locator('.mobile-menu a[href^="understand"], footer a[href^="understand"]')).toHaveCount(0);
+  await expect(page.locator('.mobile-menu a[href^="understand"]')).toHaveCount(0);
+  await expect(page.locator('footer #supporting-research a[href="understand.html#budget"]')).toHaveCount(1);
   await expect(page.locator('section#our-case')).toHaveCount(0);
   await page.goto('/about.html#our-case');
   await expect(page.locator('#our-case')).toContainText('Compare the full costs');

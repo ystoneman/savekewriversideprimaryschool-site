@@ -1,5 +1,14 @@
 # Testing the website
 
+## Optional supporting research footer — 13 October 2026
+
+Initial/final home-smoke checks each passed 9/9. All 151 Python validation/security/structure checks and 32 deadline/backend Node tests passed. Five-link restoration, exact question arrival, archive labels, keyboard expansion, no-script access and Back passed 17 focused Chromium/WebKit checks. The final incoming-link/history-state recheck passed 16/16. Generators, JavaScript syntax and whitespace pass. The Sites artifact suite passed 13/13 across 320/390/1440px, light/dark and scripts/no scripts, retaining disabled forms/analytics and the full rally photo.
+
+Independent campaign/evidence source reviews and UX source/render review found no remaining actionable issue. Fixed a block-link recovery paragraph that created dangling prose. Real WebKit renders cover Home, expanded footer and question arrival at 320/390/1440. Native iPhone 17 / iOS 26.5 Safari rendered both closed footer and direct #supporting-research arrival on an isolated HTTP preview with disabled collectors/forms; native touch expansion was attempted but the UI control returned noWindowsAvailable, so touch handoff remains unverified. Browser-emulation touch/keyboard links pass. Archived source claims remain dated references, not freshly recertified research.
+
+Merged current main’s approved hourly analytics changes to avoid overwriting concurrent work. Broad affected local run: 476 passed and one obsolete no-script assertion still required no research footer links. Updated that expectation to the owner-authorized footer route and rechecked its report-download journey, alongside the affected Evidence/Understand discovery tests; all 21 rechecks passed. Exact-revision hosted verification is tracked in the PR description. No live campaign-domain deployment is authorized by this preview update.
+
+
 ## Concise homepage after team preview — 13 October 2026
 
 The unchanged campaign-case text moved from Home to About; Menu and homepage actions are retained. Initial and final homepage smoke each passed 9/9. The affected About/archived-route/legacy-anchor checks passed 16/16 across Chromium and WebKit; explicit 320×568 heading-below-header regressions passed 8/8. Both no-script handoffs passed 2/2. All 151 Python checks and 31 deadline/backend Node tests pass; generator freshness and artifact privacy validation pass.

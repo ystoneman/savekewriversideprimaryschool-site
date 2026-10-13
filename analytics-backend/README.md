@@ -63,3 +63,13 @@ opens. Daily totals must not be summed and labelled weekly/monthly uniques.
 Counts reflect eligible browser storage contexts, not exact people. Previous
 choices do not contribute until reviewed; interruption/blocking can undercount.
 See ANALYTICS.md and privacy.html for retention, purpose and accuracy limits.
+
+## Hourly page opens (v5)
+
+`page_hour` rows have UTC day and fixed `00`–`23` receipt-hour labels, all pages combined. The input is only the isolated fixed `{metric: "page_hour", label: "all"}`; arbitrary client hours and combinations are rejected. Earlier daily-only requests do not create hourly rows.
+
+```sql
+SELECT day,label AS utc_hour,total FROM counts WHERE metric='page_hour' ORDER BY day,label;
+```
+
+Missing hours are unavailable, not inferred zeros. Use only for website maintenance/usability; hourly series has a later start and narrower saved-choice coverage than daily page opens.
