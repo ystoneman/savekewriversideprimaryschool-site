@@ -13,6 +13,6 @@
 .update-list h2{font:700 20px/1.35 Arial,sans-serif;margin:0 0 6px;color:var(--theme-strong,var(--ink))}
 .update-list p{font-size:17px;line-height:1.55;margin:0 0 10px}
 .update-date{font-size:13px!important;font-weight:700;letter-spacing:.04em;color:var(--theme-readable,var(--muted))!important;margin-bottom:4px!important}
-.update-list a{display:inline-flex;align-items:center;min-height:44px}
+
 .home-case{padding-block:8px 32px}
 @media(max-width:700px){.campaign-section h2{font-size:20px}.update-list h2{font-size:18px}}

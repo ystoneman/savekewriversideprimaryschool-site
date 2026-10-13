@@ -49,7 +49,7 @@ tests/browser/research-update.spec.js
 .github/scripts/build_old_site_redirect.py .github/scripts/old_site_redirect.js .github/scripts/old_site_redirect.css .github/scripts/test_old_site_redirect.py tests/browser/old-site-redirect.spec.js
 tests/browser/fundraising-briefs.spec.js
 .github/scripts/build_navigation.py tests/browser/orientation.spec.js
-tests/browser/clarity.spec.js tests/browser/rally.spec.js
+tests/browser/clarity.spec.js tests/browser/rally.spec.js tests/browser/campaign-site.spec.js
 tests/browser/qr.spec.js
 tests/browser/theme.spec.js
 VIDEO-PERMISSIONS.md CONTRIBUTING.md .github/CODEOWNERS .github/pull_request_template.md .github/branch-protection.json

@@ -46,10 +46,11 @@ This collection is not exhaustive. Original documents remain with their publishe
 
 | File | Purpose |
 | --- | --- |
+| dates.html / get-involved.html / updates.html / campaign.css / campaign.js | The slim campaign site's Dates, leaflet & FAQs, Get involved and Campaign updates pages; `campaign.js` swaps the open and closed consultation blocks after 16 October 2026 (London date) |
 | about.html | Named owner, supplied family account, position, update history and private contact form |
 | supporters.html / supporters.js / supporters.json | Specific supporter statement, separate consents, manual confirmation and human-approved public names only |
 | community.css | Parent introduction, contribution routes and supporter styles |
-| index.html | Homepage with six visitor task routes and the school enquiry; works without JavaScript |
+| index.html | Homepage: respond, petition and Get involved actions, a three-point case and hidden legacy routes for old links; works without JavaScript |
 | evidence.html | Current Kew findings, historical cases, original-source cards, evidence gaps and search; works without JavaScript |
 | understand.html / case-evidence-data.json / case-evidence.csv | Generated explanation and reviewed aggregate case figures with a visitor CSV export |
 | proposal.html / proposal.css | Dated proposal, conditional timetable, institutional roles, factual profiles, questions and decision record; no JavaScript required |
@@ -76,6 +77,14 @@ This collection is not exhaustive. Original documents remain with their publishe
 | suggestions.json | Approved website suggestions only |
 | letters.json | Consented, AI-screened or human-reviewed letters; no council identity fields or reply emails |
 | .nojekyll | Disables Jekyll processing for branch-based Pages |
+
+## Five-page campaign site and archive — 13 October 2026
+
+The live site is five Menu pages (Home, Dates, leaflet & FAQs, Get involved, Campaign updates, About & contact) plus task pages (letters, videos, ideas, privacy, corrections, thank-you). `proposal`, `faq`, `understand`, `evidence`, `options`, `lessons`, `lessons-sources`, `rally`, `supporters` and the fundraising briefs are archived in place: `build_navigation.py` (`ARCHIVED_PAGES`) adds the banner, the sticky Archived label and `noindex`, and `check_site.py` rejects any live-page link to them. Treat their content and data files as frozen.
+
+**Adding a campaign update:** add a dated `<li>` at the top of the list in `updates.html` (newest first) with a public, checkable fact and a link where one exists. Leave out private names, internal strategy and unconfirmed events. Team members can send items to savekrps@gmail.com with the subject "Website update". Useful triggers: the consultation deadline passing (17 October 2026), the November 2026 committee, statutory notices (January 2027) and the petition closing (13 January 2027).
+
+**After the deadline:** without JavaScript, Get involved, Dates and Home keep their pre-deadline text. On 17 October 2026, swap the `hidden` attribute between the `data-stage="open"` and `data-stage="closed"` blocks on `get-involved.html` and `dates.html`, and update the homepage's static intro and action.
 
 ## Maintenance
 
