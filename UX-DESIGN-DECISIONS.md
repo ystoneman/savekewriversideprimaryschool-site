@@ -1,5 +1,11 @@
 # UX design decisions
 
+## Petition deadline countdown — 13 October 2026
+
+J1–J3: the owner requested a petition counter matching the council-response countdown, while approving PR #47 for production release. Add the derived London-calendar days remaining to the existing petition note; retain the exact 13 January 2027 closing date beside it, borough/account eligibility and the separate official-response reminder while that response window is open. Show Closes today on January 13 and the existing published-date-passed/View wording from January 14. Static HTML retains the fixed date; a countdown does not establish a closing hour, provider availability or signature total.
+
+Reuse the council countdown style without adding a row or new action. Keep pointerdown from changing the pressed target. Independent UX planning and evidence plan/actual-diff review support this bounded addition. Fresh official-page retrieval confirms the petition runs to 13/01/2027. Delivery evidence is in TESTING.md and PR #47.
+
 ## Maintained supporting research, with current actions in one place — 13 October 2026
 
 J1–J3/J5/J6: the owner clarified that useful research should remain available as supporting detail, rather than be presented as retired content. Keep the five-page campaign Menu and concise Home; the third, closed footer disclosure contains only five research links. Remove the blanket archive warning and whole-page archive labels from the maintained research destinations. Individual source dates, the explicitly historical September question ledger and claim-changing qualifications stay with their evidence.

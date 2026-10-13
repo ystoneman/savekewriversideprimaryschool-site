@@ -100,13 +100,31 @@ for(const width of [320,390,1440])test(`Homepage petition: ${width}px keeps the 
  await expect(page.locator('.home-plan')).toHaveAccessibleName('Get involved');await expect(page.locator('.home-plan')).toHaveAttribute('href','get-involved.html');
  const bounds=await link.boundingBox(),help=await page.locator('.home-plan').boundingBox();expect(bounds.height).toBeGreaterThanOrEqual(44);expect(help.y).toBe(bounds.y);
  await expect(page.locator('#main-action')).toBeInViewport({ratio:1});
+ await expect(page.locator('#petition-note .countdown')).toHaveText('92 days left');
+ await expect(page.locator('#petition-note')).toContainText('Petition closes 13 January 2027.');
  await expect(page.locator('#petition-note')).toContainText('Signing does not replace your consultation response.');
  await page.route(petition,r=>r.fulfill({contentType:'text/html',body:'<h1>Fictional petition destination</h1>'}));
  if(hasTouch)await link.tap();else{await link.focus();await page.keyboard.press('Enter');}
  await expect(page).toHaveURL(petition);await page.goBack();await expect(link).toBeVisible();
 });
-for(const [at,label] of [['2026-10-17T12:00:00Z','Sign the petition'],['2027-01-13T23:59:59Z','Sign the petition'],['2027-01-14T00:00:00Z','View the petition']])test(`Homepage petition: independent deadline at ${at}`,async({page})=>{
+for(const [at,label,count] of [['2026-10-17T12:00:00Z','Sign the petition','88 days left'],['2027-01-12T12:00:00Z','Sign the petition','1 day left'],['2027-01-13T23:59:59Z','Sign the petition','Closes today'],['2027-01-14T00:00:00Z','View the petition',null]])test(`Homepage petition: independent deadline at ${at}`,async({page})=>{
  await page.clock.setFixedTime(new Date(at));await page.goto('/index.html');await expect(page.locator('#petition-action')).toHaveAccessibleName(label);await expect(page.locator('#petition-action')).toHaveAttribute('href',petition);
+ if(count)await expect(page.locator('#petition-note .countdown')).toHaveText(count);
+ else{await expect(page.locator('#petition-note .countdown')).toHaveCount(0);await expect(page.locator('#petition-note')).toContainText('closing date, 13 January 2027, has passed');}
+});
+
+test('Homepage petition countdown: midnight refresh retains the pressed destination and Back recovery',async({page,hasTouch})=>{
+ await page.setViewportSize({width:320,height:568});
+ await page.clock.install({time:new Date('2027-01-12T23:59:30Z')});await page.goto('/index.html');
+ const link=page.locator('#petition-action');await expect(page.locator('#petition-note .countdown')).toHaveText('1 day left');
+ const before=await link.boundingBox();
+ await page.clock.setFixedTime(new Date('2027-01-13T00:00:00Z'));
+ await link.dispatchEvent('pointerdown');await expect(page.locator('#petition-note .countdown')).toHaveText('1 day left');
+ expect(await link.boundingBox()).toEqual(before);
+ await page.route(petition,r=>r.fulfill({contentType:'text/html',body:'<h1>Fictional petition destination</h1>'}));
+ if(hasTouch)await link.tap();else{await link.focus();await page.keyboard.press('Enter');}
+ await expect(page).toHaveURL(petition);await page.goBack();await expect(link).toBeVisible();
+ await expect(page.locator('#petition-note .countdown')).toHaveText('Closes today');
 });
 
 for (const scripts of [true, false]) test.describe(`Homepage menu sizing, scripts ${scripts}`, () => {

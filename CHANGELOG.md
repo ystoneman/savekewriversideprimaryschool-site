@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Petition deadline countdown — 13 October 2026
+
+Add the same days-left styling as the council response to the existing Sign the petition note, counting London calendar days until 13 January 2027. Retain the fixed date and eligibility, final-day/expired states, no-script fallback and stable touch/keyboard handoff. The council's petition page was retrieved again and confirms 13/10/2026–13/01/2027. Petition-link opening analytics already exist in this PR; deploy the additive backend labels before releasing the site. The owner approved production deployment once required current-revision checks pass. Completed checks and release evidence are recorded in TESTING.md and the PR.
+
 ### Supporting research without duplicated campaign actions — 13 October 2026
 
 Keep useful research as maintained secondary pages below the concise landing page, removing blanket archive warnings from those destinations. Add a focused six-question page with the original sourced articles; retain financial figures, alternatives, historical cases and their source dates/limits. Remove repeated campaign introductions and generic response/preparation/contribution blocks from research, using Dates and Get involved for current actions. Keep eight contextual funding feedback routes with one privacy/routing explanation. Old Options anchors reveal only their current handoffs, and recruitment remains separate.

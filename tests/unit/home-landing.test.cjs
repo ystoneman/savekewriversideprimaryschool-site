@@ -9,7 +9,7 @@ function state(at) {
   const action={href:'council',textContent:'Check the council consultation',handlers:{},removeAttribute(){},replaceChildren(n){this.textContent=n.textContent},append(){},addEventListener:(type,fn)=>{events[type]=fn}};
   const note={textContent:'',replaceChildren(...nodes){this.textContent=nodes.map(n=>n.textContent).join('')}};const intro={textContent:'',replaceChildren(...nodes){this.textContent=nodes.map(n=>n.textContent).join('')}};
   class FakeDate extends Date {constructor(...args){super(...(args.length?args:[now]))}}
-  const petition={textContent:'',events:{},addEventListener(type,fn){this.events[type]=fn}};const petitionNote={textContent:''};
+  const petition={textContent:'',events:{},addEventListener(type,fn){this.events[type]=fn}};const petitionNote={textContent:'',replaceChildren(...nodes){this.textContent=nodes.map(n=>n.textContent).join('')}};
   const document={hidden:false,getElementById:id=>({'main-action':action,'action-note':note,'petition-action':petition,'petition-note':petitionNote}[id]||null),querySelector:()=>intro,createTextNode:textContent=>({textContent}),createElement:()=>({setAttribute(){}}),addEventListener:(type,fn)=>{events[type]=fn}};
   vm.runInNewContext(code,{Date:FakeDate,Intl,document,window:{addEventListener:(type,fn)=>{events[type]=fn}},setInterval:fn=>{tick=fn}});
   return {action,note,intro,petition,petitionNote,document,events,advance:value=>{now=value},tick:()=>tick()};
@@ -72,4 +72,22 @@ test('petition stays active after consultation closes and through its own final 
 test('petition retires independently on London 14 January, including an already open page',()=>{
  const s=state('2027-01-13T23:59:59Z');s.advance('2027-01-14T00:00:00Z');s.petition.events.click({type:'click'});
  assert.equal(s.petition.textContent,'View the petition');assert.match(s.petitionNote.textContent,/closing date.*has passed/);
+});
+
+for (const [at,label] of [
+ ['2026-10-13T12:00:00Z','92 days left'],
+ ['2026-10-13T23:00:00Z','91 days left'],
+ ['2026-10-24T22:59:59Z','81 days left'],
+ ['2026-10-24T23:00:00Z','80 days left'],
+ ['2026-10-25T23:59:59Z','80 days left'],
+ ['2026-10-26T00:00:00Z','79 days left'],
+ ['2027-01-12T12:00:00Z','1 day left'],
+ ['2027-01-13T00:00:00Z','Closes today'],
+]) test('petition countdown uses London calendar days at '+at,()=>{
+ const s=state(at);assert.match(s.petitionNote.textContent,new RegExp('^'+label+' · Petition closes 13 January 2027\\.'));
+});
+test('petition countdown refreshes an open page while retaining the pressed target',()=>{
+ const s=state('2027-01-12T23:59:59Z');s.advance('2027-01-13T00:00:00Z');s.petition.events.pointerdown({type:'pointerdown'});
+ assert.match(s.petitionNote.textContent,/^1 day left/);s.petition.events.click({type:'click'});assert.match(s.petitionNote.textContent,/^Closes today/);
+ s.advance('2027-01-14T00:00:00Z');s.tick();assert.equal(s.petition.textContent,'View the petition');assert.doesNotMatch(s.petitionNote.textContent,/days? left|Closes today/);
 });
