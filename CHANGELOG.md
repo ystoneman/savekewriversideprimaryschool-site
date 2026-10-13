@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Mobile homepage menu width — 13 October 2026
+
+- Keep the homepage Menu panel as wide as its mobile header when the analytics notice positions its wrapper at button width. This fixes clipped links and sideways scrolling, including after dismissing the notice. Bump the homepage stylesheet version for cached visitors.
+- Add regressions for fresh/dismissed analytics, script/no-script, every menu link, keyboard Escape/focus and navigation at 320/390/700/820/1440px. The two analytics-state cases fail on the previous CSS; all 16 new cases pass across Chromium and WebKit. Chromium subpixel vertical scrolling has a 1% viewport tolerance; horizontal overflow and link bounds remain explicitly checked.
+- Independent UX planning and actual-diff/rendered review found no remaining issue. Local validation: 149 Python checks, 29 Node checks and 124-public-file staging pass. Full hosted checks and verified deployment are recorded in the release pull request.
+
 - Replace the campaign contact email on the homepage, press route and About page with `savekrps@gmail.com`; keep the existing contact placements and campaign/recruitment separation. Verification and publication evidence will be recorded in the release pull request.
 
 ### One Menu, council dates and documents — 13 October 2026

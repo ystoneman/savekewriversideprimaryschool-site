@@ -1293,3 +1293,31 @@ test('Daily browser: delayed scope check cannot activate or reset Umami', async 
   expect(dailyBrowsers(aggregates)).toEqual([]);
   expect(await page.evaluate(key => localStorage.getItem(key), browserDayKey)).toBeNull();
 });
+
+for (const dismissed of [false, true]) test(`Homepage menu fits with analytics notice dismissed ${dismissed}`, {tag:'@home-smoke'}, async ({page, context}) => {
+ await virtualProduction(context);
+ for (const width of [320, 390, 700, 820, 1440]) {
+  await page.setViewportSize({width,height:width === 320 ? 568 : 844});
+  await page.goto(site);
+  if (dismissed && await page.locator('.analytics-invitation').isVisible()) {
+   await page.getByRole('button', {name:'Turn analytics off',exact:true}).click();
+  }
+  await page.locator('#menu > summary').click();
+  const menu = page.locator('#menu nav');
+  expect(await menu.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+  for (const link of await menu.locator('a').all()) {
+   await link.scrollIntoViewIfNeeded();
+   const bounds=await link.boundingBox(), panel=await menu.boundingBox();
+   expect(bounds.x).toBeGreaterThanOrEqual(panel.x);
+   expect(bounds.x+bounds.width).toBeLessThanOrEqual(panel.x+panel.width+1);
+   await expect(link).toBeInViewport({ratio:0.99});
+  }
+  await page.screenshot({path:test.info().outputPath(`menu-${width}.png`)});
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#menu')).not.toHaveAttribute('open','');
+  await expect(page.locator('#menu > summary')).toBeFocused();
+  await page.locator('#menu > summary').click();
+  await menu.locator('a[href="about.html"]').click();
+  await expect(page).toHaveURL(/about\.html$/);
+ }
+});

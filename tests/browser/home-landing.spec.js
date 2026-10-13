@@ -76,3 +76,26 @@ test('Homepage countdown: return refreshes the active count without changing the
  await page.clock.setFixedTime(new Date('2026-10-12T23:00:00Z'));await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));
  await expect(page.locator('#action-note')).toContainText('3 days left');await expect(page.locator('#main-action')).toHaveAttribute('href',official);
 });
+
+for (const scripts of [true, false]) test.describe(`Homepage menu sizing, scripts ${scripts}`, () => {
+ test.use({ javaScriptEnabled: scripts });
+ test('Homepage: menu links fit without sideways scrolling', {tag:'@home-smoke'}, async ({page}) => {
+  for (const width of [320, 390, 700, 820, 1440]) {
+   await page.setViewportSize({width, height:width === 320 ? 568 : 844});
+   await page.goto('/index.html');
+   await page.locator('#menu > summary').click();
+   const menu = page.locator('#menu nav');
+   expect(await menu.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+   for (const link of await menu.locator('a').all()) {
+    await link.scrollIntoViewIfNeeded();
+    const bounds = await link.boundingBox();
+    const panel = await menu.boundingBox();
+    expect(bounds.x).toBeGreaterThanOrEqual(panel.x);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(panel.x + panel.width + 1);
+    await expect(link).toBeInViewport({ratio:0.99});
+   }
+   await menu.locator('a[href="about.html"]').click();
+   await expect(page).toHaveURL(/about\.html$/);
+  }
+ });
+});
