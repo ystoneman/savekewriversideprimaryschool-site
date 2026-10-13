@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add one eligible community letter with the author's submitted wording and display name, labelled AI screened. Publication and the optional one-time notice remain pending until the canonical and compatibility releases are verified.
+
 - Add the verified Richmond e-petition to the Parent action plan with borough eligibility, dates, petitioner attribution and a reminder that signing does not replace the official consultation response. Add a separate Discover the school Menu group; keep Parent Voices visible on the video page and route Open Day booking through the recruitment-only `/visit/` handoff, now pointed at the verified registration form.
 
 ### Mobile homepage menu width — 13 October 2026
