@@ -4,7 +4,7 @@
 
 ### BBC television appearance — 14 October 2026
 
-- Add the owner-confirmed live BBC appearance on 13 October at 6:30pm to Campaign updates, with the dated BBC iPlayer bulletin link labelled as the full programme and limited availability. Lead-agent evidence review keeps the claim within the owner’s account; playback availability could not be verified. Retain existing update anchors and newest-first order. Release checks and publication evidence are recorded in the release PR.
+- Add the owner-confirmed live BBC appearance on 13 October at 6:30pm to Campaign updates, with the dated BBC iPlayer bulletin link labelled as the full programme and limited availability. Lead-agent evidence review keeps the claim within the owner’s account; playback availability could not be verified. Retain existing update anchors and newest-first order. The merged release exposed a WebKit lazy-image test race: wait for the existing rally photograph to load before decoding it, retaining decoding, alt-text and 4:3 checks. Release checks and publication evidence are recorded in the release PR.
 
 ### Approved preview rally photo — 13 October 2026
 
