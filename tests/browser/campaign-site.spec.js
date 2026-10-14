@@ -241,6 +241,12 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
   for (let index = 1; index < dates.length; index++) {
     expect(dates[index] <= dates[index - 1], `${dates[index]} follows ${dates[index - 1]} (newest first)`).toBe(true);
   }
+  const bbc = page.locator('#update-bbc');
+  await expect(entries.first()).toHaveAttribute('id', 'update-bbc');
+  await expect(bbc.locator('time')).toHaveAttribute('datetime', '2026-10-13');
+  await expect(bbc).toContainText('6:30pm');
+  await expect(bbc.getByRole('link', { name: /full programme on iPlayer/ })).toHaveAttribute('href', 'https://www.bbc.co.uk/iplayer/episode/m0032vcr/bbc-london-evening-news-13102026');
+  await expect(bbc).toContainText('availability may be limited');
   const text = await page.locator('main').innerText();
   expect(text).not.toContain('~');
   expect(text.toLowerCase()).not.toContain('to be verified');
