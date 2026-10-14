@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### BBC television appearance — 14 October 2026
+
+- Add the owner-confirmed live BBC appearance on 13 October at 6:30pm to Campaign updates, with the dated BBC iPlayer bulletin link labelled as the full programme and limited availability. Lead-agent evidence review keeps the claim within the owner’s account; playback availability could not be verified. Retain existing update anchors and newest-first order. Release checks and publication evidence are recorded in the release PR.
+
 ### Approved preview rally photo — 13 October 2026
 
 Bring the existing approved Sites preview's York House rally entry and original photograph into the production candidate. Date, conversations with council members and face permissions were confirmed during preview creation. Retain the full 4:3 photo and neutral caption without implying council endorsement or a turnout total. The home page remains concise. Source verification and checks are recorded in the release PR.
