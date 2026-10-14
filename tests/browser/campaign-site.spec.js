@@ -256,7 +256,9 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
   const rally=page.locator('main ol.update-list > #update-york-house-rally');
   await expect(rally.locator('time')).toHaveAttribute('datetime','2026-10-06');
   const photo=rally.locator('img');
-  await photo.scrollIntoViewIfNeeded();await photo.evaluate(image=>image.decode());
+  await photo.scrollIntoViewIfNeeded();
+  await expect.poll(() => photo.evaluate(image => image.complete && image.naturalWidth > 0), { message: 'The lazy-loaded rally photograph has loaded before decoding' }).toBe(true);
+  await photo.evaluate(image=>image.decode());
   await expect(photo).toHaveAttribute('alt',/Campaign members.*York House/);
   const box=await photo.boundingBox();expect(box.width/box.height).toBeCloseTo(4/3,2);
 });

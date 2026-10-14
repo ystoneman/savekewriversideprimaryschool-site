@@ -252,6 +252,8 @@ test('Letters: direct next-steps visit does not confirm receipt or erase the pen
   const submissions = await captureSubmissions(page);
   await sendFictionalLetter(page);
   await expect.poll(() => submissions.length).toBe(1);
+  // Recording the intercepted POST does not establish its document history entry.
+  await page.waitForURL('https://formspree.io/f/xnpnenzy', { waitUntil: 'load' });
   // A direct visit is not evidence of a provider receipt.
   await page.goto('/sent.html');
   await expect(page.locator('#sent-title')).toHaveText('After sending your letter');
