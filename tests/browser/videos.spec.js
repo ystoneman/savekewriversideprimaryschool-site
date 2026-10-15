@@ -30,7 +30,7 @@ test('Video: upload is a clear external handoff without embedded trackers or loc
   });
   await page.goto('/videos.html');
   await expect(page.locator('iframe,video,form,input[type="file"]')).toHaveCount(0);
-  await expect(page.locator('.video-process')).toContainText('Nothing is published automatically');
+  await expect(page.locator('.video-process')).toContainText('AI-assisted review, editing or automatic release happens only if you also give separate, dated permission for that exact recording');
   await expect(page.locator('#video-upload-link')).toHaveText(/^Share your parent testimonial/);
   await expect(page.locator('#upload-step-two')).toContainText('Permissions first, then private upload');
   await expect(page.locator('#resume-instructions')).toContainText('same email in both steps');
@@ -91,6 +91,8 @@ test('Video: withdrawal leads to private request and non-Google alternative stay
   await expect(page.locator('#video-privacy')).toBeInViewport();
   await expect(page.locator('section[aria-labelledby="video-privacy"]')).toContainText('2026-09-22-videos-v1');
   await expect(page.locator('section[aria-labelledby="video-privacy"]')).toContainText('2026-09-22-videos-dropbox-v1');
+  await expect(page.locator('section[aria-labelledby="video-privacy"]')).toContainText('The current form’s YouTube choice alone does not authorize AI content review or editing');
+  await expect(page.locator('section[aria-labelledby="video-privacy"]')).toContainText('Unlisted means anyone with the link or access to that page can watch and share it');
 });
 
 // Main run 35823364131: focusing the help summary started a smooth scroll in desktop

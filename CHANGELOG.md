@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Parent Voices video privacy notice — 15 October 2026
+
+Explain the conditional AI-assisted review, VEED editing and YouTube release workflow, including separate dated permission for the exact recording and for website embedding or a public excerpt. Clarify that the current form alone does not grant these extra uses, earlier permissions retain their scope, Unlisted letters remain shareable, and withdrawal covers the website embed. Keep the parent-testimonial submission page focused on school discovery and retain its existing provider route. This is a notice/source change; it does not attest rollout readiness or process any submission.
+
 ### BBC television appearance — 14 October 2026
 
 - Add the owner-confirmed live BBC appearance on 13 October at 6:30pm to Campaign updates, with the dated BBC iPlayer bulletin link labelled as the full programme and limited availability. Lead-agent evidence review keeps the claim within the owner’s account; playback availability could not be verified. Retain existing update anchors and newest-first order. The merged release exposed a WebKit lazy-image test race: wait for the existing rally photograph to load before decoding it, retaining decoding, alt-text and 4:3 checks. Also await the intercepted provider document before testing direct next-steps navigation, matching the adjacent test’s existing boundary. Release checks and publication evidence are recorded in the release PR.
