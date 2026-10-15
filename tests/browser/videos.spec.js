@@ -30,7 +30,7 @@ test('Video: upload is a clear external handoff without embedded trackers or loc
   });
   await page.goto('/videos.html');
   await expect(page.locator('iframe,video,form,input[type="file"]')).toHaveCount(0);
-  await expect(page.locator('.video-process')).toContainText('AI-assisted review, editing or automatic release happens only if you also give separate, dated permission for that exact recording');
+  await expect(page.locator('.video-process')).toContainText('If you consent to AI processing, Claude, OpenAI and VEED may help review and edit your recording');
   await expect(page.locator('#video-upload-link')).toHaveText(/^Share your parent testimonial/);
   await expect(page.locator('#upload-step-two')).toContainText('Permissions first, then private upload');
   await expect(page.locator('#resume-instructions')).toContainText('same email in both steps');
@@ -91,7 +91,8 @@ test('Video: withdrawal leads to private request and non-Google alternative stay
   await expect(page.locator('#video-privacy')).toBeInViewport();
   await expect(page.locator('section[aria-labelledby="video-privacy"]')).toContainText('2026-09-22-videos-v1');
   await expect(page.locator('section[aria-labelledby="video-privacy"]')).toContainText('2026-09-22-videos-dropbox-v1');
-  await expect(page.locator('section[aria-labelledby="video-privacy"]')).toContainText('The current form’s YouTube choice alone does not authorize AI content review or editing');
+  await expect(page.locator('section[aria-labelledby="video-privacy"]')).toContainText('Its separate processing and YouTube choices together allow AI-assisted review and editing');
+  await expect(page.locator('section[aria-labelledby="video-privacy"]')).toContainText('The form does not authorize a closure-focused video letter or website embedding');
   await expect(page.locator('section[aria-labelledby="video-privacy"]')).toContainText('Unlisted means anyone with the link or access to that page can watch and share it');
 });
 
@@ -151,7 +152,7 @@ test('Video: direct arrival explains testimonial purpose and retains upload help
   await page.goto('/videos.html#upload');
   const card = page.locator('#upload');
   await expect(card).toContainText('YouTube permission required');
-  await expect(card).toContainText('News-media and paid-ads permissions optional');
+  await expect(card).toContainText('News-media and paid-ads choices are optional');
   const councilNote = card.locator('.video-council-note');
   await expect(councilNote).toContainText('not an official council response');
   // Videos are for families choosing a school; views on the proposal are sent to the council instead.
@@ -200,7 +201,7 @@ test('Video: paid-ads permission is separate, versioned and never inferred from 
   await expect(page.locator('#legacy-google-upload-link')).toHaveAttribute('href', legacy);
   await page.goto('/privacy.html');
   const notice = page.locator('section[aria-labelledby="video-privacy"]');
-  for (const version of ['2026-09-26-videos-v3', '2026-09-26-videos-dropbox-v3', '2026-09-22-videos-v1', '2026-09-22-videos-v2', '2026-09-22-videos-dropbox-v1', '2026-09-22-videos-dropbox-v2']) await expect(notice).toContainText(version);
+  for (const version of ['2026-09-29-videos-v4', '2026-09-29-videos-dropbox-v4', '2026-09-26-videos-v3', '2026-09-26-videos-dropbox-v3', '2026-09-22-videos-v1', '2026-09-22-videos-v2', '2026-09-22-videos-dropbox-v1', '2026-09-22-videos-dropbox-v2']) await expect(notice).toContainText(version);
   await expect(notice).toContainText('an earlier record grants no paid-ads permission');
   await expect(notice).toContainText('The YouTube permission alone does not allow Yann to use the recording on other social platforms, in a council collection, in paid ads or in a mailing list.');
   await expect(notice).not.toContainText('in advertising or in a mailing list');
@@ -224,6 +225,7 @@ for (const [width, height] of [[320,568],[375,667],[390,844],[1440,1000]]) {
       const button = page.locator('#video-upload-link');
       await expect(button).toHaveText(/^Share your parent testimonial/);
       await expect(button).toBeInViewport({ ratio: 1 });
+      await expect(page.locator('#upload-requirements')).toContainText('form separately asks for AI processing');
       const position = await button.evaluate(element => ({top:element.getBoundingClientRect().top,bar:document.querySelector('.site-orientation').getBoundingClientRect().bottom}));
       expect(position.top).toBeGreaterThanOrEqual(position.bar);
       await expect(page.locator('.video-three > li')).toHaveCount(3);

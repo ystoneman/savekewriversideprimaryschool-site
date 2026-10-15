@@ -595,7 +595,7 @@ test('No JavaScript: the exact video QR upload address keeps a working permissio
 test('No JavaScript: video publication purpose and upload support survive direct arrival', async ({ page, baseURL }) => {
   await page.goto('/videos.html#upload');
   await expect(page.locator('#upload')).toContainText('YouTube permission required');
-  await expect(page.locator('#upload')).toContainText('News-media and paid-ads permissions optional');
+  await expect(page.locator('#upload')).toContainText('News-media and paid-ads choices are optional');
   await expect(page.locator('#resume-instructions')).toContainText('including any earlier private-only choice');
   await expect(page.locator('#private-video-alternative')).toHaveCount(0);
   await page.locator('#upload-help a[href="about.html#contact"]').last().tap();
