@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Parent Voices testimonial notice alignment — 15 October 2026
+
+Align the testimonial page and privacy notice with the planned v4 Google and Dropbox choices: separate affirmative AI processing, possible automatic YouTube release after checks, and a meaningful excerpt of a longer school-life testimonial. Keep this intake for school-life recordings; closure-focused video letters and website embedding still require a separate dated exact-recording agreement. Preserve all earlier v1–v3 permission scope and the independent media and paid-ads choices. Provider rollout and live verification remain separate steps.
+
 ### Parent Voices video privacy notice — 15 October 2026
 
 Explain the conditional AI-assisted review, VEED editing and YouTube release workflow, including separate dated permission for the exact recording and for website embedding or a public excerpt. Clarify that the current form alone does not grant these extra uses, earlier permissions retain their scope, Unlisted letters remain shareable, and withdrawal covers the website embed. Keep the parent-testimonial submission page focused on school discovery and retain its existing provider route. This is a notice/source change; it does not attest rollout readiness or process any submission.
