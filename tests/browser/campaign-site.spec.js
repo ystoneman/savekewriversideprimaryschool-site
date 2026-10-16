@@ -242,7 +242,12 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
     expect(dates[index] <= dates[index - 1], `${dates[index]} follows ${dates[index - 1]} (newest first)`).toBe(true);
   }
   const bbc = page.locator('#update-bbc');
-  await expect(entries.first()).toHaveAttribute('id', 'update-bbc');
+  await expect(entries.first()).toHaveAttribute('id', 'update-consultation-deadline');
+  await expect(page.locator('#update-consultation-deadline time')).toHaveAttribute('datetime', '2026-10-16');
+  await expect(page.locator('#update-recovery-plan time')).toHaveAttribute('datetime', '2026-10-16');
+  const article = page.locator('#update-bbc-article');
+  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-15');
+  await expect(article.getByRole('link', { name: /Read the BBC article/ })).toHaveAttribute('href', 'https://www.bbc.co.uk/news/articles/c6rmy3e179n8o');
   await expect(bbc.locator('time')).toHaveAttribute('datetime', '2026-10-13');
   await expect(bbc).toContainText('6:30pm');
   await expect(bbc.getByRole('link', { name: /full programme on iPlayer/ })).toHaveAttribute('href', 'https://www.bbc.co.uk/iplayer/episode/m0032vcr/bbc-london-evening-news-13102026');
@@ -262,6 +267,30 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
   await expect(photo).toHaveAttribute('alt',/Campaign members.*York House/);
   const box=await photo.boundingBox();expect(box.width/box.height).toBeCloseTo(4/3,2);
 });
+
+// A dated update remains a useful historical entry after the published deadline.
+for (const [date, stage] of [['2026-10-16T12:00:00Z', 'open'], ['2026-10-17T12:00:00Z', 'closed']]) {
+  test(`The deadline update reaches current official response details (${stage})`, async ({ page }) => {
+    await page.clock.setFixedTime(new Date(date));
+    await page.goto('/updates.html#update-consultation-deadline');
+    const entry = page.locator('#update-consultation-deadline');
+    await expect(entry).toBeInViewport();
+    await expect(entry).toContainText('16 October 2026');
+    await entry.getByRole('link', { name: 'Official response details' }).click();
+    await expect(page).toHaveURL(/get-involved\.html#respond$/);
+    const response = page.locator(`#respond [data-stage="${stage}"]`);
+    await expect(response).toBeVisible();
+    if (stage === 'open') {
+      await expect(response.locator(`a[href="${officialForm}"]`)).toBeVisible();
+    } else {
+      await expect(response).toContainText('16 October 2026');
+      await expect(page.locator('#respond [data-stage="open"]')).toBeHidden();
+    }
+    await page.goBack();
+    await expect(page).toHaveURL(/updates\.html#update-consultation-deadline$/);
+    await expect(page.locator('#update-consultation-deadline')).toBeInViewport();
+  });
+}
 
 test.describe('Archived pages', () => {
   for (const file of archivedPages) {
