@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Ram-narrated homepage campaign film — 16 October 2026
+
+- Add the owner-approved 85.5-second landscape petition film after the existing hero/photo, with a still, deliberate playback, native controls, captions, a transcript and the full Ram/personal-capacity credit. Preserve hero actions and recruitment separation.
+- Publish only the finished film and poster; allow same-origin media on the homepage and retain blocked frames/external media. Keep direct-file and failed-script recovery, date-aware petition/consultation wording and post-deadline retirement with current council links.
+- Independent planning/implementation reviews and actual local checks are recorded in TESTING.md. Hosted checks, deployment and live verification remain separate release gates.
+
+
 ### Parent Voices testimonial notice alignment — 15 October 2026
 
 Align the testimonial page and privacy notice with the planned v4 Google and Dropbox choices: separate affirmative AI processing, possible automatic YouTube release after checks, and a meaningful excerpt of a longer school-life testimonial. Keep this intake for school-life recordings; closure-focused video letters and website embedding still require a separate dated exact-recording agreement. Preserve all earlier v1–v3 permission scope and the independent media and paid-ads choices. Provider rollout and live verification remain separate steps.

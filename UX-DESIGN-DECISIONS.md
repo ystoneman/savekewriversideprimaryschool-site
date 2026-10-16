@@ -1,5 +1,15 @@
 # UX design decisions
 
+## Ram-narrated campaign film — 16 October 2026
+
+J1/J2/J3/J6: the owner approved a homepage embed of the 14 October petition film, mobile/desktop testing and deployment. Put one optional landscape player after the existing hero and ladybird photograph, before the footer, with a shareable `/#campaign-film` anchor. Preserve the existing action positions and compact navigation. The portrait cut remains a social-post asset.
+
+A static poster links directly to the MP4; enhancement replaces that link with a keyboard-operable Play button and attaches the media source only on request. Native controls provide pause, seeking and fullscreen. Keep burned-in captions without adding a duplicate default caption track, and retain a native transcript disclosure containing narration and essential on-screen context. A separate direct-file link survives playback failure and disabled/failed scripts. Only the homepage permits same-origin media; frames and external media remain blocked.
+
+Show the film date, full personal-capacity/Ram credit, eligibility/account information and current council-information route beside it. Keep the consultation distinction through 16 October using London dates. After 13 January 2027 the enhanced player/direct-file invitation is retired and the petition link becomes View; the dated transcript remains. At that point, update/remove the static fallback alongside the active embed. Recheck the fixed narration on any substantive council-stage change, particularly withdrawal, a decision or a statutory representation period; remove or clearly archive outdated film claims and revise the static/no-script copy too. Keep this closure-campaign film separate from recruitment/Parent Voices.
+
+Independent UX and campaign/evidence planning reviews informed the implementation; actual-diff/rendered reviews and completed verification are recorded in TESTING.md and the release pull request. No visitor-study result is claimed.
+
 ## Approved campaign photo record — 13 October 2026
 
 J6: production should match the approved Sites preview. Add the same 6 October York House rally entry and original 4:3 photograph to Campaign updates. The owner supplied the photo and confirmed the date, conversations and permission for its use during preview creation. This resolves the earlier decision below to omit the rally for lack of a public record; it is a campaign record, not an independently published account. The neutral body and caption imply no endorsement, turnout or outcome. The concise homepage and recruitment routes stay as reviewed. Independent evidence review confirms the exact approved text and photo; rendered and release checks are recorded in TESTING.md and PR #47.
