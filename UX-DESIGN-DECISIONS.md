@@ -1,5 +1,9 @@
 # UX design decisions
 
+## Optional video letters within Community letters — 16 October 2026
+
+Visitor need (J4, with J8/J9 boundaries): a consented closure-focused parent recording should be readable as a community contribution without turning it into recruitment material or implying it is an official council response. Use the existing newest-first Letters feed rather than a second route or a Discover the school promotion. Label a video item as an opinion with its actual review status and chosen generic credit, and describe it in a factual editorial sentence rather than a fabricated quotation. An Unlisted video is still shareable through the page or its link. The player is click-to-load to avoid contacting YouTube before the visitor chooses to watch; a visible YouTube link and generated no-JavaScript watch/removal fallback preserve access without scripts. The page-specific frame policy permits only youtube-nocookie. Focus returns to Load video when the player closes. This is a prepared implementation, with focused browser checks; no recording has yet been released or embedded, and real-phone and live-player verification remain separate gates.
+
 ## Approved campaign photo record — 13 October 2026
 
 J6: production should match the approved Sites preview. Add the same 6 October York House rally entry and original 4:3 photograph to Campaign updates. The owner supplied the photo and confirmed the date, conversations and permission for its use during preview creation. This resolves the earlier decision below to omit the rally for lack of a public record; it is a campaign record, not an independently published account. The neutral body and caption imply no endorsement, turnout or outcome. The concise homepage and recruitment routes stay as reviewed. Independent evidence review confirms the exact approved text and photo; rendered and release checks are recorded in TESTING.md and PR #47.
