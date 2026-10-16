@@ -30,7 +30,7 @@ def validate_board(board, kind):
     required |= {'displayName'} if kind == 'supporters' else {'body'}
     if kind == 'letters': required.add('displayName')
     if kind == 'suggestions': required.add('status')
-    allowed = required | {'displayName'}
+    allowed = required | {'displayName'} | ({'youtubeId'} if kind == 'letters' else set())
     seen = set()
     for row in board[kind]:
         if not isinstance(row, dict) or not required <= set(row) <= allowed or any(not isinstance(v, str) for v in row.values()):
@@ -43,6 +43,8 @@ def validate_board(board, kind):
         dt.date.fromisoformat(row['date'])
         if row['review'] not in allowed_reviews or (kind == 'suggestions' and row['status'] != 'Received'):
             raise ValueError('Invalid public review status.')
+        if 'youtubeId' in row and not re.fullmatch(r'[A-Za-z0-9_-]{11}', row['youtubeId']):
+            raise ValueError('Invalid YouTube video ID.')
         if 'body' in row:
             # Letters match the browser's native maxlength / JavaScript length.
             length = len(row['body'].encode('utf-16-le', errors='surrogatepass')) // 2 if kind == 'letters' else len(row['body'].strip())

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Video letters in the Community letters feed — 16 October 2026
+
+Prepare an optional, strict YouTube-ID video-letter card within the existing newest-first Letters feed. It uses a click-to-load privacy-enhanced player, a persistent YouTube link, a generated no-JavaScript watch/removal fallback and video-specific attribution. The ordinary written-letter route and its permissions remain unchanged. No recording or contributor details have been added to the public feed, and this source change is not a release.
+
 ### Parent Voices testimonial notice alignment — 15 October 2026
 
 Align the testimonial page and privacy notice with the planned v4 Google and Dropbox choices: separate affirmative AI processing, possible automatic YouTube release after checks, and a meaningful excerpt of a longer school-life testimonial. Keep this intake for school-life recordings; closure-focused video letters and website embedding still require a separate dated exact-recording agreement. Preserve all earlier v1–v3 permission scope and the independent media and paid-ads choices. Provider rollout and live verification remain separate steps.

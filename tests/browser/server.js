@@ -36,7 +36,11 @@ const server = http2.createSecureServer({ key: fs.readFileSync(key), cert: fs.re
     response.writeHead(404).end();
     return;
   }
-  response.writeHead(200, { 'Content-Type': types[extension], 'Cache-Control': 'no-store' });
+  const headers = { 'Content-Type': types[extension], 'Cache-Control': 'no-store' };
+  // Unrouted navigation tests cannot intercept a mistaken external player request.
+  // This additional policy keeps the real click-to-load CSP testable elsewhere.
+  if (request.headers['x-kew-no-external-frames'] === '1') headers['Content-Security-Policy'] = "frame-src 'none'";
+  response.writeHead(200, headers);
   if (request.method === 'HEAD') response.end();
   else fs.createReadStream(path.join(root, name)).pipe(response);
 });
