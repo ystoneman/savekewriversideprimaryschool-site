@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Campaign milestones — 16 October 2026
+
+Add three concise entries to Campaign updates: the 16 October consultation response deadline, submission of the parent volunteers’ costed recovery plan on 16 October, and the BBC News article published on 15 October. Keep the deadline wording tied to its exact date and link to the existing current-response details, so the entry remains useful as history after the deadline. Record submission as a proposal for consideration without claiming acceptance or publishing model figures. Retain the earlier BBC television entry and all existing update anchors. Independent campaign, evidence and UX planning reviews completed; the evidence finding was resolved by omitting an unconfirmed recipient. Independent campaign/evidence actual-diff and rendered UX reviews found no remaining actionable issue. Local checks pass: 151 Python tests, 41 Node tests, five generator freshness checks, 132-file public validation and 16 focused browser cases. Rendered WebKit checks cover 320px light, 390px dark, 1440px light and 320px without scripts. Hosted release checks and live publication remain to be verified separately.
+
 ### Parent Voices testimonial notice alignment — 15 October 2026
 
 Align the testimonial page and privacy notice with the planned v4 Google and Dropbox choices: separate affirmative AI processing, possible automatic YouTube release after checks, and a meaningful excerpt of a longer school-life testimonial. Keep this intake for school-life recordings; closure-focused video letters and website embedding still require a separate dated exact-recording agreement. Preserve all earlier v1–v3 permission scope and the independent media and paid-ads choices. Provider rollout and live verification remain separate steps.
