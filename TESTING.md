@@ -1,5 +1,13 @@
 # Testing the website
 
+## Campaign milestones — 16 October 2026
+
+Verified the new Campaign updates entries against the BBC article’s 15 October publication date, the campaign’s 16 October submission record and the council-linked form’s 16 October deadline. The recovery-plan entry reports submission for consideration without an acceptance claim or an inferred recipient. All existing update anchors remain.
+
+All 151 Python tests, 41 Node backend/deadline tests, five generator freshness checks, 132-file public validation and whitespace checks pass. The 16 focused browser cases pass across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit: newest-first exact dates, BBC article and retained bulletin links, official-response handoff both before and after the deadline, Back navigation and About’s update route.
+
+Independent campaign and evidence actual-diff reviews and UX rendered review found no remaining actionable issue. UX inspected WebKit at 320×568 light, 390×844 dark, 1440×1000 light and 320×568 without scripts: no horizontal overflow; new and retained BBC anchors in view; keyboard activation, current response stages and Back work. These are browser-emulation checks, not native or physical-phone tests. Existing CSS, scripts, navigation and homepage are unchanged. Hosted exact-revision checks and live publication remain to be verified separately.
+
 ## Parent Voices testimonial v4 notice candidate — 15 October 2026
 
 The site candidate aligns its school-life testimonial route with the planned v4 processing and YouTube choices, while retaining a separate exact-recording agreement for closure video letters or website embeds. Historical v1–v3 scope remains explicit. The current live provider forms are still v3 and Dropbox's request description is blank, so this candidate is not yet a live v4 notice or an intake-processing gate. The 104 affected video-journey cases pass across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit, including 320×568 first-screen action and deep links; 151 Python checks, `check_site.py` (132 public files) and `git diff --check` pass. Independent campaign actual-diff review found three wording mismatches (all controlled YouTube versions on withdrawal, the legacy form's processing choice, and audio/picture edits); these were corrected. Independent UX actual-diff review inspected 320×568/390×844/1440×1000 Chromium/WebKit and 320×568 no-script, finding the action visible without overflow and flagging provider v4 verification as a release prerequisite. Browser emulation is not a physical-phone test. Hosted current-revision checks, provider updates and live deployment remain to be verified separately.
