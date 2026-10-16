@@ -157,7 +157,7 @@ def render(data, case_data=None):
     header = header.replace('href="#top"','href="index.html"').replace('href="#records"','href="evidence.html#records"')
     header = header.replace('href="understand.html"','href="understand.html" aria-current="page"')
     footer = index[index.index('<footer>'):]
-    csp = re.search(r'<meta http-equiv="Content-Security-Policy"[^>]+>',index).group(0)
+    csp = re.search(r'<meta http-equiv="Content-Security-Policy"[^>]+>',index).group(0).replace(" media-src 'self';", '')
     head = f'''<!doctype html>
 <html lang="en-GB"><head><meta charset="utf-8">{csp}
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="theme-color" content="#143936">

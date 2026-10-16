@@ -200,3 +200,9 @@ The owner confirmed school permission to reuse photographs without children’s 
 - `images/school-project-{480,960}.jpg`: classroom solar-system model. Original: https://www.kewriverside.richmond.sch.uk/_site/data/files/images/slideshow/DDC26CF7327250E266276FB0704EE853.JPG
 
 The first image sits beside the desktop homepage introduction and is omitted at phone widths to protect the action and task routes. The second is in the existing school-visit section on all layouts. Alternative text and visible school-source credit accompany both. Local files remain safe when downloaded or viewed without CSS; faces are absent from the assets themselves.
+
+## Homepage campaign film maintenance
+
+The Ram-narrated film in `index.html#campaign-film` is dated 14 October 2026. `campaign-film.js` defers media loading until Play and retires the enhanced player after the published petition closing date, 13 January 2027 (Europe/London). Keep the dated transcript, full personal-capacity/Ram credit and current `dates.html` route alongside it. The static poster/direct-file fallback remains available when scripts fail or are disabled; update or remove that fallback alongside the active embed when archiving the film.
+
+Recheck the recorded proposal status and signing invitation whenever the council announces a substantive change, including a withdrawal, decision or statutory representation period. Remove the active film if the proposal is withdrawn; otherwise clearly archive or replace outdated narration and update both scripted and static/no-script descriptions. Petition closure and proposal decisions are separate triggers. Keep the campaign film separate from Parent Voices, video recruitment submissions and Open Day material. Only the finished MP4 and poster belong in the public artifact; raw voice recordings and production sources do not.
