@@ -1,5 +1,15 @@
 # UX design decisions
 
+## Simpler homepage petition and video — 17 October 2026
+
+J1/J2/J3/J6: the owner found the repeated petition invitation and surrounding video instructions excessive and preferred “campaign video” to “film”. Keep the hero's single petition action, countdown, exact closing date and eligibility/account note; remove the second video-area invitation. No protected destination or campaign priority changes.
+
+Use “Campaign video”, “Play video” and the closed “Transcript” summary. Keep duration and Ram above the player; put only personal ownership, the dated proposal context and current council-information link below it. Full personal-capacity/non-representative attribution moves into the transcript, alongside unchanged narration and on-screen context. Burned-in captions and the recording are unchanged. This replaces the longer visible attribution/detail treatment in the earlier film decision.
+
+The poster itself remains the native file link without working scripts. With enhancement, retain the existing portrait/landscape file anchors as media sources but expose them only after a playback error; hide recovery links on Retry. January retirement still hides both player and recovery. Keep the existing shared #campaign-film anchor and media paths for compatibility.
+
+Independent campaign/UX planning reviews supported the simplification; the source-dependency finding was resolved by retaining the recovery anchors and removing obsolete petition references. Actual-diff/rendered reviews and verification belong in TESTING.md and the release pull request.
+
 ## Portrait campaign film on phones — 17 October 2026
 
 J1/J2/J6: the owner requested the existing Ram-narrated 4:5 composition on mobile and removal of the expired response sentence from the homepage introduction. At widths up to 700px use the exact approved portrait MP4, its own still and a 4:5 player; wider layouts retain the 16:9 cut. This supersedes the earlier landscape-only homepage/social-only portrait choice. Select only one source on Play and pin its source/frame during rotation or resizing, preserving playback time. Retry can select the new viewport after resetting the failed source. Static/failed-script poster and direct-file links expose the matching cut through the same breakpoint.

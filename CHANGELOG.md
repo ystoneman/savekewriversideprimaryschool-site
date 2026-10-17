@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Homepage petition and video simplification — 17 October 2026
+
+- Keep one homepage petition button and one visible closing-date/eligibility/account note in the hero; remove the duplicate invitation below the video.
+- Use “Campaign video” and “Play video”. Keep the duration/Ram credit and a short dated personal credit; move full attribution into the closed “Transcript” disclosure. Preserve the recording and burned-in captions.
+- Show a direct video link only after playback fails, with Retry and the matching portrait/landscape file. Retain native poster fallbacks without working scripts and January expiry retirement.
+- Independent campaign and UX planning reviews informed the change; campaign actual-diff and rendered UX reviews found no remaining issue. Local checks and release status are recorded in TESTING.md and the pull request.
+
 ### Portrait homepage film and shorter introduction — 17 October 2026
 
 - Use Ram’s approved 4:5 film/poster on screens up to 700px, retaining the landscape cut above that width. Preserve deliberate loading, responsive static/download fallbacks, captions/transcript, native controls and expiry; rotation/resizing does not restart or change the playing source.

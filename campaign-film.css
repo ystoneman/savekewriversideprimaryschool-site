@@ -1,6 +1,6 @@
 .campaign-film{border-top:1px solid var(--line);padding-block:32px 42px;max-width:860px;scroll-margin-top:24px}
-.campaign-film h2{font:400 clamp(1.65rem,4vw,2.2rem)/1.15 Georgia,'Times New Roman',serif;letter-spacing:-.02em;margin:0 0 20px}
-.film-date{font-size:13px;color:var(--muted);margin:0 0 8px}
+.campaign-film h2{font:400 clamp(1.65rem,4vw,2.2rem)/1.15 Georgia,'Times New Roman',serif;letter-spacing:-.02em;margin:0 0 8px}
+.film-date{font-size:13px;color:var(--muted);margin:0 0 16px}
 .campaign-film figure{margin:0}
 .film-player{position:relative;aspect-ratio:16/9;background:#193e36;border-radius:8px;overflow:hidden}
 .film-player video{display:block;width:100%;height:100%;aspect-ratio:inherit;object-fit:contain}
@@ -12,9 +12,7 @@
 .film-poster:focus-visible{outline:4px solid var(--accent);outline-offset:-6px}
 .film-poster svg{width:20px;height:20px;fill:currentColor}
 .film-credit{font-size:13px;line-height:1.55;color:var(--muted);margin-top:12px;max-width:76ch}
-.film-context,.film-petition-note{font-size:14px;line-height:1.55;margin:14px 0}
 .film-actions{display:flex;align-items:center;flex-wrap:wrap;gap:4px 22px;margin-top:16px}
-.film-actions .action{min-height:48px;font-size:17px;padding:12px 20px}
 .film-download{display:inline-flex;align-items:center;min-height:44px;font-size:14px}
 .film-transcript{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
 .film-transcript>summary{cursor:pointer;min-height:44px;padding-block:10px;font-size:16px;font-weight:700}
