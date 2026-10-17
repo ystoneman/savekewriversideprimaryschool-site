@@ -1,6 +1,9 @@
 const fs = require('node:fs/promises');
 const { test, expect, expectDestination } = require('./fixtures');
 
+// These journeys exercise the open consultation; deadline cases override this date.
+test.use({ consultationDate: '2026-10-15T12:00:00Z' });
+
 const questions = {
   'school-places': ['choose-school', 'school-choice', 'apply-during-consultation'],
   learning: ['school-results', 'latest-inspection', 'mixed-age-learning', 'mixed-age-research'],
@@ -28,7 +31,7 @@ async function activate(locator, hasTouch) {
 
 // Get involved replaced the Help shortcut (13 October 2026 slim-site decision).
 test('Homepage: responsive copy keeps words separated on mobile and desktop', async ({ page }) => {
- for (const [at, copy] of [[consultationWeek, '1 September 2027; no decision yet. Supporters seek time to test costed recovery and sustainable alternatives.'], [afterDeadline, 'Richmond Council proposes closing the school from 1 September 2027. Responses closed on 16 October 2026. If it proceeds in November 2026, it plans a final decision in April 2027.']]) {
+ for (const [at, copy] of [[consultationWeek, '1 September 2027; no decision yet. Supporters seek time to test costed recovery and sustainable alternatives.'], [afterDeadline, 'Richmond Council proposes closing the school from 1 September 2027. If it proceeds in November 2026, it plans a final decision in April 2027.']]) {
   for (const width of [390,1440]) {
    await page.clock.setFixedTime(new Date(at));
    await page.setViewportSize({width,height:1000});await page.goto('/index.html');

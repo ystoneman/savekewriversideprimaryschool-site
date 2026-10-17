@@ -205,7 +205,7 @@ test.describe('Response deadline (London dates)', () => {
     await page.goto('/index.html');
     await expect(page.locator('#main-action')).toBeHidden();
     await expect(page.locator('#action-note')).toBeHidden();
-    await expect(page.locator('.hero .intro')).toHaveText('Richmond Council proposes closing the school from 1 September 2027. Responses closed on 16 October 2026. If it proceeds in November 2026, it plans a final decision in April 2027.');
+    await expect(page.locator('.hero .intro')).toHaveText('Richmond Council proposes closing the school from 1 September 2027. If it proceeds in November 2026, it plans a final decision in April 2027.');
     const firstAction = await page.locator('.actions .action').evaluateAll(actions => actions.find(action => action.getClientRects().length && getComputedStyle(action).visibility !== 'hidden')?.id);
     expect(firstAction, 'The petition is the first visible homepage action').toBe('petition-action');
     await expect(page.locator('#petition-action')).toHaveAttribute('href', petition);

@@ -1,5 +1,11 @@
 # UX design decisions
 
+## Portrait campaign film on phones — 17 October 2026
+
+J1/J2/J6: the owner requested the existing Ram-narrated 4:5 composition on mobile and removal of the expired response sentence from the homepage introduction. At widths up to 700px use the exact approved portrait MP4, its own still and a 4:5 player; wider layouts retain the 16:9 cut. This supersedes the earlier landscape-only homepage/social-only portrait choice. Select only one source on Play and pin its source/frame during rotation or resizing, preserving playback time. Retry can select the new viewport after resetting the failed source. Static/failed-script poster and direct-file links expose the matching cut through the same breakpoint.
+
+Remove only “Responses closed on 16 October 2026.” from the expired hero introduction; retain proposed closure and the conditional decision timetable. The closed-response guards, Dates and Campaign updates retain their existing information. No navigation or recruitment change is added. Independent UX and campaign/evidence planning and actual-diff reviews completed; a responsive download-link specificity finding was fixed and independently rechecked at five widths with scripts enabled/disabled/failed. Verification is recorded in TESTING.md and the release pull request.
+
 ## Ram-narrated campaign film — 16 October 2026
 
 J1/J2/J3/J6: the owner approved a homepage embed of the 14 October petition film, mobile/desktop testing and deployment. Put one optional landscape player after the existing hero and ladybird photograph, before the footer, with a shareable `/#campaign-film` anchor. Preserve the existing action positions and compact navigation. The portrait cut remains a social-post asset.

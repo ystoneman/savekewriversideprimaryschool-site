@@ -1,4 +1,7 @@
 const { test, expect, expectDestination, expectScrollSettled } = require('./fixtures');
+
+// These journeys exercise the open consultation; deadline cases override this date.
+test.use({ consultationDate: '2026-10-15T12:00:00Z' });
 const upload = 'https://docs.google.com/forms/d/e/1FAIpQLScJZ8ZnZWTaPUIoM9l2Vjir7TgNNTHuUyDEF5uLRJolm8iccg/viewform';
 const dropbox = 'https://www.dropbox.com/request/9uaa0fawrtdz6pv8b6hn';
 const legacy = 'https://docs.google.com/forms/d/e/1FAIpQLSfK3b8XtDJ5_mhKWTqxfZpZwPOJLGXjN1QIQYTKYlJ0dRAHHQ/viewform';

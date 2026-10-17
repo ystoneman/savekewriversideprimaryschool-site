@@ -1,4 +1,7 @@
 const { test, expect, captureSubmissions, revealLetterChoices } = require('./fixtures');
+
+// These journeys exercise the open consultation; deadline cases override this date.
+test.use({ consultationDate: '2026-10-15T12:00:00Z' });
 const { readFileSync, readdirSync } = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
@@ -22,7 +25,7 @@ const types = {
   '.ico': 'image/x-icon',
 };
 const localAssets = new Set(readdirSync(root).filter(name => types[path.extname(name)]));
-for (const name of ['school-discovery-480.jpg', 'school-discovery-960.jpg', 'school-project-480.jpg', 'school-project-960.jpg', 'york-house-rally.jpg', 'campaign-film-20261014.jpg']) {
+for (const name of ['school-discovery-480.jpg', 'school-discovery-960.jpg', 'school-project-480.jpg', 'school-project-960.jpg', 'york-house-rally.jpg', 'campaign-film-20261014.jpg', 'campaign-film-4x5-20261014.jpg']) {
   localAssets.add('images/' + name);
 }
 const emptyBoards = {
