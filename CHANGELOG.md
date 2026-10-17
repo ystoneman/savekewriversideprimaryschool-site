@@ -7,6 +7,7 @@
 - Use Ram’s approved 4:5 film/poster on screens up to 700px, retaining the landscape cut above that width. Preserve deliberate loading, responsive static/download fallbacks, captions/transcript, native controls and expiry; rotation/resizing does not restart or change the playing source.
 - Remove the closed-response sentence from the homepage introduction while retaining proposal/conditional decision wording, existing response guards and dated information elsewhere.
 - Independent planning/implementation reviews completed. Actual local checks are recorded in TESTING.md; hosted gates and live deployment remain separate release checks.
+- Make historical response-journey tests use explicit dates while preserving closed-stage overrides, extra-tab coverage and timer checks. Keep continuous rotation playback and separate pause/seek regressions.
 
 ### Ram-narrated homepage campaign film — 16 October 2026
 

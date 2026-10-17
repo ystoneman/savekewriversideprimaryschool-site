@@ -119,12 +119,13 @@ for(const width of [320,390,700,701,1440])test(`Campaign film: ${width}px choose
 for(const [start,end]of[[390,844],[1440,390]])test(`Campaign film: resizing ${start} to ${end}px preserves the selected cut and playback time`,async({page})=>{
  const requested=[];page.on('request',r=>{if(r.url().endsWith('.mp4'))requested.push(new URL(r.url()).pathname);});
  await page.setViewportSize({width:start,height:844});await page.goto('/index.html#campaign-film');const expected=selectedMedia(page);
- await page.locator('#film-play').click();const video=page.locator('#campaign-film-video');await expect.poll(()=>video.evaluate(v=>v.currentTime),{timeout:15000}).toBeGreaterThan(.1);
- await video.evaluate(v=>{v.pause();v.currentTime=30;});await expect.poll(()=>video.evaluate(v=>!v.seeking)).toBe(true);
+ await page.locator('#film-play').click();const video=page.locator('#campaign-film-video');await expect.poll(()=>video.evaluate(v=>v.currentTime),{timeout:15000}).toBeGreaterThan(2);
+ const before=await video.evaluate(v=>{window.rotationVideo=v;return v.currentTime;});
  await page.setViewportSize({width:end,height:390});
- expect(await video.evaluate(v=>v.currentTime)).toBeCloseTo(30,0);await expect(video).toHaveAttribute('src',expected.slice(1));
+ expect(await video.evaluate(v=>v.currentTime)).toBeGreaterThanOrEqual(before);await expect(video).toHaveAttribute('src',expected.slice(1));
+ expect(await video.evaluate(v=>v===window.rotationVideo)).toBe(true);
  const bounds=await page.locator('.film-player').boundingBox();expect(bounds.width/bounds.height).toBeCloseTo(start<=700?4/5:16/9,2);
- await video.evaluate(v=>v.play());await expect.poll(()=>video.evaluate(v=>v.currentTime)).toBeGreaterThan(30.1);
+ await expect.poll(()=>video.evaluate(v=>v.currentTime),{timeout:10000}).toBeGreaterThan(before+.2);
  expect([...new Set(requested)]).toEqual([expected]);
 });
 

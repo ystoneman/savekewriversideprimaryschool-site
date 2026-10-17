@@ -1,4 +1,7 @@
 const { test, expect, pages, captureSubmissions, chooseKind, revealLetterChoices } = require('./fixtures');
+
+// These journeys exercise the open consultation; deadline cases override this date.
+test.use({ consultationDate: '2026-10-15T12:00:00Z' });
 const { readFileSync } = require('node:fs');
 const path = require('node:path');
 
