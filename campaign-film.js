@@ -8,8 +8,7 @@
   const portraitFallback = document.getElementById('film-portrait-link');
   const player = section.querySelector('.film-player');
   const status = document.getElementById('film-status');
-  const petition = document.getElementById('film-petition');
-  const note = document.getElementById('film-petition-note');
+  const recovery = document.getElementById('film-recovery');
   const download = document.getElementById('film-download');
   const portraitDownload = document.getElementById('film-portrait-download');
   const narrow = window.matchMedia('(max-width:700px)');
@@ -22,7 +21,7 @@
   play.type = 'button';
   play.className = 'film-poster';
   play.id = 'film-play';
-  play.setAttribute('aria-label', 'Play the campaign film, narrated by Ram, 1 minute 26 seconds');
+  play.setAttribute('aria-label', 'Play the campaign video, narrated by Ram, 1 minute 26 seconds');
   play.append(...fallback.cloneNode(true).childNodes);
   const picture = document.createElement('picture');
   const source = document.createElement('source');
@@ -37,7 +36,6 @@
     const part = type => parts.find(item => item.type === type).value;
     const today = `${part('year')}-${part('month')}-${part('day')}`;
     retired = today > '2027-01-13';
-    petition.textContent = retired ? 'View the petition' : 'Sign the petition';
     if (retired) {
       if (video) {
         video.pause();
@@ -45,13 +43,9 @@
         video.load();
       }
       player.hidden = true;
-      download.hidden = true;
-      portraitDownload.hidden = true;
-      status.textContent = 'This film’s published petition deadline, 13 January 2027, has passed. Read the current council information before acting.';
+      recovery.hidden = true;
+      status.textContent = 'This video’s published petition deadline, 13 January 2027, has passed. Read the current council information before acting.';
       status.hidden = false;
-      note.textContent = 'The transcript records the film as made on 14 October 2026.';
-    } else {
-      note.textContent = 'Petition closes 13 January 2027. For people who live, work or study in Richmond borough; a Richmond Account is required.' + (today <= '2026-10-16' ? ' Signing does not replace your consultation response.' : '');
     }
   }
   function failed() {
@@ -63,7 +57,8 @@
     video.removeAttribute('src');
     video.load();
     delete player.dataset.format;
-    status.textContent = 'Playback could not start. Try Play again, or open the MP4 below.';
+    recovery.hidden = false;
+    status.textContent = 'Playback could not start. Try Play again, or open the video below.';
     status.hidden = false;
     play.focus();
   }
@@ -76,6 +71,7 @@
       video.addEventListener('error', failed);
     }
     status.hidden = true;
+    recovery.hidden = true;
     play.hidden = true;
     video.hidden = false;
     if (!video.hasAttribute('src')) {
@@ -95,9 +91,9 @@
   window.addEventListener('pageshow', refresh);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
   setInterval(() => { if (!document.hidden) refresh(); }, 60000);
-  // Check expiry before following a petition or direct-file link on a long-open page.
-  for (const link of [petition, download, portraitDownload]) link.addEventListener('click', event => {
+  // Check expiry before following a recovery link on a long-open page.
+  for (const link of [download, portraitDownload]) link.addEventListener('click', event => {
     refresh();
-    if (link !== petition && retired) event.preventDefault();
+    if (retired) event.preventDefault();
   });
 })();
