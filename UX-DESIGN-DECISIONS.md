@@ -1,5 +1,9 @@
 # UX design decisions
 
+## Music retained with local effect reductions — 18 October 2026
+
+J2/J6: retain the original campaign video's music and effects while lowering distracting bursts at selected moments. Preserve the original voice/music relationship before mastering, narration timing, encoded picture, captions and existing controls. Use smooth local gain changes on the effect component rather than another voice-only soundtrack. All media entry points request the revised bytes; the existing unlisted YouTube upload is explicitly labelled voice-only. Independent campaign and UX planning review required accurate version labels and distinguished signal/transcription checks from subjective listening. Actual implementation checks and release status are recorded separately.
+
 ## Press interviews within Campaign updates — 18 October 2026
 
 J1/J6: readers following recent campaign activity need the two press-interview reports as well as the published BBC and earlier syndicated articles. Add them to the existing newest-first list, preserving every existing anchor and article link. Media updates leads to the newest interview entry so the shortcut does not skip the new information. Interview wording attributes the campaign account without implying separate visits by other publishers or newly published reporting.

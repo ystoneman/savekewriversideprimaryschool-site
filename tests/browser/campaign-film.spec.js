@@ -1,9 +1,22 @@
 const {test,expect}=require('./fixtures');
-const media='/media/kew-petition-film-ram-20261014.mp4?v=2026101803';
-const portrait='/media/kew-petition-film-ram-4x5-20261014.mp4?v=2026101803';
+const media='/media/kew-petition-film-ram-20261014.mp4?v=2026101805';
+const portrait='/media/kew-petition-film-ram-4x5-20261014.mp4?v=2026101805';
 const mediaRoute='**/media/kew-petition-film-ram-*.mp4*';
 const selectedMedia=page=>page.viewportSize().width<=700?portrait:media;
 const petition='https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249';
+
+test('Campaign video: the opening retains its background soundtrack before narration',async({page})=>{
+ await page.goto('/index.html#campaign-film');
+ const rms=await page.evaluate(async url=>{
+  const context=new OfflineAudioContext(2,1,48000);
+  const buffer=await context.decodeAudioData(await (await fetch(url)).arrayBuffer());
+  const channel=buffer.getChannelData(0);
+  const start=Math.round(.30*buffer.sampleRate),end=Math.round(1.25*buffer.sampleRate);
+  let energy=0;for(let i=start;i<end;i++)energy+=channel[i]*channel[i];
+  return Math.sqrt(energy/(end-start));
+ },selectedMedia(page));
+ expect(rms,'The music/effects opening must not become silent in a narration-only remux').toBeGreaterThan(.002);
+});
 
 test('Campaign video: petition below the player and optional transcript preserve homepage actions',{tag:'@home-smoke'},async({page})=>{
  const requests=[];page.on('request',r=>{if(new URL(r.url()).pathname.endsWith('.mp4'))requests.push(r.url());});
