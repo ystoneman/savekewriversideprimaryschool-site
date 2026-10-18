@@ -268,6 +268,27 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
   const box=await photo.boundingBox();expect(box.width/box.height).toBeCloseTo(4/3,2);
 });
 
+for (const scripts of [true,false]) test.describe(`Updates discovery with scripts ${scripts}`,()=>{
+ test.use({javaScriptEnabled:scripts});
+ test('Shortcuts reach the proposal, media, rally photo and planned next-event details',async({page})=>{
+  await page.goto('/updates.html');
+  const nav=page.getByRole('navigation',{name:'Find campaign updates'});
+  for(const [label,id]of[['Recovery proposal','update-recovery-plan'],['Media coverage','update-bbc-article'],['Rally photo','update-york-house-rally'],['12 November rally','next-rally']]){
+   await nav.getByRole('link',{name:label,exact:true}).click();
+   await expect(page).toHaveURL(new RegExp('#'+id+'$'));
+   await expect(page.locator('#'+id+' h2')).toBeInViewport();
+   if(scripts)await expectScrollSettled(page,'Update '+label);
+   await page.goBack();await expect(page).toHaveURL(/updates\.html$/);
+  }
+  await expect(page.locator('#update-recovery-plan')).toContainText('Achieving for Children');
+  await expect(page.locator('#update-recovery-plan')).toContainText('The campaign believes');
+  await expect(page.locator('#next-rally')).toContainText('Thursday 12 November 2026, 6pm');
+  await expect(page.locator('#next-rally')).toContainText('access details are not included');
+  await expect(page.locator('#next-rally time')).toHaveAttribute('datetime','2026-11-12T18:00:00+00:00');
+  await expect(page.locator('#update-news a')).toHaveCount(4);
+ });
+});
+
 // A dated update remains a useful historical entry after the published deadline.
 for (const [date, stage] of [['2026-10-16T12:00:00Z', 'open'], ['2026-10-17T12:00:00Z', 'closed']]) {
   test(`The deadline update reaches current official response details (${stage})`, async ({ page }) => {

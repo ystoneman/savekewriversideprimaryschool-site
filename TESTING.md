@@ -1,5 +1,13 @@
 # Testing the website
 
+## Campaign updates and clean film — 18 October 2026
+
+- Before implementation, all ten homepage smoke cases passed. The first affected-journey run passed 182 checks. After the share-expiry fix, all 480 campaign-film/campaign-site/home-landing checks passed across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit; no-script fallback cases are included within those specs. After adding sourced rally particulars, all eight scripted/no-script Updates shortcut/Back cases passed across the four engines. All 16 final no-script/link-expiry cases also passed after adding the unlisted route. Complete hosted coverage remains the release gate.
+- All 152 Python privacy/security/data checks, eight backend tests and 33 date unit tests passed; 138 public assets validate. Both remuxed MP4s are 85.5 seconds; their encoded picture streams have exactly the original SHA-256 hashes. The only audio input was the existing clean Ram narration stem; final AAC measures −16.02 LUFS and −1.50 dBTP in both formats. No animation or burned-in caption was re-encoded.
+- Independent campaign/evidence planning and actual-diff reviews resolved the new sharing-expiry bypass. Independent rendered WebKit review inspected 320×568, 390×844 and 1440×1000 light/dark with fresh analytics notice: hero action rectangles match HEAD, petition follows the player, no horizontal overflow. Keyboard petition handoff/Back, selected read-only manual-copy URL, no-script links/downloads, Updates anchors/Back, doubled-text reflow, actual media play/pause and January retirement passed. Screenshots remain outside the public artifact.
+- Native iPhone 17 / iOS 26.5 Safari opened the styled local HTTP preview, played the clean portrait film with visible native controls, followed the below-video button to the official Richmond petition and returned with Back. No signature or form was submitted. The local preview response alone omitted TLS-upgrading; published CSP is unchanged. Native explicit pause was not established separately; browser WebKit pause/seek checks passed.
+- Exact-revision hosted checks, canonical deployment and live asset verification remain separate release gates recorded in the pull request.
+
 ## Homepage petition and video simplification — 17 October 2026
 
 - Early homepage smoke: all 10 cases passed. Updated focused campaign-video/home-landing run: all 94 cases passed across iPhone WebKit and desktop Chromium. Coverage pins one homepage petition destination, default-hidden recovery links, a closed accessible transcript, deferred loading, portrait/landscape playback, pause/seek, retry, resize, failed/disabled scripts, October/January transitions, handoff and Back. Existing all-page suites remain enabled.

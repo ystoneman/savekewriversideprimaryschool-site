@@ -24,3 +24,5 @@ html:has(.campaign-page){scroll-behavior:auto}
 .update-photo{margin:16px 0 14px}
 .update-photo img{display:block;width:100%;max-width:100%;height:auto;border-radius:8px}
 .update-photo figcaption{font-size:14px;line-height:1.5;color:var(--theme-readable,var(--muted));margin-top:8px}
+.updates-shortcuts{display:flex;flex-wrap:wrap;gap:0 22px;margin:4px 0 16px}
+.updates-shortcuts a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
