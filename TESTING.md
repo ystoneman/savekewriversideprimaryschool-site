@@ -1,5 +1,17 @@
 # Testing the website
 
+
+## Petition tracker follow-through — 18 October 2026
+
+The same campaign/video candidate includes the requested online petition tracker. The exact council petition returned 193 at 15:48 BST on 18 October; the strict Worker parser was checked against a fresh council response without saving/outputting signer details. The fallback is dated; campaign goal 1,000 and first milestone 500 separate paper signatures and imply no decision threshold.
+
+All 152 Python checks, 44 backend/deadline unit checks, 140-file public validation, JavaScript syntax and whitespace checks pass. The 72 tracker cases pass across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit: 0/193/500/1,000/1,200 totals and percentages, capped native bar, nonnegative remainder, check time, no cookies/referrer, invalid/stale/future/extra-field payloads, outage, true no-JavaScript, London expiry, delayed-response interaction guards and narrow layouts. Homepage smoke passes 10/10; 194 iPhone WebKit/desktop Chromium analytics cases pass with functional responses intercepted. Two Safari dark-theme homepage regressions pass after explicitly styling the copy-video button; the hosted contrast failure was fixed without weakening its assertion. The intentional tracker source link updates the exact homepage link count while retaining both petition action IDs.
+
+Independent campaign/evidence actual-diff rechecks cleared the corrected percentage. Rendered UX review checked 320×568, 390×844 and 1440×1000 in both appearances, true no-script and doubled text. Small-phone hero action rectangles match the pre-tracker candidate exactly; desktop actions move upward with grid centring while keeping their size and priority. Stable wording/date formatting and an initial-read interaction guard resolve late-response Share displacement. Native iPhone 17 / iOS 26.5 Safari showed the dated tracker without overflow; its source opened the correct official petition, optional council cookies were rejected, and Back returned to the tracker. These are simulator and browser-emulation checks, not physical-device tests. Production refresh is tested with fictional intercepted payloads; local previews deliberately keep the snapshot.
+
+Worker deployment, hosted final-revision checks, Pages deployment and live verification remain separate release gates; this entry does not establish publication.
+
+
 ## Campaign updates and clean film — 18 October 2026
 
 - Before implementation, all ten homepage smoke cases passed. The first affected-journey run passed 182 checks. After the share-expiry fix, all 480 campaign-film/campaign-site/home-landing checks passed across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit; no-script fallback cases are included within those specs. After adding sourced rally particulars, all eight scripted/no-script Updates shortcut/Back cases passed across the four engines. All 16 final no-script/link-expiry cases also passed after adding the unlisted route. Complete hosted coverage remains the release gate.

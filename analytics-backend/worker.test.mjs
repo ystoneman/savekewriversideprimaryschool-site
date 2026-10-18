@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
-import worker from './worker.mjs';
+import worker, { parsePetition, petitionResponse, PETITION_SOURCE } from './worker.mjs';
 
 function environment() {
   const sql = new DatabaseSync(':memory:');
@@ -25,6 +25,43 @@ function request(body, extra = {}) {
     body: typeof body === 'string' ? body : JSON.stringify(body) });
 }
 const valid = { counters: [{ metric: 'page', label: 'faq.html' }, { metric: 'source', label: 'external' }] };
+const petitionHTML = count => `<h1>Keep Kew Riverside Primary School open.</h1><p>This petition runs from 13/10/2026 to 13/01/2027.</p><p>${count} people have signed this petition.</p><p>Fictional signer data must not survive.</p>`;
+
+test('Petition parser requires exact identity, run dates and one valid standalone aggregate', () => {
+  for (const count of [0,193,500,1000,1200,1000000]) assert.equal(parsePetition(petitionHTML(count.toLocaleString('en-GB'))), count);
+  for (const html of [petitionHTML('-1'), petitionHTML('1,00'), petitionHTML('1.5'), petitionHTML('1000001'),
+    petitionHTML('193').replace('Kew Riverside','Another School'), petitionHTML('193').replace('13/01/2027','14/01/2027'),
+    petitionHTML('193') + '<p>500 people have signed this petition.</p>']) assert.equal(parsePetition(html),null);
+});
+test('Petition GET fetches one fixed source, caching only its sanitized count and original check time', async () => {
+  const stored = new Map(); let reads=0;
+  const cache = { match: async key => stored.get(key.url)?.clone(), put: async (key,value) => stored.set(key.url,value) };
+  const dependencies = { cache, now:()=>new Date('2026-10-18T14:48:17Z'), fetchPage:async (url,options) => {
+    reads++; assert.equal(url,PETITION_SOURCE); assert.deepEqual(options.headers,{Accept:'text/html'});
+    assert.equal(options.redirect,'error'); assert.equal(options.cf.cacheTtl,0);
+    return new Response(petitionHTML('193'),{headers:{'Content-Type':'text/html; charset=utf-8'}});
+  }};
+  const req = new Request('https://counter.example/petition',{headers:{Origin:'https://savekewriversideprimaryschool.org',Cookie:'fictional-private',Referer:'https://private.invalid/'}});
+  for (let n=0;n<2;n++) {
+    const response=await petitionResponse(req,dependencies); assert.equal(response.status,200);
+    assert.equal(response.headers.get('Cache-Control'),'public, max-age=900');
+    assert.deepEqual(await response.json(),{onlineSignatures:193,checkedAt:'2026-10-18T14:48:17.000Z',source:PETITION_SOURCE});
+  }
+  assert.equal(reads,1); assert.equal(stored.size,1);
+  assert.doesNotMatch(await [...stored.values()][0].text(),/Fictional|private|Cookie|signer/);
+});
+test('Petition failures never fabricate zero, store upstream HTML, redirect or write to D1', async () => {
+  for (const result of [()=>{throw new Error('Outage')},()=>new Response('wrong'),()=>new Response(petitionHTML('193'),{status:503}),
+    ()=>new Response(petitionHTML('193')+'x'.repeat(65536),{headers:{'Content-Type':'text/html'}})]) {
+    let cached=false; const response=await petitionResponse(new Request('https://counter.example/petition'),{
+      fetchPage:async()=>result(),cache:{match:async()=>undefined,put:async()=>{cached=true}}});
+    assert.equal(response.status,503); assert.deepEqual(await response.json(),{unavailable:true}); assert.equal(cached,false);
+  }
+  assert.equal((await petitionResponse(new Request('https://counter.example/petition',{method:'POST'}))).status,405);
+  assert.equal((await petitionResponse(new Request('https://counter.example/petition',{headers:{Origin:'https://other.invalid'}}))).status,403);
+  const env=environment(); assert.equal((await worker.fetch(new Request('https://counter.example/petition?source=private'),env)).status,404);
+  assert.equal(env.sql.prepare('SELECT count(*) AS n FROM counts').get().n,0);
+});
 
 test('Requests increment daily totals directly, retaining only counter columns', async () => {
   const env = environment();

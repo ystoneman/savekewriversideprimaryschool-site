@@ -29,6 +29,7 @@
 .film-sharing label{display:block;margin-bottom:6px}
 .film-sharing input{display:block;width:100%;max-width:600px;min-height:44px;padding:8px;font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--muted);border-radius:4px}
 .film-sharing a{display:inline-flex;align-items:center;overflow-wrap:anywhere}
+.film-sharing button{color:var(--ink);background:var(--paper);border:1px solid var(--muted);border-radius:6px;padding:8px 16px;font:700 15px/1.4 Arial,sans-serif}
 .film-sharing [role="status"]:empty{display:none}
 @media(max-width:700px){.campaign-film{padding-block:26px 30px}.film-player{aspect-ratio:4/5}.film-player .film-wide,.film-actions .film-wide{display:none}.film-player .film-tall{display:block}.film-actions .film-tall{display:inline-flex}.film-poster{font-size:16px}.film-poster span{padding:12px 18px;min-height:50px}.film-credit{font-size:12px}}
 /* Keep the chosen cut and frame together through rotation or window resizing. */

@@ -11,6 +11,7 @@ from public_data import validate_board
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_FILES = frozenset('''
+petition-progress.js petition-progress.css
 sitemap.xml robots.txt home-stage.js home-actions.js home-landing.css footer-links.css
 campaign-film.js campaign-film.css media/kew-petition-film-ram-20261014.mp4 images/campaign-film-20261014.jpg
 media/kew-petition-film-ram-4x5-20261014.mp4 images/campaign-film-4x5-20261014.jpg
@@ -40,7 +41,7 @@ tests/browser/mobile-header.spec.js tests/browser/mobile-feedback.spec.js tests/
 .github/scripts/pr_browser_reuse.py .github/scripts/test_pr_browser_reuse.py
 .github/scripts/test_browser_workflow.py
 tests/browser/home-landing.spec.js tests/unit/home-landing.test.cjs
-tests/browser/campaign-film.spec.js
+tests/browser/campaign-film.spec.js tests/browser/petition-progress.spec.js
 tests/review-evidence/campaign-film-320.png tests/review-evidence/campaign-film-390.png tests/review-evidence/campaign-film-1440.png
 tests/browser/simple-guides.spec.js tests/browser/simple-research.spec.js tests/browser/simple-participation.spec.js tests/browser/simplification.spec.js
 SEO-OPERATIONS.md .github/scripts/build_seo.py .github/scripts/test_seo.py tests/browser/seo.spec.js
@@ -74,7 +75,7 @@ tests/browser/contributions.spec.js tests/browser/evidence.spec.js tests/browser
 tests/browser/visitor-journeys.spec.js tests/browser/understand.spec.js tests/browser/participation.spec.js .github/scripts/build_understand.py .github/scripts/test_understand.py
 '''.split())
 CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://gateway.umami.is/api/send https://kew-riverside-statistics.analytics-backend.workers.dev/count; base-uri 'none'; object-src 'none'; frame-src 'none'; form-action 'self' https://formspree.io; upgrade-insecure-requests"
-HOME_CSP = CSP.replace("img-src 'self';", "img-src 'self'; media-src 'self';")
+HOME_CSP = CSP.replace("img-src 'self';", "img-src 'self'; media-src 'self';").replace("workers.dev/count;", "workers.dev/count https://kew-riverside-statistics.analytics-backend.workers.dev/petition;")
 SECRET_PATTERNS = [
     r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',
     r'\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{50,})\b',

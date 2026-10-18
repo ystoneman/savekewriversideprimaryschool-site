@@ -10,7 +10,9 @@ test('Campaign video: petition below the player and optional transcript preserve
  await page.goto('/index.html');
  const before=await page.locator('.home-plan').boundingBox();
  expect(await page.locator('#campaign-film').evaluate(el=>el.previousElementSibling.classList.contains('hero-grid'))).toBe(true);
- await expect(page.locator('main a[href="'+petition+'"]')).toHaveCount(2);
+ await expect(page.locator('main a[href="'+petition+'"]')).toHaveCount(3);
+ await expect(page.locator('#petition-action, #film-petition-action')).toHaveCount(2);
+ await expect(page.locator('#petition-progress a')).toHaveAttribute('href',petition);
  await expect(page.locator('#petition-note')).toContainText('13 January 2027');
  await expect(page.locator('#petition-note')).toContainText('live, work or study');
  await expect(page.locator('#petition-note')).toContainText('Richmond Account');
@@ -84,7 +86,9 @@ test.describe('Campaign film without JavaScript',()=>{
   await page.goto('/index.html#campaign-film');await expect(page.locator('.film-player .film-poster:visible')).toHaveAttribute('href',selectedMedia(page).slice(1));
   await expect(page.locator('#film-context')).toContainText('14 October 2026');
   await expect(page.locator('#petition-note')).toContainText('13 January 2027');
-  await expect(page.locator('main a[href="'+petition+'"]')).toHaveCount(2);
+  await expect(page.locator('main a[href="'+petition+'"]')).toHaveCount(3);
+ await expect(page.locator('#petition-action, #film-petition-action')).toHaveCount(2);
+ await expect(page.locator('#petition-progress a')).toHaveAttribute('href',petition);
   await expect(page.locator('#film-petition-action')).toHaveText('View or sign the petition');
   await page.locator('#film-share-fallback > summary').click();
   await expect(page.locator('#film-share-url')).toHaveValue('https://savekewriversideprimaryschool.org/#campaign-film');
