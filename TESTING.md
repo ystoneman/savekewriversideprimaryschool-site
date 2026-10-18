@@ -1,5 +1,9 @@
 # Testing the website
 
+## Revised unlisted YouTube route — 18 October 2026
+
+The replacement upload uses the exact previously verified landscape export with restored music and locally quieter effects; website MP4 bytes are unchanged. Baseline homepage smoke passed ten checks. The no-script test now requires the replacement URL, while existing sharing, download, expiry and player coverage remains intact. Independent bounded UX source review checked the link/label parity and found no remaining issue. Final focused video checks pass 116/116 across iPhone/desktop WebKit and Android/desktop Chromium, with 152 Python checks, 44 backend/deadline unit checks and 140-file public validation passing. YouTube reported both copyright and Community Guidelines checks complete with no issues, then confirmed publication as Unlisted. Signed-out playback advanced past 20 seconds with audio enabled; the 85.521-second processed player and revised description were verified. The old upload remains unlisted with its saved title/description identifying the earlier version and linking to the replacement. Exact-revision hosted checks and website deployment remain separate release gates.
+
 ## Restored music and locally quieter effects — 18 October 2026
 
 - Baseline homepage smoke passed all ten checks. The new decoded-audio regression fails against the prior voice-only video because the opening before narration is silent; it checks the restored background audio rather than mere presence of an AAC track.

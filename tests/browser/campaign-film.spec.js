@@ -106,7 +106,7 @@ test.describe('Campaign film without JavaScript',()=>{
   await page.locator('#film-share-fallback > summary').click();
   await expect(page.locator('#film-share-url')).toHaveValue('https://savekewriversideprimaryschool.org/#campaign-film');
   await expect(page.locator('#film-share-fallback a[download]')).toHaveCount(2);
-  await expect(page.locator('#film-youtube')).toHaveAttribute('href','https://youtu.be/VvHGIg5Fcvk');
+  await expect(page.locator('#film-youtube')).toHaveAttribute('href','https://youtu.be/1JIaigtPth0');
   await expect(page.locator('.film-download:visible')).toHaveCount(0);
   await page.locator('#film-transcript > summary').click();await expect(page.locator('#film-transcript')).toContainText('Please share this film.');
  });
