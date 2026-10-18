@@ -1,5 +1,12 @@
 # Testing the website
 
+## Restored music and locally quieter effects — 18 October 2026
+
+- Baseline homepage smoke passed all ten checks. The new decoded-audio regression fails against the prior voice-only video because the opening before narration is silent; it checks the restored background audio rather than mere presence of an AAC track.
+- Both exports remain 85.5 seconds and copy the original H.264 picture streams exactly. They contain the same AAC soundtrack: −16.11 LUFS integrated, −1.47 dBTP. Before mastering, the original narration and music samples are unchanged, as are effects outside the selected smooth attenuation windows. Existing loudness mastering is reapplied to the revised mix; no voice pitch, speed or timing is changed.
+- Whisper small.en independently transcribed all 16 narration lines from the final landscape mix with the original 0.80 match threshold and no prompt; no line fell below it. This establishes machine transcription, not human listening quality. No human audition or subjective clarity assessment is claimed.
+- Independent campaign/UX planning reviews resolved the inaccurate voice-only website label and identified the retained YouTube upload as a separate voice-only version. Final focused video checks pass 116/116 across iPhone/desktop WebKit and Android/desktop Chromium, including the decoded opening regression; 152 Python privacy/security checks, 44 backend/deadline unit checks, 140-file public validation, JavaScript syntax and whitespace pass. Independent campaign actual-diff review found no remaining issue. Independent WebKit UX review inspected 320/390/1440-pixel renders, matching recovery links at each width, and true no-script poster/download access at 320/1440; all six cache versions and download sizes match. No physical-device assessment was performed, and no interaction/layout source changed. Exact-revision hosted checks and live verification remain release gates.
+
 ## Recent press interviews and rally timing — 18 October 2026
 
 All 32 focused Campaign updates, discovery and deadline cases pass across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit, including scripted/no-script shortcut and Back journeys, both new interview deep links and the retained BBC deep link at 320px. All 152 Python checks, 44 Node backend/date checks, 140-file public validation and whitespace checks pass.

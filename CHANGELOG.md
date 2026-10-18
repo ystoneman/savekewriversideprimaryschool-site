@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Campaign video music and quieter effects — 18 October 2026
+
+- Restore the original music and effects in both website video formats. Reduce selected effect bursts by 4–6 dB and the loud page turn by 12 dB, with smooth gain ramps. Keep narration timing and copy the original encoded picture/captions unchanged.
+- Version all website video requests and restore accurate download sizes. Remove the website's voice-only label; identify the existing unlisted YouTube upload as the voice-only version.
+- Independent campaign and rendered UX actual-diff reviews found no remaining issue. Audio signal checks, automated transcription and passing local checks are recorded in TESTING.md. Subjective listening quality has not been assessed; hosted checks and verified deployment remain separate release gates.
+
 ### Recent press interviews and rally timing — 18 October 2026
 
 - Add the campaign's 15 October South West Londoner interview update and its attributed report of further 16 October interviews following the arranged Richmond Nub News visit. Keep interviews distinct from published coverage and retain the earlier article links and anchors.
