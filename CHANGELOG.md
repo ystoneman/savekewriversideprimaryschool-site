@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Petition counter runtime compatibility — 18 October 2026
+
+- Use Cloudflare-supported manual redirect handling for the fixed council fetch; reject non-success responses before reading or caching the count. Keep the dated fallback, exact source, timeout, payload bounds and aggregate-only cache.
+- Add a redirect refusal regression and verify the exact handler in Cloudflare’s temporary remote runtime with successful source reads and cache hits. Public website asset bytes are unchanged.
+
 ### Campaign updates and video follow-through — 18 October 2026
 
 - Publish narration-only soundtracks in both Ram film formats. Copy the original H.264 picture streams unchanged, preserving animation and captions; encode the existing clean narration at −16 LUFS / −1.5 dBTP. Version media requests so returning visitors receive the new sound.

@@ -34,8 +34,9 @@ export async function petitionResponse(request, { fetchPage = fetch, cache = glo
   try {
     const cached = await cache?.match(key);
     if (cached) return cached;
+    // Workers supports manual/follow, not Fetch's error mode. Reject 3xx below.
     const response = await fetchPage(PETITION_SOURCE, { headers: {'Accept':'text/html'},
-      redirect:'error', signal:AbortSignal.timeout(6000), cf:{cacheTtl:0} });
+      redirect:'manual', signal:AbortSignal.timeout(6000), cf:{cacheTtl:0} });
     if (!response.ok || !/^text\/html\b/i.test(response.headers.get('Content-Type') || '')) throw new Error('Unavailable');
     const reader = response.body.getReader();
     const chunks = []; let bytes = 0;

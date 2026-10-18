@@ -38,7 +38,7 @@ test('Petition GET fetches one fixed source, caching only its sanitized count an
   const cache = { match: async key => stored.get(key.url)?.clone(), put: async (key,value) => stored.set(key.url,value) };
   const dependencies = { cache, now:()=>new Date('2026-10-18T14:48:17Z'), fetchPage:async (url,options) => {
     reads++; assert.equal(url,PETITION_SOURCE); assert.deepEqual(options.headers,{Accept:'text/html'});
-    assert.equal(options.redirect,'error'); assert.equal(options.cf.cacheTtl,0);
+    assert.equal(options.redirect,'manual'); assert.equal(options.cf.cacheTtl,0);
     return new Response(petitionHTML('193'),{headers:{'Content-Type':'text/html; charset=utf-8'}});
   }};
   const req = new Request('https://counter.example/petition',{headers:{Origin:'https://savekewriversideprimaryschool.org',Cookie:'fictional-private',Referer:'https://private.invalid/'}});
@@ -51,7 +51,7 @@ test('Petition GET fetches one fixed source, caching only its sanitized count an
   assert.doesNotMatch(await [...stored.values()][0].text(),/Fictional|private|Cookie|signer/);
 });
 test('Petition failures never fabricate zero, store upstream HTML, redirect or write to D1', async () => {
-  for (const result of [()=>{throw new Error('Outage')},()=>new Response('wrong'),()=>new Response(petitionHTML('193'),{status:503}),
+  for (const result of [()=>{throw new Error('Outage')},()=>new Response('wrong'),()=>new Response(null,{status:302,headers:{Location:'https://other.invalid/'}}),()=>new Response(petitionHTML('193'),{status:503}),
     ()=>new Response(petitionHTML('193')+'x'.repeat(65536),{headers:{'Content-Type':'text/html'}})]) {
     let cached=false; const response=await petitionResponse(new Request('https://counter.example/petition'),{
       fetchPage:async()=>result(),cache:{match:async()=>undefined,put:async()=>{cached=true}}});
