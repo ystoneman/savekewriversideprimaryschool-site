@@ -1,5 +1,11 @@
 # UX design decisions
 
+## Press interviews within Campaign updates — 18 October 2026
+
+J1/J6: readers following recent campaign activity need the two press-interview reports as well as the published BBC and earlier syndicated articles. Add them to the existing newest-first list, preserving every existing anchor and article link. Media updates leads to the newest interview entry so the shortcut does not skip the new information. Interview wording attributes the campaign account without implying separate visits by other publishers or newly published reporting.
+
+Keep the dated rally plan in its existing section; an approximate finish time and direct official committee listing help readers distinguish the campaign gathering from the council meeting. Gathering point and access remain unconfirmed. No new page, Menu row or homepage action is needed. Planning/implementation reviews and actual validation belong in TESTING.md and the release description.
+
 ## Petition beside the film and dated campaign progress — 18 October 2026
 
 J1/J2/J6: someone finishing the homepage video on a phone needs the petition at that point. The owner requests a second petition action beneath the player, superseding the 17 October removal of that duplicate. Keep the hero unchanged. Put the new action immediately after the player/credit and before sharing, recovery and Transcript; repeat eligibility/account/deadline where someone acts. Both petition labels/notes use one London-date state, without moving a pressed target on pointerdown.

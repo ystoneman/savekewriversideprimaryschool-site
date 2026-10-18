@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Recent press interviews and rally timing — 18 October 2026
+
+- Add the campaign's 15 October South West Londoner interview update and its attributed report of further 16 October interviews following the arranged Richmond Nub News visit. Keep interviews distinct from published coverage and retain the earlier article links and anchors.
+- Point Media updates to the newest interview entry. Add the campaign's approximate 6:45pm rally finish and the official 12 November, 7pm committee listing, retaining planned-event and gathering/access qualifications.
+- Specialist review and verification results are recorded in TESTING.md and the pull request; this entry does not establish deployment.
+
 ### Petition counter runtime compatibility — 18 October 2026
 
 - Use Cloudflare-supported manual redirect handling for the fixed council fetch; reject non-success responses before reading or caching the count. Keep the dated fallback, exact source, timeout, payload bounds and aggregate-only cache.

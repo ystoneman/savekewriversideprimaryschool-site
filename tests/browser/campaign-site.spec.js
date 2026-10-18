@@ -245,6 +245,14 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
   await expect(entries.first()).toHaveAttribute('id', 'update-consultation-deadline');
   await expect(page.locator('#update-consultation-deadline time')).toHaveAttribute('datetime', '2026-10-16');
   await expect(page.locator('#update-recovery-plan time')).toHaveAttribute('datetime', '2026-10-16');
+  const interviews = page.locator('#update-press-16-october');
+  await expect(interviews.locator('time')).toHaveAttribute('datetime', '2026-10-16');
+  await expect(interviews).toContainText('Campaign organisers reported');
+  await expect(interviews).toContainText('after arranging a visit with Richmond Nub News');
+  await expect(interviews).not.toContainText('The Standard');
+  await expect(interviews).not.toContainText('MyLondon');
+  await expect(page.locator('#update-press-15-october time')).toHaveAttribute('datetime', '2026-10-15');
+  await expect(page.locator('#update-press-15-october')).toContainText('South West Londoner reporter');
   const article = page.locator('#update-bbc-article');
   await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-15');
   await expect(article.getByRole('link', { name: /Read the BBC article/ })).toHaveAttribute('href', 'https://www.bbc.co.uk/news/articles/c6rmy3e179n8o');
@@ -273,7 +281,7 @@ for (const scripts of [true,false]) test.describe(`Updates discovery with script
  test('Shortcuts reach the proposal, media, rally photo and planned next-event details',async({page})=>{
   await page.goto('/updates.html');
   const nav=page.getByRole('navigation',{name:'Find campaign updates'});
-  for(const [label,id]of[['Recovery proposal','update-recovery-plan'],['Media coverage','update-bbc-article'],['Rally photo','update-york-house-rally'],['12 November rally','next-rally']]){
+  for(const [label,id]of[['Recovery proposal','update-recovery-plan'],['Media updates','update-press-16-october'],['Rally photo','update-york-house-rally'],['12 November rally','next-rally']]){
    await nav.getByRole('link',{name:label,exact:true}).click();
    await expect(page).toHaveURL(new RegExp('#'+id+'$'));
    await expect(page.locator('#'+id+' h2')).toBeInViewport();
@@ -283,9 +291,20 @@ for (const scripts of [true,false]) test.describe(`Updates discovery with script
   await expect(page.locator('#update-recovery-plan')).toContainText('Achieving for Children');
   await expect(page.locator('#update-recovery-plan')).toContainText('The campaign believes');
   await expect(page.locator('#next-rally')).toContainText('Thursday 12 November 2026, 6pm');
-  await expect(page.locator('#next-rally')).toContainText('access details are not included');
+  await expect(page.locator('#next-rally')).toContainText('until around 6:45pm');
+  await expect(page.locator('#next-rally')).toContainText('access arrangements are not yet confirmed');
   await expect(page.locator('#next-rally time')).toHaveAttribute('datetime','2026-11-12T18:00:00+00:00');
+  await expect(page.locator('#next-rally a')).toHaveAttribute('href','https://cabnet.richmond.gov.uk/ieListDocuments.aspx?CId=800&MId=500000748&Ver=4');
   await expect(page.locator('#update-news a')).toHaveCount(4);
+ });
+ test('Direct interview and existing BBC links retain readable destinations',async({page})=>{
+  await page.setViewportSize({width:320,height:568});
+  for(const [id,title]of[['update-press-16-october','Further parent interviews at the school gates'],['update-press-15-october','Parents speak with South West Londoner'],['update-bbc-article','Kew Riverside parents in BBC News']]){
+   await page.goto('/updates.html#'+id);
+   await expect(page.locator('#'+id+' h2')).toHaveText(title);
+   await expect(page.locator('#'+id+' h2')).toBeInViewport();
+   await expectNoHorizontalOverflow(page,'Updates '+id);
+  }
  });
 });
 
