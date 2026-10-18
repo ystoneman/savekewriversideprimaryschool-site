@@ -17,6 +17,45 @@
     portrait: {link:portraitDownload, poster:portraitFallback.querySelector('img').getAttribute('src'), width:1080, height:1350},
   };
   let retired = false;
+  const shareTrigger = document.getElementById('film-share-trigger');
+  const shareFallback = document.getElementById('film-share-fallback');
+  const shareURL = document.getElementById('film-share-url');
+  const shareStatus = document.getElementById('film-share-status');
+  const shareCopy = document.getElementById('film-share-copy');
+  const sharing = section.querySelector('.film-sharing');
+  shareTrigger.hidden = false;
+  shareCopy.hidden = false;
+  function manualShare() {
+    shareFallback.open = true;
+    shareStatus.textContent = 'Select and copy the video link.';
+    shareURL.focus();
+    shareURL.select();
+  }
+  async function copyVideoLink() {
+    refresh();
+    if (retired) return;
+    if (!navigator.clipboard?.writeText) { manualShare(); return; }
+    try {
+      await navigator.clipboard.writeText(shareURL.value);
+      shareStatus.textContent = 'Video link copied.';
+    } catch { manualShare(); }
+  }
+  shareCopy.addEventListener('click', copyVideoLink);
+  shareTrigger.addEventListener('click', async () => {
+    refresh();
+    if (retired) return;
+    if (shareTrigger.disabled) return;
+    shareTrigger.disabled = true;
+    shareStatus.textContent = '';
+    try {
+      if (navigator.share) {
+        try { await navigator.share({title:'Keep Kew Riverside open — narrated by Ram',url:shareURL.value}); }
+        catch (error) { if (error.name !== 'AbortError') manualShare(); }
+      } else await copyVideoLink();
+    } finally {
+      shareTrigger.disabled = false;
+    }
+  });
   const play = document.createElement('button');
   play.type = 'button';
   play.className = 'film-poster';
@@ -44,6 +83,7 @@
       }
       player.hidden = true;
       recovery.hidden = true;
+      sharing.hidden = true;
       status.textContent = 'This video’s published petition deadline, 13 January 2027, has passed. Read the current council information before acting.';
       status.hidden = false;
     }
@@ -96,4 +136,8 @@
     refresh();
     if (retired) event.preventDefault();
   });
+  sharing.querySelectorAll('a').forEach(link => link.addEventListener('click', event => {
+    refresh();
+    if (retired) event.preventDefault();
+  }));
 })();

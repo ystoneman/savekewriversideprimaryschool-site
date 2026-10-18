@@ -1,5 +1,17 @@
 # UX design decisions
 
+## Petition beside the film and dated campaign progress — 18 October 2026
+
+J1/J2/J6: someone finishing the homepage video on a phone needs the petition at that point. The owner requests a second petition action beneath the player, superseding the 17 October removal of that duplicate. Keep the hero unchanged. Put the new action immediately after the player/credit and before sharing, recovery and Transcript; repeat eligibility/account/deadline where someone acts. Both petition labels/notes use one London-date state, without moving a pressed target on pointerdown.
+
+Native/copy/manual sharing uses the canonical `/#campaign-film` link, without visitor queries. Optional MP4 downloads and the expressly owner-authorized unlisted campaign upload on the Parent Voices channel stay in the film's sharing disclosure. That upload has a campaign-specific description and no recruitment playlist; recruitment pages and their communications retain their separate purpose. Hide every enhanced sharing/download route with the expired player and guard activation on a long-open page. Static fallbacks retain explicit dates and source context.
+
+The compact petition tracker follows the hero’s eligibility note, before Share, preserving the action row and first-screen priority. Label the count as online, separate paper signatures, and identify 1,000/500 as campaign goal/milestone. A native progress element accompanies readable total, percentage and remaining count. One functional production read refreshes the aggregate; retain the original source-check timestamp and dated fallback, with no animation, polling or live-region announcements. Keep freshness wording/date formatting stable and ignore pending data after the first pointerdown or keydown so an arriving count cannot move a pressed control. Counts may decrease after council moderation, and above-goal totals remain accurate while the bar caps at its goal. Hide active targets after the London petition deadline.
+
+Campaign updates keeps its newest-first list and original anchors. Four compact local shortcuts surface the existing proposal, media and approved photo, plus the briefing's dated 12 November rally plan. A dated plan heading avoids an evergreen Next rally invitation; venue/access details are not inferred. Financial viability is an attributed campaign assessment, and submission does not imply council acceptance.
+
+Independent campaign/evidence actual-diff review and rendered WebKit UX review found no remaining actionable issues after the sharing-expiry fix. At 320/390/1440 in both appearances with fresh analytics notices, hero action rectangles match the released baseline. Keyboard/Back, no-script links, native controls, manual sharing and enlarged-text reflow were inspected. Verification is recorded in TESTING.md; no unfamiliar visitor study is claimed.
+
 ## Simpler homepage petition and video — 17 October 2026
 
 J1/J2/J3/J6: the owner found the repeated petition invitation and surrounding video instructions excessive and preferred “campaign video” to “film”. Keep the hero's single petition action, countdown, exact closing date and eligibility/account note; remove the second video-area invitation. No protected destination or campaign priority changes.

@@ -68,6 +68,7 @@ async function virtualProduction(context, options = {}) {
       await route.fulfill({ contentType: types[path.extname(name)], body: readFileSync(path.join(root, name)) });
     }
   });
+  await context.route('https://kew-riverside-statistics.analytics-backend.workers.dev/petition', route => route.fulfill({json:{onlineSignatures:193,checkedAt:'2026-10-15T11:59:00Z',source:'https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249'}}));
   await context.route(endpoint, async route => {
     const request = route.request();
     expect(request.method()).toBe('POST');

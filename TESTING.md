@@ -1,5 +1,25 @@
 # Testing the website
 
+
+## Petition tracker follow-through — 18 October 2026
+
+The same campaign/video candidate includes the requested online petition tracker. The exact council petition returned 193 at 15:48 BST on 18 October; the strict Worker parser was checked against a fresh council response without saving/outputting signer details. The fallback is dated; campaign goal 1,000 and first milestone 500 separate paper signatures and imply no decision threshold.
+
+All 152 Python checks, 44 backend/deadline unit checks, 140-file public validation, JavaScript syntax and whitespace checks pass. The 72 tracker cases pass across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit: 0/193/500/1,000/1,200 totals and percentages, capped native bar, nonnegative remainder, check time, no cookies/referrer, invalid/stale/future/extra-field payloads, outage, true no-JavaScript, London expiry, delayed-response interaction guards and narrow layouts. Homepage smoke passes 10/10; 194 iPhone WebKit/desktop Chromium analytics cases pass with functional responses intercepted. Two Safari dark-theme homepage regressions pass after explicitly styling the copy-video button; the hosted contrast failure was fixed without weakening its assertion. The intentional tracker source link updates the exact homepage link count while retaining both petition action IDs.
+
+Independent campaign/evidence actual-diff rechecks cleared the corrected percentage. Rendered UX review checked 320×568, 390×844 and 1440×1000 in both appearances, true no-script and doubled text. Small-phone hero action rectangles match the pre-tracker candidate exactly; desktop actions move upward with grid centring while keeping their size and priority. Stable wording/date formatting and an initial-read interaction guard resolve late-response Share displacement. Native iPhone 17 / iOS 26.5 Safari showed the dated tracker without overflow; its source opened the correct official petition, optional council cookies were rejected, and Back returned to the tracker. These are simulator and browser-emulation checks, not physical-device tests. Production refresh is tested with fictional intercepted payloads; local previews deliberately keep the snapshot.
+
+Worker deployment, hosted final-revision checks, Pages deployment and live verification remain separate release gates; this entry does not establish publication.
+
+
+## Campaign updates and clean film — 18 October 2026
+
+- Before implementation, all ten homepage smoke cases passed. The first affected-journey run passed 182 checks. After the share-expiry fix, all 480 campaign-film/campaign-site/home-landing checks passed across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit; no-script fallback cases are included within those specs. After adding sourced rally particulars, all eight scripted/no-script Updates shortcut/Back cases passed across the four engines. All 16 final no-script/link-expiry cases also passed after adding the unlisted route. Complete hosted coverage remains the release gate.
+- All 152 Python privacy/security/data checks, eight backend tests and 33 date unit tests passed; 138 public assets validate. Both remuxed MP4s are 85.5 seconds; their encoded picture streams have exactly the original SHA-256 hashes. The only audio input was the existing clean Ram narration stem; final AAC measures −16.02 LUFS and −1.50 dBTP in both formats. No animation or burned-in caption was re-encoded.
+- Independent campaign/evidence planning and actual-diff reviews resolved the new sharing-expiry bypass. Independent rendered WebKit review inspected 320×568, 390×844 and 1440×1000 light/dark with fresh analytics notice: hero action rectangles match HEAD, petition follows the player, no horizontal overflow. Keyboard petition handoff/Back, selected read-only manual-copy URL, no-script links/downloads, Updates anchors/Back, doubled-text reflow, actual media play/pause and January retirement passed. Screenshots remain outside the public artifact.
+- Native iPhone 17 / iOS 26.5 Safari opened the styled local HTTP preview, played the clean portrait film with visible native controls, followed the below-video button to the official Richmond petition and returned with Back. No signature or form was submitted. The local preview response alone omitted TLS-upgrading; published CSP is unchanged. Native explicit pause was not established separately; browser WebKit pause/seek checks passed.
+- Exact-revision hosted checks, canonical deployment and live asset verification remain separate release gates recorded in the pull request.
+
 ## Homepage petition and video simplification — 17 October 2026
 
 - Early homepage smoke: all 10 cases passed. Updated focused campaign-video/home-landing run: all 94 cases passed across iPhone WebKit and desktop Chromium. Coverage pins one homepage petition destination, default-hidden recovery links, a closed accessible transcript, deferred loading, portrait/landscape playback, pause/seek, retry, resize, failed/disabled scripts, October/January transitions, handoff and Back. Existing all-page suites remain enabled.

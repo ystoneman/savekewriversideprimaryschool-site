@@ -1,20 +1,24 @@
 const {test,expect}=require('./fixtures');
-const media='/media/kew-petition-film-ram-20261014.mp4';
-const portrait='/media/kew-petition-film-ram-4x5-20261014.mp4';
-const mediaRoute='**/media/kew-petition-film-ram-*.mp4';
+const media='/media/kew-petition-film-ram-20261014.mp4?v=2026101803';
+const portrait='/media/kew-petition-film-ram-4x5-20261014.mp4?v=2026101803';
+const mediaRoute='**/media/kew-petition-film-ram-*.mp4*';
 const selectedMedia=page=>page.viewportSize().width<=700?portrait:media;
 const petition='https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249';
 
-test('Campaign video: one petition action and optional transcript keep the homepage concise',{tag:'@home-smoke'},async({page})=>{
- const requests=[];page.on('request',r=>{if(r.url().endsWith('.mp4'))requests.push(r.url());});
+test('Campaign video: petition below the player and optional transcript preserve homepage actions',{tag:'@home-smoke'},async({page})=>{
+ const requests=[];page.on('request',r=>{if(new URL(r.url()).pathname.endsWith('.mp4'))requests.push(r.url());});
  await page.goto('/index.html');
  const before=await page.locator('.home-plan').boundingBox();
  expect(await page.locator('#campaign-film').evaluate(el=>el.previousElementSibling.classList.contains('hero-grid'))).toBe(true);
- await expect(page.locator('main a[href="'+petition+'"]')).toHaveCount(1);
+ await expect(page.locator('main a[href="'+petition+'"]')).toHaveCount(3);
+ await expect(page.locator('#petition-action, #film-petition-action')).toHaveCount(2);
+ await expect(page.locator('#petition-progress a')).toHaveAttribute('href',petition);
  await expect(page.locator('#petition-note')).toContainText('13 January 2027');
  await expect(page.locator('#petition-note')).toContainText('live, work or study');
  await expect(page.locator('#petition-note')).toContainText('Richmond Account');
  await expect(page.locator('#film-heading')).toHaveText('Campaign video');
+ await expect(page.locator('#film-petition-action')).toHaveAttribute('href',petition);
+ expect(await page.locator('#film-petition-action').evaluate(el=>el.closest('.film-petition').previousElementSibling.tagName)).toBe('FIGURE');
  await expect(page.locator('#film-transcript')).not.toHaveAttribute('open');
  await expect(page.locator('#film-transcript > summary')).toHaveText('Transcript');
  await expect(page.locator('.film-download:visible')).toHaveCount(0);
@@ -82,7 +86,14 @@ test.describe('Campaign film without JavaScript',()=>{
   await page.goto('/index.html#campaign-film');await expect(page.locator('.film-player .film-poster:visible')).toHaveAttribute('href',selectedMedia(page).slice(1));
   await expect(page.locator('#film-context')).toContainText('14 October 2026');
   await expect(page.locator('#petition-note')).toContainText('13 January 2027');
-  await expect(page.locator('main a[href="'+petition+'"]')).toHaveCount(1);
+  await expect(page.locator('main a[href="'+petition+'"]')).toHaveCount(3);
+ await expect(page.locator('#petition-action, #film-petition-action')).toHaveCount(2);
+ await expect(page.locator('#petition-progress a')).toHaveAttribute('href',petition);
+  await expect(page.locator('#film-petition-action')).toHaveText('View or sign the petition');
+  await page.locator('#film-share-fallback > summary').click();
+  await expect(page.locator('#film-share-url')).toHaveValue('https://savekewriversideprimaryschool.org/#campaign-film');
+  await expect(page.locator('#film-share-fallback a[download]')).toHaveCount(2);
+  await expect(page.locator('#film-youtube')).toHaveAttribute('href','https://youtu.be/VvHGIg5Fcvk');
   await expect(page.locator('.film-download:visible')).toHaveCount(0);
   await page.locator('#film-transcript > summary').click();await expect(page.locator('#film-transcript')).toContainText('Please share this film.');
  });
@@ -94,7 +105,9 @@ for(const [at,closed,consultation] of [
 ])test(`Campaign film: London-date invitation at ${at}`,async({page})=>{
  await page.clock.setFixedTime(new Date(at));await page.goto('/index.html#campaign-film');
  await expect(page.locator('#petition-action')).toHaveText(closed?'View the petition':'Sign the petition');
- if(closed){await expect(page.locator('.film-player')).toBeHidden();await expect(page.locator('#film-status')).toContainText('deadline');await expect(page.locator('#film-download')).toBeHidden();await expect(page.locator('#film-portrait-download')).toBeHidden();}
+ await expect(page.locator('#film-petition-action')).toHaveText(closed?'View the petition':'Sign the petition');
+ expect(await page.locator('#film-petition-note').textContent()).toBe(await page.locator('#petition-note').textContent());
+ if(closed){await expect(page.locator('.film-player')).toBeHidden();await expect(page.locator('#film-status')).toContainText('deadline');await expect(page.locator('#film-download')).toBeHidden();await expect(page.locator('#film-portrait-download')).toBeHidden();await expect(page.locator('.film-sharing')).toBeHidden();}
  else{await expect(page.locator('#film-play')).toBeVisible();if(consultation)await expect(page.locator('#petition-note')).toContainText('does not replace');else await expect(page.locator('#petition-note')).not.toContainText('consultation response');}
 });
 
@@ -102,16 +115,17 @@ test('Campaign film: returning after expiry removes the old player without downl
  await page.clock.setFixedTime(new Date('2027-01-13T23:59:59Z'));await page.goto('/index.html#campaign-film');
  await page.clock.setFixedTime(new Date('2027-01-14T00:00:00Z'));await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));
  await expect(page.locator('.film-player')).toBeHidden();await expect(page.locator('#petition-action')).toHaveText('View the petition');
+ await expect(page.locator('.film-sharing')).toBeHidden();
 });
 
 test('Campaign film: petition handoff and Back preserve the optional section',async({page})=>{
  await page.route(petition,r=>r.fulfill({contentType:'text/html',body:'<h1>Fictional petition</h1>'}));
- await page.goto('/index.html#campaign-film');await page.locator('#petition-action').click();await expect(page).toHaveURL(petition);
+ await page.goto('/index.html#campaign-film');await page.locator('#film-petition-action').focus();await page.keyboard.press('Enter');await expect(page).toHaveURL(petition);
  await page.goBack();await expect(page).toHaveURL(/#campaign-film$/);await expect(page.locator('#film-play')).toBeVisible();
 });
 
 for(const width of [320,390,700,701,1440])test(`Campaign film: ${width}px chooses a matching poster, frame and single MP4`,async({page})=>{
- const requested=[];page.on('request',r=>{if(r.url().endsWith('.mp4'))requested.push(new URL(r.url()).pathname);});
+ const requested=[];page.on('request',r=>{if(new URL(r.url()).pathname.endsWith('.mp4'))requested.push(new URL(r.url()).pathname+new URL(r.url()).search);});
  await page.setViewportSize({width,height:844});await page.goto('/index.html#campaign-film');
  const expected=selectedMedia(page);const ratio=width<=700?4/5:16/9;
  await expect(page.locator('.film-download:visible')).toHaveCount(0);
@@ -127,7 +141,7 @@ for(const width of [320,390,700,701,1440])test(`Campaign film: ${width}px choose
 });
 
 for(const [start,end]of[[390,844],[1440,390]])test(`Campaign film: resizing ${start} to ${end}px preserves the selected cut and playback time`,async({page})=>{
- const requested=[];page.on('request',r=>{if(r.url().endsWith('.mp4'))requested.push(new URL(r.url()).pathname);});
+ const requested=[];page.on('request',r=>{if(new URL(r.url()).pathname.endsWith('.mp4'))requested.push(new URL(r.url()).pathname+new URL(r.url()).search);});
  await page.setViewportSize({width:start,height:844});await page.goto('/index.html#campaign-film');const expected=selectedMedia(page);
  await page.locator('#film-play').click();const video=page.locator('#campaign-film-video');await expect.poll(()=>video.evaluate(v=>v.currentTime),{timeout:15000}).toBeGreaterThan(2);
  const before=await video.evaluate(v=>{window.rotationVideo=v;return v.currentTime;});
@@ -143,4 +157,56 @@ test('Campaign film: Retry after resizing selects the current viewport cut',asyn
  let first=true;await page.route(mediaRoute,r=>{if(first){first=false;return r.fulfill({contentType:'video/mp4',body:'Invalid first response'});}return r.continue();});
  await page.setViewportSize({width:390,height:844});await page.goto('/index.html#campaign-film');await page.locator('#film-play').click();await expect(page.locator('#film-status')).toContainText('Playback could not start');
  await page.setViewportSize({width:1440,height:1000});await page.locator('#film-play').click();const video=page.locator('#campaign-film-video');await expect.poll(()=>video.evaluate(v=>v.currentTime),{timeout:15000}).toBeGreaterThan(.1);await expect(video).toHaveAttribute('src',media.slice(1));
+});
+
+for (const mode of ['native','cancelled','clipboard','manual']) test(`Campaign film sharing: ${mode} keeps the video link and recovery usable`,async({page})=>{
+ await page.addInitScript(mode=>{
+  window.videoShares=[];window.videoCopies=[];
+  Object.defineProperty(navigator,'share',{configurable:true,value:mode==='native'||mode==='cancelled'?async data=>{window.videoShares.push(data);if(mode==='cancelled')throw new DOMException('Cancelled','AbortError');}:undefined});
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:mode==='manual'?undefined:{writeText:async text=>window.videoCopies.push(text)}});
+ },mode);
+ await page.goto('/index.html?utm_source=fictional#campaign-film');
+ await page.locator('#film-share-trigger').click();
+ const canonical='https://savekewriversideprimaryschool.org/#campaign-film';
+ if(mode==='native'||mode==='cancelled'){
+  expect(await page.evaluate(()=>window.videoShares)).toEqual([{title:'Keep Kew Riverside open — narrated by Ram',url:canonical}]);
+  expect(await page.evaluate(()=>window.videoCopies)).toEqual([]);
+  await expect(page.locator('#film-share-fallback')).not.toHaveAttribute('open');
+ }else if(mode==='clipboard'){
+  expect(await page.evaluate(()=>window.videoCopies)).toEqual([canonical]);
+  await expect(page.locator('#film-share-status')).toHaveText('Video link copied.');
+ }else{
+  await expect(page.locator('#film-share-url')).toBeFocused();
+  await expect(page.locator('#film-share-url')).toHaveValue(canonical);
+  expect(await page.locator('#film-share-url').evaluate(el=>el.selectionEnd-el.selectionStart)).toBe(canonical.length);
+ }
+ await expect(page.locator('#film-share-trigger')).toBeEnabled();
+ await expect(page.locator('#film-petition-action')).toHaveAttribute('href',petition);
+});
+
+test('Campaign film: an expired petition click keeps its target stable and updates both invitations',async({page})=>{
+ await page.clock.setFixedTime(new Date('2027-01-13T23:59:59Z'));
+ await page.goto('/index.html#campaign-film');
+ const link=page.locator('#film-petition-action');await link.scrollIntoViewIfNeeded();
+ const before=await link.boundingBox();
+ await page.clock.setFixedTime(new Date('2027-01-14T00:00:00Z'));
+ await link.dispatchEvent('pointerdown');
+ expect(await link.boundingBox()).toEqual(before);
+ await expect(link).toHaveText('Sign the petition');
+ await page.route(petition,r=>r.fulfill({contentType:'text/html',body:'<h1>Fictional closed petition</h1>'}));
+ await link.click();await expect(page).toHaveURL(petition);
+ await page.goBack();await expect(link).toHaveText('View the petition');
+ await expect(page.locator('#film-petition-note')).toContainText('closing date');
+});
+
+for(const route of ['share','download','youtube'])test(`Campaign film: a long-open ${route} action retires the dated video after midnight`,async({page})=>{
+ await page.addInitScript(()=>{window.videoShares=[];Object.defineProperty(navigator,'share',{configurable:true,value:async data=>window.videoShares.push(data)});});
+ await page.clock.setFixedTime(new Date('2027-01-13T23:59:59Z'));await page.goto('/index.html#campaign-film');
+ if(route!=='share')await page.locator('#film-share-fallback > summary').click();
+ await page.clock.setFixedTime(new Date('2027-01-14T00:00:00Z'));
+ let downloads=0;page.on('download',()=>downloads++);
+ await page.locator(route==='share'?'#film-share-trigger':route==='youtube'?'#film-youtube':'#film-share-fallback a[download]').first().click();
+ await expect(page.locator('.film-sharing')).toBeHidden();
+ await expect(page.locator('#film-status')).toContainText('deadline');
+ expect(await page.evaluate(()=>window.videoShares)).toEqual([]);expect(downloads).toBe(0);
 });
