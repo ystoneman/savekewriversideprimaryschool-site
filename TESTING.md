@@ -1,5 +1,13 @@
 # Testing the website
 
+## Recent press interviews and rally timing — 18 October 2026
+
+All 32 focused Campaign updates, discovery and deadline cases pass across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit, including scripted/no-script shortcut and Back journeys, both new interview deep links and the retained BBC deep link at 320px. All 152 Python checks, 44 Node backend/date checks, 140-file public validation and whitespace checks pass.
+
+Independent campaign/evidence planning and actual-diff reviews found no remaining actionable issue; the official 12 November committee listing was checked separately. Independent rendered UX review inspected 320/390/1440px in both appearances, true no-JavaScript and doubled text: the new Media updates arrival, old BBC arrival, keyboard activation and Back remain readable without horizontal overflow. Native iPhone 17 / iOS 26.5 Safari Simulator verified touch Media updates arrival and Back, then opened the correct Richmond committee listing and returned. These are simulator and browser-emulation checks, not physical-device tests. Only the local preview response omitted its HTTP-incompatible TLS-upgrade directive; production CSP is unchanged.
+
+Exact-revision hosted checks, deployment and live verification remain separate release gates recorded in the pull request.
+
 
 ## Petition counter runtime verification — 18 October 2026
 
