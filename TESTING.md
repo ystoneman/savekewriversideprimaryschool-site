@@ -1,6 +1,11 @@
 # Testing the website
 
 
+## Petition counter runtime verification — 18 October 2026
+
+Live service verification exposed Cloudflare's rejection of the standard Fetch `redirect: 'error'` option. The narrow backend correction uses `manual`; the existing non-OK guard rejects 3xx without following it. All 44 Node backend/date checks and 152 Python checks pass, including the new 302 refusal fixture. Public asset validation remains 140 files, and no browser/visitor source bytes change. The exact corrected handler was bundled into an isolated temporary Cloudflare preview and returned the council's 193 aggregate both without caching and from a cache hit; its original check time survived the hit. No signer HTML or visitor data was logged or persisted. Cloudflare runtime verification supplements the local Node tests that missed the unsupported option. Production Worker deployment and exact-revision hosted checks are separate release gates.
+
+
 ## Petition tracker follow-through — 18 October 2026
 
 The same campaign/video candidate includes the requested online petition tracker. The exact council petition returned 193 at 15:48 BST on 18 October; the strict Worker parser was checked against a fresh council response without saving/outputting signer details. The fallback is dated; campaign goal 1,000 and first milestone 500 separate paper signatures and imply no decision threshold.
