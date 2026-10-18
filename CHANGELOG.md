@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Revised audio on the unlisted YouTube copy — 18 October 2026
+
+- Point the homepage's YouTube sharing link to the revised music/effects upload and remove the voice-only qualifier. Preserve the existing native player, downloads and dated retirement guards.
+- Keep the earlier unlisted upload available for existing shared links, with a description pointing to the replacement. Provider publication/playback and website deployment are verified separately in the release record.
+
 ### Campaign video music and quieter effects — 18 October 2026
 
 - Restore the original music and effects in both website video formats. Reduce selected effect bursts by 4–6 dB and the loud page turn by 12 dB, with smooth gain ramps. Keep narration timing and copy the original encoded picture/captions unchanged.

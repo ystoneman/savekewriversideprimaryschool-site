@@ -1,5 +1,9 @@
 # UX design decisions
 
+## Matching audio in the optional YouTube copy — 18 October 2026
+
+J2/J6: the optional unlisted YouTube route should offer the same restored music and quieter effects as the website videos. Update the existing sharing link and remove the obsolete voice-only qualifier. Preserve old shared YouTube links with a notice pointing to the revised copy; keep both uploads out of recruitment playlists. The approved landscape export, campaign description, attribution and adult audience setting are retained. A bounded independent UX source review found no remaining issue; provider and release verification are recorded separately.
+
 ## Music retained with local effect reductions — 18 October 2026
 
 J2/J6: retain the original campaign video's music and effects while lowering distracting bursts at selected moments. Preserve the original voice/music relationship before mastering, narration timing, encoded picture, captions and existing controls. Use smooth local gain changes on the effect component rather than another voice-only soundtrack. All media entry points request the revised bytes; the existing unlisted YouTube upload is explicitly labelled voice-only. Independent campaign and UX planning review required accurate version labels and distinguished signal/transcription checks from subjective listening. Actual implementation checks and release status are recorded separately.
