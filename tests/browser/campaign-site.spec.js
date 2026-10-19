@@ -215,14 +215,16 @@ test.describe('Response deadline (London dates)', () => {
 
   test.describe('without JavaScript', () => {
     test.use({ javaScriptEnabled: false });
-    test('the respond blocks show', async ({ page }) => {
+    test('current Get involved fallback shows the closed stage; Dates retains its existing fallback', async ({ page }) => {
       // A post-deadline clock proves the static copy, not the date script, decides here.
       await page.clock.setFixedTime(new Date('2026-10-20T12:00:00Z'));
       for (const file of ['dates.html', 'get-involved.html']) {
         await page.goto('/' + file);
         await expect(page.locator('.current-response-note'), 'No page script ran').toHaveCount(0);
-        await expect(page.locator('main [data-stage="open"]'), `${file} respond block`).toBeVisible();
-        await expect(page.locator('main [data-stage="closed"]'), `${file} closed block`).toBeHidden();
+        const currentFallback = file === 'get-involved.html';
+        await expect(page.locator('main [data-stage="open"]'), `${file} respond block`).toBeVisible({ visible: !currentFallback });
+        await expect(page.locator('main [data-stage="closed"]'), `${file} closed block`).toBeVisible({ visible: currentFallback });
+        if (currentFallback) expect(await page.locator('main > section').last().getAttribute('id')).toBe('respond');
       }
     });
   });
@@ -456,7 +458,7 @@ test('Homepage legacy routes to current pages land on sections that exist', asyn
 });
 
 // Implementation review (13 October 2026): after the deadline the petition leads on Get
-// involved, while links to #respond still land on the closed note.
+// involved, while links to #respond still land on the closed note at the bottom.
 test.describe('Get involved order around the deadline', () => {
   const order = page => page.locator('main section[id]').evaluateAll(sections => sections.map(section => section.id).slice(0, 2));
 
@@ -466,8 +468,9 @@ test.describe('Get involved order around the deadline', () => {
     expect(await order(page)).toEqual(['respond', 'petition']);
     await page.clock.setFixedTime(new Date('2026-10-16T23:00:00Z'));
     await page.goto('/get-involved.html');
-    expect(await order(page)).toEqual(['petition', 'respond']);
+    expect(await order(page)).toEqual(['petition', 'representatives']);
     await expect(page.locator('#petition a[href="' + petition + '"]')).toBeVisible();
+    expect(await page.locator('main > section').last().getAttribute('id')).toBe('respond');
     await page.goto('/get-involved.html#respond');
     await expectScrollSettled(page, 'get-involved.html#respond');
     await expect(page.locator('#respond [data-stage="closed"]')).toBeInViewport();
@@ -478,12 +481,17 @@ test.describe('Get involved order around the deadline', () => {
     await page.goto('/get-involved.html');
     expect(await order(page)).toEqual(['respond', 'petition']);
     await page.clock.runFor(61_000);
-    expect(await order(page)).toEqual(['petition', 'respond']);
+    expect(await order(page)).toEqual(['petition', 'representatives']);
     const link = page.locator('#petition a[href="' + petition + '"]');
     await link.focus();
     await page.clock.runFor(121_000);
-    expect(await order(page)).toEqual(['petition', 'respond']);
+    expect(await order(page)).toEqual(['petition', 'representatives']);
     await expect(link).toBeFocused();
+    const y = await page.evaluate(() => scrollY);
+    await page.evaluate(() => { dispatchEvent(new Event('pageshow')); document.dispatchEvent(new Event('visibilitychange')); });
+    expect(await page.evaluate(() => scrollY)).toBe(y);
+    await expect(link).toBeFocused();
+    expect(await page.locator('main > section').last().getAttribute('id')).toBe('respond');
   });
 
   for (const size of phoneSizes) {
@@ -705,5 +713,86 @@ test.describe('Visual contribution cards', () => {
         await expect(page.locator('#' + id + ' a[download]')).toHaveCount(2);
       }
     });
+  });
+});
+
+// Owner request, 19 October: get to available actions sooner, with the petition's
+// own closing date on its button and the closed consultation retained at #respond.
+test.describe('Current actions first', () => {
+  test('petition deadline is part of the action and lookup buttons reach the right representatives', async ({ page, hasTouch }) => {
+    await page.clock.setFixedTime(new Date('2026-10-19T12:00:00Z'));
+    await page.goto('/get-involved.html');
+    const button = page.locator('#involved-petition-action');
+    await expect(button).toHaveAccessibleName('Sign petition by 13 Jan 2027');
+    await expect(button.locator('time')).toHaveAttribute('datetime', '2027-01-13');
+    await expect(page.locator('#petition > p')).toContainText('live, work or study in Richmond borough');
+    await expect(page.locator('#petition > p')).toContainText('Richmond Account');
+    for (const [name, url] of [
+      ['Find your councillors', 'https://cabnet.richmond.gov.uk/mgMemberIndex.aspx?bcr=1'],
+      ['Find your MP', 'https://members.parliament.uk/FindYourMP'],
+    ]) {
+      await page.route(url, route => route.fulfill({ contentType: 'text/html', body: '<h1>Fictional representative lookup</h1>' }));
+      const link = page.locator('#representatives').getByRole('link', { name, exact: true });
+      await expect(link).toHaveAttribute('href', url);
+      await link.scrollIntoViewIfNeeded();
+      if (hasTouch) await link.tap(); else await link.click();
+      await expect(page).toHaveURL(url);
+      await page.goBack();
+      await expect(page.locator('#representatives')).toBeInViewport();
+    }
+  });
+
+  for (const [at, expired] of [['2027-01-13T23:59:59Z', false], ['2027-01-14T00:00:00Z', true]]) {
+    test(`petition invitation follows its independent London closing date at ${at}`, async ({ page }) => {
+      await page.clock.setFixedTime(new Date(at));
+      await page.goto('/get-involved.html#petition');
+      await expect(page.locator('#petition-title')).toHaveText(expired ? 'View the petition' : 'Sign the petition');
+      await expect(page.locator('#involved-petition-action')).toHaveAccessibleName(expired ? 'View petition · closed 13 Jan 2027' : 'Sign petition by 13 Jan 2027');
+      await expect(page.locator('#involved-petition-action')).toHaveAttribute('href', petition);
+    });
+  }
+
+  test('midnight refresh keeps a held petition target stable, then updates on activation and Back', async ({ page }) => {
+    await page.clock.install({ time: new Date('2027-01-13T23:59:00Z') });
+    await page.goto('/get-involved.html#petition');
+    const link = page.locator('#involved-petition-action');
+    await link.focus();
+    await link.dispatchEvent('pointerdown');
+    const before = await link.boundingBox();
+    await page.clock.runFor(61_000);
+    await expect(link).toHaveAccessibleName('Sign petition by 13 Jan 2027');
+    expect(await link.boundingBox()).toEqual(before);
+    await page.evaluate(() => dispatchEvent(new PointerEvent('pointerup')));
+    await page.route(petition, route => route.fulfill({ contentType: 'text/html', body: '<h1>Fictional petition</h1>' }));
+    await link.press('Enter');
+    await expect(page).toHaveURL(petition);
+    await page.goBack();
+    await expect(page.locator('#petition-title')).toHaveText('View the petition');
+    await expect(link).toHaveAccessibleName('View petition · closed 13 Jan 2027');
+    await expect(link).toBeInViewport();
+  });
+
+  test('unpressed long-open page updates the whole petition invitation without stealing focus', async ({ page }) => {
+    await page.clock.install({ time: new Date('2027-01-13T23:59:00Z') });
+    await page.goto('/get-involved.html#petition');
+    const link = page.locator('#involved-petition-action');
+    await link.focus();
+    await page.clock.runFor(61_000);
+    await expect(page.locator('#petition-title')).toHaveText('View the petition');
+    await expect(link).toHaveAccessibleName('View petition · closed 13 Jan 2027');
+    await expect(link).toBeFocused();
+  });
+
+  test('old consultation links arrive at the visible heading and return from its timetable', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-10-19T12:00:00Z'));
+    await page.goto('/get-involved.html#respond');
+    await expectScrollSettled(page, 'closed consultation arrival');
+    const heading = page.locator('#respond-closed-title');
+    await expect(heading).toBeInViewport({ ratio: 1 });
+    await expect(page.locator('#respond')).toHaveAccessibleName('The consultation response deadline has passed');
+    await page.locator('#respond a[href="dates.html#timetable"]').click();
+    await expect(page.locator('#timetable')).toBeInViewport();
+    await page.goBack();
+    await expect(heading).toBeInViewport({ ratio: 1 });
   });
 });

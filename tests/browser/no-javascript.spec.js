@@ -468,15 +468,16 @@ test('No JavaScript: Get involved offers every action and the archived parent pl
   await expect(page).toHaveURL(/get-involved\.html$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Get involved');
   const respond = page.locator('#respond');
-  await expect(respond.getByRole('link', { name: /^Respond to the council/ })).toHaveAttribute('href', 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform');
+  await expect(respond.locator('[data-stage="closed"]')).toBeVisible();
+  await expect(respond.locator('[data-stage="open"]')).toBeHidden();
   await expect(respond).toContainText('16 October 2026');
-  await expect(respond.locator('a[href="mailto:schoolorganisation@achievingforchildren.org.uk"]')).toBeVisible();
-  await expect(respond).toContainText('Guildhall 2');
+  expect(await page.locator('main > section').last().getAttribute('id')).toBe('respond');
   const [checklist] = await Promise.all([page.waitForEvent('download'), respond.locator('a[href="response-checklist.pdf"]').tap()]);
   expect(checklist.suggestedFilename()).toBe('kew-riverside-response-checklist.pdf');
   expect(await checklist.failure()).toBeNull();
   await expect(page.locator('#petition a[href="https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249"]')).toBeVisible();
-  await expect(page.locator('#petition')).toContainText('13 January 2027');
+  await expect(page.locator('#petition time')).toHaveAttribute('datetime', '2027-01-13');
+  await expect(page.locator('#petition a.primary')).toHaveAccessibleName('Sign petition by 13 Jan 2027');
   for (const href of ['https://cabnet.richmond.gov.uk/mgMemberIndex.aspx?bcr=1', 'https://members.parliament.uk/FindYourMP']) await expect(page.locator(`#representatives a[href="${href}"]`)).toBeVisible();
   for (const href of ['letters.html#letter-form', 'letters.html']) await expect(page.locator(`#share-your-story a[href="${href}"]`)).toBeVisible();
   await expect(page.locator('.school-contributions #parent-video a[href="videos.html#upload"]')).toBeVisible();
@@ -484,6 +485,9 @@ test('No JavaScript: Get involved offers every action and the archived parent pl
   for (const href of ['feedback.html', 'mailto:savekrps@gmail.com']) await expect(page.locator(`#help a[href="${href}"]`)).toBeVisible();
   for (const href of ['qr/savekewriverside-home-qr.png', 'qr/savekewriverside-home-qr.svg']) await expect(page.locator(`#spread-the-word a[href="${href}"][download]`)).toBeVisible();
   await expect(page.locator('.page-sections')).toHaveCount(0);
+  await page.goto('/get-involved.html#respond');
+  await expect(page.locator('#respond-closed-title')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('#respond')).toHaveAccessibleName('The consultation response deadline has passed');
   // The parent plan was archived in place; its own steps still work from a direct link.
   await page.goto('/proposal.html#parent-plan');
   await expect(page.locator('#parent-plan-title')).toBeInViewport();

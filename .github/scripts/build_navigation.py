@@ -115,7 +115,7 @@ def render_identity(name, document):
     descriptions = {
         'index.html': 'Help keep Kew Riverside Primary School open. Respond to the council, sign the petition and find the council’s own dates and documents.',
         'dates.html': 'The council’s own timetable for the proposed closure of Kew Riverside Primary School, with its consultation leaflet and FAQs. Closure is proposed, not decided.',
-        'get-involved.html': 'Ways to help keep Kew Riverside Primary School open: respond to the council, sign the petition, write to your representatives and share your story.',
+        'get-involved.html': 'Ways to help keep Kew Riverside Primary School open: sign the petition, write to your representatives and share your story.',
         'updates.html': 'News from the parent-led campaign to keep Kew Riverside Primary School open, newest first.',
         'about.html': 'Who runs this independent parent-led campaign website, how to contact the campaign, and guidance for journalists.',
         'proposal.html': 'Understand the proposed closure of Kew Riverside Primary School, the consultation process, who decides and the parent action plan. Responses are due by 16 October 2026.',

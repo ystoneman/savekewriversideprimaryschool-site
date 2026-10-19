@@ -58,8 +58,8 @@ for (const [width, height] of [[320, 568], [390, 844]]) {
   });
 
   // Implementation review (13 October 2026, J2): after the deadline the petition leads
-  // Get involved and the dated closed note follows it, instead of the response button.
-  test(`Top journeys: ${width}×${height} Get involved after the deadline leads with the petition, then a dated note instead of the response button`, async ({ page }) => {
+  // Get involved, followed by current actions; the closed note is at the bottom.
+  test(`Top journeys: ${width}×${height} Get involved after the deadline leads with the petition, then current actions with the dated note at the bottom`, async ({ page }) => {
     await page.clock.setFixedTime(new Date(afterDeadline));
     await page.setViewportSize({ width, height });
     await page.goto('/get-involved.html');
@@ -67,7 +67,8 @@ for (const [width, height] of [[320, 568], [390, 844]]) {
     await expect(page.locator('#respond a[data-current-response]')).toBeHidden();
     await expect(page.locator('#petition h2')).toBeInViewport({ ratio: 1 });
     await expect(page.locator(`#petition a[href="${petition}"]`)).toBeVisible();
-    expect(await page.locator('main section[id]').evaluateAll(sections => sections.map(section => section.id).slice(0, 2))).toEqual(['petition', 'respond']);
+    expect(await page.locator('main section[id]').evaluateAll(sections => sections.map(section => section.id).slice(0, 2))).toEqual(['petition', 'representatives']);
+    expect(await page.locator('main > section').last().getAttribute('id')).toBe('respond');
     const closed = page.locator('#respond [data-stage="closed"]');
     await expect(closed.getByRole('heading', { level: 2 })).toHaveText('The consultation response deadline has passed');
     await expect(closed.getByRole('heading', { level: 2 })).toBeVisible();

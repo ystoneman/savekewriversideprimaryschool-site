@@ -1,5 +1,12 @@
 # Testing the website
 
+## Current actions first — 19 October 2026
+
+- All 136 focused browser cases pass across iPhone WebKit, Android Chromium, desktop Chromium/WebKit and iPhone no-script. Coverage includes October stage ordering, static closed-stage fallback, the retained response-checklist download, representative lookup touch/click handoffs and Back, old consultation anchors, independent January expiry, long-open pages, focus and a held pointer target across midnight. External providers are intercepted; no forms are submitted.
+- Independent rendered UX compares the current main baseline with the candidate at 320/390/1440px, light/dark, doubled text and scripts/no scripts. Petition height decreases by about 79/79/26px; letters arrive about 392/366/210px earlier. Representative buttons add about 31px on phones and 13px on desktop; retain their clear full-size targets because the overall route is substantially shorter. No overflow, covered closed-stage heading or repeated-refresh focus/scroll regression was found. Campaign actual-diff review found no actionable issue.
+- Native iPhone 17 / iOS 26.5 Safari Simulator renders the date button and both lookup controls, follows the MP lookup by touch and returns through Back, and opens the preserved `#respond` anchor below the sticky header. The isolated HTTP preview disables writes and removes TLS upgrading only from served preview HTML; production policy is unchanged. These are simulator checks, not a physical-phone visitor study.
+- 157 Python checks, 44 backend/deadline unit checks, 140-file public staging, navigation freshness, JavaScript syntax and whitespace checks pass. The first focused run had four failures from an accidentally inserted current-stage assertion in the historical-open test; correcting that test scope yielded the complete passing focused run. Complete exact-revision hosted checks and live publication are recorded separately in the release pull request. No conversion improvement or provider receipt is claimed.
+
 ## Visual contribution cards — 19 October 2026
 
 - 48 focused browser checks pass across iPhone WebKit, Android Chromium, desktop Chromium and desktop WebKit: letter/video/help handoffs, Back, ordinary no-script links, four actual QR downloads, old anchors, deadline ordering/first-screen actions, 320/390/1440px light/dark reflow, simulated doubled text and a keyboard-modality focus outline. External provider submissions are blocked; these checks do not establish provider receipt. No real form was submitted.
