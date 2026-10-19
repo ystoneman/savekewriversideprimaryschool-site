@@ -67,6 +67,7 @@ tests/browser/videos.spec.js tests/browser/top-journeys.spec.js tests/browser/ho
 .github/scripts/build_lessons.py .github/scripts/test_lessons.py tests/browser/lessons.spec.js
 .nojekyll .gitignore .gitattributes README.md CODEX-HANDOFF.md .github/workflows/pages.yml
 .github/scripts/check_site.py .github/scripts/public_data.py
+.github/scripts/build_video_letters.py .github/scripts/test_video_letters.py tests/browser/video-letters.spec.js
 .github/scripts/test_security.py .github/scripts/test_site_structure.py
 AGENTS.md CLAUDE.md TESTING.md CHANGELOG.md UX-DESIGN-DECISIONS.md package.json package-lock.json playwright.config.js
 tests/browser/fixtures.js tests/browser/server.js tests/browser/mobile.spec.js
@@ -75,6 +76,7 @@ tests/browser/contributions.spec.js tests/browser/evidence.spec.js tests/browser
 tests/browser/visitor-journeys.spec.js tests/browser/understand.spec.js tests/browser/participation.spec.js .github/scripts/build_understand.py .github/scripts/test_understand.py
 '''.split())
 CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://gateway.umami.is/api/send https://kew-riverside-statistics.analytics-backend.workers.dev/count; base-uri 'none'; object-src 'none'; frame-src 'none'; form-action 'self' https://formspree.io; upgrade-insecure-requests"
+LETTERS_CSP = CSP.replace("frame-src 'none'", 'frame-src https://www.youtube-nocookie.com')
 HOME_CSP = CSP.replace("img-src 'self';", "img-src 'self'; media-src 'self';").replace("workers.dev/count;", "workers.dev/count https://kew-riverside-statistics.analytics-backend.workers.dev/petition;")
 SECRET_PATTERNS = [
     r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',
@@ -125,9 +127,10 @@ def require(ok, message):
 
 
 class Page(HTMLParser):
-    def __init__(self, text, *, home_media=False):
+    def __init__(self, text, expected_csp=None, *, home_media=False):
         super().__init__()
         self.home_media = home_media
+        self.expected_csp = expected_csp if expected_csp is not None else HOME_CSP if home_media else CSP
         self.csp = False
         self.referrer = False
         self.inputs = {}
@@ -140,7 +143,7 @@ class Page(HTMLParser):
         require(not any(k.startswith('on') or k == 'style' for k in a), 'Inline handler or style is forbidden.')
         require(tag not in {'base', 'iframe', 'object', 'embed', 'style'}, 'Unexpected active or embedded content.')
         if tag == 'meta' and a.get('http-equiv', '').lower() == 'content-security-policy':
-            require(a.get('content') == (HOME_CSP if self.home_media else CSP), 'Security policy has changed; review it explicitly.')
+            require(a.get('content') == self.expected_csp, 'Security policy has changed; review it explicitly.')
             self.csp = True
         if tag == 'meta' and a.get('name') == 'referrer':
             require(a.get('content') == 'strict-origin-when-cross-origin', 'Keep form domain validation compatible without leaking query strings.')
@@ -196,7 +199,7 @@ def validate_site(root=ROOT):
         data = p.read_bytes().decode('utf-8', errors='replace')
         require(not any(re.search(pattern, data) for pattern in SECRET_PATTERNS), 'Possible credential in ' + name + ' (value withheld).')
         if name.endswith('.html'):
-            page = Page(data, home_media=name == 'index.html')
+            page = Page(data, LETTERS_CSP if name == 'letters.html' else None, home_media=name == 'index.html')
             if name in ARCHIVED_PAGES:
                 require('<!-- archive:start -->' in data and re.search(r'<meta name="robots" content="[^"]*noindex', data), 'Archived page lacks its banner or noindex: ' + name)
             elif name in PUBLIC_FILES and name not in REDIRECT_PAGES:
@@ -204,6 +207,8 @@ def validate_site(root=ROOT):
                 links = archived_links(name, data)
                 require(not links, 'Live page links to archived pages: ' + name + ' -> ' + ', '.join(sorted(links)))
             if name == 'letters.html':
+                from build_video_letters import build
+                build(root, check=True)
                 require(all('disabled' in page.inputs.get(field, {}) for field in ('council-name', 'council-postcode')), 'Council identity must be disabled before consent is checked.')
                 for field, value in {
                     'notice_version': '2026-09-22-letters-v3',

@@ -38,7 +38,8 @@ const productionOnly = { 'connect-src': ['https://gateway.umami.is/api/send',
 function staysOnSite(file) {
   const policy = readFileSync(path.join(root, file), 'utf8').match(/http-equiv="Content-Security-Policy" content="([^"]*)"/)?.[1]?.toLowerCase() || '';
   const sources = policy.split(';').map(directive => directive.trim().split(/\s+/)).filter(([name]) => /-src(?:-elem|-attr)?$/.test(name));
-  return sources.some(([name]) => name === 'default-src') && sources.every(([name, ...allowed]) => allowed.every(source => ["'self'", "'none'", ...(productionOnly[name] || [])].includes(source)));
+  return sources.some(([name]) => name === 'default-src') && sources.every(([name, ...allowed]) => allowed.every(source =>
+    ["'self'", "'none'", ...(productionOnly[name] || []), ...(file === 'letters.html' && name === 'frame-src' ? ['https://www.youtube-nocookie.com'] : [])].includes(source)));
 }
 
 const test = base.extend({
@@ -61,8 +62,10 @@ const test = base.extend({
       // In WebKit any route pauses every request until Playwright continues it, which keeps
       // more homepage requests in flight when a legacy link redirects. Cancelling them trips
       // a network-process defect that can lose the redirected navigation (TESTING.md).
-      // Without routes nothing can abort a request: no page's policy may let it reach another
-      // origin from this server, and the journey must not submit forms or leave the site.
+      // Without routes nothing can abort a request. The server adds a stricter frame-src
+      // policy for this context, so the click-to-load Letters player cannot contact YouTube.
+      await context.setExtraHTTPHeaders({ 'x-kew-no-external-frames': '1' });
+      // Apart from that explicitly blocked frame, page policies cannot reach other origins.
       // Requests to other origins, local writes and the letters board are still reported.
       for (const file of pages) expect(staysOnSite(file), `${file} can reach no other origin from this server`).toBe(true);
       context.on('request', request => {

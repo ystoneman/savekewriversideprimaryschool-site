@@ -84,6 +84,14 @@
       "displayName": "Lisa",
       "date": "2026-10-13",
       "review": "AI screened"
+    },
+    {
+      "id": "letter-d2137332d949",
+      "date": "2026-10-19",
+      "review": "Human reviewed",
+      "displayName": "Parent voice",
+      "body": "A parent shares her experience of Kew Riverside Primary School and her concerns about the proposed closure.",
+      "youtubeId": "6Uhc2pIML08"
     }
   ]
 }
