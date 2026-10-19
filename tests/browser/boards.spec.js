@@ -28,7 +28,7 @@ for (const [width, height] of [[390, 844], [1440, 1000]]) {
     const involved = page.locator('a.home-plan');
     if (hasTouch) await involved.tap(); else await involved.click();
     await expect(page).toHaveURL(/\/get-involved\.html$/);
-    const read = page.locator('#share-your-story').getByRole('link', { name: 'read letters from other families', exact: true });
+    const read = page.locator('#share-your-story').getByRole('link', { name: 'Read community letters', exact: true });
     await read.scrollIntoViewIfNeeded();
     if (hasTouch) await read.tap(); else await read.click();
     await expect(page).toHaveURL(/\/letters\.html$/);
@@ -51,7 +51,7 @@ for (const [width, height] of [[390, 844], [1440, 1000]]) {
 test('Get involved: the writing link opens the composer and Back returns to Share your story', async ({ page, hasTouch }) => {
   await page.goto('/get-involved.html');
   const write = page.locator('#share-your-story a[href="letters.html#letter-form"]');
-  await expect(write).toHaveText('Write a community letter');
+  await expect(write).toHaveAccessibleName('Write a community letter');
   await write.scrollIntoViewIfNeeded();
   const storyPosition = await page.evaluate(() => scrollY);
   if (hasTouch) await write.tap(); else await write.click();

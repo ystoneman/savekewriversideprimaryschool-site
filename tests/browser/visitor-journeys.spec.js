@@ -300,7 +300,7 @@ test('Get involved: homepage shortcut leads to current actions; archived meeting
   await expect(page).toHaveURL(/get-involved\.html$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Get involved', exact: true })).toBeInViewport();
   await expect(page.locator('main')).toContainText('Closure is proposed, not decided.');
-  expect(await page.locator('main > section').evaluateAll(sections => sections.map(section => section.id))).toEqual(['respond', 'petition', 'representatives', 'share-your-story', 'help', 'spread-the-word']);
+  expect(await page.locator('main > section').evaluateAll(sections => sections.map(section => section.id))).toEqual(['respond', 'petition', 'representatives', 'share-your-story', 'help', 'spread-the-word', 'school-contributions']);
   await page.goto('/proposal.html#school-meeting');
   await activate(page.locator('#school-meeting a[href="#parent-plan"]'), hasTouch);
   await expect(page.locator('#parent-plan-title')).toBeInViewport();
@@ -539,14 +539,15 @@ test('Get involved: flyer makers can download the permanent homepage and visit Q
   await page.goto('/index.html');
   await activate(page.locator('.home-plan'), hasTouch);
   await expect(page).toHaveURL(/get-involved\.html$/);
-  const section = page.locator('#spread-the-word');
-  await section.scrollIntoViewIfNeeded();
-  // Pin each filename to its own paragraph and link name so the two QR purposes cannot be swapped.
+  await expect(page.locator('#spread-the-word #share-qr')).toBeVisible();
+  await expect(page.locator('#school-contributions #visit-qr')).toBeVisible();
+  await expect(page.locator('#spread-the-word #visit-qr')).toHaveCount(0);
+  // Pin each filename to its own card and link name so the two QR purposes cannot be swapped.
   for (const [id, label, base, caveat, svgTitle] of [
     ['share-qr', 'Homepage', 'savekewriverside-home-qr', 'in your own name', 'QR code for the Kew Riverside Primary School website'],
     ['visit-qr', 'Visit', 'savekewriverside-visit-qr', 'Keep closure campaigning off Open Day flyers', 'QR code for Kew Riverside Primary School visit enquiries'],
   ]) {
-    const share = section.locator('#' + id);
+    const share = page.locator('#' + id);
     await expect(share).toBeVisible();
     await expect(share).toContainText(caveat);
     await expect(share.getByRole('link')).toHaveCount(2);
