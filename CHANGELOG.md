@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Visual contribution cards — 19 October 2026
+
+- Get involved replaces the story, help and sharing paragraphs with compact custom SVG icons, explicit action buttons and short effort/process explanations. Writing goes directly to the existing letter composer, with reading kept visible.
+- Recruitment videos and Open Day QR downloads have their own Discover the school section. The video card describes the existing permission-first route and possible automatic publication after checks. Campaign/recruitment QR downloads and old anchors remain distinct.
+- Independent campaign and UX planning/diff reviews completed; a misleading personal-review promise was corrected and rechecked. Rendered 320/390/1440px light/dark review found no remaining issue. Local validation: 48 focused browser checks across four projects, 152 Python checks, 33 deadline unit checks and 140-file public staging pass. Native iPhone 17 / iOS 26.5 Safari reached a local certificate warning; no bypass or native interaction success is claimed. No real form was submitted.
+- Local implementation only; publication and changes to submission rates are not claimed.
+
 ### Revised audio on the unlisted YouTube copy — 18 October 2026
 
 - Point the homepage's YouTube sharing link to the revised music/effects upload and remove the voice-only qualifier. Preserve the existing native player, downloads and dated retirement guards.
