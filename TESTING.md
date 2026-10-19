@@ -1,5 +1,11 @@
 # Testing the website
 
+## Contribution order — 19 October 2026
+
+All 84 focused cases pass across iPhone WebKit, Android Chromium, desktop Chromium/WebKit and iPhone no-script. The new regression requires video immediately after the letter, help after all other current actions, retained historical/current consultation order, native desktop Tab/Option-Tab progression from reading letters to video, direct video arrival/handoff/Back and no-script order. Existing help, permission, reading and four QR-download checks remain. All 157 Python checks, navigation freshness, whitespace and 140-file public validation pass; no CSS or JavaScript implementation changed.
+
+Independent actual-diff campaign review found no actionable issue. Independent rendered UX checks at 320/390/1440px, both appearances, and no scripts verify the visible recruitment label, level-two heading, video/help/school/visit anchors, focused video link and absence of overflow. Native iPhone 17 / iOS 26.5 Safari Simulator shows the adjacent cards, opens the retained video anchor, follows its button to the existing permission-first page and returns through Back. Native scroll/swipe attempts did not move the page, so direct-anchor navigation established that handoff; no native scrolling success is claimed. Preview write actions are disabled and only its served HTML omits TLS upgrading. No form was submitted. Complete current-revision hosted checks and deployment remain separate release gates recorded in the pull request.
+
 ## Current actions first — 19 October 2026
 
 - All 136 focused browser cases pass across iPhone WebKit, Android Chromium, desktop Chromium/WebKit and iPhone no-script. Coverage includes October stage ordering, static closed-stage fallback, the retained response-checklist download, representative lookup touch/click handoffs and Back, old consultation anchors, independent January expiry, long-open pages, focus and a held pointer target across midnight. External providers are intercepted; no forms are submitted.

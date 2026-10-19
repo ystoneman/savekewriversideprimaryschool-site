@@ -300,7 +300,7 @@ test('Get involved: homepage shortcut leads to current actions; archived meeting
   await expect(page).toHaveURL(/get-involved\.html$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Get involved', exact: true })).toBeInViewport();
   await expect(page.locator('main')).toContainText('Closure is proposed, not decided.');
-  expect(await page.locator('main > section').evaluateAll(sections => sections.map(section => section.id))).toEqual(['respond', 'petition', 'representatives', 'share-your-story', 'help', 'spread-the-word', 'school-contributions']);
+  expect(await page.locator('main > section').evaluateAll(sections => sections.map(section => section.id))).toEqual(['respond', 'petition', 'representatives', 'share-your-story', 'parent-video', 'spread-the-word', 'school-contributions', 'help']);
   await page.goto('/proposal.html#school-meeting');
   await activate(page.locator('#school-meeting a[href="#parent-plan"]'), hasTouch);
   await expect(page.locator('#parent-plan-title')).toBeInViewport();

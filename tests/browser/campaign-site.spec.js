@@ -607,6 +607,33 @@ test('Shared research-footer link opens the optional section', async ({ page }) 
 
 
 test.describe('Visual contribution cards', () => {
+  test('video follows the letter immediately and help is the last action before the consultation reference', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-10-19T12:00:00Z'));
+    await page.goto('/get-involved.html#share-your-story');
+    expect(await page.locator('main > section').evaluateAll(sections => sections.map(section => section.id))).toEqual([
+      'petition', 'representatives', 'share-your-story', 'parent-video', 'spread-the-word', 'school-contributions', 'help', 'respond',
+    ]);
+    await expect(page.locator('#share-your-story + #parent-video')).toHaveCount(1);
+    await expect(page.locator('#school-contributions + #help + #respond')).toHaveCount(1);
+    // Native focus traversal follows the visual order across the newly adjacent cards.
+    // macOS WebKit uses Option-Tab for links; the phone projects still verify DOM order.
+    if (!test.info().project.name.startsWith('iphone') && !test.info().project.name.startsWith('android')) {
+      const read = page.locator('#share-your-story .contribution-secondary');
+      await read.focus();
+      await page.keyboard.press(test.info().project.name.includes('webkit') ? 'Alt+Tab' : 'Tab');
+      await expect(page.locator('#parent-video a.primary')).toBeFocused();
+    }
+    await page.goto('/get-involved.html#parent-video');
+    const video = page.locator('#parent-video');
+    await expectScrollSettled(page, 'parent video arrival');
+    await expect(video.locator(':scope > .contribution-kicker')).toBeInViewport({ ratio: 1 });
+    await expect(video.getByRole('heading', { level: 2 })).toBeInViewport({ ratio: 1 });
+    await video.locator('a.primary').click();
+    await expect(page.locator('#video-upload-link')).toBeInViewport({ ratio: 1 });
+    await page.goBack();
+    await expect(video.getByRole('heading', { level: 2 })).toBeInViewport({ ratio: 1 });
+  });
+
   test('letter and video actions reach the existing forms and Back returns to the card', async ({ page }) => {
     await page.goto('/get-involved.html#share-your-story');
     const letter = page.locator('#share-your-story');
@@ -625,7 +652,8 @@ test.describe('Visual contribution cards', () => {
     await expect(video).toContainText('Permissions first, then private upload');
     await expect(video).toContainText('published automatically after checks');
     await expect(page.locator('#share-your-story a[href="videos.html#upload"]')).toHaveCount(0);
-    await expect(page.locator('.school-contributions #parent-video')).toHaveCount(1);
+    await expect(page.locator('#parent-video.recruitment-action > .contribution-kicker')).toHaveText('Discover the school');
+    await expect(video.getByRole('heading', { level: 2, name: 'Record a parent video' })).toBeVisible();
     await video.getByRole('link', { name: 'Share your parent testimonial' }).click();
     await expect(page).toHaveURL(/videos\.html#upload$/);
     await expect(page.locator('#video-upload-link')).toBeInViewport({ ratio: 1 });
@@ -701,6 +729,9 @@ test.describe('Visual contribution cards', () => {
     test.use({ javaScriptEnabled: false });
     test('letters, recruitment video and old downloads work as ordinary links', async ({ page }) => {
       await page.goto('/get-involved.html#share-your-story');
+      expect(await page.locator('main > section').evaluateAll(sections => sections.map(section => section.id))).toEqual([
+        'petition', 'representatives', 'share-your-story', 'parent-video', 'spread-the-word', 'school-contributions', 'help', 'respond',
+      ]);
       await page.locator('#share-your-story a.primary').click();
       await expect(page.locator('#message')).toBeVisible();
       await page.goBack();

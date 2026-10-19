@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Contribution order — 19 October 2026
+
+Move Record a parent video directly after Write a community letter, retaining a standalone Discover the school label and the same recruitment-only content and permissions. Move Offer an idea or help after sharing and visit downloads so it is the last current-action card. Preserve existing anchors and the closed consultation reference beneath the actions. Update no-script, keyboard, destination and Back regression coverage; verification and publication are recorded separately.
+
 ### Current actions first — 19 October 2026
 
 - Put the verified 13 January 2027 petition closing date on its button and retain eligibility/account requirements in a shorter paragraph. Shorten the page introduction and give councillor/MP lookups their own descriptive buttons.
