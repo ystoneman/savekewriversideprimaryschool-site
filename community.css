@@ -20,12 +20,7 @@
   .simple-page .about-page .simple-intro h1{margin-top:0;margin-bottom:14px}
 }
 
-.video-letter-player:empty{display:none}
 .video-letter-player iframe{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:12px;background:#000}
 .video-letter-actions{display:flex;flex-wrap:wrap;gap:12px 24px;margin:16px 0}
 .video-letter-actions a{display:inline-flex;align-items:center;min-height:44px}
-.video-letter-note{font-size:.9rem;line-height:1.5}
-.video-letter-load,.video-letter-stop{margin:12px 0;min-height:44px}
-.video-letter-load{border:0}
-.video-letter-load[hidden],.video-letter-stop[hidden]{display:none}
-@media print{.video-letter-player iframe,.video-letter-load,.video-letter-stop{display:none!important}.video-letter-actions a[href^="https://www.youtube.com/watch"]::after{content:" (" attr(href) ")"}}
+@media print{.video-letter-player iframe{display:none!important}.video-letter-actions a[href^="https://www.youtube.com/watch"]::after{content:" (" attr(href) ")"}}

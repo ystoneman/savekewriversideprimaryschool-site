@@ -1,5 +1,11 @@
 # Testing the website
 
+## Automatic video-letter player — 19 October 2026
+
+All 41 focused browser checks pass across the four scripted projects and iPhone no-script: one player loads on arrival without autoplay permission/query or focus movement; links, keyboard exit, Back, mixed letters, strict IDs, cached assets, no-script fallback and network guards remain covered. The delayed-feed regression exposed real WebKit displacement of the focused writing field; preserving its screen position fixes it. The keyboard test uses the same macOS WebKit Option-Tab convention as the existing suite. Player responses and letters use fictional intercepted fixtures; no real forms are submitted.
+
+All 157 Python checks, 44 Node deadline/collector unit checks, navigation/fallback freshness, JavaScript syntax and 140-file public validation pass. Independent UX actual-diff/rendered review, native iOS verification and complete exact-revision hosted checks are recorded in the pull request as they complete; this entry alone does not establish deployment.
+
 ## Complete video-letter release candidate — 19 October 2026
 
 The owner confirmed approval of the exact complete recording and instructed Unlisted YouTube release and Letters embedding. Saved Studio visibility is Unlisted, embedding enabled, subscriber notification off, SD/HD processing complete and Notices clear. A separate Incognito window exposed Sign in and played the full-version URL past 0:26 of 1:44. These are playback smoke checks, not a new agent auditory assessment. The contributor/owner’s exact-version review is the release basis.

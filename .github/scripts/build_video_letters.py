@@ -26,7 +26,6 @@ def render_fallback(board):
                        f'<div class="letter-source"><p>Published on Save Kew Riverside Primary School Campaign · Independent and parent-led</p>'
                        f'<div class="letter-source-actions"><a class="letter-permalink" href="{letter_url}" aria-label="savekewriversideprimaryschool.org — Permanent link to the video letter by {esc(row["displayName"], quote=True)}">savekewriversideprimaryschool.org</a></div>'
                        f'<p class="letter-print-url">{letter_url}</p></div>'
-                       f'<p>This unlisted video is public here and shareable by link.</p>'
                        f'<p><a href="https://www.youtube.com/watch?v={row["youtubeId"]}">Watch on YouTube</a></p>'
                        f'<a href="feedback.html?kind=privacy&amp;letter={row["id"]}#feedback-form">Report this video letter or request removal</a></article>')
     return '\n' + '\n'.join(entries) + '\n'

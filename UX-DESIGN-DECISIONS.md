@@ -1,5 +1,11 @@
 # UX design decisions
 
+## Video letters ready to play — 19 October 2026
+
+J4: the owner wants a familiar embedded player without the explanatory paragraph or a separate loading step. Load the existing privacy-enhanced YouTube iframe with each video letter, without autoplay or focus movement. Remove Load/Close controls and keep the direct YouTube, privacy and removal links, plus the no-JavaScript watch/removal fallback. The privacy notice now describes the connection on page load. This supersedes the click-to-load decision below; no recruitment route or contribution permission changes.
+
+Reserve the same player aspect ratio and preserve a visible writing field's position when a delayed feed adds content above it. Focused regression checks cover automatic loading, keyboard recovery, Back and delayed-feed/player focus. Independent UX review and native verification are recorded with the release evidence.
+
 ## Optional video letters within Community letters — 16 October 2026
 
 Visitor need (J4, with J8/J9 boundaries): a consented closure-focused parent recording should be readable as a community contribution without turning it into recruitment material or implying it is an official council response. Use the existing newest-first Letters feed rather than a second route or a Discover the school promotion. Label a video item as an opinion with its actual review status and chosen generic credit, and describe it in a factual editorial sentence rather than a fabricated quotation. An Unlisted video is still shareable through the page or its link. The player is click-to-load to avoid contacting YouTube before the visitor chooses to watch; a visible YouTube link and generated no-JavaScript watch/removal fallback preserve access without scripts. The page-specific frame policy permits only youtube-nocookie. Focus returns to Load video when the player closes. This is a prepared implementation, with focused browser checks; no recording has yet been released or embedded, and real-phone and live-player verification remain separate gates.

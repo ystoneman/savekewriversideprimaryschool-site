@@ -428,21 +428,15 @@
           article.append(body, source);
         }
         if (item.youtubeId) {
-          const note = document.createElement('p');
-          note.className = 'video-letter-note';
-          note.textContent = 'This Unlisted video is watchable here and shareable by link. Loading the player connects to YouTube (Google).';
           const player = document.createElement('div');
           player.className = 'video-letter-player';
-          const load = document.createElement('button');
-          load.type = 'button';
-          load.className = 'button primary video-letter-load';
-          load.textContent = 'Load video';
-          load.setAttribute('aria-label', 'Load video letter by ' + item.displayName);
-          const stop = document.createElement('button');
-          stop.type = 'button';
-          stop.className = 'video-letter-stop';
-          stop.textContent = 'Close video player';
-          stop.hidden = true;
+          const frame = document.createElement('iframe');
+          frame.src = 'https://www.youtube-nocookie.com/embed/' + item.youtubeId + '?rel=0';
+          frame.title = 'Video letter by ' + item.displayName;
+          frame.allow = 'fullscreen';
+          frame.allowFullscreen = true;
+          frame.referrerPolicy = 'strict-origin-when-cross-origin';
+          player.append(frame);
           const actions = document.createElement('div');
           actions.className = 'video-letter-actions';
           const watch = document.createElement('a');
@@ -452,33 +446,20 @@
           privacy.href = 'privacy.html#video-privacy';
           privacy.textContent = 'Video privacy';
           actions.append(watch, privacy);
-          let frame;
-          load.addEventListener('click', () => {
-            if (frame) return;
-            frame = document.createElement('iframe');
-            frame.src = 'https://www.youtube-nocookie.com/embed/' + item.youtubeId + '?rel=0';
-            frame.title = 'Video letter by ' + item.displayName;
-            frame.allow = 'fullscreen';
-            frame.allowFullscreen = true;
-            frame.referrerPolicy = 'strict-origin-when-cross-origin';
-            player.append(frame);
-            load.hidden = true;
-            stop.hidden = false;
-            frame.focus({preventScroll: true});
-          });
-          stop.addEventListener('click', () => {
-            if (frame) frame.remove();
-            frame = undefined;
-            stop.hidden = true;
-            load.hidden = false;
-            load.focus({preventScroll: true});
-          });
-          article.append(note, load, player, stop, actions);
+          article.append(player, actions);
         }
         article.append(removal);
         fragment.append(article);
       });
+      // Keep an active writer in place when a slow feed adds content above the form.
+      // Safari does not consistently anchor the focused field during this update.
+      const focused = document.activeElement;
+      const writing = form.contains(focused) ? focused : null;
+      const previousPosition = writing && writing.getBoundingClientRect();
       board.replaceChildren(fragment);
+      if (previousPosition && previousPosition.bottom > 0 && previousPosition.top < innerHeight) {
+        window.scrollBy({top: writing.getBoundingClientRect().top - previousPosition.top, behavior: 'instant'});
+      }
       lettersLoaded = true;
       boardStatus.textContent = data.letters.length ? data.letters.length + ' published letter' + (data.letters.length === 1 ? '' : 's') + '.' : 'No community letters have been published yet. You can submit yours for review using the form below.';
       openLinkedLetter();
