@@ -237,8 +237,9 @@ def render_navigation(name, document):
         return render_home_navigation(document)
     document = render_identity(name, document)
     document = render_archive(name, document)
+    page_versions = {'letters.js': '2026101903', 'community.css': '2026101902'} if name == 'letters.html' else {}
     for asset in ('letters.js', 'contribute.css', 'feedback.css', 'community.css', 'discovery.css'):
-        version = '2026101902' if name == 'letters.html' and asset in {'letters.js', 'community.css'} else VERSION
+        version = page_versions.get(asset, VERSION)
         document = re.sub(re.escape(asset)+r'\?v=\d+', asset+'?v='+version, document)
     esc = html.escape
     def compact_body(match):

@@ -27,7 +27,7 @@ test('Short guides: homepage Help arrives at usable actions on Get involved', as
   const letter = page.locator('#share-your-story').getByRole('link', { name: 'Write a community letter' });
   await expect(letter).toBeVisible();
   await expect(letter).toHaveAttribute('href', 'letters.html#letter-form');
-  const idea = page.locator('#help').getByRole('link', { name: 'Send an idea, a question or an offer of help' });
+  const idea = page.locator('#help').getByRole('link', { name: 'Send an idea or offer help' });
   await expect(idea).toBeVisible();
   await expect(idea).toHaveAttribute('href', 'feedback.html');
 });

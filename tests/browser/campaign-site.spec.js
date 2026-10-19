@@ -596,3 +596,114 @@ test('Shared research-footer link opens the optional section', async ({ page }) 
   await page.goto('/index.html#supporting-research');
   await expect(page.locator('footer #supporting-research')).toHaveAttribute('open', '');
 });
+
+
+test.describe('Visual contribution cards', () => {
+  test('letter and video actions reach the existing forms and Back returns to the card', async ({ page }) => {
+    await page.goto('/get-involved.html#share-your-story');
+    const letter = page.locator('#share-your-story');
+    await expect(letter.getByRole('link', { name: 'Read community letters' })).toHaveAttribute('href', 'letters.html');
+    await letter.getByRole('link', { name: 'Write a community letter' }).click();
+    await expect(page).toHaveURL(/letters\.html#letter-form$/);
+    await expect(page.locator('#message')).toBeVisible();
+    await page.goBack();
+    await expect(page).toHaveURL(/get-involved\.html#share-your-story$/);
+    await expect(letter).toBeInViewport();
+    const video = page.locator('#parent-video');
+    await expect(video).toContainText('30 seconds–3 minutes');
+    await expect(video).toContainText('adults only');
+    await expect(video).toContainText('children off camera');
+    await expect(video).toContainText('YouTube permission required');
+    await expect(video).toContainText('Permissions first, then private upload');
+    await expect(video).toContainText('published automatically after checks');
+    await expect(page.locator('#share-your-story a[href="videos.html#upload"]')).toHaveCount(0);
+    await expect(page.locator('.school-contributions #parent-video')).toHaveCount(1);
+    await video.getByRole('link', { name: 'Share your parent testimonial' }).click();
+    await expect(page).toHaveURL(/videos\.html#upload$/);
+    await expect(page.locator('#video-upload-link')).toBeInViewport({ ratio: 1 });
+  });
+
+  test('help card reaches the private choices without changing them', async ({ page }) => {
+    await page.goto('/get-involved.html#help');
+    const help = page.locator('#help');
+    await expect(help.getByRole('link', { name: 'Email savekrps@gmail.com' })).toHaveAttribute('href', 'mailto:savekrps@gmail.com');
+    await help.getByRole('link', { name: 'Send an idea or offer help' }).click();
+    await expect(page).toHaveURL(/feedback\.html$/);
+    await expect(page.locator('.ideas-intro')).toContainText('Nothing is published');
+    await expect(page.locator('#kind-cards')).toBeVisible();
+  });
+
+  test('old QR anchors expose distinctly labelled campaign and Open Day downloads', async ({ page }) => {
+    for (const [id, prefix, group] of [
+      ['share-qr', 'home', 'Campaign homepage QR downloads'],
+      ['visit-qr', 'visit', 'Open Day QR downloads'],
+    ]) {
+      await page.goto('/get-involved.html#' + id);
+      await expect(page.locator('#' + id)).toBeInViewport();
+      for (const format of ['png', 'svg']) {
+        const link = page.getByRole('navigation', { name: group }).locator(`a[href="qr/savekewriverside-${prefix}-qr.${format}"]`);
+        await expect(link).toBeVisible();
+        await expect(link).toHaveAttribute('download', `savekewriverside-${prefix}-qr.${format}`);
+        const downloadPromise = page.waitForEvent('download');
+        await link.click();
+        const download = await downloadPromise;
+        expect(download.suggestedFilename()).toBe(`savekewriverside-${prefix}-qr.${format}`);
+        expect(await download.failure()).toBe(null);
+      }
+    }
+    await expect(page.locator('.school-contributions #visit-qr')).toContainText('without showing campaign pages');
+    await expect(page.locator('#spread-the-word #visit-qr')).toHaveCount(0);
+  });
+
+  test('cards reflow with visible buttons in both appearances and enlarged text', async ({ page }) => {
+    for (const colorScheme of ['light', 'dark']) {
+      await page.emulateMedia({ colorScheme });
+      for (const width of [320, 390, 1440]) {
+        await page.setViewportSize({ width, height: width === 320 ? 568 : 1000 });
+        await page.goto('/get-involved.html#share-your-story');
+        for (const id of ['share-your-story', 'help', 'parent-video', 'visit-qr']) {
+          const card = page.locator('#' + id);
+          const actions = card.locator('.simple-actions a');
+          for (const action of await actions.all()) {
+            await expect(action).toBeVisible();
+            const box = await action.boundingBox();
+            expect(box.height).toBeGreaterThanOrEqual(44);
+            expect(box.x).toBeGreaterThanOrEqual(0);
+            expect(box.x + box.width).toBeLessThanOrEqual(width + 1);
+          }
+        }
+        await expectNoHorizontalOverflow(page, `${width}px ${colorScheme} contribution cards`);
+      }
+    }
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.evaluate(() => {
+      const sizes = [...document.querySelectorAll('main, main *')].map(el => [el, parseFloat(getComputedStyle(el).fontSize)]);
+      for (const [el, size] of sizes) el.style.fontSize = `${size * 2}px`;
+    });
+    await expectNoHorizontalOverflow(page, '320px enlarged text contribution cards');
+    // Enter keyboard modality before checking the native link’s focus outline.
+    const write = page.locator('#share-your-story a.primary');
+    await page.keyboard.press('Tab');
+    await write.focus();
+    await expect(write).toBeFocused();
+    expect(await write.evaluate(el => parseFloat(getComputedStyle(el).outlineWidth))).toBeGreaterThanOrEqual(3);
+  });
+
+  test.describe('without JavaScript', () => {
+    test.use({ javaScriptEnabled: false });
+    test('letters, recruitment video and old downloads work as ordinary links', async ({ page }) => {
+      await page.goto('/get-involved.html#share-your-story');
+      await page.locator('#share-your-story a.primary').click();
+      await expect(page.locator('#message')).toBeVisible();
+      await page.goBack();
+      await expect(page.locator('#share-your-story')).toBeInViewport();
+      await page.locator('#parent-video a.primary').click();
+      await expect(page.locator('#video-upload-link')).toBeInViewport({ ratio: 1 });
+      for (const id of ['share-qr', 'visit-qr']) {
+        await page.goto('/get-involved.html#' + id);
+        await expect(page.locator('#' + id)).toBeInViewport();
+        await expect(page.locator('#' + id + ' a[download]')).toHaveCount(2);
+      }
+    });
+  });
+});

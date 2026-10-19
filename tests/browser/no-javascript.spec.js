@@ -478,7 +478,9 @@ test('No JavaScript: Get involved offers every action and the archived parent pl
   await expect(page.locator('#petition a[href="https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249"]')).toBeVisible();
   await expect(page.locator('#petition')).toContainText('13 January 2027');
   for (const href of ['https://cabnet.richmond.gov.uk/mgMemberIndex.aspx?bcr=1', 'https://members.parliament.uk/FindYourMP']) await expect(page.locator(`#representatives a[href="${href}"]`)).toBeVisible();
-  for (const href of ['letters.html#letter-form', 'letters.html', 'videos.html#upload']) await expect(page.locator(`#share-your-story a[href="${href}"]`)).toBeVisible();
+  for (const href of ['letters.html#letter-form', 'letters.html']) await expect(page.locator(`#share-your-story a[href="${href}"]`)).toBeVisible();
+  await expect(page.locator('.school-contributions #parent-video a[href="videos.html#upload"]')).toBeVisible();
+  await expect(page.locator('#share-your-story a[href="videos.html#upload"]')).toHaveCount(0);
   for (const href of ['feedback.html', 'mailto:savekrps@gmail.com']) await expect(page.locator(`#help a[href="${href}"]`)).toBeVisible();
   for (const href of ['qr/savekewriverside-home-qr.png', 'qr/savekewriverside-home-qr.svg']) await expect(page.locator(`#spread-the-word a[href="${href}"][download]`)).toBeVisible();
   await expect(page.locator('.page-sections')).toHaveCount(0);
@@ -728,7 +730,7 @@ test('No JavaScript: Get involved and the footer open Share a video at its permi
   await menu.locator(':scope > summary').tap();
   await expect(menu.getByRole('link', { name: 'Share a video', exact: true })).toHaveCount(0);
   await menu.getByRole('link', { name: 'Get involved', exact: true }).tap();
-  await page.locator('#share-your-story a[href="videos.html#upload"]').tap();
+  await page.locator('.school-contributions #parent-video a[href="videos.html#upload"]').tap();
   await expect(page).toHaveURL(/videos\.html#upload$/);
   await expect(page.locator('#video-upload-link')).toBeInViewport({ ratio: 1 });
   await page.goto('/letters.html');

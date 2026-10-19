@@ -62,7 +62,7 @@ for (const file of pages) {
 
 test('Get involved leads to Share ideas with its categories ready', async ({ page, hasTouch }) => {
   await page.goto('/get-involved.html');
-  const ideas = page.locator('#help').getByRole('link', { name: 'Send an idea, a question or an offer of help', exact: true });
+  const ideas = page.locator('#help').getByRole('link', { name: 'Send an idea or offer help', exact: true });
   await ideas.scrollIntoViewIfNeeded();
   if (hasTouch) await ideas.tap(); else await ideas.click();
   await expect(page).toHaveURL(/\/feedback\.html$/);

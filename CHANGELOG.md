@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Visual contribution cards — 19 October 2026
+
+- Get involved replaces the story, help and sharing paragraphs with custom SVG icons, explicit action buttons and shorter prompts. Writing goes directly to the existing letter composer, with reading kept visible.
+- Recruitment videos and Open Day QR downloads have their own Discover the school section. The video card describes the existing permission-first route and possible automatic publication after checks. Campaign/recruitment downloads and old anchors remain distinct.
+- Preserve the untouched composer’s visible arrival position when a slow Letters feed arrives, extending the active-writer safeguard without moving focus. Refresh the letter renderer’s cache version.
+- Independent campaign and rendered UX reviews found no remaining issue. Refreshed browser/native verification and hosted deployment evidence are recorded in TESTING.md and the release pull request. No improved submission rate is claimed.
+
 ### Video letters ready to play — 19 October 2026
 
 Load video-letter players with the Letters page, with playback still requiring Play. Remove the extra paragraph and Load/Close buttons, retain direct watch/privacy/removal links and update the privacy notice. Preserve an active writer's screen position when a delayed feed arrives in Safari. Refresh the Letters asset versions and generated no-script fallback. Verification and deployment are recorded separately.

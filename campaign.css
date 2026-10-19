@@ -26,3 +26,31 @@ html:has(.campaign-page){scroll-behavior:auto}
 .update-photo figcaption{font-size:14px;line-height:1.5;color:var(--theme-readable,var(--muted));margin-top:8px}
 .updates-shortcuts{display:flex;flex-wrap:wrap;gap:0 22px;margin:4px 0 16px}
 .updates-shortcuts a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
+
+/* Get involved: distinct, direct actions without changing other campaign pages. */
+.involvement-page .contribution-card{max-width:760px;margin:16px 0;padding:22px;border:1px solid var(--theme-border,var(--line));border-radius:14px;background:var(--theme-surface,#fff)}
+.involvement-page .letter-action{border-top:4px solid var(--theme-primary,var(--green));background:var(--theme-soft,#edf4e8)}
+.contribution-heading>div{min-width:0;overflow-wrap:anywhere}
+.contribution-heading{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.involvement-page .contribution-kicker{font:700 12px/1.5 Arial,sans-serif;letter-spacing:.04em;color:var(--theme-readable,var(--teal));margin:0 0 4px}
+.involvement-page .contribution-heading :is(h2,h3){font:700 24px/1.2 Arial,sans-serif;color:var(--ink);margin:0;letter-spacing:-.025em}
+.contribution-icon{width:56px;height:56px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--teal);background:var(--theme-soft,#edf4e8);padding:7px;border-radius:12px}
+.letter-action .contribution-icon{background:var(--theme-surface,#fff)}
+.involvement-page .contribution-card>p{font-size:17px;line-height:1.5;margin:0 0 12px}
+.involvement-page .contribution-card .simple-note{font-size:14px;line-height:1.5;margin-bottom:6px}
+.involvement-page .contribution-card .simple-actions{margin:14px 0 12px}
+.involvement-page .contribution-card .simple-actions a{gap:16px;justify-content:space-between;text-align:left}
+.contribution-secondary{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:15px;font-weight:700;text-underline-offset:4px}
+.school-contributions{max-width:760px;margin-top:32px;padding-top:24px;border-top:2px solid var(--theme-border,var(--line))}
+.involvement-page .school-contributions>h2{font:700 25px/1.25 Arial,sans-serif;color:var(--ink);margin:0 0 18px;letter-spacing:-.025em}
+.involvement-page .video-action{border-top:4px solid var(--teal)}
+.involvement-page .contribution-card a:focus-visible{outline:3px solid var(--theme-focus,var(--teal));outline-offset:4px}
+@media(max-width:600px){
+  .involvement-page .contribution-card{padding:18px 16px}
+  .contribution-heading{gap:12px}
+  .contribution-icon{width:48px;height:48px;padding:6px;border-radius:10px}
+  .involvement-page .contribution-heading :is(h2,h3){font-size:22px}
+  .involvement-page .contribution-card .simple-actions{flex-direction:column;gap:10px}
+  .involvement-page .contribution-card .simple-actions a{width:100%;min-width:0}
+}
+@media print{.involvement-page .contribution-card{break-inside:avoid;background:white}.contribution-icon{display:none}}

@@ -451,10 +451,10 @@
         article.append(removal);
         fragment.append(article);
       });
-      // Keep an active writer in place when a slow feed adds content above the form.
+      // Keep a form arrival or active writer in place when a slow feed adds content above it.
       // Safari does not consistently anchor the focused field during this update.
       const focused = document.activeElement;
-      const writing = form.contains(focused) ? focused : null;
+      const writing = form.contains(focused) ? focused : location.hash === '#letter-form' ? form : null;
       const previousPosition = writing && writing.getBoundingClientRect();
       board.replaceChildren(fragment);
       if (previousPosition && previousPosition.bottom > 0 && previousPosition.top < innerHeight) {
