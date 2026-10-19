@@ -238,7 +238,8 @@ def render_navigation(name, document):
     document = render_identity(name, document)
     document = render_archive(name, document)
     for asset in ('letters.js', 'contribute.css', 'feedback.css', 'community.css', 'discovery.css'):
-        document = re.sub(re.escape(asset)+r'\?v=\d+', asset+'?v='+VERSION, document)
+        version = '2026101901' if name == 'letters.html' and asset in {'letters.js', 'community.css'} else VERSION
+        document = re.sub(re.escape(asset)+r'\?v=\d+', asset+'?v='+version, document)
     esc = html.escape
     def compact_body(match):
         tag = match.group()

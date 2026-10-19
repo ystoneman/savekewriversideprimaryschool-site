@@ -41,6 +41,15 @@ const server = http2.createSecureServer({ key: fs.readFileSync(key), cert: fs.re
   const headers = { 'Content-Type': types[extension], 'Cache-Control': 'no-store', 'Content-Length': size, 'Accept-Ranges': 'bytes' };
   // Extra response policy isolates unrouted tests from external frames.
   if (request.headers['x-kew-no-external-frames'] === '1') headers['Content-Security-Policy'] = "frame-src 'none'";
+  // Static no-script video links are published content too: keep real contributors
+  // out of test traces, then let page-level fixtures insert fictional cards.
+  if (name === 'letters.html') {
+    const html = fs.readFileSync(file, 'utf8').replace(/(<!-- video-letters-fallback:start -->)[\s\S]*?(<!-- video-letters-fallback:end -->)/, '$1\n\n$2');
+    headers['Content-Length'] = Buffer.byteLength(html);
+    response.writeHead(200, headers);
+    response.end(request.method === 'HEAD' ? undefined : html);
+    return;
+  }
   // Match Pages byte-range delivery so native video seeking is tested, too.
   if (request.headers.range) {
     const match = /^bytes=(\d*)-(\d*)$/.exec(request.headers.range);

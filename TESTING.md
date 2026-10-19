@@ -1,5 +1,11 @@
 # Testing the website
 
+## Complete video-letter release candidate — 19 October 2026
+
+The owner confirmed approval of the exact complete recording and instructed Unlisted YouTube release and Letters embedding. Saved Studio visibility is Unlisted, embedding enabled, subscriber notification off, SD/HD processing complete and Notices clear. A separate Incognito window exposed Sign in and played the full-version URL past 0:26 of 1:44. These are playback smoke checks, not a new agent auditory assessment. The contributor/owner’s exact-version review is the release basis.
+
+The candidate uses generic public credit and a short editorial introduction, with no private permission/contact material. Builder freshness, 157 Python checks, 33 deadline unit tests, collector unit tests and public staging pass. All 61 focused browser checks pass across the four scripted projects and the iPhone no-script project, covering video/written rendering, cache versions, privacy activation, close/focus recovery, the no-script fallback and the test-network guards. Independent campaign and rendered UX final review found no remaining blocking finding. Complete current-revision hosted release results are recorded in the pull request. No unfamiliar-person physical-phone trial is claimed; the owner explicitly instructed release after reviewing the concrete implementation and exact full-version question. This records the owner’s release instruction, not a completed visitor study.
+
 ## Video-letter feature refresh — 19 October 2026
 
 The existing draft feature was merged with current main; conflict resolution retains the homepage’s same-origin media/petition CSP and byte-range delivery alongside the Letters-only YouTube frame allowance and unrouted-test frame block. 157 Python checks and 18 focused iPhone WebKit / desktop Chromium video-letter and existing mobile-letter checks pass. These tests use fictional records and intercepted player requests. No recording was added, no provider visibility was changed and no public release is claimed. Additional no-script/harness checks and fresh hosted status are recorded in the draft pull request. The recorded full-video content/audio and release requirements remain separate from feature validation.
