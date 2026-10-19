@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from check_site import CSP, HOME_CSP, Page, PUBLIC_FILES, ROOT, stage_site, validate_site
 from public_data import STATEMENT, STATEMENT_VERSION, validate_board
+from build_video_letters import build as build_video_letters
 
 
 def fixture(kind):
@@ -92,6 +93,7 @@ class DeploymentTests(unittest.TestCase):
                 (self.root / name).write_text(json.dumps(fixture(Path(name).stem)))
             else:
                 shutil.copyfile(ROOT / name, self.root / name)
+        build_video_letters(self.root)  # Regenerate static links for the fictional board.
         subprocess.run(['git', 'init', '-q', str(self.root)], check=True)
 
     def test_stage_contains_only_intended_public_assets(self):

@@ -9,6 +9,22 @@
 - Independent campaign and UX planning/diff reviews completed; a misleading personal-review promise was corrected and rechecked. Rendered 320/390/1440px light/dark review found no remaining issue. Local validation: 48 focused browser checks across four projects, 152 Python checks, 33 deadline unit checks and 140-file public staging pass. Native iPhone 17 / iOS 26.5 Safari reached a local certificate warning; no bypass or native interaction success is claimed. No real form was submitted.
 - Local implementation only; publication and changes to submission rates are not claimed.
 
+### Video letters ready to play — 19 October 2026
+
+Load video-letter players with the Letters page, with playback still requiring Play. Remove the extra paragraph and Load/Close buttons, retain direct watch/privacy/removal links and update the privacy notice. Preserve an active writer's screen position when a delayed feed arrives in Safari. Refresh the Letters asset versions and generated no-script fallback. Verification and deployment are recorded separately.
+
+### First complete video letter — 19 October 2026
+
+Add an owner-approved complete video letter to the existing newest-first Community letters feed, using the contributor’s generic credit and a factual editorial introduction. The matching YouTube upload is Unlisted and permits embedding; the separate recruitment excerpt remains unchanged. Player loading is deliberate and the direct-watch/removal routes work without JavaScript. The navigation generator preserves the new renderer/style versions for returning readers. Checks and actual deployment evidence are recorded separately; this entry alone is not a release receipt.
+
+### Video-letter feature refreshed — 19 October 2026
+
+Resume the existing draft feature against the current site, preserving homepage media/security and browser-harness protections. Version the changed letter renderer and styles so cached older scripts cannot reject the new optional video field. Clarify the privacy notice’s deliberate player-loading behaviour. No recording is added and this is not a deployment.
+
+### Video letters in the Community letters feed — 16 October 2026
+
+Prepare an optional, strict YouTube-ID video-letter card within the existing newest-first Letters feed. It uses a click-to-load privacy-enhanced player, a persistent YouTube link, a generated no-JavaScript watch/removal fallback and video-specific attribution. The ordinary written-letter route and its permissions remain unchanged. No recording or contributor details have been added to the public feed, and this source change is not a release.
+
 ### Revised audio on the unlisted YouTube copy — 18 October 2026
 
 - Point the homepage's YouTube sharing link to the revised music/effects upload and remove the voice-only qualifier. Preserve the existing native player, downloads and dated retirement guards.

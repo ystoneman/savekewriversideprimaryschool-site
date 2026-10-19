@@ -309,11 +309,12 @@
   fetch('letters.json', {cache: 'no-store'})
     .then(response => { if (!response.ok) throw new Error('Letters unavailable'); return response.json(); })
     .then(data => {
-      const allowed = ['id', 'body', 'displayName', 'date', 'review'];
+      const allowed = ['id', 'body', 'displayName', 'date', 'review', 'youtubeId'];
       if (!data || Object.keys(data).sort().join(',') !== 'letters,version' || data.version !== 1 || !Array.isArray(data.letters)) throw new Error('Invalid letters');
       const seen = new Set();
       if (data.letters.some(item => !item || Object.values(item).some(value => typeof value !== 'string') || Object.keys(item).some(key => !allowed.includes(key)) || typeof item.id !== 'string' || !/^letter-[a-f0-9]{12}$/.test(item.id) || typeof item.body !== 'string' || item.body.length < 10 || item.body.length > 30000 || typeof item.displayName !== 'string' || !item.displayName.trim() || item.displayName.length > 60 || !/^\d{4}-\d{2}-\d{2}$/.test(item.date) || !['Human reviewed', 'AI screened'].includes(item.review))) throw new Error('Invalid letter');
       data.letters.forEach(item => {
+        if ('youtubeId' in item && !/^[A-Za-z0-9_-]{11}$/.test(item.youtubeId)) throw new Error('Invalid video letter');
         if (seen.has(item.id) || Number.isNaN(Date.parse(item.date))) throw new Error('Invalid letter');
         seen.add(item.id);
       });
@@ -330,7 +331,7 @@
         const meta = document.createElement('div');
         meta.className = 'suggestion-meta';
         const review = document.createElement('span');
-        review.textContent = item.review + ' · Opinion';
+        review.textContent = (item.youtubeId ? 'Video letter · ' : '') + item.review + ' · Opinion';
         const date = document.createElement('time');
         date.dateTime = item.date;
         date.textContent = new Date(item.date + 'T12:00:00Z').toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
@@ -340,11 +341,12 @@
         body.textContent = item.body;
         const removal = document.createElement('a');
         removal.href = 'feedback.html?kind=privacy&letter=' + encodeURIComponent(item.id) + '#feedback-form';
-        removal.textContent = 'Report this letter or request removal';
+        removal.textContent = item.youtubeId ? 'Report this video letter or request removal' : 'Report this letter or request removal';
         removal.className = 'letter-removal';
         const letterURL = 'https://savekewriversideprimaryschool.org/letters.html#' + item.id;
         const publicationDate = new Date(item.date + 'T12:00:00Z').toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric',timeZone:'UTC'});
-        const attribution = 'Community letter by ' + item.displayName + ', published ' + publicationDate + ' on Save Kew Riverside Primary School Campaign, an independent parent-led website.\n' + letterURL;
+        const kindLabel = item.youtubeId ? 'Video letter' : 'Community letter';
+        const attribution = kindLabel + ' by ' + item.displayName + ', published ' + publicationDate + ' on Save Kew Riverside Primary School Campaign, an independent parent-led website.\n' + letterURL;
         const source = document.createElement('div');
         source.className = 'letter-source';
         const publisher = document.createElement('p');
@@ -355,17 +357,17 @@
         permalink.className = 'letter-permalink';
         permalink.href = letterURL;
         permalink.textContent = 'savekewriversideprimaryschool.org';
-        permalink.setAttribute('aria-label', 'savekewriversideprimaryschool.org — Permanent link to the letter by ' + item.displayName);
+        permalink.setAttribute('aria-label', 'savekewriversideprimaryschool.org — Permanent link to the ' + (item.youtubeId ? 'video letter' : 'letter') + ' by ' + item.displayName);
         const copy = document.createElement('button');
         copy.type = 'button';
         copy.className = 'letter-copy';
         copy.textContent = 'Copy attribution';
-        copy.setAttribute('aria-label', 'Copy attribution for the letter by ' + item.displayName);
+        copy.setAttribute('aria-label', 'Copy attribution for the ' + (item.youtubeId ? 'video letter' : 'letter') + ' by ' + item.displayName);
         const fallback = document.createElement('textarea');
         fallback.className = 'letter-attribution-fallback';
         fallback.readOnly = true;
         fallback.hidden = true;
-        fallback.setAttribute('aria-label', 'Attribution for the letter by ' + item.displayName);
+        fallback.setAttribute('aria-label', 'Attribution for the ' + (item.youtubeId ? 'video letter' : 'letter') + ' by ' + item.displayName);
         const status = document.createElement('span');
         status.className = 'letter-copy-status';
         status.setAttribute('role', 'status');
@@ -425,10 +427,39 @@
         } else {
           article.append(body, source);
         }
+        if (item.youtubeId) {
+          const player = document.createElement('div');
+          player.className = 'video-letter-player';
+          const frame = document.createElement('iframe');
+          frame.src = 'https://www.youtube-nocookie.com/embed/' + item.youtubeId + '?rel=0';
+          frame.title = 'Video letter by ' + item.displayName;
+          frame.allow = 'fullscreen';
+          frame.allowFullscreen = true;
+          frame.referrerPolicy = 'strict-origin-when-cross-origin';
+          player.append(frame);
+          const actions = document.createElement('div');
+          actions.className = 'video-letter-actions';
+          const watch = document.createElement('a');
+          watch.href = 'https://www.youtube.com/watch?v=' + item.youtubeId;
+          watch.textContent = 'Watch on YouTube';
+          const privacy = document.createElement('a');
+          privacy.href = 'privacy.html#video-privacy';
+          privacy.textContent = 'Video privacy';
+          actions.append(watch, privacy);
+          article.append(player, actions);
+        }
         article.append(removal);
         fragment.append(article);
       });
+      // Keep an active writer in place when a slow feed adds content above the form.
+      // Safari does not consistently anchor the focused field during this update.
+      const focused = document.activeElement;
+      const writing = form.contains(focused) ? focused : null;
+      const previousPosition = writing && writing.getBoundingClientRect();
       board.replaceChildren(fragment);
+      if (previousPosition && previousPosition.bottom > 0 && previousPosition.top < innerHeight) {
+        window.scrollBy({top: writing.getBoundingClientRect().top - previousPosition.top, behavior: 'instant'});
+      }
       lettersLoaded = true;
       boardStatus.textContent = data.letters.length ? data.letters.length + ' published letter' + (data.letters.length === 1 ? '' : 's') + '.' : 'No community letters have been published yet. You can submit yours for review using the form below.';
       openLinkedLetter();

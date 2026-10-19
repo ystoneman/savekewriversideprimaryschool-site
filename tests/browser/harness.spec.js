@@ -39,11 +39,14 @@ test('Harness: tests see an empty letters board instead of published letters', a
   await page.goto('/index.html');
   const board = await page.evaluate(() => fetch('letters.json', { cache: 'no-store' }).then(response => response.json()));
   expect(board).toEqual({ version: 1, letters: [] });
+  const html = await (await page.request.get('/letters.html')).text();
+  expect(html.match(/<!-- video-letters-fallback:start -->([\s\S]*?)<!-- video-letters-fallback:end -->/)[1].trim()).toBe('');
 });
 
 unroutedTest('Harness: without routing, other origins, local writes and the real letters board are still reported', async ({ page, networkGuard, baseURL }) => {
   await otherOrigin(async url => {
-    await page.goto('/index.html');
+    const response = await page.goto('/index.html');
+    expect(response.headers()['content-security-policy']).toBe("frame-src 'none'");
     // HEAD keeps the published letters out of any failure trace.
     await page.evaluate(() => fetch('letters.json', { method: 'HEAD', cache: 'no-store' }));
     // Only the write is fulfilled locally, and the route is removed straight afterwards.
