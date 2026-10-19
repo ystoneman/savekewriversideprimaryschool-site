@@ -16,7 +16,7 @@ const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'kew-browser-test-'));
 const key = path.join(temporary, 'localhost.key');
 const certificate = path.join(temporary, 'localhost.crt');
 execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', key, '-out', certificate, '-days', '1', '-subj', '/CN=127.0.0.1'], { stdio: 'ignore' });
-const types = { '.xml': 'application/xml; charset=utf-8', '.txt': 'text/plain; charset=utf-8', '.jpg': 'image/jpeg', '.png': 'image/png', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.csv': 'text/csv; charset=utf-8', '.pdf': 'application/pdf', '.md': 'text/markdown; charset=utf-8', '.ics': 'text/calendar; charset=utf-8' };
+const types = { '.mp4': 'video/mp4', '.xml': 'application/xml; charset=utf-8', '.txt': 'text/plain; charset=utf-8', '.jpg': 'image/jpeg', '.png': 'image/png', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.csv': 'text/csv; charset=utf-8', '.pdf': 'application/pdf', '.md': 'text/markdown; charset=utf-8', '.ics': 'text/calendar; charset=utf-8' };
 const server = http2.createSecureServer({ key: fs.readFileSync(key), cert: fs.readFileSync(certificate), allowHTTP1: true }, (request, response) => {
   let name, url;
   try {
@@ -36,13 +36,27 @@ const server = http2.createSecureServer({ key: fs.readFileSync(key), cert: fs.re
     response.writeHead(404).end();
     return;
   }
-  const headers = { 'Content-Type': types[extension], 'Cache-Control': 'no-store' };
-  // Unrouted navigation tests cannot intercept a mistaken external player request.
-  // This additional policy keeps the real click-to-load CSP testable elsewhere.
+  const file = path.join(root, name);
+  const size = fs.statSync(file).size;
+  const headers = { 'Content-Type': types[extension], 'Cache-Control': 'no-store', 'Content-Length': size, 'Accept-Ranges': 'bytes' };
+  // Extra response policy isolates unrouted tests from external frames.
   if (request.headers['x-kew-no-external-frames'] === '1') headers['Content-Security-Policy'] = "frame-src 'none'";
+  // Match Pages byte-range delivery so native video seeking is tested, too.
+  if (request.headers.range) {
+    const match = /^bytes=(\d*)-(\d*)$/.exec(request.headers.range);
+    const start = match && match[1] ? Number(match[1]) : match && match[2] ? Math.max(0, size - Number(match[2])) : NaN;
+    const end = match && match[1] && match[2] ? Math.min(size - 1, Number(match[2])) : size - 1;
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start >= size || start > end) {
+      response.writeHead(416, { 'Content-Range': `bytes */${size}` }).end(); return;
+    }
+    response.writeHead(206, { ...headers, 'Content-Length': end - start + 1, 'Content-Range': `bytes ${start}-${end}/${size}` });
+    if (request.method === 'HEAD') response.end();
+    else fs.createReadStream(file, { start, end }).pipe(response);
+    return;
+  }
   response.writeHead(200, headers);
   if (request.method === 'HEAD') response.end();
-  else fs.createReadStream(path.join(root, name)).pipe(response);
+  else fs.createReadStream(file).pipe(response);
 });
 function cleanUp() { server.close(); fs.rmSync(temporary, { recursive: true, force: true }); }
 process.on('exit', cleanUp);

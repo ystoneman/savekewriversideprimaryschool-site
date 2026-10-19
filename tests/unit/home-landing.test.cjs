@@ -21,7 +21,7 @@ test('London date boundary retains the response on 16 October',()=>{
  const s=state('2026-10-16T22:59:59Z');assert.match(s.action.href,/docs.google.com/);assert.equal(s.action.textContent,'Respond to the council');
 });
 test('London 17 October retires both response link and current-stage claim',()=>{
- const s=state('2026-10-16T23:00:00Z');assert.match(s.action.href,/www.richmond.gov.uk/);assert.equal(s.action.textContent,'Check the council consultation');assert.match(s.note.textContent,/has passed/);assert.match(s.intro.textContent,/^Richmond Council proposes closing the school from 1 September 2027\. Responses closed on 16 October 2026\. If it proceeds in November 2026, it plans a final decision in April 2027\.$/);assert.equal(s.action.hidden,true);assert.equal(s.note.hidden,true);assert.doesNotMatch(s.intro.textContent,/No final decision has/);
+ const s=state('2026-10-16T23:00:00Z');assert.match(s.action.href,/www.richmond.gov.uk/);assert.equal(s.action.textContent,'Check the council consultation');assert.match(s.note.textContent,/has passed/);assert.match(s.intro.textContent,/^Richmond Council proposes closing the school from 1 September 2027\. If it proceeds in November 2026, it plans a final decision in April 2027\.$/);assert.equal(s.action.hidden,true);assert.equal(s.note.hidden,true);assert.doesNotMatch(s.intro.textContent,/No final decision has/);
 });
 test('future dates never revive an expired response',()=>{const s=state('2027-09-01T12:00:00Z');assert.match(s.action.href,/www.richmond.gov.uk/);assert.match(s.note.textContent,/has passed/)});
 test('without JavaScript the fallback stays dated and links current council information',()=>{

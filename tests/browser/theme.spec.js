@@ -1,5 +1,8 @@
 const { test, expect, pages } = require('./fixtures');
 
+// These journeys exercise the open consultation; deadline cases override this date.
+test.use({ consultationDate: '2026-10-15T12:00:00Z' });
+
 const dark = 'rgb(16, 30, 27)', light = 'rgb(251, 250, 246)';
 async function appearance(page, expected) {
   // WebKit can expose a transparent body when its background is propagated to

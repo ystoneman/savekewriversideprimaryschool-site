@@ -2,9 +2,67 @@
 
 ## Unreleased
 
+### Video-letter feature refreshed — 19 October 2026
+
+Resume the existing draft feature against the current site, preserving homepage media/security and browser-harness protections. Version the changed letter renderer and styles so cached older scripts cannot reject the new optional video field. Clarify the privacy notice’s deliberate player-loading behaviour. No recording is added and this is not a deployment.
+
 ### Video letters in the Community letters feed — 16 October 2026
 
 Prepare an optional, strict YouTube-ID video-letter card within the existing newest-first Letters feed. It uses a click-to-load privacy-enhanced player, a persistent YouTube link, a generated no-JavaScript watch/removal fallback and video-specific attribution. The ordinary written-letter route and its permissions remain unchanged. No recording or contributor details have been added to the public feed, and this source change is not a release.
+
+### Revised audio on the unlisted YouTube copy — 18 October 2026
+
+- Point the homepage's YouTube sharing link to the revised music/effects upload and remove the voice-only qualifier. Preserve the existing native player, downloads and dated retirement guards.
+- Keep the earlier unlisted upload available for existing shared links, with a description pointing to the replacement. Provider publication/playback and website deployment are verified separately in the release record.
+
+### Campaign video music and quieter effects — 18 October 2026
+
+- Restore the original music and effects in both website video formats. Reduce selected effect bursts by 4–6 dB and the loud page turn by 12 dB, with smooth gain ramps. Keep narration timing and copy the original encoded picture/captions unchanged.
+- Version all website video requests and restore accurate download sizes. Remove the website's voice-only label; identify the existing unlisted YouTube upload as the voice-only version.
+- Independent campaign and rendered UX actual-diff reviews found no remaining issue. Audio signal checks, automated transcription and passing local checks are recorded in TESTING.md. Subjective listening quality has not been assessed; hosted checks and verified deployment remain separate release gates.
+
+### Recent press interviews and rally timing — 18 October 2026
+
+- Add the campaign's 15 October South West Londoner interview update and its attributed report of further 16 October interviews following the arranged Richmond Nub News visit. Keep interviews distinct from published coverage and retain the earlier article links and anchors.
+- Point Media updates to the newest interview entry. Add the campaign's approximate 6:45pm rally finish and the official 12 November, 7pm committee listing, retaining planned-event and gathering/access qualifications.
+- Specialist review and verification results are recorded in TESTING.md and the pull request; this entry does not establish deployment.
+
+### Petition counter runtime compatibility — 18 October 2026
+
+- Use Cloudflare-supported manual redirect handling for the fixed council fetch; reject non-success responses before reading or caching the count. Keep the dated fallback, exact source, timeout, payload bounds and aggregate-only cache.
+- Add a redirect refusal regression and verify the exact handler in Cloudflare’s temporary remote runtime with successful source reads and cache hits. Public website asset bytes are unchanged.
+
+### Campaign updates and video follow-through — 18 October 2026
+
+- Publish narration-only soundtracks in both Ram film formats. Copy the original H.264 picture streams unchanged, preserving animation and captions; encode the existing clean narration at −16 LUFS / −1.5 dBTP. Version media requests so returning visitors receive the new sound.
+- Restore a petition action immediately below the player, with the same eligibility/account/date and London-date retirement as the hero. Add native sharing, clipboard/manual-copy recovery, MP4 downloads and an unlisted YouTube viewing link. Retire every enhanced video-sharing route after the published petition deadline.
+- Add local Campaign updates links to the recovery proposal, existing media coverage, the approved rally photograph and the dated 12 November rally plan. Attribute the proposal's financial prospects to the campaign and the planned rally to the 14 October briefing; do not imply council acceptance, a confirmed gathering point or venue access.
+- Add an online-only petition tracker after the hero eligibility note: dated council snapshot, campaign goal of 1,000, first campaign milestone of 500 and a bounded functional read through the existing no-log Worker. Cache only the aggregate/source/check time for 15 minutes; preserve the dated fallback on failure and retire active targets after the petition deadline. Explain the functional request in Privacy.
+- Independent campaign, evidence and rendered UX planning/implementation reviews completed; the sharing-expiry finding was corrected and narrowly rechecked. Completed checks and remaining hosted release gates are recorded in TESTING.md and the pull request. This entry does not establish deployment.
+
+### Homepage petition and video simplification — 17 October 2026
+
+- Keep one homepage petition button and one visible closing-date/eligibility/account note in the hero; remove the duplicate invitation below the video.
+- Use “Campaign video” and “Play video”. Keep the duration/Ram credit and a short dated personal credit; move full attribution into the closed “Transcript” disclosure. Preserve the recording and burned-in captions.
+- Show a direct video link only after playback fails, with Retry and the matching portrait/landscape file. Retain native poster fallbacks without working scripts and January expiry retirement.
+- Independent campaign and UX planning reviews informed the change; campaign actual-diff and rendered UX reviews found no remaining issue. Local checks and release status are recorded in TESTING.md and the pull request.
+
+### Portrait homepage film and shorter introduction — 17 October 2026
+
+- Use Ram’s approved 4:5 film/poster on screens up to 700px, retaining the landscape cut above that width. Preserve deliberate loading, responsive static/download fallbacks, captions/transcript, native controls and expiry; rotation/resizing does not restart or change the playing source.
+- Remove the closed-response sentence from the homepage introduction while retaining proposal/conditional decision wording, existing response guards and dated information elsewhere.
+- Independent planning/implementation reviews completed. Actual local checks are recorded in TESTING.md; hosted gates and live deployment remain separate release checks.
+- Make historical response-journey tests use explicit dates while preserving closed-stage overrides, extra-tab coverage and timer checks. Keep continuous rotation playback and separate pause/seek regressions.
+
+### Ram-narrated homepage campaign film — 16 October 2026
+
+- Add the owner-approved 85.5-second landscape petition film after the existing hero/photo, with a still, deliberate playback, native controls, captions, a transcript and the full Ram/personal-capacity credit. Preserve hero actions and recruitment separation.
+- Publish only the finished film and poster; allow same-origin media on the homepage and retain blocked frames/external media. Keep direct-file and failed-script recovery, date-aware petition/consultation wording and post-deadline retirement with current council links.
+- Independent planning/implementation reviews and actual local checks are recorded in TESTING.md. Hosted checks, deployment and live verification remain separate release gates.
+
+### Campaign milestones — 16 October 2026
+
+Add three concise entries to Campaign updates: the 16 October consultation response deadline, submission of the parent volunteers’ costed recovery plan on 16 October, and the BBC News article published on 15 October. Keep the deadline wording tied to its exact date and link to the existing current-response details, so the entry remains useful as history after the deadline. Record submission as a proposal for consideration without claiming acceptance or publishing model figures. Retain the earlier BBC television entry and all existing update anchors. Independent campaign, evidence and UX planning reviews completed; the evidence finding was resolved by omitting an unconfirmed recipient. Independent campaign/evidence actual-diff and rendered UX reviews found no remaining actionable issue. Local checks pass: 151 Python tests, 41 Node tests, five generator freshness checks, 132-file public validation and 16 focused browser cases. Rendered WebKit checks cover 320px light, 390px dark, 1440px light and 320px without scripts. Hosted release checks and live publication remain to be verified separately.
 
 ### Parent Voices testimonial notice alignment — 15 October 2026
 

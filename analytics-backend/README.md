@@ -73,3 +73,14 @@ SELECT day,label AS utc_hour,total FROM counts WHERE metric='page_hour' ORDER BY
 ```
 
 Missing hours are unavailable, not inferred zeros. Use only for website maintenance/usability; hourly series has a later start and narrower saved-choice coverage than daily page opens.
+
+## Functional petition count (18 October 2026)
+
+`GET /petition` is separate from analytics. It reads only Richmond petition 249,
+requires the exact title/run dates and one bounded aggregate, and returns only
+`onlineSignatures`, `checkedAt` and the fixed source URL. No visitor headers or
+cookies go upstream. The 15-minute edge cache holds that sanitized JSON only,
+retaining the original check time. Fetch/parse failures return 503, never zero.
+No D1 writes, new binding, scheduled fetch, logging or client storage are added.
+Deploy this compatible Worker addition before the homepage release, then check the
+read-only endpoint and confirm existing `/count` method/origin guards still hold.

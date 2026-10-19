@@ -11,6 +11,52 @@ const headers = {
   'X-Content-Type-Options': 'nosniff',
 };
 const reply = (status, value) => new Response(JSON.stringify(value), { status, headers });
+export const PETITION_SOURCE = 'https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249';
+const petitionHeaders = { ...headers, 'Access-Control-Allow-Methods': 'GET', 'Cache-Control': 'public, max-age=900' };
+const petitionReply = (status, value) => new Response(JSON.stringify(value), { status,
+  headers: { ...petitionHeaders, ...(status === 200 ? {} : {'Cache-Control':'no-store'}) } });
+
+export function parsePetition(html) {
+  if (!/<h1>\s*Keep Kew Riverside Primary School open\.?\s*<\/h1>/i.test(html) ||
+      !/This petition runs from 13\/10\/2026 to 13\/01\/2027\./.test(html)) return null;
+  const matches = [...html.matchAll(/<p>\s*(0|[1-9]\d{0,6}|[1-9]\d{0,2}(?:,\d{3}){1,2})\s+people have signed this petition\.\s*<\/p>/gi)];
+  if (matches.length !== 1) return null;
+  const count = Number(matches[0][1].replaceAll(',', ''));
+  return Number.isSafeInteger(count) && count >= 0 && count <= 1000000 ? count : null;
+}
+
+export async function petitionResponse(request, { fetchPage = fetch, cache = globalThis.caches?.default, now = () => new Date() } = {}) {
+  if (request.method !== 'GET') return petitionReply(405, { unavailable: true });
+  const origin = request.headers.get('Origin');
+  if (origin && origin !== ORIGIN) return petitionReply(403, { unavailable: true });
+  // Fixed cache key and upstream: visitor queries, headers and cookies never travel upstream.
+  const key = new Request(new URL('/petition', request.url));
+  try {
+    const cached = await cache?.match(key);
+    if (cached) return cached;
+    // Workers supports manual/follow, not Fetch's error mode. Reject 3xx below.
+    const response = await fetchPage(PETITION_SOURCE, { headers: {'Accept':'text/html'},
+      redirect:'manual', signal:AbortSignal.timeout(6000), cf:{cacheTtl:0} });
+    if (!response.ok || !/^text\/html\b/i.test(response.headers.get('Content-Type') || '')) throw new Error('Unavailable');
+    const reader = response.body.getReader();
+    const chunks = []; let bytes = 0;
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      bytes += value.byteLength;
+      if (bytes > 65536) { await reader.cancel(); throw new Error('Oversize'); }
+      chunks.push(value);
+    }
+    const body = new Uint8Array(bytes); let offset = 0;
+    for (const chunk of chunks) { body.set(chunk, offset); offset += chunk.length; }
+    const count = parsePetition(new TextDecoder().decode(body));
+    if (count === null) throw new Error('Unavailable');
+    const result = petitionReply(200, { onlineSignatures:count, checkedAt:now().toISOString(), source:PETITION_SOURCE });
+    // Only the sanitized aggregate enters the edge cache. No HTML or signer data is retained.
+    await cache?.put(key, result.clone());
+    return result;
+  } catch (_) { return petitionReply(503, { unavailable: true }); }
+}
 
 export function validate(value) {
   if (!value || Object.keys(value).join() !== 'counters' || !Array.isArray(value.counters) ||
@@ -32,6 +78,7 @@ export function validate(value) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === '/petition' && !url.search) return petitionResponse(request);
     if (url.pathname !== '/count' || url.search) return reply(404, { accepted: false });
     if (request.headers.get('Origin') !== ORIGIN) return reply(403, { accepted: false });
     // Honour signals server-side too. No IP, UA, cookie, session or fingerprint

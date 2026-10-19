@@ -30,7 +30,8 @@ function headerLinks(file, selector) {
 // The two collectors are the only other origins a page's policy allows. analytics.js
 // contacts both only from the production host (analytics.spec.js), never this server.
 const productionOnly = { 'connect-src': ['https://gateway.umami.is/api/send',
-  'https://kew-riverside-statistics.analytics-backend.workers.dev/count'] };
+  'https://kew-riverside-statistics.analytics-backend.workers.dev/count',
+  'https://kew-riverside-statistics.analytics-backend.workers.dev/petition'] };
 
 // True when the page's policy, including the default that other fetch directives fall
 // back to, lets it reach no other origin when served by this test harness.
@@ -42,6 +43,14 @@ function staysOnSite(file) {
 }
 
 const test = base.extend({
+  // Historical active-consultation journeys opt in to a fixed date. The context
+  // covers extra tabs; explicit deadline tests can still override its clock.
+  // Leave the native clock alone elsewhere, including HTTP/2 performance checks.
+  consultationDate: [null, { option: true }],
+  campaignCalendar: [async ({ context, consultationDate }, use) => {
+    if (consultationDate) await context.clock.setFixedTime(new Date(consultationDate));
+    await use();
+  }, { auto: true }],
   // Only journeys that submit no forms and follow no links to other origins may turn
   // routing off (the legacy-route tests); without routes nothing is aborted.
   routeRequests: [true, { option: true }],

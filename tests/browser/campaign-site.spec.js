@@ -205,7 +205,7 @@ test.describe('Response deadline (London dates)', () => {
     await page.goto('/index.html');
     await expect(page.locator('#main-action')).toBeHidden();
     await expect(page.locator('#action-note')).toBeHidden();
-    await expect(page.locator('.hero .intro')).toHaveText('Richmond Council proposes closing the school from 1 September 2027. Responses closed on 16 October 2026. If it proceeds in November 2026, it plans a final decision in April 2027.');
+    await expect(page.locator('.hero .intro')).toHaveText('Richmond Council proposes closing the school from 1 September 2027. If it proceeds in November 2026, it plans a final decision in April 2027.');
     const firstAction = await page.locator('.actions .action').evaluateAll(actions => actions.find(action => action.getClientRects().length && getComputedStyle(action).visibility !== 'hidden')?.id);
     expect(firstAction, 'The petition is the first visible homepage action').toBe('petition-action');
     await expect(page.locator('#petition-action')).toHaveAttribute('href', petition);
@@ -242,7 +242,20 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
     expect(dates[index] <= dates[index - 1], `${dates[index]} follows ${dates[index - 1]} (newest first)`).toBe(true);
   }
   const bbc = page.locator('#update-bbc');
-  await expect(entries.first()).toHaveAttribute('id', 'update-bbc');
+  await expect(entries.first()).toHaveAttribute('id', 'update-consultation-deadline');
+  await expect(page.locator('#update-consultation-deadline time')).toHaveAttribute('datetime', '2026-10-16');
+  await expect(page.locator('#update-recovery-plan time')).toHaveAttribute('datetime', '2026-10-16');
+  const interviews = page.locator('#update-press-16-october');
+  await expect(interviews.locator('time')).toHaveAttribute('datetime', '2026-10-16');
+  await expect(interviews).toContainText('Campaign organisers reported');
+  await expect(interviews).toContainText('after arranging a visit with Richmond Nub News');
+  await expect(interviews).not.toContainText('The Standard');
+  await expect(interviews).not.toContainText('MyLondon');
+  await expect(page.locator('#update-press-15-october time')).toHaveAttribute('datetime', '2026-10-15');
+  await expect(page.locator('#update-press-15-october')).toContainText('South West Londoner reporter');
+  const article = page.locator('#update-bbc-article');
+  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-15');
+  await expect(article.getByRole('link', { name: /Read the BBC article/ })).toHaveAttribute('href', 'https://www.bbc.co.uk/news/articles/c6rmy3e179n8o');
   await expect(bbc.locator('time')).toHaveAttribute('datetime', '2026-10-13');
   await expect(bbc).toContainText('6:30pm');
   await expect(bbc.getByRole('link', { name: /full programme on iPlayer/ })).toHaveAttribute('href', 'https://www.bbc.co.uk/iplayer/episode/m0032vcr/bbc-london-evening-news-13102026');
@@ -262,6 +275,62 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
   await expect(photo).toHaveAttribute('alt',/Campaign members.*York House/);
   const box=await photo.boundingBox();expect(box.width/box.height).toBeCloseTo(4/3,2);
 });
+
+for (const scripts of [true,false]) test.describe(`Updates discovery with scripts ${scripts}`,()=>{
+ test.use({javaScriptEnabled:scripts});
+ test('Shortcuts reach the proposal, media, rally photo and planned next-event details',async({page})=>{
+  await page.goto('/updates.html');
+  const nav=page.getByRole('navigation',{name:'Find campaign updates'});
+  for(const [label,id]of[['Recovery proposal','update-recovery-plan'],['Media updates','update-press-16-october'],['Rally photo','update-york-house-rally'],['12 November rally','next-rally']]){
+   await nav.getByRole('link',{name:label,exact:true}).click();
+   await expect(page).toHaveURL(new RegExp('#'+id+'$'));
+   await expect(page.locator('#'+id+' h2')).toBeInViewport();
+   if(scripts)await expectScrollSettled(page,'Update '+label);
+   await page.goBack();await expect(page).toHaveURL(/updates\.html$/);
+  }
+  await expect(page.locator('#update-recovery-plan')).toContainText('Achieving for Children');
+  await expect(page.locator('#update-recovery-plan')).toContainText('The campaign believes');
+  await expect(page.locator('#next-rally')).toContainText('Thursday 12 November 2026, 6pm');
+  await expect(page.locator('#next-rally')).toContainText('until around 6:45pm');
+  await expect(page.locator('#next-rally')).toContainText('access arrangements are not yet confirmed');
+  await expect(page.locator('#next-rally time')).toHaveAttribute('datetime','2026-11-12T18:00:00+00:00');
+  await expect(page.locator('#next-rally a')).toHaveAttribute('href','https://cabnet.richmond.gov.uk/ieListDocuments.aspx?CId=800&MId=500000748&Ver=4');
+  await expect(page.locator('#update-news a')).toHaveCount(4);
+ });
+ test('Direct interview and existing BBC links retain readable destinations',async({page})=>{
+  await page.setViewportSize({width:320,height:568});
+  for(const [id,title]of[['update-press-16-october','Further parent interviews at the school gates'],['update-press-15-october','Parents speak with South West Londoner'],['update-bbc-article','Kew Riverside parents in BBC News']]){
+   await page.goto('/updates.html#'+id);
+   await expect(page.locator('#'+id+' h2')).toHaveText(title);
+   await expect(page.locator('#'+id+' h2')).toBeInViewport();
+   await expectNoHorizontalOverflow(page,'Updates '+id);
+  }
+ });
+});
+
+// A dated update remains a useful historical entry after the published deadline.
+for (const [date, stage] of [['2026-10-16T12:00:00Z', 'open'], ['2026-10-17T12:00:00Z', 'closed']]) {
+  test(`The deadline update reaches current official response details (${stage})`, async ({ page }) => {
+    await page.clock.setFixedTime(new Date(date));
+    await page.goto('/updates.html#update-consultation-deadline');
+    const entry = page.locator('#update-consultation-deadline');
+    await expect(entry).toBeInViewport();
+    await expect(entry).toContainText('16 October 2026');
+    await entry.getByRole('link', { name: 'Official response details' }).click();
+    await expect(page).toHaveURL(/get-involved\.html#respond$/);
+    const response = page.locator(`#respond [data-stage="${stage}"]`);
+    await expect(response).toBeVisible();
+    if (stage === 'open') {
+      await expect(response.locator(`a[href="${officialForm}"]`)).toBeVisible();
+    } else {
+      await expect(response).toContainText('16 October 2026');
+      await expect(page.locator('#respond [data-stage="open"]')).toBeHidden();
+    }
+    await page.goBack();
+    await expect(page).toHaveURL(/updates\.html#update-consultation-deadline$/);
+    await expect(page.locator('#update-consultation-deadline')).toBeInViewport();
+  });
+}
 
 test.describe('Archived pages', () => {
   for (const file of archivedPages) {

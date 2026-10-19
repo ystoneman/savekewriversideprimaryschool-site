@@ -57,3 +57,22 @@ unroutedTest('Harness: without routing, other origins, local writes and the real
     networkGuard.splice(0); // Deliberate probes, reported above.
   });
 });
+
+// Pinning a historical journey must not mask explicit deadline scenarios.
+test.describe('Historical campaign calendar', () => {
+  test.use({ consultationDate: '2026-10-15T12:00:00Z' });
+  test('Harness: context date is deterministic and explicit stages cover every tab and timer', async ({ page, context }) => {
+    await page.goto('/index.html');
+    expect(await page.evaluate(() => new Date().toISOString())).toBe('2026-10-15T12:00:00.000Z');
+    await page.clock.setFixedTime(new Date('2026-10-17T12:00:00Z'));
+    const extra = await context.newPage();
+    await extra.goto('/index.html');
+    expect(await extra.evaluate(() => new Date().toISOString())).toBe('2026-10-17T12:00:00.000Z');
+    await expect(extra.locator('#main-action')).toBeHidden();
+    await page.clock.install({ time: new Date('2027-01-14T00:00:00Z') });
+    await page.clock.pauseAt(new Date('2027-01-14T00:00:01Z'));
+    await page.clock.runFor(1000);
+    expect(await page.evaluate(() => new Date().toISOString())).toBe('2027-01-14T00:00:02.000Z');
+    await extra.close();
+  });
+});

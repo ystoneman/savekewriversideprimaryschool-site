@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
-from check_site import CSP, Page, PUBLIC_FILES, ROOT, stage_site, validate_site
+from check_site import CSP, HOME_CSP, Page, PUBLIC_FILES, ROOT, stage_site, validate_site
 from public_data import STATEMENT, STATEMENT_VERSION, validate_board
 
 
@@ -159,6 +159,21 @@ class DeploymentTests(unittest.TestCase):
                      'feedback.css#fragment', 'feedback.css?v=not-a-version', 'letters.js?v=1'):
             with self.subTest(href=href), self.assertRaises(ValueError):
                 Page(head + '<link rel="stylesheet" href="' + href + '">')
+
+    def test_homepage_media_is_local_deliberate_and_confined_to_home(self):
+        head = '<meta http-equiv="Content-Security-Policy" content="' + HOME_CSP + '"><meta name="referrer" content="strict-origin-when-cross-origin">'
+        video = '<video controls playsinline preload="none" poster="images/campaign-film-20261014.jpg" src="media/kew-petition-film-ram-20261014.mp4"></video>'
+        Page(head + video, home_media=True)
+        with self.assertRaises(ValueError): Page(head + video)
+        for before, after in (
+            ('media/kew-petition-film-ram-20261014.mp4', 'https://example.invalid/film.mp4'),
+            ('media/kew-petition-film-ram-20261014.mp4', '../private/film.mp4'),
+            ('media/kew-petition-film-ram-20261014.mp4', 'unreviewed.mp4'),
+            ('<video controls', '<video autoplay controls'),
+            ('images/campaign-film-20261014.jpg', 'https://example.invalid/poster.jpg'),
+        ):
+            with self.subTest(change=after), self.assertRaises(ValueError):
+                Page(head + video.replace(before, after), home_media=True)
 
 
 if __name__ == '__main__': unittest.main()

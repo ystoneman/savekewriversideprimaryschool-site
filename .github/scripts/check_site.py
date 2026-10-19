@@ -11,7 +11,10 @@ from public_data import validate_board
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_FILES = frozenset('''
+petition-progress.js petition-progress.css
 sitemap.xml robots.txt home-stage.js home-actions.js home-landing.css footer-links.css
+campaign-film.js campaign-film.css media/kew-petition-film-ram-20261014.mp4 images/campaign-film-20261014.jpg
+media/kew-petition-film-ram-4x5-20261014.mp4 images/campaign-film-4x5-20261014.jpg
 simplify.js simplify.css
 images/school-discovery-480.jpg images/school-discovery-960.jpg images/school-project-480.jpg images/school-project-960.jpg
 rally.html rally.css rally-6-october.ics
@@ -38,6 +41,8 @@ tests/browser/mobile-header.spec.js tests/browser/mobile-feedback.spec.js tests/
 .github/scripts/pr_browser_reuse.py .github/scripts/test_pr_browser_reuse.py
 .github/scripts/test_browser_workflow.py
 tests/browser/home-landing.spec.js tests/unit/home-landing.test.cjs
+tests/browser/campaign-film.spec.js tests/browser/petition-progress.spec.js
+tests/review-evidence/campaign-film-320.png tests/review-evidence/campaign-film-390.png tests/review-evidence/campaign-film-1440.png
 tests/browser/simple-guides.spec.js tests/browser/simple-research.spec.js tests/browser/simple-participation.spec.js tests/browser/simplification.spec.js
 SEO-OPERATIONS.md .github/scripts/build_seo.py .github/scripts/test_seo.py tests/browser/seo.spec.js
 SEO-IMPLEMENTATION-PLAN.md
@@ -72,6 +77,7 @@ tests/browser/visitor-journeys.spec.js tests/browser/understand.spec.js tests/br
 '''.split())
 CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://gateway.umami.is/api/send https://kew-riverside-statistics.analytics-backend.workers.dev/count; base-uri 'none'; object-src 'none'; frame-src 'none'; form-action 'self' https://formspree.io; upgrade-insecure-requests"
 LETTERS_CSP = CSP.replace("frame-src 'none'", 'frame-src https://www.youtube-nocookie.com')
+HOME_CSP = CSP.replace("img-src 'self';", "img-src 'self'; media-src 'self';").replace("workers.dev/count;", "workers.dev/count https://kew-riverside-statistics.analytics-backend.workers.dev/petition;")
 SECRET_PATTERNS = [
     r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',
     r'\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{50,})\b',
@@ -121,9 +127,10 @@ def require(ok, message):
 
 
 class Page(HTMLParser):
-    def __init__(self, text, expected_csp=CSP):
+    def __init__(self, text, expected_csp=None, *, home_media=False):
         super().__init__()
-        self.expected_csp = expected_csp
+        self.home_media = home_media
+        self.expected_csp = expected_csp if expected_csp is not None else HOME_CSP if home_media else CSP
         self.csp = False
         self.referrer = False
         self.inputs = {}
@@ -141,8 +148,15 @@ class Page(HTMLParser):
         if tag == 'meta' and a.get('name') == 'referrer':
             require(a.get('content') == 'strict-origin-when-cross-origin', 'Keep form domain validation compatible without leaking query strings.')
             self.referrer = True
-        if tag in {'script', 'link', 'img', 'form'}:
+        if tag in {'script', 'link', 'img', 'form', 'video', 'source', 'track'}:
             require(self.csp, 'Policy must precede all resources and forms.')
+        if tag in {'video', 'source', 'track'}:
+            require(self.home_media, 'Media is only reviewed for the homepage.')
+            resource = a.get('src', '')
+            if resource:
+                require(resource in PUBLIC_FILES and resource.endswith(('.mp4', '.vtt')), 'Only reviewed local media is allowed.')
+            if tag == 'video':
+                require(a.get('poster') in PUBLIC_FILES and 'autoplay' not in a, 'Video needs a reviewed poster and deliberate playback.')
         if tag == 'script':
             script = urlsplit(a.get('src', ''))
             require(not script.scheme and not script.netloc and not script.fragment
@@ -185,7 +199,7 @@ def validate_site(root=ROOT):
         data = p.read_bytes().decode('utf-8', errors='replace')
         require(not any(re.search(pattern, data) for pattern in SECRET_PATTERNS), 'Possible credential in ' + name + ' (value withheld).')
         if name.endswith('.html'):
-            page = Page(data, LETTERS_CSP if name == 'letters.html' else CSP)
+            page = Page(data, LETTERS_CSP if name == 'letters.html' else None, home_media=name == 'index.html')
             if name in ARCHIVED_PAGES:
                 require('<!-- archive:start -->' in data and re.search(r'<meta name="robots" content="[^"]*noindex', data), 'Archived page lacks its banner or noindex: ' + name)
             elif name in PUBLIC_FILES and name not in REDIRECT_PAGES:

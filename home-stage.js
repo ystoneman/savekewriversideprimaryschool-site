@@ -6,6 +6,8 @@
   const note = document.getElementById('action-note');
   const petition = document.getElementById('petition-action');
   const petitionNote = document.getElementById('petition-note');
+  const filmPetition = document.getElementById('film-petition-action');
+  const filmPetitionNote = document.getElementById('film-petition-note');
   const intro = document.querySelector('.intro');
   let rendered = '';
   function countdownText(deadline, today) {
@@ -21,6 +23,7 @@
     if (petition && event?.type !== 'pointerdown') {
       const closed = today > '2027-01-13';
       petition.textContent = closed ? 'View the petition' : 'Sign the petition';
+      if (filmPetition) filmPetition.textContent = closed ? 'View the petition' : 'Sign the petition';
       const consultationOpen = today <= '2026-10-16';
       if (closed) {
         petitionNote.textContent = 'The published petition closing date, 13 January 2027, has passed. Check the council’s petition page for its status.';
@@ -30,6 +33,7 @@
         count.textContent = countdownText(Date.UTC(2027, 0, 13), calendarDay);
         petitionNote.replaceChildren(count, document.createTextNode(' · Petition closes 13 January 2027. For people who live, work or study in Richmond borough; a Richmond Account is required.'+(consultationOpen ? ' Signing does not replace your consultation response.' : '')));
       }
+      if (filmPetitionNote) filmPetitionNote.textContent = petitionNote.textContent;
     }
     const stage = today >= '2026-10-12' && today <= '2026-10-16' ? 'active' : today > '2026-10-16' ? 'expired' : 'dated';
     const active = stage === 'active';
@@ -54,7 +58,7 @@
       count.textContent = countdownText(Date.UTC(2026, 9, 16), calendarDay);
       note.replaceChildren(count, document.createTextNode(' · Respond by 16 October 2026.'));
     } else if (stage === 'expired') {
-      intro.textContent = 'Richmond Council proposes closing the school from 1 September 2027. Responses closed on 16 October 2026. If it proceeds in November 2026, it plans a final decision in April 2027.';
+      intro.textContent = 'Richmond Council proposes closing the school from 1 September 2027. If it proceeds in November 2026, it plans a final decision in April 2027.';
       note.textContent = 'The published 16 October deadline has passed. Check the council’s latest information before acting.';
     } else {
       intro.textContent = 'On 12 October 2026, Richmond Council was consulting on proposed closure from 1 September 2027. Check the council’s page for the current position.';
@@ -72,5 +76,6 @@
   ['pointerdown','click','auxclick','contextmenu','keydown'].forEach(type => {
     action.addEventListener(type, refreshStage, {capture:true});
     if (petition) petition.addEventListener(type, refreshStage, {capture:true});
+    if (filmPetition) filmPetition.addEventListener(type, refreshStage, {capture:true});
   });
 })();
