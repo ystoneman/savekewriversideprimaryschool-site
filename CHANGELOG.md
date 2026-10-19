@@ -4,10 +4,10 @@
 
 ### Visual contribution cards — 19 October 2026
 
-- Get involved replaces the story, help and sharing paragraphs with compact custom SVG icons, explicit action buttons and short effort/process explanations. Writing goes directly to the existing letter composer, with reading kept visible.
-- Recruitment videos and Open Day QR downloads have their own Discover the school section. The video card describes the existing permission-first route and possible automatic publication after checks. Campaign/recruitment QR downloads and old anchors remain distinct.
-- Independent campaign and UX planning/diff reviews completed; a misleading personal-review promise was corrected and rechecked. Rendered 320/390/1440px light/dark review found no remaining issue. Local validation: 48 focused browser checks across four projects, 152 Python checks, 33 deadline unit checks and 140-file public staging pass. Native iPhone 17 / iOS 26.5 Safari reached a local certificate warning; no bypass or native interaction success is claimed. No real form was submitted.
-- Local implementation only; publication and changes to submission rates are not claimed.
+- Get involved replaces the story, help and sharing paragraphs with custom SVG icons, explicit action buttons and shorter prompts. Writing goes directly to the existing letter composer, with reading kept visible.
+- Recruitment videos and Open Day QR downloads have their own Discover the school section. The video card describes the existing permission-first route and possible automatic publication after checks. Campaign/recruitment downloads and old anchors remain distinct.
+- Preserve the untouched composer’s visible arrival position when a slow Letters feed arrives, extending the active-writer safeguard without moving focus. Refresh the letter renderer’s cache version.
+- Independent campaign and rendered UX reviews found no remaining issue. Refreshed browser/native verification and hosted deployment evidence are recorded in TESTING.md and the release pull request. No improved submission rate is claimed.
 
 ### Video letters ready to play — 19 October 2026
 

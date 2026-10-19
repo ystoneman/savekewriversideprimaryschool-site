@@ -8,7 +8,7 @@ Retain the preceding official-response, petition and representative sections, ex
 
 Recruitment videos and Open Day downloads move out of the campaign story/sharing sections into a separately labelled Discover the school section. Its content concerns school life and visits, with no campaign participation ask; campaign homepage QR downloads stay in Spread the word. This is a local grouping change within J8/J9, not a new campaign/recruitment communication. J4 now has an explicit Write a community letter heading while preserving `#share-your-story`.
 
-Independent campaign and UX planning/implementation reviews informed the design; their one publication-process finding was fixed and rechecked. Verification is recorded in TESTING.md. No unfamiliar-person real-phone trial, provider receipt, improved conversion or deployment is claimed.
+Independent campaign and UX planning/implementation reviews informed the design; their publication-process finding was fixed and rechecked. The native CTA handoff also exposed a late feed displacing the untouched letter composer; preserve its visible arrival position without moving focus, as already done for active writers. Refreshed campaign/rendered UX review and a bounded form-arrival review found no remaining issue. Verification is recorded in TESTING.md and the release pull request. The owner requested publication of the prepared CTA update; no unfamiliar-person real-phone trial, provider receipt or improved conversion is claimed.
 
 ## Video letters ready to play — 19 October 2026
 

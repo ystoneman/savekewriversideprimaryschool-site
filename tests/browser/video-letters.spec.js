@@ -91,12 +91,28 @@ test('Video letter: unsafe video ID fails the entire board closed; ordinary lett
   await expect(page.locator('iframe')).toHaveCount(0);
 });
 
+test('Video letter: delayed feed preserves an untouched direct form arrival', async ({ page }) => {
+  await board(page);
+  let releaseBoard;
+  const pendingBoard=new Promise(resolve=>{releaseBoard=resolve;});
+  await page.route('**/letters.json',async route=>{
+    await pendingBoard;
+    await route.fulfill({json:{version:1,letters:[row]}});
+  });
+  await page.goto('/letters.html#letter-form',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#message')).toBeInViewport();
+  releaseBoard();
+  await expect(page.locator('#'+row.id+' iframe')).toBeVisible();
+  await expect(page.locator('#message')).toBeInViewport();
+  await expect(page.locator('iframe')).not.toBeFocused();
+});
+
 test('Video letter: refreshed assets render mixed written and video letters for returning readers', async ({ page }) => {
   const written = {...row, id:'letter-fedcba543210', body:'A fictional written letter stays readable beside a video.'};
   delete written.youtubeId;
   await board(page,[written,row]);
   await page.goto('/letters.html#letters');
-  await expect(page.locator('script[src="letters.js?v=2026101902"]')).toHaveCount(1);
+  await expect(page.locator('script[src="letters.js?v=2026101903"]')).toHaveCount(1);
   await expect(page.locator('link[href="community.css?v=2026101902"]')).toHaveCount(1);
   await expect(page.locator('#'+written.id)).toContainText(written.body);
   await expect(page.locator('#'+row.id+' iframe')).toBeVisible();
