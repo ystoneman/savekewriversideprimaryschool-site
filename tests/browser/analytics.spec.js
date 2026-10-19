@@ -1001,7 +1001,7 @@ test('A petition handoff from Get involved records a fixed opening label in aggr
   await expect.poll(() => aggregates.filter(r => r.body.counters.some(c => c.metric === 'page')).length).toBe(1);
   await allowAnalytics(page);
   await expect.poll(() => pageViews(sent).length).toBe(1);
-  await page.locator('#petition').getByRole('link', { name: /Sign the petition/ }).click();
+  await page.locator('#petition').getByRole('link', { name: /Sign petition by/ }).click();
   await expect.poll(() => handoffs.length).toBe(1);
   await expect.poll(() => events(sent, 'Action opened')).toEqual([{ action: 'Opened petition' }]);
   await expect.poll(() => aggregates.some(r => r.body.counters.some(c => c.metric === 'action' && c.label === 'Opened petition'))).toBe(true);

@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Contribution order — 19 October 2026
+
+Move Record a parent video directly after Write a community letter, retaining a standalone Discover the school label and the same recruitment-only content and permissions. Move Offer an idea or help after sharing and visit downloads so it is the last current-action card. Preserve existing anchors and the closed consultation reference beneath the actions. Update no-script, keyboard, destination and Back regression coverage; verification and publication are recorded separately.
+
+### Current actions first — 19 October 2026
+
+- Put the verified 13 January 2027 petition closing date on its button and retain eligibility/account requirements in a shorter paragraph. Shorten the page introduction and give councillor/MP lookups their own descriptive buttons.
+- Move the closed consultation notice to the bottom, preserving its incoming anchor, timetable and response-checklist download. Current no-script HTML now shows the closed stage; historical open-stage ordering still works with scripts.
+- After the petition closes, change both its heading and action to viewing, keeping the dated closure visible and preserving focused/pressed targets. Refresh changed asset versions and maintained page metadata.
+- Independent campaign/UX reviews and verification are recorded in TESTING.md and the release pull request. No improved action-taking rate is claimed.
+
 ### Visual contribution cards — 19 October 2026
 
 - Get involved replaces the story, help and sharing paragraphs with custom SVG icons, explicit action buttons and shorter prompts. Writing goes directly to the existing letter composer, with reading kept visible.

@@ -54,3 +54,5 @@ html:has(.campaign-page){scroll-behavior:auto}
   .involvement-page .contribution-card .simple-actions a{width:100%;min-width:0}
 }
 @media print{.involvement-page .contribution-card{break-inside:avoid;background:white}.contribution-icon{display:none}}
+
+.involvement-page :is(.petition-button,#representatives .simple-actions a){gap:12px;text-align:left;justify-content:space-between}
