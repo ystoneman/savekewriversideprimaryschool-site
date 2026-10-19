@@ -1,74 +1,83 @@
 const { test, expect } = require('./fixtures');
 const row = { id: 'letter-012345abcdef', date: '2026-09-29', review: 'AI screened', displayName: 'Fictional parent', body: 'A fictional video letter about a school proposal.', youtubeId: 'AbC0123_-xy' };
+const playerURL = 'https://www.youtube-nocookie.com/embed/AbC0123_-xy?rel=0';
+const fictionalPlayer = '<!doctype html><title>Fictional player</title><button>Play fictional video</button>';
 async function board(page, rows = [row]) {
   await page.route('**/letters.json', route => route.fulfill({ json: { version: 1, letters: rows } }));
+  await page.route('https://www.youtube-nocookie.com/**', route => route.fulfill({contentType:'text/html',body:fictionalPlayer}));
 }
 
-test('Video letter: Load video stands out with readable text in light and dark', async ({page}) => {
-  await board(page);
-  for (const scheme of ['light','dark']) {
-    await page.emulateMedia({colorScheme:scheme});
-    await page.goto('/letters.html#letters');
-    const load=page.getByRole('button',{name:'Load video letter by Fictional parent'});
-    await expect(load).toBeVisible();
-    const measured=await load.evaluate(el=>{
-      const parse=v=>(v.match(/[\d.]+/g)||[]).map(Number);
-      const lum=rgb=>rgb.slice(0,3).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
-      const contrast=(a,b)=>(Math.max(lum(a),lum(b))+.05)/(Math.min(lum(a),lum(b))+.05);
-      const style=getComputedStyle(el),background=parse(style.backgroundColor);
-      let parent=el.parentElement;
-      while(parent && parse(getComputedStyle(parent).backgroundColor)[3]===0) parent=parent.parentElement;
-      return {text:contrast(parse(style.color),background),control:contrast(background,parse(getComputedStyle(parent).backgroundColor))};
-    });
-    expect(measured.text).toBeGreaterThanOrEqual(4.5);
-    expect(measured.control).toBeGreaterThanOrEqual(3);
-  }
-});
-
-test('Video letter: no Google request before activation; one removable player and truthful labels', async ({ page, hasTouch }) => {
+test('Video letter: player loads on arrival without autoplay or an extra loading step', async ({ page, browserName }) => {
   await board(page);
   const requests = [];
-  await page.route('https://www.youtube-nocookie.com/**', route => {
-    requests.push(route.request().url());
-    return route.fulfill({contentType:'text/html',body:'<!doctype html><title>Fictional player</title><button>Fictional play control</button>'});
+  page.on('request', request => {
+    if (request.url().startsWith('https://www.youtube-nocookie.com/')) requests.push(request.url());
   });
-  await page.goto('/letters.html#letters');
+  await page.goto('/letters.html#' + row.id);
   const card = page.locator('#' + row.id);
   await expect(card).toContainText('Video letter · AI screened · Opinion');
-  await expect(card).toContainText('watchable here and shareable by link');
+  await expect(card.locator('.video-letter-note,.video-letter-load,.video-letter-stop')).toHaveCount(0);
   await expect(card.getByRole('link', {name:'Watch on YouTube'})).toHaveAttribute('href','https://www.youtube.com/watch?v=AbC0123_-xy');
-  await expect(page.locator('iframe')).toHaveCount(0); expect(requests).toEqual([]);
-  await card.screenshot({path:test.info().outputPath('video-letter-before.png')});
-  const load = card.getByRole('button', {name:'Load video letter by Fictional parent'});
-  if (hasTouch) await load.tap(); else { await load.focus(); await page.keyboard.press('Enter'); }
+  await expect(card.getByRole('link', {name:'Video privacy'})).toHaveAttribute('href','privacy.html#video-privacy');
   const player = card.locator('iframe');
-  await expect(player).toHaveCount(1); await expect(player).toHaveAttribute('title','Video letter by Fictional parent');
-  await expect(player).toHaveAttribute('src','https://www.youtube-nocookie.com/embed/AbC0123_-xy?rel=0');
-  await expect(load).toBeHidden(); await expect(player).toBeFocused();
-  await expect.poll(() => requests.length).toBe(1);
-  await card.screenshot({path:test.info().outputPath('video-letter-player.png')});
-  await card.getByRole('button',{name:'Close video player'}).click();
-  await expect(player).toHaveCount(0); await expect(load).toBeFocused();
+  await expect(player).toHaveCount(1);
+  await expect(player).toHaveAttribute('title','Video letter by Fictional parent');
+  await expect(player).toHaveAttribute('src',playerURL);
+  await expect(player).toHaveAttribute('allow','fullscreen');
+  await expect(player).toHaveAttribute('allowfullscreen','');
+  await expect(player).toHaveAttribute('referrerpolicy','strict-origin-when-cross-origin');
+  await expect.poll(() => requests).toEqual([playerURL]);
+  await expect(player).not.toBeFocused();
+  const play = player.contentFrame().getByRole('button',{name:'Play fictional video'});
+  await play.focus(); await expect(play).toBeFocused();
+  await page.keyboard.press(browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab');
+  await expect(card.getByRole('link',{name:'Watch on YouTube'})).toBeFocused();
   await card.getByRole('link',{name:'Report this video letter or request removal'}).click();
   await expect(page).toHaveURL(/feedback\.html\?kind=privacy&letter=letter-012345abcdef#feedback-form$/);
   await expect(page.locator('input[name="kind"][value="privacy"]')).toBeChecked();
+  await page.goBack();
+  await expect(page.locator('#'+row.id+' iframe')).toHaveAttribute('src',playerURL);
 });
 
-test('Video letter: a delayed player response cannot steal focus from the next action', async ({ page }) => {
+test('Video letter: ready player and recovery links fit light and dark layouts', async ({page}) => {
   await board(page);
-  let release;
-  const pending = new Promise(resolve => { release = resolve; });
-  await page.route('https://www.youtube-nocookie.com/**', async route => {
-    await pending;
-    await route.fulfill({contentType:'text/html',body:'<!doctype html><title>Fictional delayed player</title><button>Fictional play</button>'});
+  for (const scheme of ['light','dark']) {
+    await page.emulateMedia({colorScheme:scheme});
+    await page.goto('/letters.html#' + row.id);
+    const card=page.locator('#'+row.id);
+    await expect(card.locator('iframe')).toBeVisible();
+    await expect(card.getByRole('link',{name:'Watch on YouTube'})).toBeVisible();
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    const size=await card.locator('iframe').boundingBox();
+    expect(size.width/size.height).toBeCloseTo(16/9,1);
+    await card.screenshot({path:test.info().outputPath('video-letter-'+scheme+'.png')});
+  }
+});
+
+test('Video letter: delayed feed and player preserve writing focus and form arrival', async ({ page }) => {
+  await board(page);
+  let releaseBoard, releasePlayer;
+  const pendingBoard=new Promise(resolve=>{releaseBoard=resolve;});
+  const pendingPlayer=new Promise(resolve=>{releasePlayer=resolve;});
+  await page.route('**/letters.json',async route=>{
+    await pendingBoard;
+    await route.fulfill({json:{version:1,letters:[row]}});
   });
-  await page.goto('/letters.html#letters');
-  const card=page.locator('#'+row.id);
-  await card.locator('.video-letter-load').click();
-  const close=card.locator('.video-letter-stop'); await close.focus(); release();
-  await expect(card.locator('iframe')).toBeVisible();
-  await expect(close).toBeFocused();
-  await close.click();
+  await page.route('https://www.youtube-nocookie.com/**',async route=>{
+    await pendingPlayer;
+    await route.fulfill({contentType:'text/html',body:fictionalPlayer});
+  });
+  await page.goto('/letters.html#letter-form',{waitUntil:'domcontentloaded'});
+  const message=page.locator('#message');
+  await message.fill('A fictional draft stays in focus while the video loads.');
+  await expect(message).toBeInViewport();
+  releaseBoard();
+  await expect(page.locator('#'+row.id+' iframe')).toHaveCount(1);
+  await expect(message).toBeFocused();
+  releasePlayer();
+  await expect(page.frameLocator('#'+row.id+' iframe').getByRole('button')).toBeVisible();
+  await expect(message).toBeFocused();
+  await expect(message).toBeInViewport();
 });
 
 test('Video letter: unsafe video ID fails the entire board closed; ordinary letters still work', async ({ page }) => {
@@ -79,18 +88,17 @@ test('Video letter: unsafe video ID fails the entire board closed; ordinary lett
   await page.unroute('**/letters.json');
   const text={...row}; delete text.youtubeId; await board(page,[text]);
   await page.reload(); await expect(page.locator('#'+row.id)).toContainText(row.body);
-  await expect(page.locator('.video-letter-load,iframe')).toHaveCount(0);
+  await expect(page.locator('iframe')).toHaveCount(0);
 });
-
 
 test('Video letter: refreshed assets render mixed written and video letters for returning readers', async ({ page }) => {
   const written = {...row, id:'letter-fedcba543210', body:'A fictional written letter stays readable beside a video.'};
   delete written.youtubeId;
   await board(page,[written,row]);
   await page.goto('/letters.html#letters');
-  await expect(page.locator('script[src="letters.js?v=2026101901"]')).toHaveCount(1);
-  await expect(page.locator('link[href="community.css?v=2026101901"]')).toHaveCount(1);
+  await expect(page.locator('script[src="letters.js?v=2026101902"]')).toHaveCount(1);
+  await expect(page.locator('link[href="community.css?v=2026101902"]')).toHaveCount(1);
   await expect(page.locator('#'+written.id)).toContainText(written.body);
-  await expect(page.locator('#'+row.id+' .video-letter-load')).toBeVisible();
+  await expect(page.locator('#'+row.id+' iframe')).toBeVisible();
   await expect(page.locator('#letters-list article')).toHaveCount(2);
 });

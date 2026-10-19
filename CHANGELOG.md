@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Video letters ready to play — 19 October 2026
+
+Load video-letter players with the Letters page, with playback still requiring Play. Remove the extra paragraph and Load/Close buttons, retain direct watch/privacy/removal links and update the privacy notice. Preserve an active writer's screen position when a delayed feed arrives in Safari. Refresh the Letters asset versions and generated no-script fallback. Verification and deployment are recorded separately.
+
 ### First complete video letter — 19 October 2026
 
 Add an owner-approved complete video letter to the existing newest-first Community letters feed, using the contributor’s generic credit and a factual editorial introduction. The matching YouTube upload is Unlisted and permits embedding; the separate recruitment excerpt remains unchanged. Player loading is deliberate and the direct-watch/removal routes work without JavaScript. The navigation generator preserves the new renderer/style versions for returning readers. Checks and actual deployment evidence are recorded separately; this entry alone is not a release receipt.

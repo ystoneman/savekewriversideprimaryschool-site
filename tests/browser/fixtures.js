@@ -63,7 +63,7 @@ const test = base.extend({
       // more homepage requests in flight when a legacy link redirects. Cancelling them trips
       // a network-process defect that can lose the redirected navigation (TESTING.md).
       // Without routes nothing can abort a request. The server adds a stricter frame-src
-      // policy for this context, so the click-to-load Letters player cannot contact YouTube.
+      // policy for this context, so the Letters player cannot contact YouTube.
       await context.setExtraHTTPHeaders({ 'x-kew-no-external-frames': '1' });
       // Apart from that explicitly blocked frame, page policies cannot reach other origins.
       // Requests to other origins, local writes and the letters board are still reported.
