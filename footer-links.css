@@ -2,4 +2,11 @@
 .footer-discovery a{display:inline-flex;align-items:center;gap:10px;min-height:44px;max-width:100%;overflow-wrap:anywhere;color:inherit;text-underline-offset:4px}
 .footer-discovery svg{flex-shrink:0}
 .footer-discovery a:focus-visible{outline:3px solid currentColor;outline-offset:4px}
-@media print{.footer-discovery{display:none}}
+.footer-socials{border-top:1px solid var(--line);margin-top:20px;padding-top:20px}
+.footer-socials h2{margin:0;font-size:18px;line-height:1.4;letter-spacing:normal;color:inherit}
+.footer-socials p{margin:6px 0 10px;font-size:14px;line-height:1.5;color:inherit}
+.footer-social-links{display:flex;flex-wrap:wrap;gap:12px}
+.footer-social-links a{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:4px 12px;border:1px solid currentColor;border-radius:8px;color:inherit;font-size:16px;line-height:1.5;text-underline-offset:4px}
+.footer-social-links svg{flex-shrink:0}
+.footer-social-links a:focus-visible{outline:3px solid currentColor;outline-offset:4px}
+@media print{.footer-discovery,.footer-socials{display:none}}

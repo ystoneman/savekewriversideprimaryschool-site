@@ -180,13 +180,18 @@ def render_identity(name, document):
     return document
 
 def render_footer_discovery(document):
+    # Campaign profiles are a separate action from school visits and videos.
+    tiktok = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M16.7 1h-4.1v15.1a3.3 3.3 0 1 1-2.8-3.3V8.6a7.5 7.5 0 1 0 6.9 7.5V8.5a10.4 10.4 0 0 0 6.1 2V6.3A6.2 6.2 0 0 1 16.7 1z"/></svg>'
+    x = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.64 7.584H.47l8.6-9.835L0 1.154h7.594l5.243 6.932zm-1.29 19.49h2.039L6.487 3.24H4.3z"/></svg>'
+    socials = '<!-- footer-socials:start --><section class="wrap footer-socials" aria-labelledby="campaign-socials-title"><h2 id="campaign-socials-title">Amplify the campaign on our socials</h2><p>Follow, like and share our campaign posts.</p><div class="footer-social-links"><a href="https://www.tiktok.com/@savekrps">'+tiktok+'<span>TikTok</span></a><a href="https://x.com/SaveKRPS">'+x+'<span>X</span></a></div></section><!-- footer-socials:end -->'
     # Independent parent videos and school visits have distinct labels; this row
     # never carries petition or closure-campaign requests.
     youtube = '<svg width="28" height="20" viewBox="0 0 28 20" aria-hidden="true" focusable="false"><rect width="28" height="20" rx="5" fill="currentColor"/><path d="M11 5.5v9l8-4.5z" fill="var(--theme-background, var(--paper, #fbfaf6))"/></svg>'
     row = '<!-- footer-discovery:start --><div class="wrap footer-discovery"><a class="footer-youtube" href="https://www.youtube.com/@KewParentVoices">'+youtube+'<span>Parent Voices on YouTube</span></a><a class="footer-open-days" href="https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform">Visit our Open Days <span aria-hidden="true">↗&#xFE0E;</span></a></div><!-- footer-discovery:end -->'
     document = re.sub(r'<!-- footer-discovery:start -->.*?<!-- footer-discovery:end -->', '', document, flags=re.S)
-    document = document.replace('</footer>', row+'</footer>')
-    link = '<link rel="stylesheet" href="footer-links.css?v=2026101303">'
+    document = re.sub(r'<!-- footer-socials:start -->.*?<!-- footer-socials:end -->', '', document, flags=re.S)
+    document = document.replace('</footer>', socials+row+'</footer>')
+    link = '<link rel="stylesheet" href="footer-links.css?v=2026102001">'
     document = re.sub(r'<link rel="stylesheet" href="footer-links\.css(?:\?v=\d+)?">', '', document)
     document = document.replace('<link rel="stylesheet"',link+'<link rel="stylesheet"',1)
     return document
@@ -325,9 +330,10 @@ def render_navigation(name, document):
     header = header.replace('</header>',orientation+'</header>')
     document = document[:match.start()]+header+document[match.end():]
     footer_links = ''.join(f'<a href="{esc(href)}"{extra}>{esc(label)}</a>' for href, label, extra in FOOTER_LINKS)
-    # The discovery row sits before </footer>; remove it so the link list can be
-    # rewritten, then render_footer_discovery restores it.
+    # Remove the two appended footer sections while rewriting the link list;
+    # render_footer_discovery restores both afterwards.
     document = re.sub(r'<!-- footer-discovery:start -->.*?<!-- footer-discovery:end -->', '', document, flags=re.S)
+    document = re.sub(r'<!-- footer-socials:start -->.*?<!-- footer-socials:end -->', '', document, flags=re.S)
     document = re.sub(r'(<footer><div class="wrap footer-inner"><div>.*?</div>)<div>.*?</div>(</div></footer>)', lambda m: m.group(1)+'<div>'+footer_links+'</div>'+m.group(2), document, count=1, flags=re.S)
     return render_footer_discovery(document)
 
