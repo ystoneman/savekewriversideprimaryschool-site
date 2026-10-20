@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Campaign social profiles — 20 October 2026
+
+Add “Amplify the campaign on our socials” to all 23 standard page footers, with labelled TikTok and X icons linking directly to the campaign profiles. Keep school visits and Parent Voices in their separate existing row. Static links need no scripts or embeds; refresh the shared footer stylesheet cache version. Preserve the recruitment-only `/visit/` handoff. Further platform links await confirmed campaign destinations. Independent reviews and local verification are recorded in TESTING.md; no live release is claimed.
+
 ### Contribution order — 19 October 2026
 
 Move Record a parent video directly after Write a community letter, retaining a standalone Discover the school label and the same recruitment-only content and permissions. Move Offer an idea or help after sharing and visit downloads so it is the last current-action card. Preserve existing anchors and the closed consultation reference beneath the actions. Update no-script, keyboard, destination and Back regression coverage; verification and publication are recorded separately.

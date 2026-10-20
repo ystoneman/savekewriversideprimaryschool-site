@@ -1,5 +1,11 @@
 # UX design decisions
 
+## Campaign social profiles in the footer — 20 October 2026
+
+J2/J6: visitors who want to spread campaign posts need direct links to the campaign's own accounts. Add a compact, always-visible “Amplify the campaign on our socials” section in every standard footer, with decorative local SVG icons and visible TikTok/X names. Native links work without scripts or a disclosure and make no social-platform request before activation. Use the confirmed profile URLs without tracking parameters; add further platforms only once their campaign destinations are confirmed.
+
+Keep this section distinct from the following Parent Voices/Open Days row, with its own heading and border. Preserve all existing footer, Menu and main-content routes; the recruitment-only `/visit/` handoff has no standard footer and receives no campaign CTA. A new page, Menu entry or homepage band is unnecessary. Independent campaign and UX reviews and completed checks are recorded in TESTING.md; this prepared change is not a deployment.
+
 ## Letter, video and final help action — 19 October 2026
 
 J4/J5/J9: the owner requests the parent-video invitation directly below the community-letter card and Offer an idea or help as the last call to action. Use that order in HTML so visual reading, keyboard navigation and no-script access agree. Petition and representatives still lead; campaign sharing and the Open Day download block follow the video; the private help card follows every other current action, before the closed consultation reference.

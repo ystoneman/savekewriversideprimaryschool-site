@@ -1,5 +1,13 @@
 # Testing the website
 
+## Campaign social footer — 20 October 2026
+
+- Early homepage smoke passes 10/10. All 55 focused browser cases pass across iPhone WebKit, Android Chromium, desktop Chromium/WebKit and iPhone no-script. They verify all 23 standard footers, exact profile URLs, visible labels, disclosure-free access, minimum 44px touch targets, intercepted social handoffs and Back, and retained Parent Voices/Open Day handoffs. No provider was contacted or form submitted.
+- All 157 Python checks, 140-file public validation, navigation regeneration and whitespace checks pass. Only the shared footer markup and stylesheet cache version change within generated page HTML; main content and `/visit/` remain unchanged.
+- Independent actual-diff campaign and rendered UX reviews found no actionable findings. UX inspected 320px light, 390px dark, 1440px desktop, no-script Get involved, landscape research and doubled footer text, plus desktop keyboard focus/Enter/Back. New social links reflow, and ordinary-text pages have no horizontal overflow or unexpected external request. Doubled footer text exposes an existing 8px overflow in Home's disclosure icons, unchanged when the new social section is removed; whole-footer enlarged-text overflow is not claimed to pass.
+- Native iPhone 17 / iOS 26.5 Safari Simulator renders the separate campaign and school-discovery sections. Touching both TikTok and X opens a local fictional profile, and Safari Back restores the footer. This isolated read-only HTTP preview replaces only the two social destinations with fixtures, disables submissions/frames and omits TLS upgrading from served HTML; production files and policy retain their real links. These are Simulator checks, not a physical-phone visitor trial.
+- The campaign profile URLs are confirmed account links. Automated direct reads of TikTok/X are blocked by those platforms, so provider availability and login behaviour remain unverified. No social embed, new analytics or real external action was added. Current-revision hosted checks and live publication are separate release gates; no deployment is claimed here.
+
 ## Contribution order — 19 October 2026
 
 All 84 focused cases pass across iPhone WebKit, Android Chromium, desktop Chromium/WebKit and iPhone no-script. The new regression requires video immediately after the letter, help after all other current actions, retained historical/current consultation order, native desktop Tab/Option-Tab progression from reading letters to video, direct video arrival/handoff/Back and no-script order. Existing help, permission, reading and four QR-download checks remain. All 157 Python checks, navigation freshness, whitespace and 140-file public validation pass; no CSS or JavaScript implementation changed.

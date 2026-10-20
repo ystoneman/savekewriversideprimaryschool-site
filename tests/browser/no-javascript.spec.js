@@ -1,5 +1,23 @@
 const { test, expect, pages, headerLinks, expectDestination, expectStillArrival, captureSubmissions } = require('./fixtures');
 
+for (const [name, url] of [['TikTok', 'https://www.tiktok.com/@savekrps'], ['X', 'https://x.com/SaveKRPS']]) {
+  test(`No JavaScript: campaign socials ${name} opens directly and supports Back`, async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto('/index.html');
+    const socials = page.getByRole('region', { name: 'Amplify the campaign on our socials' });
+    const link = socials.getByRole('link', { name, exact: true });
+    await link.scrollIntoViewIfNeeded();
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute('href', url);
+    await page.route(url, route => route.fulfill({ contentType: 'text/html', body: '<h1>Fictional campaign profile</h1>' }));
+    await link.tap();
+    await expect(page).toHaveURL(url);
+    await page.goBack();
+    await expect(link).toBeVisible();
+    await expect(page.locator('.footer-discovery').getByRole('link', { name: 'Parent Voices on YouTube' })).toBeVisible();
+  });
+}
+
 test('No JavaScript: campaign ownership, letter-data fallback and journalist guidance remain available', async ({ page }) => {
   await page.goto('/letters.html');
   await expect(page).toHaveTitle('Community letters | Save Kew Riverside Primary School Campaign');

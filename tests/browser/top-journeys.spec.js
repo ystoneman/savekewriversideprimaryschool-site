@@ -1,4 +1,4 @@
-const { test, expect, expectScrollSettled } = require('./fixtures');
+const { test, expect, pages, expectScrollSettled } = require('./fixtures');
 const official = 'https://docs.google.com/forms/d/e/1FAIpQLSda5oPsdUlrJkf6vACC_AjvXFR6-ki3iBymNIF5BAWNxf85xQ/viewform';
 const petition = 'https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249';
 // Fixed London dates either side of the published 16 October 2026 response deadline.
@@ -177,6 +177,47 @@ test('Top journeys: the council’s Kew Riverside FAQ is one Menu choice from th
 });
 
 // The footer links are direct external handoffs, visible without opening More pages.
+const campaignSocials = [['TikTok', 'https://www.tiktok.com/@savekrps'], ['X', 'https://x.com/SaveKRPS']];
+test('Campaign socials: every standard footer exposes the confirmed profiles separately from school discovery', async ({ page }) => {
+  for (const file of pages) {
+    await page.goto('/' + file);
+    const socials = page.getByRole('region', { name: 'Amplify the campaign on our socials' });
+    await expect(socials).toHaveCount(1);
+    await expect(socials.locator('a')).toHaveCount(2);
+    for (const [name, url] of campaignSocials) {
+      const link = socials.getByRole('link', { name, exact: true });
+      await expect(link).toHaveAttribute('href', url);
+      await link.scrollIntoViewIfNeeded();
+      await expect(link).toBeVisible();
+      expect(await link.evaluate(a => a.closest('details'))).toBeNull();
+    }
+    await expect(socials.getByRole('link', { name: /Parent Voices|Open Days/ })).toHaveCount(0);
+    await expect(page.locator('.footer-discovery').getByRole('link', { name: 'Visit our Open Days' })).toHaveCount(1);
+  }
+});
+
+for (const file of ['index.html', 'dates.html', 'videos.html']) for (const [name, url] of campaignSocials) {
+  test(`Campaign socials: ${file} ${name} handoff and Back keep the footer usable`, async ({ page, isMobile }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto('/' + file);
+    const link = page.locator('.footer-socials').getByRole('link', { name, exact: true });
+    await link.scrollIntoViewIfNeeded();
+    const box = await link.boundingBox();
+    expect(box.height).toBeGreaterThanOrEqual(44);
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    await page.route(url, route => route.fulfill({ contentType: 'text/html', body: '<h1>Fictional campaign profile</h1>' }));
+    if (isMobile) await link.tap();
+    else {
+      await link.focus();
+      await page.keyboard.press('Enter');
+    }
+    await expect(page).toHaveURL(url);
+    await page.goBack();
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute('href', url);
+  });
+}
+
 // Dates replaces the archived FAQ as the representative inner page (13 October 2026 slim-site decision).
 for(const file of ['index.html','dates.html','videos.html'])for(const [name,url] of [['Parent Voices on YouTube','https://www.youtube.com/@KewParentVoices'],['Visit our Open Days','https://docs.google.com/forms/d/e/1FAIpQLSfwTdpsQB5HOlbJxumjINzFjWiZZCshEHUIrkgXlUDCBBPGrw/viewform']])test(`Footer: ${file} ${name} is a direct accessible handoff with Back recovery`,async({page})=>{
  await page.setViewportSize({width:320,height:568});await page.goto('/'+file);const link=page.locator('.footer-discovery').getByRole('link',{name,exact:true});await link.scrollIntoViewIfNeeded();await expect(link).toBeVisible();await expect(link).toHaveAttribute('href',url);

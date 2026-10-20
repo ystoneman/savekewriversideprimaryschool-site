@@ -43,6 +43,7 @@ tests/browser/mobile-header.spec.js tests/browser/mobile-feedback.spec.js tests/
 tests/browser/home-landing.spec.js tests/unit/home-landing.test.cjs
 tests/browser/campaign-film.spec.js tests/browser/petition-progress.spec.js
 tests/review-evidence/campaign-film-320.png tests/review-evidence/campaign-film-390.png tests/review-evidence/campaign-film-1440.png
+tests/review-evidence/campaign-socials-mobile.png tests/review-evidence/campaign-socials-desktop.png
 tests/browser/simple-guides.spec.js tests/browser/simple-research.spec.js tests/browser/simple-participation.spec.js tests/browser/simplification.spec.js
 SEO-OPERATIONS.md .github/scripts/build_seo.py .github/scripts/test_seo.py tests/browser/seo.spec.js
 SEO-IMPLEMENTATION-PLAN.md
