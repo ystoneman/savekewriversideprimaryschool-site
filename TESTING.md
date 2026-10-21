@@ -1,5 +1,13 @@
 # Testing the website
 
+## Legal-advice fund draft — 21 October 2026
+
+All 25 current focused browser cases pass across iPhone WebKit, Android Chromium, desktop Chromium/WebKit and iPhone without JavaScript. They cover the Get involved entry and Back, retained action order, first-screen contribution access at 320 × 568, light/dark enlarged-text reflow, dated manual progress and absence of payment inputs or provider requests. The draft has no confirmed payment destination: these results do not establish a working payment handoff, QR or provider receipt. Earlier bank-transfer/alternative-provider tests were replaced after that design was superseded.
+
+The complete local browser suite passes 3,755 cases with 103 expected skips. The first attempt exposed four outdated sitemap/action-order expectations and was stopped; those explicit lists now include the new page while preserving every previous destination and order assertion. All 501 targeted journey/SEO cases then passed before the complete successful run. All 157 Python security/privacy/structure checks, 44 Node backend/deadline unit checks, navigation freshness, whitespace validation and 142-file public validation pass.
+
+Independent campaign/evidence actual-diff reviews identified the remaining source-dependent launch inputs. Independent UX inspected the held draft at 320px light, 390px dark and 1440px in both appearances, plus true no-script mobile; its only further reading recommendation was to remove a repeated introduction, now done. Native iPhone 17 / iOS 26.5 Safari Simulator verified Get involved#legal-fund → draft page → contribution anchor. The read-only HTTP preview removes TLS upgrading only from served HTML and disables analytics/submissions; production policy is unchanged. These checks cover the held layout, not an actual payment flow. The final provider flow requires fresh rendered/native checks and intercepted handoff/Back coverage. No physical-phone visitor trial, hosted current-revision result or deployment is claimed.
+
 ## Campaign social footer — 20 October 2026
 
 - Early homepage smoke passes 10/10. All 55 focused browser cases pass across iPhone WebKit, Android Chromium, desktop Chromium/WebKit and iPhone no-script. They verify all 23 standard footers, exact profile URLs, visible labels, disclosure-free access, minimum 44px touch targets, intercepted social handoffs and Back, and retained Parent Voices/Open Day handoffs. No provider was contacted or form submitted.

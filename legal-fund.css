@@ -1,0 +1,50 @@
+.legal-fund { max-width:1050px; padding-block:36px 56px; }
+.fund-intro { max-width:760px; margin-bottom:28px; }
+.fund-kicker { color:var(--teal); font-size:.8rem; font-weight:750; letter-spacing:.07em; text-transform:uppercase; margin:0 0 10px; }
+.fund-intro h1 { font-size:clamp(2rem,4.3vw,3.25rem); line-height:1.1; letter-spacing:-.035em; max-width:680px; margin:0 0 16px; }
+.fund-intro>p:not(.fund-kicker) { font-size:1.05rem; line-height:1.6; margin:0; max-width:680px; }
+.fund-layout { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(0,1fr); gap:44px; align-items:start; }
+.fund-card { border:1px solid var(--line); border-radius:18px; background:var(--white); overflow:hidden; }
+.fund-progress { padding:24px 28px 20px; background:var(--theme-soft,#edf4e8); }
+.fund-total { margin:0 0 2px; font-size:1rem; }
+.fund-total strong { font-size:2.2rem; font-variant-numeric:tabular-nums; color:var(--ink); letter-spacing:-.035em; }
+.fund-goal { margin:0; font-size:.95rem; }
+.fund-progress progress { display:block; width:100%; height:10px; margin:14px 0 10px; appearance:none; border:0; border-radius:99px; overflow:hidden; background:var(--line); color:var(--teal); }
+.fund-progress progress::-webkit-progress-bar { background:var(--line); border-radius:99px; }
+.fund-progress progress::-webkit-progress-value { background:var(--teal); border-radius:99px; }
+.fund-progress progress::-moz-progress-bar { background:var(--teal); border-radius:99px; }
+.fund-updated { font-size:.8rem; color:var(--muted); margin:8px 0 0; }
+.fund-payment { padding:24px 28px; }
+.legal-fund h2 { font-size:1.45rem; line-height:1.25; margin:0 0 10px; }
+.fund-primary { display:inline-flex; align-items:center; justify-content:center; gap:14px; min-height:48px; padding:10px 18px; margin-top:18px; border-radius:8px; font-size:1rem; font-weight:650; text-decoration:none; }
+.fund-primary:focus-visible { outline:3px solid var(--theme-focus,#b4641d); outline-offset:3px; }
+#contribute { scroll-margin-top:12px; }
+.fund-terms { font-size:.9rem; line-height:1.55; margin:8px 0 0; }
+.fund-story { padding-top:6px; }
+.fund-story p { font-size:1rem; line-height:1.65; margin:0 0 16px; }
+.fund-transparency { border-top:1px solid var(--line); padding-top:24px; margin-top:24px; }
+.fund-story .fund-small { font-size:.875rem; color:var(--muted); }
+.fund-transparency>a { display:inline-flex; align-items:center; min-height:44px; font-size:.95rem; }
+.fund-story .fund-other { border-top:1px solid var(--line); padding-top:22px; margin-top:22px; font-size:.9rem; }
+@media(max-width:700px) {
+ .legal-fund { padding-block:24px 36px; }
+ .fund-intro { margin-bottom:20px; }
+ .fund-intro h1 { font-size:2rem; }
+ .fund-intro>p:not(.fund-kicker) { font-size:1rem; line-height:1.5; }
+ .fund-layout { grid-template-columns:minmax(0,1fr); gap:28px; }
+ .fund-progress { padding:18px 20px 16px; }
+ .fund-payment { padding:20px; }
+ .fund-total strong { font-size:2rem; }
+ .fund-story { padding-top:0; }
+}
+
+
+.fund-pending { padding:14px 16px; border:1px solid var(--line); border-radius:8px; color:var(--muted); font-size:.95rem; }
+.fund-payment-link { display:flex; align-items:center; justify-content:center; min-height:48px; border-radius:8px; padding:10px 18px; text-decoration:none; font-weight:650; }
+.fund-payment-link:focus-visible { outline:3px solid var(--theme-focus,#b4641d); outline-offset:3px; }
+.fund-qr { margin-top:16px; border-top:1px solid var(--line); padding-top:8px; }
+.fund-qr summary { min-height:44px; padding-block:10px; font-size:.95rem; cursor:pointer; }
+.fund-qr img { display:block; width:156px; height:156px; margin:14px auto; background:#fff; }
+.fund-qr p { font-size:.85rem; line-height:1.5; margin:10px 0 0; }
+@media(max-width:359px) { .fund-payment,.fund-progress { padding-inline:16px; } }
+@media print { .legal-fund { max-width:none; } .fund-layout { grid-template-columns:1fr 1fr; } }

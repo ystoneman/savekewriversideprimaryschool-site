@@ -11,6 +11,7 @@ from public_data import validate_board
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_FILES = frozenset('''
+legal-fund.html legal-fund.css
 petition-progress.js petition-progress.css
 sitemap.xml robots.txt home-stage.js home-actions.js home-landing.css footer-links.css
 campaign-film.js campaign-film.css media/kew-petition-film-ram-20261014.mp4 images/campaign-film-20261014.jpg
@@ -37,6 +38,7 @@ og-fundraising-trustees-v1.png og-fundraising-admin-v1.png
 dates.html get-involved.html updates.html questions.html campaign.css campaign.js images/york-house-rally.jpg
 '''.split())
 MAINTENANCE_FILES = frozenset('''
+tests/browser/legal-fund.spec.js
 tests/browser/mobile-header.spec.js tests/browser/mobile-feedback.spec.js tests/browser/mobile-letters.spec.js tests/browser/mobile-reading.spec.js tests/browser/mobile-contact-support.spec.js
 .github/scripts/pr_browser_reuse.py .github/scripts/test_pr_browser_reuse.py
 .github/scripts/test_browser_workflow.py

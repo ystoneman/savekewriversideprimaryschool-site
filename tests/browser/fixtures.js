@@ -14,7 +14,7 @@ const pages = allPages.filter(name => !redirectPages.includes(name));
 // they route to, supporting research outside the Menu, and retained archives.
 // orientation.spec.js checks that together they are exactly `pages`.
 const menuPages = ['index.html', 'dates.html', 'get-involved.html', 'updates.html', 'about.html'];
-const taskPages = ['letters.html', 'videos.html', 'feedback.html', 'privacy.html', 'corrections.html', 'sent.html'];
+const taskPages = ['legal-fund.html', 'letters.html', 'videos.html', 'feedback.html', 'privacy.html', 'corrections.html', 'sent.html'];
 const supportingPages = ['questions.html', 'understand.html', 'evidence.html', 'options.html', 'lessons.html', 'lessons-sources.html'];
 const archivedPages = ['proposal.html', 'faq.html', 'rally.html', 'supporters.html', 'fundraising-trustees.html', 'fundraising-admin.html'];
 function headerLinks(file, selector) {

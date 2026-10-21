@@ -13,7 +13,7 @@ PAGES = {
     # Live pages (13 October 2026: the slim five-page campaign site). Page identity
     # labels only; the Menu and footer come from MENU_GROUPS and FOOTER_LINKS.
     'index.html': 'Home', 'dates.html': 'Dates, leaflet & FAQs', 'get-involved.html': 'Get involved',
-    'updates.html': 'Campaign updates', 'about.html': 'About & contact',
+    'updates.html': 'Campaign updates', 'about.html': 'About & contact', 'legal-fund.html': 'Legal fund',
     'letters.html': 'Community letters', 'videos.html': 'Share a video', 'feedback.html': 'Share ideas',
     'privacy.html': 'Privacy', 'corrections.html': 'Corrections', 'sent.html': 'Next steps',
 }
@@ -89,6 +89,7 @@ def render_identity(name, document):
     esc = html.escape
     titles = {
         'index.html': SITE_NAME,
+        'legal-fund.html': 'Kew Riverside legal fund',
         'letters.html': 'Community letters',
         'about.html': 'About & contact',
         'dates.html': 'Kew Riverside Primary School closure proposal: dates, leaflet and FAQs',
@@ -116,6 +117,7 @@ def render_identity(name, document):
         'index.html': 'Help keep Kew Riverside Primary School open. Respond to the council, sign the petition and find the council’s own dates and documents.',
         'dates.html': 'The council’s own timetable for the proposed closure of Kew Riverside Primary School, with its consultation leaflet and FAQs. Closure is proposed, not decided.',
         'get-involved.html': 'Ways to help keep Kew Riverside Primary School open: sign the petition, write to your representatives and share your story.',
+        'legal-fund.html': 'Help fund specialist legal advice on the proposed closure of Kew Riverside Primary School. See the funding progress and how to contribute.',
         'updates.html': 'News from the parent-led campaign to keep Kew Riverside Primary School open, newest first.',
         'about.html': 'Who runs this independent parent-led campaign website, how to contact the campaign, and guidance for journalists.',
         'proposal.html': 'Understand the proposed closure of Kew Riverside Primary School, the consultation process, who decides and the parent action plan. Responses are due by 16 October 2026.',

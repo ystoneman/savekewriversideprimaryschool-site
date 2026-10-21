@@ -106,7 +106,7 @@ test('Options: optional funding questions keep private context and recover throu
   await expect(questions.locator('details.question-detail[open]')).toHaveCount(0);
   const status = page.locator('#option-crowdfunding .option-first .funding-status');
   await expect(status).toBeVisible();
-  await expect(status).toContainText('No donations or pledges');
+  await expect(status).toContainText('For this recovery-plan option, no donations or pledges');
   await expect(status).toContainText(/no recipient.*agreed/);
   const recipient = page.locator('#crowdfunding-recipient > details.question-detail');
   await activate(recipient.locator(':scope > summary'), hasTouch);

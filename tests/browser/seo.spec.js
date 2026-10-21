@@ -1,7 +1,7 @@
 const { test, expect, archivedPages } = require('./fixtures');
 const site = 'https://savekewriversideprimaryschool.org/';
 // The slim campaign site (13 October 2026) lists only its live reading pages; archived pages stay served but unlisted.
-const sitemapPages = ['', 'dates.html', 'get-involved.html', 'updates.html', 'about.html', 'letters.html', 'questions.html', 'understand.html', 'evidence.html', 'options.html', 'lessons.html', 'lessons-sources.html'];
+const sitemapPages = ['', 'dates.html', 'get-involved.html', 'updates.html', 'about.html', 'legal-fund.html', 'letters.html', 'questions.html', 'understand.html', 'evidence.html', 'options.html', 'lessons.html', 'lessons-sources.html'];
 
 for (const [file, type] of [['sitemap.xml', 'application/xml'], ['robots.txt', 'text/plain']]) {
   test(`${file} is served by GET and HEAD with the correct MIME type`, async ({ request }) => {

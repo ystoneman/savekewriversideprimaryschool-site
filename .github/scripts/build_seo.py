@@ -8,7 +8,7 @@ from check_site import ROOT, PUBLIC_FILES
 
 # Live campaign pages only; archived pages are noindex and stay out (13 October 2026).
 PAGES = ('index.html', 'dates.html', 'get-involved.html', 'updates.html',
-         'about.html', 'letters.html', 'questions.html', 'evidence.html', 'understand.html',
+         'about.html', 'legal-fund.html', 'letters.html', 'questions.html', 'evidence.html', 'understand.html',
          'options.html', 'lessons.html', 'lessons-sources.html')
 NAMESPACE = 'http://www.sitemaps.org/schemas/sitemap/0.9'
 

@@ -116,7 +116,11 @@ Routine, relevant letters with the new explicit permissions may publish after au
 
 ## Exploratory community funding
 
-Option 02 (`index.html#option-crowdfunding`) is linked to the costed recovery plan. The £400,000 figure is the council’s forecast deficit by 2028/29, not a campaign target. Eight fixed question links route to `feedback.html?kind=crowdfunding&question=...#feedback-form`. Funding feedback stays private for human review even if publication permission is submitted; it is never eligible for the automatic board. There are no donations, pledges, donor lists or recipient agreements. Category selection also works without JavaScript. Do not interpret submitted ideas as permission to publish, forward, contact third parties or make financial commitments.
+Option 02 (`index.html#option-crowdfunding`) is linked to the costed recovery plan. The £400,000 figure is the council’s forecast deficit by 2028/29, not a campaign target. Eight fixed question links route to `feedback.html?kind=crowdfunding&question=...#feedback-form`. Funding feedback stays private for human review even if publication permission is submitted; it is never eligible for the automatic board. For this recovery-plan option, there are no donations, pledges, donor lists or recipient agreements. The separate legal-advice fund has its own purpose and contribution route at `legal-fund.html`. Category selection also works without JavaScript. Do not interpret submitted ideas as permission to publish, forward, contact third parties or make financial commitments.
+
+## Legal-advice fund — pending launch
+
+The prepared page is `legal-fund.html`. Keep it unpublished while `data-launch-pending` markers remain: the payment destination, public organiser wording, initial target and unused-fund rule must be confirmed before launch. Funding progress is manual; update the displayed total and its report date together using the organiser’s current figures. Keep the original correspondence and payment setup records outside this public repository.
 
 ## Security checks and deployment
 
