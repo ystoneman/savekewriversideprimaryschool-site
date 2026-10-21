@@ -384,11 +384,56 @@
             fallback.select();
           }
         });
+        const share = document.createElement('button');
+        share.type = 'button';
+        share.className = 'letter-share';
+        share.textContent = 'Share';
+        share.setAttribute('aria-label', 'Share the ' + (item.youtubeId ? 'video letter' : 'letter') + ' by ' + item.displayName);
+        const shareFallback = document.createElement('textarea');
+        shareFallback.className = 'letter-share-fallback';
+        shareFallback.readOnly = true;
+        shareFallback.hidden = true;
+        shareFallback.setAttribute('aria-label', 'Link to the letter by ' + item.displayName);
+        const shareStatus = document.createElement('span');
+        shareStatus.className = 'letter-share-status';
+        shareStatus.setAttribute('role', 'status');
+        share.addEventListener('click', async () => {
+          shareStatus.textContent = '';
+          shareFallback.hidden = true;
+          if (typeof navigator.share === 'function') {
+            try {
+              // Share the public destination only; quoting permission is separate.
+              await navigator.share({ title: kindLabel + ' by ' + item.displayName + ' | Save Kew Riverside Primary School Campaign', url: letterURL });
+              return;
+            } catch (error) {
+              if (error.name === 'AbortError') return;
+            }
+          }
+          try {
+            await navigator.clipboard.writeText(letterURL);
+            shareStatus.textContent = 'Letter link copied.';
+          } catch {
+            shareFallback.value = letterURL;
+            shareFallback.hidden = false;
+            shareStatus.textContent = 'Select and copy this letter link with your device’s Copy command.';
+            shareFallback.focus();
+            shareFallback.select();
+          }
+        });
         const printedURL = document.createElement('p');
         printedURL.className = 'letter-print-url';
         printedURL.textContent = letterURL;
-        actions.append(permalink, copy);
-        source.append(publisher, actions, fallback, status, printedURL);
+        actions.append(share, permalink, copy);
+        const sourceNotes = document.getElementById('sources-' + item.id);
+        if (sourceNotes) {
+          const notesLink = document.createElement('a');
+          notesLink.className = 'letter-permalink';
+          notesLink.href = '#' + sourceNotes.id;
+          notesLink.textContent = 'Supporting note and sources';
+          notesLink.addEventListener('click', () => { sourceNotes.open = true; });
+          actions.append(notesLink);
+        }
+        source.append(publisher, actions, fallback, status, shareFallback, shareStatus, printedURL);
         article.append(author, meta);
         if (item.body.length > 350) {
           const excerpt = document.createElement('p');

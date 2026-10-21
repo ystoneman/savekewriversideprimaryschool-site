@@ -25,7 +25,12 @@ class VideoLetterTests(unittest.TestCase):
         self.assertIn('watch?v=AbC0123_-xy',text); self.assertIn('kind=privacy&amp;letter=letter-',text)
         self.assertIn('Independent and parent-led', text)
         self.assertIn('https://savekewriversideprimaryschool.org/letters.html#', text)
-        self.assertNotIn('<iframe',text); self.assertEqual(render_fallback(fixture('letters')),'\n\n')
+        self.assertNotIn('<iframe',text)
+        written=render_fallback(fixture('letters'))
+        self.assertIn('Community letter · Human reviewed · Opinion',written)
+        self.assertIn('class="suggestion-body"',written)
+        self.assertNotIn('Watch on YouTube',written)
+        self.assertNotIn('<button',written)
     def test_static_fallback_matches_feed_newest_first_order(self):
         board = self.video()
         older = copy.deepcopy(board['letters'][0]); older['id'] = 'letter-000000000001'; older['date'] = '2026-09-01'

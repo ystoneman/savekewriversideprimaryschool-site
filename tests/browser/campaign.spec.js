@@ -9,6 +9,63 @@ async function feed(page, letters = [first, second]) {
   await page.route('**/letters.json', route => route.fulfill({ json: { version: 1, letters } }));
 }
 
+test('A letter with supporting sources opens its note and returns to the same letter', async ({ page }) => {
+  const item = { ...first, id: 'letter-20261021a001', body: first.body.repeat(12) };
+  await feed(page, [item]);
+  await page.goto('/letters.html#' + item.id);
+  await page.locator('#' + item.id).getByRole('link', { name: 'Supporting note and sources' }).click();
+  const note = page.locator('#sources-' + item.id);
+  await expect(note).toHaveAttribute('open','');
+  await expect(note.locator('summary')).toBeInViewport();
+  await expect(note).toContainText('do not establish a like-for-like increase or money freely available to Kew');
+  await page.goBack();
+  await expect(page.locator('#' + item.id + ' .letter-story')).toHaveAttribute('open','');
+  await expect(page.locator('#' + item.id + ' .public-author')).toBeInViewport();
+});
+
+for (const mode of ['native', 'cancel', 'error', 'clipboard', 'manual']) {
+  test(`Individual letter Share: ${mode} keeps the selected public link and private draft intact`, async ({ page }) => {
+    await feed(page, [{ ...first, body: first.body.repeat(15) }, second]);
+    await page.addInitScript(mode => {
+      window.letterShares = []; window.letterCopies = [];
+      Object.defineProperty(navigator, 'share', { configurable: true, value: ['native','cancel','error'].includes(mode) ? async payload => {
+        window.letterShares.push(payload);
+        if (mode !== 'native') throw new DOMException('Fictional share outcome', mode === 'cancel' ? 'AbortError' : 'NotAllowedError');
+      } : undefined });
+      Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async value => {
+        if (mode === 'manual') throw new Error('Fictional clipboard denial');
+        window.letterCopies.push(value);
+      } } });
+    }, mode);
+    await page.goto('/letters.html?utm_source=fictional#' + first.id);
+    await page.locator('#message').fill('Fictional private draft never included in sharing.');
+    const before = page.url();
+    const card = page.locator('#' + first.id);
+    const button = card.locator('.letter-share');
+    await button.focus(); await page.keyboard.press('Enter');
+    const url = site + 'letters.html#' + first.id;
+    if (['native','cancel','error'].includes(mode)) expect(await page.evaluate(() => window.letterShares)).toEqual([{ title: 'Community letter by Fictional writer | Save Kew Riverside Primary School Campaign', url }]);
+    if (['error','clipboard'].includes(mode)) {
+      await expect(card.locator('.letter-share-status')).toHaveText('Letter link copied.');
+      expect(await page.evaluate(() => window.letterCopies)).toEqual([url]);
+    } else expect(await page.evaluate(() => window.letterCopies)).toEqual([]);
+    if (mode === 'manual') {
+      const fallback = card.locator('.letter-share-fallback');
+      await expect(fallback).toBeFocused(); await expect(fallback).toHaveValue(url);
+      expect(await fallback.evaluate(el => el.readOnly && el.selectionEnd - el.selectionStart === el.value.length)).toBe(true);
+      await expect(card.locator('.letter-share-status')).toContainText('Select and copy');
+    } else {
+      await expect(button).toBeFocused(); await expect(card.locator('.letter-share-fallback')).toBeHidden();
+    }
+    await expect(card.locator('.letter-story')).toHaveAttribute('open','');
+    expect(page.url()).toBe(before);
+    await expect(page.locator('#message')).toHaveValue('Fictional private draft never included in sharing.');
+    await expect(page.locator('#' + second.id + ' .letter-share-status')).toBeEmpty();
+    await button.click();
+    if (['native','cancel'].includes(mode)) expect(await page.evaluate(() => window.letterCopies)).toEqual([]);
+  });
+}
+
 // Slim campaign site (13 October 2026): letters and ideas left the Menu. Home routes
 // participation through Get involved (with letters and ideas also in its footer), and the
 // petition leads the first screen once the published response deadline has passed.

@@ -6,6 +6,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[2]
 VERSION = '2026101401'
+ORIENTATION_VERSION = '2026102101'
 PREVIEW_VERSION = '2026100901'  # Shared images are unchanged by this curation.
 SITE_NAME = 'Save Kew Riverside Primary School Campaign'
 SITE_URL = 'https://savekewriversideprimaryschool.org/'
@@ -287,7 +288,7 @@ def render_navigation(name, document):
     theme_script = theme.group() if theme else ''
     head = re.sub(theme_pattern, '', head)
     head = re.sub(r'(?m)^ +$', '', head)
-    document = head+'<link rel="stylesheet" href="orientation.css?v='+VERSION+'">'+theme_script+''.join(deferred)+separator+body
+    document = head+'<link rel="stylesheet" href="orientation.css?v='+ORIENTATION_VERSION+'">'+theme_script+''.join(deferred)+separator+body
     match = re.search(r'<header class="site-header">.*?</header>', document, re.S)
     header = match.group()
     header = re.sub(r'<details class="mobile-menu">.*?</details>', '', header, flags=re.S)

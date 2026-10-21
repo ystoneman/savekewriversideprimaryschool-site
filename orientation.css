@@ -79,17 +79,17 @@ html.has-orientation{scroll-behavior:auto}
 .letter-source p{margin:0 0 4px;font-size:13px}
 .letter-source-actions{display:flex;align-items:center;flex-wrap:wrap;gap:2px 18px}
 .letter-permalink{overflow-wrap:anywhere;min-width:0}
-.letter-copy{background:transparent;border:0;color:var(--teal);font:inherit;text-decoration:underline;text-underline-offset:3px;min-height:44px;padding:5px 0}
-.letter-copy:focus-visible{outline:3px solid var(--theme-focus,var(--teal));outline-offset:3px}
-.letter-attribution-fallback{display:block;width:100%;min-height:110px;margin-top:8px;padding:10px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:5px;font:14px/1.5 Arial,sans-serif;resize:vertical}
-.letter-copy-status:not(:empty){display:block;margin-top:4px}
+.letter-copy,.letter-share{background:transparent;border:0;color:var(--teal);font:inherit;text-decoration:underline;text-underline-offset:3px;min-height:44px;padding:5px 0}
+.letter-copy:focus-visible,.letter-share:focus-visible{outline:3px solid var(--theme-focus,var(--teal));outline-offset:3px}
+.letter-attribution-fallback,.letter-share-fallback{display:block;width:100%;min-height:110px;margin-top:8px;padding:10px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:5px;font:14px/1.5 Arial,sans-serif;resize:vertical}
+.letter-copy-status:not(:empty),.letter-share-status:not(:empty){display:block;margin-top:4px}
 .letter-print-url,.letter-print-body{display:none}
 .press-credit{padding:18px;border-left:3px solid var(--teal);background:var(--theme-soft,#edf3e8);overflow-wrap:anywhere}
 .letters-press-note{font-size:14px}
 .letter-unavailable{padding:16px;border:1px solid var(--line);border-radius:8px}
 @media print{
   .letter-source{color:black;border-color:#aaa;break-inside:avoid}
-  .letter-source-actions,.letter-copy-status,.letter-attribution-fallback,.letter-excerpt,.letter-story summary,.letter-collapse,.letter-removal,.letters-invite .invite-layout,.letters-invite .format-line,.letters-board-heading .letter-write-link{display:none!important}
+  .letter-source-actions,.letter-copy-status,.letter-attribution-fallback,.letter-share-fallback,.letter-share-status,.letter-excerpt,.letter-story summary,.letter-collapse,.letter-removal,.letters-invite .invite-layout,.letters-invite .format-line,.letters-board-heading .letter-write-link{display:none!important}
   .letter-print-url{display:block;font-size:9pt;overflow-wrap:anywhere}
   .letter-story{display:none!important}
   .letter-print-body{display:block;white-space:pre-wrap}
