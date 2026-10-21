@@ -1,5 +1,25 @@
 const { test, expect, pages, headerLinks, expectDestination, expectStillArrival, captureSubmissions } = require('./fixtures');
 
+test('No JavaScript: a shared written-letter link reaches the full fictional letter', async ({ page }) => {
+  const { execFileSync } = require('node:child_process');
+  const fictional = execFileSync('python3', ['-c', "import sys; sys.path.insert(0,'.github/scripts'); from build_video_letters import render_fallback; print(render_fallback({'version':1,'letters':[{'id':'letter-012345abcdef','date':'2026-10-21','review':'Human reviewed','displayName':'Fictional parent','body':'A fictional written letter.\\n\\nIts complete ending remains available without scripts.'}]}))"], { encoding: 'utf8' });
+  await page.route('**/letters.html', async route => {
+    const response = await route.fetch();
+    const body = (await response.text()).replace(/(<!-- video-letters-fallback:start -->)[\s\S]*?(<!-- video-letters-fallback:end -->)/, '$1\n' + fictional + '$2');
+    await route.fulfill({response,body});
+  });
+  await page.goto('/letters.html#letter-012345abcdef');
+  const card = page.locator('#letter-012345abcdef');
+  await expect(card.locator('h3')).toBeInViewport();
+  await expect(card).toContainText('Its complete ending remains available without scripts.');
+  await expect(card.locator('.letter-permalink')).toHaveAttribute('href', 'https://savekewriversideprimaryschool.org/letters.html#letter-012345abcdef');
+  await expect(card.locator('button')).toHaveCount(0);
+  await card.getByRole('link', { name: 'Report this community letter or request removal' }).tap();
+  await expect(page).toHaveURL(/feedback\.html\?kind=privacy&letter=letter-012345abcdef#feedback-form$/);
+  await page.goBack();
+  await expect(card.locator('h3')).toBeInViewport();
+});
+
 for (const [name, url] of [['TikTok', 'https://www.tiktok.com/@savekrps'], ['X', 'https://x.com/SaveKRPS']]) {
   test(`No JavaScript: campaign socials ${name} opens directly and supports Back`, async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });

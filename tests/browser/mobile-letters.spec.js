@@ -30,6 +30,10 @@ for (const width of [320, 390]) {
       await expect(card.locator('time')).toHaveAttribute('datetime', letter.date);
       await expect(card.locator('.letter-source')).toContainText('Save Kew Riverside Primary School Campaign · Independent and parent-led');
       await expect(card.locator('.letter-permalink')).toHaveText('savekewriversideprimaryschool.org');
+      const share = card.locator('.letter-share');
+      await expect(share).toHaveAccessibleName('Share the letter by Anonymous');
+      expect((await share.boundingBox()).height).toBeGreaterThanOrEqual(44);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await expect(card.locator('.letter-permalink')).toHaveAttribute('href', canonical);
       expect(await card.locator('.letter-source').evaluate(el => !el.closest('details'))).toBe(true);
       for (const selector of ['.letter-permalink', '.letter-copy', '.letter-story > summary', '.letter-removal']) {

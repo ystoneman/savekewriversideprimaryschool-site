@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — individual letter sharing and recovery letter
+
+- Publish the owner-approved 21 October letter asking for supported recovery, with its funding note and public source links as supporting material. Keep the meeting account, personal interpretation and requested commitments distinct.
+- Add Share to each written/video letter: native sharing sends a neutral title and canonical letter link; clipboard and selected manual-copy fallbacks remain available. Cancellation copies nothing. Existing attribution, report/removal and permission choices remain.
+- Generate readable no-script written letters alongside video links, preserving permanent fragments. No new public data fields or providers.
+- Local verification: 65 focused browser cases, 157 Python checks, 44 deadline/backend unit checks, 140-file public validation and whitespace checks pass. Native iPhone 17 / iOS 26.5 Safari on an isolated preview opens the correct Share sheet and cancels back without a copy notice. No message or test submission was sent. Independent campaign/evidence actual-diff reviews passed; rendered UX actual-diff reviews passed; exact-revision hosted checks remain the release gate.
+
+
 ## Unreleased
 
 ### Campaign social profiles — 20 October 2026
