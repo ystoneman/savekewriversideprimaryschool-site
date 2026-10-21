@@ -19,7 +19,7 @@ const campaignLinks = [
 const menuNames = [...campaignLinks.map(([, name]) => name), 'Watch Parent Voices', 'Book an Open Day'];
 const menuPages = campaignLinks.map(([file]) => file);
 const supportingPages = ['questions.html', 'understand.html', 'evidence.html', 'options.html', 'lessons.html', 'lessons-sources.html'];
-const livePages = [...menuPages, ...supportingPages, 'letters.html', 'videos.html', 'feedback.html', 'privacy.html', 'corrections.html', 'sent.html'];
+const livePages = [...menuPages, ...supportingPages, 'legal-fund.html', 'letters.html', 'videos.html', 'feedback.html', 'privacy.html', 'corrections.html', 'sent.html'];
 const archivedPages = ['proposal.html', 'faq.html', 'rally.html', 'supporters.html', 'fundraising-trustees.html', 'fundraising-admin.html'];
 const phoneSizes = [{ width: 320, height: 568 }, { width: 390, height: 844 }];
 
@@ -58,7 +58,7 @@ async function expectUncovered(locator, label) {
 }
 
 test.describe('Menu on the live pages', () => {
-  for (const file of ['index.html', 'dates.html', 'get-involved.html', 'updates.html', 'about.html', 'letters.html', 'videos.html', 'feedback.html', 'privacy.html', 'corrections.html']) {
+  for (const file of ['index.html', 'dates.html', 'get-involved.html', 'updates.html', 'about.html', 'legal-fund.html', 'letters.html', 'videos.html', 'feedback.html', 'privacy.html', 'corrections.html']) {
     test(`${file} has the slim Menu, no header tiles and no section chooser`, async ({ page }) => {
       await page.goto('/' + file);
       await openMenu(page);
@@ -398,7 +398,7 @@ test.describe('Archived pages', () => {
     const response = await page.request.get(baseURL + '/sitemap.xml');
     expect(response.ok()).toBe(true);
     const locations = [...(await response.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
-    expect(locations).toEqual(['/', '/dates.html', '/get-involved.html', '/updates.html', '/about.html', '/letters.html', '/questions.html', '/evidence.html', '/understand.html', '/options.html', '/lessons.html', '/lessons-sources.html'].map(path => 'https://savekewriversideprimaryschool.org' + path));
+    expect(locations).toEqual(['/', '/dates.html', '/get-involved.html', '/updates.html', '/about.html', '/legal-fund.html', '/letters.html', '/questions.html', '/evidence.html', '/understand.html', '/options.html', '/lessons.html', '/lessons-sources.html'].map(path => 'https://savekewriversideprimaryschool.org' + path));
   });
 });
 
@@ -611,7 +611,7 @@ test.describe('Visual contribution cards', () => {
     await page.clock.setFixedTime(new Date('2026-10-19T12:00:00Z'));
     await page.goto('/get-involved.html#share-your-story');
     expect(await page.locator('main > section').evaluateAll(sections => sections.map(section => section.id))).toEqual([
-      'petition', 'representatives', 'share-your-story', 'parent-video', 'spread-the-word', 'school-contributions', 'help', 'respond',
+      'petition', 'representatives', 'share-your-story', 'parent-video', 'spread-the-word', 'legal-fund', 'school-contributions', 'help', 'respond',
     ]);
     await expect(page.locator('#share-your-story + #parent-video')).toHaveCount(1);
     await expect(page.locator('#school-contributions + #help + #respond')).toHaveCount(1);
@@ -730,7 +730,7 @@ test.describe('Visual contribution cards', () => {
     test('letters, recruitment video and old downloads work as ordinary links', async ({ page }) => {
       await page.goto('/get-involved.html#share-your-story');
       expect(await page.locator('main > section').evaluateAll(sections => sections.map(section => section.id))).toEqual([
-        'petition', 'representatives', 'share-your-story', 'parent-video', 'spread-the-word', 'school-contributions', 'help', 'respond',
+        'petition', 'representatives', 'share-your-story', 'parent-video', 'spread-the-word', 'legal-fund', 'school-contributions', 'help', 'respond',
       ]);
       await page.locator('#share-your-story a.primary').click();
       await expect(page.locator('#message')).toBeVisible();

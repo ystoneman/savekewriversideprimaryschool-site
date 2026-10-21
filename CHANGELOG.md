@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Legal-advice fund (draft)
+
+Prepare a dedicated legal-fund page with dated progress, a short purpose statement and a contribution card in the existing site design. Add a contextual Get involved entry without changing the Menu or recruitment route, and scope recovery-plan no-donations wording to that separate exploratory option. Payment destination and final fund terms remain pending; this draft is not published. Verification is recorded in TESTING.md.
+
 ### Campaign social profiles — 20 October 2026
 
 Add “Amplify the campaign on our socials” to all 23 standard page footers, with labelled TikTok and X icons linking directly to the campaign profiles. Keep school visits and Parent Voices in their separate existing row. Static links need no scripts or embeds; refresh the shared footer stylesheet cache version. Preserve the recruitment-only `/visit/` handoff. Further platform links await confirmed campaign destinations. Independent reviews and local verification are recorded in TESTING.md; no live release is claimed.

@@ -15,7 +15,7 @@ class SEOTests(unittest.TestCase):
         tree = ET.fromstring(outputs()['sitemap.xml'])
         urls = [entry.find('{'+NAMESPACE+'}loc').text for entry in tree]
         expected = ['https://savekewriversideprimaryschool.org/'+name for name in
-                    ('', 'dates.html', 'get-involved.html', 'updates.html', 'about.html', 'letters.html', 'questions.html', 'evidence.html', 'understand.html', 'options.html', 'lessons.html', 'lessons-sources.html')]
+                    ('', 'dates.html', 'get-involved.html', 'updates.html', 'about.html', 'legal-fund.html', 'letters.html', 'questions.html', 'evidence.html', 'understand.html', 'options.html', 'lessons.html', 'lessons-sources.html')]
         self.assertEqual(urls, expected)
         self.assertEqual(len(urls), len(set(urls)))
         self.assertTrue(all(len(entry) == 1 for entry in tree))

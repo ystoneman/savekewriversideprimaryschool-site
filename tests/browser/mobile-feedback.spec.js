@@ -8,7 +8,7 @@ for (const width of [320, 390]) {
       await page.clock.setFixedTime(new Date('2026-10-12T12:00:00+01:00'));
       await page.goto('/feedback.html');
       await expect(page.getByRole('heading', { name: 'Share ideas', exact: true })).toBeVisible();
-      await expect(page.locator('.feedback-intro .invite-lead')).toContainText('Nothing is published unless you choose. No donations.');
+      await expect(page.locator('.feedback-intro .invite-lead')).toContainText('Nothing is published unless you choose. This form takes no donations.');
       const official = page.locator('#ideas-official-open');
       await expect(official).toContainText('16 October 2026');
       await expect(page.locator('.feedback-intro .ideas-read-link')).toBeVisible();

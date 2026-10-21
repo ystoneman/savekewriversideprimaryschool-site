@@ -301,7 +301,7 @@ Help people understand the proposal, check its evidence and take useful action i
 
 The owner's feedback identified practical needs: make participation easier to find, explain the next steps for families, make the financial figures understandable, and keep navigation usable on an iPhone. The growing collection also needs clearer entry points. These inputs justify the changes below; they do not establish how representative any preference is across the wider community.
 
-Keep the static site, working incoming links, source citations, accessible tables and separate publication permissions. The site takes no donations. A funding idea is a suggestion, not a payment or pledge.
+Keep the static site, working incoming links, source citations, accessible tables and separate publication permissions. The separate legal-advice fund provides a contribution route at `legal-fund.html`. Exploratory recovery-plan funding feedback remains a suggestion, not a payment or pledge.
 
 ## Protected visitor journeys
 
@@ -875,3 +875,12 @@ J4/J5 and incoming routes across J1–J9: maintain one full website. Legacy addr
 Operators need a phone-width dashboard and coarse activity timing for website maintenance and content checks. A separate hourly all-page total is narrower than page/device/source-by-hour breakdowns. The compact first-visit notice names hourly page totals separately from daily browser estimates; older saved choices preserve prior scope until renewed. Existing Analytics/Off/Why controls and notice-before-default counting remain. Private reporting uses a 316px Mobile tab with stacked counts, numerical data and in-cell bars because native Sheets floating charts were absent in supplied iPhone screenshots.
 
 The four-engine analytics suite, independent actual-diff review and rendered 320×568 WebKit notice/panel review verify readable choices and visible Respond action. Production receipt is verified through an ordinary Chrome visit/reload and fresh aggregate source reads. Native iOS Simulator testing was attempted, but the window became unavailable; no native Safari result is claimed. The Google-rendered Mobile tab is verified at its narrow width, including populated hourly bars; the iPhone Sheets app is not directly tested. No protected journey priority changes.
+
+
+## Legal-advice fund — 21 October 2026 (unreleased)
+
+Visitors arriving from a shared link need to understand the purpose, see dated progress and reach a contribution route with little reading. A dedicated task page uses the existing typography, colour palette, header and footer. Its primary action remains on the first small-phone screen; a compact progress/payment card precedes the explanation on mobile. An optional QR disclosure will supplement a same-phone payment link once its destination is confirmed. The site does not embed a payment service, collect payment details or require new JavaScript.
+
+The new Get involved entry follows Spread the word and precedes the separate school-visit downloads. It adds no homepage band or Menu row, preserves letter→video adjacency and leaves Offer an idea or help as the last current action. This is a legal-advice fund with a distinct purpose; the recovery-plan funding questions remain exploratory and private. Existing blanket no-donations wording is scoped to those questions.
+
+Campaign, evidence and UX planning reviews informed the design. Campaign/evidence actual-diff checks found no placement or established-claim error after scoping the recovery-plan wording; the confirmed payment destination, organiser wording, initial target and unused-fund rule remain launch inputs. Earlier bank-transfer/alternative-provider interaction checks are superseded and are not evidence for the final payment flow. Current draft layout, entry/Back, dated-total, no-script and enlarged-text checks pass. Final provider handoff/QR checks, updated rendered/native review and release validation remain pending. No unfamiliar-person physical-phone trial or deployment is claimed.

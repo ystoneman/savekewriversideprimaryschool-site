@@ -170,7 +170,7 @@ test('Ways to keep Kew open: assessment titles retain visible qualifications', a
   await expect(funding).toHaveCount(1);
   await expect(funding).not.toHaveAttribute('open', '');
   await expect(funding.locator('> summary .option-summary')).toBeVisible();
-  await expect(funding.locator('> summary .option-summary')).toContainText('No donations are being collected yet.');
+  await expect(funding.locator('> summary .option-summary')).toContainText('No donations are being collected for this recovery-plan option.');
   await expect(page.locator('.options-intro .eyebrow')).toHaveText('Assess alternatives. Keep the school open.');
   const asks = await page.locator('.options-intro, main > .simple-note, .option-card > summary').allTextContents();
   expect(asks.join(' ')).not.toMatch(/teaching at Kew|See if fundraising could help/);
