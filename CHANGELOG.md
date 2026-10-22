@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — campaign YouTube channel
+
+- Add the new campaign YouTube channel beside TikTok and X in all 23 standard footers, with its icon, visible label and distinct accessible name. Preserve the separate Parent Voices recruitment link.
+- Independent campaign planning and actual-diff/rendered UX review found no remaining issue. Baseline homepage smoke 10/10, focused social/footer browser cases 67/67, Python checks 157/157, Node checks 44/44 and 140-file public validation pass. Current-revision hosted checks and live verification remain release gates.
+
 ## Unreleased — tighter recovery letter
 
 - Condense the 21 October letter, removing repeated recovery arguments while preserving its opening, personal account, quotation and qualification, and closing request. Move detailed capacity comparisons and recovery-assessment scope into the existing supporting note. Keep the letter’s permanent link and sharing controls.

@@ -1,5 +1,9 @@
 # UX design decisions
 
+## Campaign YouTube footer — 22 October 2026
+
+J2/J6: add the owner-requested campaign YouTube icon and channel link within the existing campaign social row. Use visible YouTube text and the accessible name “YouTube campaign channel”; retain wrapping, 44px targets and direct no-script access. J8/J9’s Parent Voices recruitment link stays separate. No new navigation item, embed or analytics is needed. Independent rendered review verifies 320/390/1440px, no-script and doubled footer text, focus, intercepted handoff and Back. Release checks are recorded in TESTING.md and the pull request.
+
 ## Campaign social profiles in the footer — 20 October 2026
 
 J2/J6: visitors who want to spread campaign posts need direct links to the campaign's own accounts. Add a compact, always-visible “Amplify the campaign on our socials” section in every standard footer, with decorative local SVG icons and visible TikTok/X names. Native links work without scripts or a disclosure and make no social-platform request before activation. Use the confirmed profile URLs without tracking parameters; add further platforms only once their campaign destinations are confirmed.
