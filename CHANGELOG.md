@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — letter sign-off correction
+
+- Remove the mistakenly added AI sign-off from the 21 October letter and its no-script copy, as requested by its author. The letter’s wording and sharing controls are otherwise unchanged.
+
 ## Unreleased — individual letter sharing and recovery letter
 
 - Publish the owner-approved 21 October letter asking for supported recovery, with its funding note and public source links as supporting material. Keep the meeting account, personal interpretation and requested commitments distinct.
