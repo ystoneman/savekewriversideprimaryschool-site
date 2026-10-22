@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — staff video letter
+
+- Add the owner-requested staff video to Community letters, credited as Staff voice and framed as a personal account and opinion, with the existing player, permanent link, sharing and removal routes. Generate the matching no-script watch link.
+- Lead-agent evidence review checked the exact YouTube title and description; no new layout, navigation or interaction. Publication requested by the owner on 22 October 2026.
+- Verification: 157 Python checks, 44 Node unit checks, 24 focused video-letter browser cases and 140-file public validation pass; generated fallback and whitespace checks pass. Hosted checks and live deployment are separate release gates.
+
 ## Unreleased — letter sign-off correction
 
 - Remove the mistakenly added AI sign-off from the 21 October letter and its no-script copy, as requested by its author. The letter’s wording and sharing controls are otherwise unchanged.
