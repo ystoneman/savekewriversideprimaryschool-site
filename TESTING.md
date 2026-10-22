@@ -1,5 +1,10 @@
 # Testing the website
 
+## Campaign YouTube footer — 22 October 2026
+
+- Baseline homepage smoke: 10 passed. Updated social/footer checks: all 67 passed across five browser projects; exact channel URL, label, 44px target, handoff and Back, no-script access and retained recruitment links. External destinations are intercepted.
+- All 157 Python checks, 44 Node checks, navigation freshness and 140-file public validation pass. Independent UX inspected 320px light, 390px dark, 1440px desktop, 320px no-script and doubled footer text; no horizontal overflow or actionable findings. Native iOS and hosted-release status are recorded separately.
+
 ## Individual letter sharing — 21 October 2026
 
 - All 65 focused browser cases pass across iPhone WebKit, Android Chromium, desktop Chromium/WebKit and iPhone no-script. Cases cover exact neutral Share payload, native cancellation, failed/unavailable sharing, clipboard denial and selected readonly fallback, repeated activation, unchanged private draft/hash, attribution controls, long-letter arrival, unavailable-letter recovery, print, 320/390px light/dark and generated no-script written-letter arrival/Back. Fixtures are fictional; external requests are intercepted.

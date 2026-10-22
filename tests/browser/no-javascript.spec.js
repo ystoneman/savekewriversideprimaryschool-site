@@ -20,7 +20,7 @@ test('No JavaScript: a shared written-letter link reaches the full fictional let
   await expect(card.locator('h3')).toBeInViewport();
 });
 
-for (const [name, url] of [['TikTok', 'https://www.tiktok.com/@savekrps'], ['X', 'https://x.com/SaveKRPS']]) {
+for (const [name, url] of [['TikTok', 'https://www.tiktok.com/@savekrps'], ['X', 'https://x.com/SaveKRPS'], ['YouTube campaign channel', 'https://www.youtube.com/@SaveKewRiverside']]) {
   test(`No JavaScript: campaign socials ${name} opens directly and supports Back`, async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
     await page.goto('/index.html');

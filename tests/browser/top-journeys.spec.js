@@ -177,13 +177,13 @@ test('Top journeys: the council’s Kew Riverside FAQ is one Menu choice from th
 });
 
 // The footer links are direct external handoffs, visible without opening More pages.
-const campaignSocials = [['TikTok', 'https://www.tiktok.com/@savekrps'], ['X', 'https://x.com/SaveKRPS']];
+const campaignSocials = [['TikTok', 'https://www.tiktok.com/@savekrps'], ['X', 'https://x.com/SaveKRPS'], ['YouTube campaign channel', 'https://www.youtube.com/@SaveKewRiverside']];
 test('Campaign socials: every standard footer exposes the confirmed profiles separately from school discovery', async ({ page }) => {
   for (const file of pages) {
     await page.goto('/' + file);
     const socials = page.getByRole('region', { name: 'Amplify the campaign on our socials' });
     await expect(socials).toHaveCount(1);
-    await expect(socials.locator('a')).toHaveCount(2);
+    await expect(socials.locator('a')).toHaveCount(3);
     for (const [name, url] of campaignSocials) {
       const link = socials.getByRole('link', { name, exact: true });
       await expect(link).toHaveAttribute('href', url);
