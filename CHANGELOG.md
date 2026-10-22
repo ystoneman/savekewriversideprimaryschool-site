@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — tighter recovery letter
+
+- Condense the 21 October letter, removing repeated recovery arguments while preserving its opening, personal account, quotation and qualification, and closing request. Move detailed capacity comparisons and recovery-assessment scope into the existing supporting note. Keep the letter’s permanent link and sharing controls.
+
 ## Unreleased — staff video letter
 
 - Add the owner-requested staff video to Community letters, credited as Staff voice and framed as a personal account and opinion, with the existing player, permanent link, sharing and removal routes. Generate the matching no-script watch link.
