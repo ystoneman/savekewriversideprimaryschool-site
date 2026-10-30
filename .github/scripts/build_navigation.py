@@ -5,7 +5,7 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026101401'
+VERSION = '2026103001'
 ORIENTATION_VERSION = '2026102101'
 # Riverside poster design layer (DESIGN.md). It loads after every other stylesheet.
 DESIGN_VERSION = '2026103001'

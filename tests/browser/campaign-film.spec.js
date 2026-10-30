@@ -142,7 +142,10 @@ for(const width of [320,390,700,701,1440])test(`Campaign film: ${width}px choose
  await page.setViewportSize({width,height:844});await page.goto('/index.html#campaign-film');
  const expected=selectedMedia(page);const ratio=width<=700?4/5:16/9;
  await expect(page.locator('.film-download:visible')).toHaveCount(0);
- const poster=page.locator('#film-play img');await poster.evaluate(img=>img.decode());
+ // WebKit rejects decode() when a lazy poster's deferred load starts after the call.
+ const poster=page.locator('#film-play img');
+ await expect.poll(()=>poster.evaluate(img=>img.complete&&img.naturalWidth>0),{message:'The lazy-loaded poster has loaded before decoding'}).toBe(true);
+ await poster.evaluate(img=>img.decode());
  expect(await poster.evaluate(img=>img.naturalWidth/img.naturalHeight)).toBeCloseTo(ratio,2);
  expect(requested).toEqual([]);
  await page.locator('#film-play').click();const video=page.locator('#campaign-film-video');
