@@ -3,7 +3,8 @@ const { test, expect, pages } = require('./fixtures');
 // These journeys exercise the open consultation; deadline cases override this date.
 test.use({ consultationDate: '2026-10-15T12:00:00Z' });
 
-const dark = 'rgb(16, 30, 27)', light = 'rgb(251, 250, 246)';
+// Canvas tokens from DESIGN.md: forest night #0d1910 and paper cream #f3ede4.
+const dark = 'rgb(13, 25, 16)', light = 'rgb(243, 237, 228)';
 async function appearance(page, expected) {
   // WebKit can expose a transparent body when its background is propagated to
   // the canvas. Assert the explicit canvas and the body's effective background.
@@ -159,7 +160,7 @@ test('A saved Light choice paints a fresh page under a dark device setting', asy
   await fresh.emulateMedia({ colorScheme:'dark' });
   await fresh.goto('/letters.html');
   await appearance(fresh, light);
-  await expect(fresh.locator('body')).toHaveCSS('color', 'rgb(53, 75, 72)');
+  await expect(fresh.locator('body')).toHaveCSS('color', 'rgb(47, 58, 49)');
   await expect(fresh.getByLabel('Appearance', { exact:true })).toHaveValue('light');
   await fresh.close();
 });
@@ -193,15 +194,26 @@ test('System appearance works without JavaScript and print remains light', async
   await expect(page.locator('html')).toHaveCSS('color-scheme','light'); await context.close();
 });
 
+test('Printed status and date text stays dark on white paper', async ({ page }) => {
+  // Forest bands re-scope their colours on screen only (riverside redesign UX review).
+  const lum = c => { const [r, g, b] = c.map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  for (const [file, selector] of [['index.html', '#top .intro'], ['index.html', '#petition-note'], ['dates.html', 'main > .simple-intro p'], ['dates.html', '.decision-table thead th']]) {
+    await page.emulateMedia({ media: 'print', colorScheme: 'dark' });
+    await page.goto('/' + file);
+    const color = await page.locator(selector).first().evaluate(el => getComputedStyle(el).color.match(/[\d.]+/g).slice(0, 3).map(Number));
+    expect((1.05) / (lum(color) + 0.05), `${file} ${selector} printed contrast`).toBeGreaterThanOrEqual(4.5);
+  }
+});
+
 test('Dark mode keeps forms, disclosure content and focus readable without changing permissions', async ({page}) => {
   await page.emulateMedia({colorScheme:'dark'}); await page.goto('/letters.html#letter-form');
-  await expect(page.locator('#message')).toHaveCSS('background-color','rgb(25, 43, 37)');
+  await expect(page.locator('#message')).toHaveCSS('background-color','rgb(21, 38, 26)');
   for (const checkbox of await page.locator('form input[type=checkbox]').all()) await expect(checkbox).not.toBeChecked();
   const choice = page.getByLabel('Appearance',{exact:true}); await choice.focus();
   await expect(choice).toBeFocused(); await expect(choice).toHaveCSS('outline-style','solid');
   await page.goto('/faq.html'); await page.locator('.faq-answer summary').first().click();
   await expect(page.locator('.faq-answer').first()).toHaveAttribute('open','');
-  await expect(page.locator('.faq-answer').first()).toHaveCSS('background-color','rgb(25, 43, 37)');
+  await expect(page.locator('.faq-answer').first()).toHaveCSS('background-color','rgb(21, 38, 26)');
 });
 
 test('Analytics choices follow the system appearance while remaining readable', async ({page}) => {
@@ -209,27 +221,28 @@ test('Analytics choices follow the system appearance while remaining readable', 
   await page.getByRole('link',{name:'Analytics choices',exact:true}).click();
   const panel=page.locator('#analytics-panel');
   await expect(panel).toBeVisible();
-  await expect(panel).toHaveCSS('background-color','rgb(25, 43, 37)');
-  await expect(panel).toHaveCSS('color','rgb(238, 244, 236)');
+  await expect(panel).toHaveCSS('background-color','rgb(21, 38, 26)');
+  await expect(panel).toHaveCSS('color','rgb(243, 237, 228)');
   // Aggregate statistics is the default; optional detailed measurement stays unpressed.
-  await expect(panel.getByRole('button',{name:'Keep basic only'})).toHaveCSS('background-color','rgb(34, 56, 46)');
-  await expect(panel.getByRole('button',{name:'Allow detailed analytics'})).toHaveCSS('background-color','rgb(25, 43, 37)');
-  await expect(panel.getByRole('button',{name:'Turn analytics off'})).toHaveCSS('background-color','rgb(25, 43, 37)');
+  await expect(panel.getByRole('button',{name:'Keep basic only'})).toHaveCSS('background-color','rgb(28, 49, 33)');
+  await expect(panel.getByRole('button',{name:'Allow detailed analytics'})).toHaveCSS('background-color','rgb(21, 38, 26)');
+  await expect(panel.getByRole('button',{name:'Turn analytics off'})).toHaveCSS('background-color','rgb(21, 38, 26)');
   await page.emulateMedia({colorScheme:'light'});
-  await expect(panel).toHaveCSS('background-color','rgb(255, 253, 247)');
+  await expect(panel).toHaveCSS('background-color','rgb(250, 246, 239)');
 });
 
 test('Chart series, keys and forecast markers retain their meaning in dark mode', async ({page}) => {
   await page.emulateMedia({colorScheme:'dark'}); await page.goto('/evidence.html');
-  await expect(page.locator('.roll-legend i').first()).toHaveCSS('border-top-color','rgb(139, 215, 207)');
-  await expect(page.locator('.roll-reported')).toHaveCSS('stroke','rgb(139, 215, 207)');
+  // Dark chart tokens from DESIGN.md: lichen main, sage secondary, warm third, forecast fill on the warm surface.
+  await expect(page.locator('.roll-legend i').first()).toHaveCSS('border-top-color','rgb(123, 228, 114)');
+  await expect(page.locator('.roll-reported')).toHaveCSS('stroke','rgb(123, 228, 114)');
   await expect(page.locator('.roll-forecast')).toHaveCSS('stroke-dasharray','8px, 6px');
-  await expect(page.locator('.roll-point.forecast').first()).toHaveCSS('fill','rgb(57, 47, 32)');
+  await expect(page.locator('.roll-point.forecast').first()).toHaveCSS('fill','rgb(58, 50, 20)');
   await page.goto('/understand.html');
-  await expect(page.locator('.attainment-bar').first()).toHaveCSS('fill','rgb(139, 215, 207)');
+  await expect(page.locator('.attainment-bar').first()).toHaveCSS('fill','rgb(123, 228, 114)');
   await expect(page.locator('.attainment-bar.series-1').first()).toHaveCSS('fill','rgb(169, 197, 172)');
-  await expect(page.locator('.attainment-bar.series-2').first()).toHaveCSS('fill','rgb(233, 198, 139)');
-  await expect(page.locator('.attainment-charts text').first()).toHaveCSS('fill','rgb(193, 210, 198)');
+  await expect(page.locator('.attainment-bar.series-2').first()).toHaveCSS('fill','rgb(255, 217, 122)');
+  await expect(page.locator('.attainment-charts text').first()).toHaveCSS('fill','rgb(195, 204, 189)');
   const ramp=await page.locator('.cohort-key i').evaluateAll(items=>items.map(el=>getComputedStyle(el).backgroundColor));
   expect(new Set(ramp).size).toBe(ramp.length);
   await page.goto('/lessons.html');
@@ -238,8 +251,8 @@ test('Chart series, keys and forecast markers retain their meaning in dark mode'
 
 test('Expanded borough chart keeps a solid surface in light and dark appearances', async ({page}) => {
   for (const [scheme, background, ink] of [
-    ['light', 'rgb(255, 255, 255)', 'rgb(24, 55, 51)'],
-    ['dark', 'rgb(25, 43, 37)', 'rgb(238, 244, 236)'],
+    ['light', 'rgb(250, 246, 239)', 'rgb(18, 35, 21)'],
+    ['dark', 'rgb(21, 38, 26)', 'rgb(243, 237, 228)'],
   ]) {
     await page.emulateMedia({colorScheme:scheme});
     await page.goto('/evidence.html');

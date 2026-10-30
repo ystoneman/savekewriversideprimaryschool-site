@@ -1,0 +1,420 @@
+/* Riverside poster design layer. Adapted from the Kikin reference on Refero
+ * Styles; DESIGN.md records the system, its sources and its rules. It loads
+ * after every other stylesheet. Order: fonts, tokens, forest bands, type,
+ * buttons, shell, footer, homepage, inner pages, forms, research, print. */
+
+/* Self-hosted under the SIL Open Font License (fonts/OFL-*.txt); no third-party requests. */
+@font-face{font-family:"Archivo Variable";font-style:normal;font-display:swap;font-weight:100 900;font-stretch:62% 125%;src:url(fonts/archivo-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Archivo Variable";font-style:normal;font-display:swap;font-weight:100 900;font-stretch:62% 125%;src:url(fonts/archivo-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Instrument Sans Variable";font-style:normal;font-display:swap;font-weight:400 700;src:url(fonts/instrument-sans-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Instrument Sans Variable";font-style:normal;font-display:swap;font-weight:400 700;src:url(fonts/instrument-sans-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+/* About sixty older component rules name Arial or Helvetica. These page-scoped
+ * faces map those names to the reading face, so every component follows the
+ * system without rewriting each rule. Remove them once those rules use --font-text. */
+@font-face{font-family:Arial;font-style:normal;font-display:swap;font-weight:400 700;src:url(fonts/instrument-sans-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Arial;font-style:normal;font-display:swap;font-weight:400 700;src:url(fonts/instrument-sans-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:Helvetica;font-style:normal;font-display:swap;font-weight:400 700;src:url(fonts/instrument-sans-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+:root{
+  --font-display:"Archivo Variable","Arial Narrow",sans-serif;
+  --font-text:"Instrument Sans Variable",Arial,Helvetica,sans-serif;
+  /* Fixed palette. Meadow is the only action colour; river and sun are decoration. */
+  --forest:#122315;--forest-2:#1a3020;--forest-3:#0b170d;--forest-line:#34503a;
+  --cream:#f3ede4;--cream-2:#faf6ef;--cream-3:#e9e1d3;
+  --meadow:#4fd862;--meadow-hover:#6be27b;--lichen:#7be472;
+  --kew-green:#1e863c;--kew-green-deep:#17652f;
+  --sage:#566053;--charcoal:#2f3a31;
+  --sun:#ffe14d;--river:#73d3eb;--navy:#0a071b;
+  --radius-card:20px;--radius-button:10px;
+  --max:1200px;--gutter:40px;--main-top:32px;
+}
+@media(max-width:700px){:root{--gutter:20px;--main-top:20px}}
+@media(max-width:350px){:root{--gutter:16px}}
+
+/* Light and dark tokens reuse the names every component already reads. */
+@media screen{
+  :root:not([data-theme]),:root:not([data-theme]) body,:root[data-theme="light"],:root[data-theme="light"] body{
+    color-scheme:light;
+    --paper:#f3ede4;--white:#faf6ef;--ink:#122315;--body:#2f3a31;--muted:#566053;--line:#d6cdbd;
+    --teal:#17652f;--green:#122315;--lime:#4fd862;--amber:#fbefc2;--wash:#e9e1d3;--accent:#4fd862;
+    --theme-surface:#faf6ef;--theme-soft:#ebe3d4;--theme-warm-surface:#fbefc2;--theme-readable:#4a5547;
+    --theme-strong:#122315;--theme-warm-text:#6b5313;--theme-border:#737c70;--theme-focus:#122315;
+    --theme-header:#122315;--theme-chart-main:#17652f;--theme-chart-secondary:#566053;--theme-chart-third:#8a6a12;
+    --theme-primary:#4fd862;--theme-on-primary:#122315;
+    --voice-letters:#17652f;--voice-letters-soft:#ebe3d4;--voice-letters-edge:#737c70;--voice-letters-text:#17652f;
+    --voice-ideas:#ffe14d;--voice-ideas-soft:#fbefc2;--voice-ideas-edge:#8a6a12;--voice-ideas-text:#6b5313;
+    --voice-cream:#faf6ef;--voice-shadow:rgba(10,7,27,.16);
+  }
+  :root[data-theme="dark"],:root[data-theme="dark"] body{
+    color-scheme:dark;
+    --paper:#0d1910;--white:#15261a;--ink:#f3ede4;--body:#d9d3c7;--muted:#aab4a5;--line:#2d4433;
+    --teal:#7be472;--green:#1a3020;--lime:#4fd862;--amber:#3a3214;--wash:#1c3121;--accent:#4fd862;
+    --theme-surface:#15261a;--theme-soft:#1c3121;--theme-warm-surface:#3a3214;--theme-readable:#c3ccbd;
+    --theme-strong:#f3ede4;--theme-warm-text:#ffe58a;--theme-border:#6d7d68;--theme-focus:#ffe14d;
+    --theme-header:#122315;--theme-chart-main:#7be472;--theme-chart-secondary:#a9c5ac;--theme-chart-third:#ffd97a;
+    --theme-primary:#4fd862;--theme-on-primary:#122315;
+    --voice-letters:#7be472;--voice-letters-soft:#1c3121;--voice-letters-edge:#6d7d68;--voice-letters-text:#7be472;
+    --voice-ideas:#ffe14d;--voice-ideas-soft:#3a3214;--voice-ideas-edge:#c9a93a;--voice-ideas-text:#ffe58a;
+    --voice-cream:#15261a;--voice-shadow:rgba(0,0,0,.4);
+  }
+}
+@media screen and (prefers-color-scheme:dark){
+  :root:not([data-theme]),:root:not([data-theme]) body{
+    color-scheme:dark;
+    --paper:#0d1910;--white:#15261a;--ink:#f3ede4;--body:#d9d3c7;--muted:#aab4a5;--line:#2d4433;
+    --teal:#7be472;--green:#1a3020;--lime:#4fd862;--amber:#3a3214;--wash:#1c3121;--accent:#4fd862;
+    --theme-surface:#15261a;--theme-soft:#1c3121;--theme-warm-surface:#3a3214;--theme-readable:#c3ccbd;
+    --theme-strong:#f3ede4;--theme-warm-text:#ffe58a;--theme-border:#6d7d68;--theme-focus:#ffe14d;
+    --theme-header:#122315;--theme-chart-main:#7be472;--theme-chart-secondary:#a9c5ac;--theme-chart-third:#ffd97a;
+    --theme-primary:#4fd862;--theme-on-primary:#122315;
+    --voice-letters:#7be472;--voice-letters-soft:#1c3121;--voice-letters-edge:#6d7d68;--voice-letters-text:#7be472;
+    --voice-ideas:#ffe14d;--voice-ideas-soft:#3a3214;--voice-ideas-edge:#c9a93a;--voice-ideas-text:#ffe58a;
+    --voice-cream:#15261a;--voice-shadow:rgba(0,0,0,.4);
+  }
+}
+@media screen{:root,body{background:var(--paper);color:var(--body)}}
+
+/* Forest bands stay dark in both appearances: masthead, homepage hero, the
+ * campaign-page openers, the letter feature card and the footer. Re-scoping
+ * the tokens lets every component inside them follow. */
+.site-header,.independent-bar,body[data-home-landing] .hero-grid,footer,
+.simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero),.involvement-page .letter-action,
+.gaps-section,.checklist-banner,.brief-card,.proposal-actions,.next-dates{
+  --ink:#f3ede4;--body:#e4ddd0;--muted:#bcc5b6;--line:#34503a;--teal:#7be472;--paper:#122315;--white:#1a3020;--wash:#1f3825;
+  --theme-surface:#1a3020;--theme-soft:#1f3825;--theme-border:#8a9a85;--theme-focus:#ffe14d;--theme-readable:#cfd6c8;--theme-strong:#f3ede4;
+  --theme-background:#122315;
+}
+@media screen{
+  .site-header,.independent-bar,body[data-home-landing] .hero-grid,footer,
+  .simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero),.involvement-page .letter-action,
+  .gaps-section,.checklist-banner,.brief-card,.proposal-actions,.next-dates{background-color:var(--forest);color:var(--body)}
+}
+@media print{
+  .site-header,.independent-bar,body[data-home-landing] .hero-grid,footer,
+  .simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero),.involvement-page .letter-action,
+  .gaps-section,.checklist-banner,.brief-card,.proposal-actions,.next-dates{
+    --ink:#122315;--body:#2f3a31;--muted:#4a5547;--teal:#17652f;--paper:#fff;--white:#fff;--theme-strong:#122315;--theme-readable:#4a5547;
+    background:#fff!important;color:#2f3a31!important}
+}
+
+/* Type: one loud display voice, one calm reading voice. */
+body{font-family:var(--font-text);font-size:17px;line-height:1.55;font-kerning:normal;-webkit-font-smoothing:antialiased}
+:is(h1,h2){font-family:var(--font-display);font-stretch:62%;font-weight:850;font-style:normal;text-transform:uppercase;line-height:.9;letter-spacing:0;word-spacing:.08em;color:var(--ink);overflow-wrap:anywhere}
+h3{font-family:var(--font-text);font-weight:650;line-height:1.25;letter-spacing:-.01em;color:var(--ink)}
+:is(h1,h2) em{font-style:normal;font-weight:inherit;color:var(--kew-green)}
+:is(.site-header,.hero-grid,.simple-intro,footer) :is(h1,h2) em{color:var(--meadow)}
+.eyebrow,.contribution-kicker,.update-date,.menu-group-label,.sent-kicker,.next-eyebrow{font-family:var(--font-text)!important;font-size:13px!important;font-weight:600!important;letter-spacing:.16em!important;text-transform:uppercase;color:var(--teal)!important}
+a{text-decoration-thickness:1.5px;text-underline-offset:.22em}
+a:hover{text-decoration-thickness:3px}
+:focus-visible{outline:3px solid var(--theme-focus,#122315)!important;outline-offset:3px!important}
+::selection{background:var(--meadow);color:var(--forest)}
+
+/* Older components set Georgia for numerals, quotes and card titles. */
+:is(.brief-stat strong,.context-number,.chart-stat strong,.school-snapshot dd,.process span,.rank,.gaps-grid article>span,.school-chart .chart-result,.place-row .place-ratio,.finding-number,.roll-key-number dd,.meeting-day strong,.visual-route a span){
+  font-family:var(--font-display)!important;font-stretch:62%!important;font-weight:850!important;letter-spacing:0!important}
+:is(.visual-preview h3,.timeline-preview h3,.research-shortcut h3,.research-card h3,.finding-how-title){
+  font-family:var(--font-display)!important;font-stretch:75%!important;font-weight:800!important;letter-spacing:0!important;line-height:1.05!important}
+:is(.voice-quote blockquote p,.support-statement){font-family:var(--font-text)!important;font-weight:500!important}
+.notice-icon{font-family:var(--font-text)!important}
+
+/* Buttons: meadow fill with an ink edge reads on cream and on forest. */
+:is(.action,.simple-actions a,.simple-actions button,.film-petition .action,.legacy-route a,.button,.feedback-submit,.step-next){
+  border-radius:var(--radius-button)!important;font-family:var(--font-display)!important;font-stretch:80%;font-weight:800!important;
+  text-transform:uppercase;letter-spacing:.02em;text-decoration:none!important;
+}
+.primary,.simple-actions .primary,.home-secondary-actions .primary,.film-petition .action,.button.primary{
+  background:var(--meadow)!important;color:var(--forest)!important;border:2px solid var(--forest)!important;
+}
+.primary:hover,.simple-actions .primary:hover,.film-petition .action:hover{background:var(--meadow-hover)!important}
+:is(.secondary,.simple-actions a:not(.primary),.simple-actions button,.button.quiet){
+  background:transparent!important;color:var(--ink)!important;border:2px solid var(--ink)!important;
+}
+:is(.secondary,.simple-actions a:not(.primary),.button.quiet):hover{background:var(--ink)!important;color:var(--paper)!important}
+.simple-toolbar button{border:2px solid var(--ink)!important;border-radius:var(--radius-button)!important;background:transparent!important;font:800 15px/1.2 var(--font-display)!important;font-stretch:80%!important;text-transform:uppercase;letter-spacing:.03em;padding:10px 16px!important}
+
+/* Shell: forest masthead with a cream wordmark. */
+.independent-bar{background:var(--forest-3)!important;color:var(--muted)}
+.site-header{border:0!important;box-shadow:none}
+.site-header .brand{color:var(--cream);font-family:var(--font-display);font-stretch:68%;font-weight:800;text-transform:uppercase;letter-spacing:.01em;line-height:.95;text-decoration:none}
+.site-header .brand svg rect{fill:var(--meadow)}
+.site-header .brand svg path{stroke:var(--forest)}
+.site-header .brand .campaign-subtitle{font-family:var(--font-text);color:var(--meadow)!important;text-transform:uppercase;letter-spacing:.16em}
+.site-header .brand .campaign-subtitle strong{font:700 14px/1.3 var(--font-text)!important;letter-spacing:.16em!important;color:var(--meadow)}
+.site-header .brand .campaign-subtitle span{font-size:11px!important;letter-spacing:.08em;color:var(--muted)}
+.site-header .nav-primary{display:inline-flex;align-items:center;min-height:44px;padding:8px 18px;border-radius:var(--radius-button);background:var(--meadow);color:var(--forest)!important;font:800 15px/1.2 var(--font-display);font-stretch:80%;text-transform:uppercase;letter-spacing:.03em;text-decoration:none}
+.site-header .nav-primary:hover{background:var(--meadow-hover)}
+.site-header .nav-primary[aria-current]{background:transparent;color:var(--cream)!important;box-shadow:inset 0 0 0 2px var(--meadow);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.site-header :is(.mobile-menu,.page-sections)>summary{background:transparent!important;border:1.5px solid var(--cream)!important;border-radius:var(--radius-button)!important;color:var(--cream)!important;font-family:var(--font-display)!important;font-stretch:80%;font-weight:800!important;text-transform:uppercase;letter-spacing:.04em}
+.site-header .page-sections>summary{border-color:transparent!important}
+.site-header .page-sections .section-prompt{color:var(--meadow);letter-spacing:.12em}
+.site-header .page-sections .section-trail{color:var(--cream);text-transform:none;letter-spacing:0;font-family:var(--font-text);font-stretch:100%;font-weight:500}
+.site-header details[open]>summary{background:var(--cream)!important;color:var(--forest)!important}
+.site-header .page-sections[open]>summary :is(.section-prompt,.section-trail){color:var(--forest)}
+.site-header .mobile-menu nav,.site-header .section-panel{background:var(--forest-2)!important;border:1px solid var(--forest-line)!important;border-radius:0 0 var(--radius-card) var(--radius-card)!important;box-shadow:0 18px 40px rgba(10,7,27,.35)!important}
+.site-header :is(.mobile-menu,.section-panel) nav a{color:var(--cream)}
+.site-header :is(.mobile-menu,.section-panel) nav a:hover{background:#24402b!important}
+.site-header :is(.mobile-menu,.section-panel) nav a[aria-current]{background:#24402b!important;box-shadow:inset 3px 0 var(--meadow)!important}
+.site-orientation{background:var(--forest-2)!important;border-top:1px solid #2b4531!important}
+.site-orientation .page-name{color:var(--cream);font-family:var(--font-display);font-stretch:75%;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.site-header .analytics-invitation{background:transparent!important;color:var(--body)!important}
+.archive-flag{background:var(--sun)!important;color:var(--forest)!important;border-color:var(--sun)!important;border-radius:4px!important;font:800 13px/1.2 var(--font-display)!important;font-stretch:80%!important;text-transform:uppercase;letter-spacing:.04em}
+.archive-banner{border:0!important;border-radius:4px!important;background:var(--theme-warm-surface)!important;color:var(--ink)!important;padding:12px 16px!important}
+.archive-banner p{color:var(--ink)!important}
+
+/* Footer: the riverside horizon closes inner pages; the homepage hero carries it. */
+footer{border:0!important;padding-block:0 32px!important}
+footer a{color:var(--cream)}
+footer :is(h2,strong){color:var(--cream)}
+.footer-inner strong{font-family:var(--font-display)!important;font-stretch:68%;font-weight:850!important;text-transform:uppercase;font-size:28px!important;line-height:.95}
+.footer-socials h2{font-family:var(--font-display)!important;font-stretch:68%;font-weight:850;text-transform:uppercase;font-size:30px!important;line-height:.95!important}
+.footer-social-links a{border:1.5px solid var(--cream)!important;border-radius:var(--radius-button)!important;padding:6px 14px!important}
+.footer-social-links a:hover{background:var(--cream);color:var(--forest)}
+.footer-discovery,.footer-socials{border-color:var(--forest-line)!important}
+.theme-controls{border-color:var(--forest-line)!important;color:var(--body)}
+.theme-controls label{color:var(--cream)}
+.theme-controls select{background-color:var(--forest-2)!important;color:var(--cream)!important;border-color:#8a9a85!important}
+.simple-page footer::before{content:"";display:block;height:clamp(80px,11vw,150px);margin-bottom:24px;background:url(images/riverside-landscape.svg) 50% 100%/cover no-repeat}
+
+/* ---------- Homepage ---------- */
+body[data-home-landing] main.wrap{width:100%;max-width:none;margin:0}
+body[data-home-landing] .site-header{width:100%;margin:0}
+body[data-home-landing] .site-header .header-inner{width:min(var(--max),calc(100% - 2 * var(--gutter)));margin-inline:auto;padding-block:20px}
+body[data-home-landing] .site-header .brand{font-size:24px}
+body[data-home-landing] .site-header .brand svg{width:44px;height:44px}
+body[data-home-landing] .site-header .mobile-menu nav{background:var(--forest-2)}
+body[data-home-landing] .site-header .mobile-menu nav p{color:var(--meadow)}
+body[data-home-landing] .hero-grid{--horizon:clamp(120px,22vw,320px);position:relative;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:clamp(32px,5vw,80px);align-items:start;padding:clamp(24px,4vw,56px) max(var(--gutter),calc((100% - var(--max)) / 2)) calc(var(--horizon) + clamp(28px,3vw,40px))}
+/* Full-bleed riverside horizon closing the hero, kept out of the reading order. */
+body[data-home-landing] .hero-grid::after{content:"";position:absolute;left:0;right:0;bottom:0;height:var(--horizon);background:url(images/riverside-landscape.svg) 50% 100%/cover no-repeat;pointer-events:none}
+body[data-home-landing] .eyebrow{color:var(--meadow)!important;margin-bottom:22px}
+body[data-home-landing] h1{font-size:clamp(3rem,6.9vw,6rem);line-height:.86;letter-spacing:-.005em;max-width:none;overflow-wrap:anywhere;color:var(--cream)}
+body[data-home-landing] h1 em{text-decoration:underline;text-decoration-color:var(--sun);text-decoration-thickness:.08em;text-underline-offset:.08em}
+body[data-home-landing] .intro{font-size:19px;line-height:1.5;max-width:40ch;margin-top:28px;color:var(--body)}
+body[data-home-landing] .intro strong{color:var(--cream)}
+body[data-home-landing] .actions{margin-top:30px;max-width:560px}
+body[data-home-landing] .action{min-height:64px;padding:14px 22px;font-size:21px;line-height:1.1;border-width:2px}
+body[data-home-landing] .action>span{font-family:var(--font-text);font-size:22px}
+body[data-home-landing] .home-secondary-actions{gap:12px}
+body[data-home-landing] .home-secondary-actions .action{font-size:21px}
+body[data-home-landing] .hero-grid .secondary{color:var(--cream)!important;border-color:var(--cream)!important}
+body[data-home-landing] .hero-grid .secondary:hover{background:var(--cream)!important;color:var(--forest)!important}
+body[data-home-landing] .action-note{font-size:14px;line-height:1.5;color:var(--muted)}
+body[data-home-landing] .action-note .countdown{color:var(--forest);background:var(--sun);text-decoration:none;padding:1px 6px;border-radius:4px}
+.petition-progress{border:1px solid var(--forest-line)!important;border-radius:var(--radius-card)!important;padding:18px 20px!important;background:var(--forest-2);font-size:14px!important}
+.petition-progress h2{font:600 13px/1.4 var(--font-text)!important;text-transform:uppercase;letter-spacing:.16em!important;color:var(--meadow)!important;margin-bottom:8px!important}
+.petition-progress #petition-total{font:850 44px/.9 var(--font-display);font-stretch:62%;color:var(--cream);margin-right:4px;vertical-align:-4px}
+.petition-progress progress{height:16px!important;border:1.5px solid var(--cream)!important;border-radius:8px!important;background:var(--forest)!important}
+.petition-progress progress::-webkit-progress-bar{background:var(--forest)!important}
+.petition-progress progress::-webkit-progress-value{background:var(--meadow)!important}
+.petition-progress progress::-moz-progress-bar{background:var(--meadow)!important}
+#share-fallback>summary,#share-trigger{color:var(--cream)}
+body[data-home-landing] .share-panel input{background:var(--forest-2);color:var(--cream);border-color:#8a9a85}
+body[data-home-landing] .share-tools button{background:var(--cream);color:var(--forest);border-color:var(--cream)}
+
+/* Photo: arch frame, patch badge pinned to the corner, sticker caption. */
+body[data-home-landing] .school-photo{position:relative;padding-top:18px}
+body[data-home-landing] .school-photo img{border-radius:999px 999px var(--radius-card) var(--radius-card);aspect-ratio:4/4.4;border:3px solid var(--cream)}
+body[data-home-landing] .school-photo figcaption{font:inherit;margin:0;max-width:none}
+body[data-home-landing] .school-photo .photo-sticker{position:relative;z-index:1;display:inline-block;margin:-58px 0 0 -10px;padding:12px 16px 10px;background:var(--sun);color:var(--forest);font:850 clamp(22px,2.2vw,30px)/.92 var(--font-display);font-stretch:68%;text-transform:uppercase;transform:rotate(-4deg);max-width:15ch}
+body[data-home-landing] .school-photo .photo-credit{display:block;margin-top:16px;font:13px/1.4 var(--font-text);color:var(--muted)}
+.photo-credit a{color:var(--cream)}
+.patch-badge{position:absolute;z-index:1;top:36px;right:-8px;width:clamp(112px,11vw,150px);height:auto;transform:rotate(9deg)}
+.patch-badge .badge-edge{fill:var(--meadow)}
+.patch-badge .badge-field{fill:var(--navy);stroke:var(--cream);stroke-width:2}
+.patch-badge .badge-text{fill:var(--cream);font:800 15px var(--font-display);font-stretch:75%;letter-spacing:.08em;text-transform:uppercase}
+.patch-badge .badge-mark{fill:none;stroke:var(--cream);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.patch-badge .badge-mark-accent{stroke:var(--meadow)}
+body[data-home-landing] .school-photo{padding-top:clamp(96px,9vw,128px)}
+body[data-home-landing] .patch-badge{top:0;right:0}
+
+
+/* Campaign video on cream. */
+body[data-home-landing] .campaign-film{width:min(var(--max),calc(100% - 2 * var(--gutter)));max-width:none;margin-inline:auto;border:0;padding-block:clamp(48px,7vw,96px) clamp(40px,6vw,80px);display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr);column-gap:clamp(28px,4vw,64px);align-items:start}
+body[data-home-landing] .campaign-film>*{grid-column:2}
+body[data-home-landing] .campaign-film>h2,body[data-home-landing] .campaign-film>.film-date{grid-column:1}
+body[data-home-landing] .campaign-film>h2{grid-row:1;font:850 clamp(3rem,6.6vw,6rem)/.86 var(--font-display);font-stretch:62%;margin:0;color:var(--ink)}
+body[data-home-landing] .campaign-film>.film-date{grid-row:2;align-self:start;margin-top:16px;font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--teal)}
+body[data-home-landing] .campaign-film>figure{grid-row:1/span 3}
+.film-player{border-radius:var(--radius-card)!important;background:var(--forest)!important;box-shadow:0 12px 40px rgba(10,7,27,.14)}
+.film-poster span{background:var(--meadow)!important;color:var(--forest)!important;border:2px solid var(--forest)!important;border-radius:var(--radius-button)!important;font:800 20px/1 var(--font-display)!important;font-stretch:80%;text-transform:uppercase;letter-spacing:.03em;box-shadow:none!important}
+.film-poster:focus-visible{outline:4px solid var(--sun)!important;outline-offset:-6px!important}
+.film-credit{color:var(--muted)!important}
+.film-petition .action{min-height:60px;font-size:20px!important}
+.film-share-button{border:2px solid var(--ink)!important;border-radius:var(--radius-button)!important;font:800 16px/1.2 var(--font-display)!important;font-stretch:80%;text-transform:uppercase;letter-spacing:.03em}
+.film-transcript>summary,.film-sharing summary{font-family:var(--font-display);font-stretch:80%;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.film-status{border-left:0!important;border-radius:var(--radius-button)}
+
+/* Home footer. */
+body[data-home-landing] footer{padding-top:28px!important}
+body[data-home-landing] footer>.wrap{width:min(var(--max),calc(100% - 2 * var(--gutter)))}
+body[data-home-landing] .footer-top{color:var(--muted)}
+body[data-home-landing] .footer-details>*{min-width:0}
+body[data-home-landing] .footer-details summary{font:650 16px/1.3 var(--font-text);letter-spacing:-.005em;color:var(--cream);overflow-wrap:anywhere;gap:12px}
+body[data-home-landing] .footer-details summary span{color:var(--meadow)}
+body[data-home-landing] .disclosure-content h2{font:850 40px/.9 var(--font-display);font-stretch:62%}
+
+/* ---------- Inner pages ---------- */
+.simple-page main{padding-top:var(--main-top)}
+.simple-page main:has(>.simple-intro:not(.feedback-intro):not(.invite-hero):first-child){padding-top:0}
+.simple-page main :is(h1,h2){font-family:var(--font-display);font-stretch:62%;font-weight:850;text-transform:uppercase;letter-spacing:0}
+.simple-page main h1{font-size:clamp(2.75rem,6.4vw,5rem);line-height:.86;max-width:16ch;color:var(--ink);overflow-wrap:anywhere}
+.simple-page main h2{font-size:clamp(1.75rem,3vw,2.4rem);line-height:.92}
+.simple-page main :is(.simple-detail-body,.contribution-card,.next-card,.share-card,.feedback-form,.review-note,.about-panel,.letter-step,.private-details,.update-list,.family-story) h2{font-size:clamp(1.6rem,2.8vw,2.3rem)}
+.simple-page main .simple-detail-body h2{font:650 clamp(1.3rem,2vw,1.6rem)/1.25 var(--font-text);text-transform:none;letter-spacing:-.01em;word-spacing:0}
+.simple-page main h2.sr-only{font-size:1px}
+/* Campaign-page openers: a forest band with a poster-sized heading. */
+.simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero){position:relative;max-width:none;margin:0 0 clamp(16px,2vw,28px);padding:clamp(24px,3vw,40px) 0 clamp(24px,2.8vw,36px);border:0;box-shadow:0 0 0 100vmax var(--forest);clip-path:inset(0 -100vmax)}
+.simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero) h1{font-size:clamp(3rem,6vw,5rem);line-height:.86;max-width:none;color:var(--cream);margin-bottom:14px}
+.simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero) p{font-size:clamp(17px,1.4vw,20px);line-height:1.45;max-width:52ch;color:var(--body);margin:0}
+.simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero) .simple-actions{margin:24px 0 0}
+.simple-intro .patch-badge{top:50%;right:0;transform:translateY(-50%) rotate(-8deg);width:clamp(110px,10vw,140px)}
+.simple-page .simple-intro p,.simple-page .invite-lead{font-size:17px;line-height:1.5}
+.campaign-section,.about-section{max-width:780px;border-top:0!important}
+.campaign-section{padding:clamp(18px,2.2vw,26px) 0 4px}
+.campaign-section>h2,.campaign-section [data-stage]>h2{margin-bottom:10px!important}
+.campaign-section p{font-size:17px}
+.simple-actions{gap:10px;margin:12px 0}
+.simple-actions :is(a,button){min-height:52px;padding:10px 18px;font-size:18px!important;line-height:1.1!important}
+.simple-actions a>span[aria-hidden]{font-family:var(--font-text)}
+.simple-note{color:var(--muted)!important}
+.simple-page main a:not([class]){text-decoration-color:var(--kew-green)}
+
+/* Disclosures: cream cards with a display-type summary. */
+.simple-detail{border:1px solid var(--line)!important;border-radius:var(--radius-card)!important;background:var(--white)!important;box-shadow:0 8px 28px rgba(10,7,27,.05)}
+.simple-detail>summary{font:650 18px/1.35 var(--font-text)!important;letter-spacing:-.005em;padding:16px 22px!important}
+.simple-detail>summary::after{font-family:var(--font-text);color:var(--teal);font-weight:600}
+.simple-detail[open]>summary{border-color:var(--line)!important}
+
+/* Get involved: actions as cards with patch-badge icons. */
+.involvement-page .contribution-card{max-width:780px;margin:clamp(14px,1.8vw,22px) 0;padding:clamp(20px,2.4vw,28px);background:var(--white);border:1px solid var(--line)!important;border-radius:var(--radius-card);box-shadow:0 12px 40px rgba(10,7,27,.07)}
+.involvement-page .letter-action{border-color:var(--forest)!important}
+.involvement-page .letter-action .simple-actions .primary{border-color:var(--meadow)!important}
+.involvement-page .letter-action a:not(.primary){color:var(--cream)}
+.involvement-page .video-action{border-top:1px solid var(--line)!important}
+.involvement-page .recruitment-action{background:var(--theme-soft)!important}
+.contribution-heading{gap:16px;margin-bottom:12px}
+.involvement-page .contribution-heading :is(h2,h3){font-family:var(--font-display);font-stretch:62%;font-weight:850;text-transform:uppercase;font-size:clamp(1.8rem,3vw,2.5rem);line-height:.9;letter-spacing:0}
+.contribution-icon{width:62px!important;height:62px!important;padding:13px!important;border-radius:50%!important;background:var(--forest)!important;color:var(--cream)!important;stroke-width:2.2!important;box-shadow:0 0 0 2px var(--cream),0 0 0 6px var(--meadow);transform:rotate(-7deg);margin:6px}
+.letter-action .contribution-icon{background:var(--navy)!important}
+.recruitment-action .contribution-icon,.school-contributions .contribution-icon{box-shadow:0 0 0 2px var(--cream),0 0 0 6px var(--river);transform:rotate(6deg)}
+.involvement-page .contribution-kicker{margin-bottom:8px!important}
+.involvement-page .contribution-card>p{font-size:17px}
+.contribution-secondary{font-weight:600;text-decoration:underline;text-decoration-color:var(--kew-green);text-decoration-thickness:2px}
+.letter-action .contribution-secondary{text-decoration-color:var(--meadow)}
+.school-contributions{max-width:780px;margin-top:clamp(24px,3vw,40px);padding:clamp(18px,2.4vw,28px);border:0!important;border-radius:var(--radius-card);background:var(--theme-soft)}
+.involvement-page .school-contributions>h2{font-family:var(--font-display);font-stretch:62%;font-weight:850;text-transform:uppercase;font-size:clamp(1.75rem,2.8vw,2.3rem);line-height:.92;margin-bottom:12px}
+.involvement-page .contribution-heading h3{font-size:clamp(1.6rem,2.8vw,2.1rem)!important}
+.school-contributions .contribution-card{box-shadow:none}
+
+/* Campaign updates and council dates. */
+.updates-shortcuts a{font-family:var(--font-display);font-stretch:80%;font-weight:800;text-transform:uppercase;letter-spacing:.03em;text-decoration-color:var(--kew-green)}
+.update-list>li{border-top:1px solid var(--line)!important;padding:clamp(22px,3vw,32px) 0 12px!important}
+.simple-page main .update-list h2{font-size:clamp(1.8rem,3.2vw,2.6rem);margin-bottom:10px}
+.update-photo img{border-radius:var(--radius-card)!important}
+.decision-table-wrap{border-radius:var(--radius-card);border:1px solid var(--line);background:var(--white);overflow:auto}
+.decision-table{margin:0!important}
+.decision-table caption{font:800 18px/1.2 var(--font-display);font-stretch:75%;text-transform:uppercase;letter-spacing:.03em;padding:16px 18px 4px}
+.decision-table thead{background:var(--forest)!important}
+.decision-table thead th{color:var(--cream)!important}
+.decision-table :is(th,td){border-color:var(--line)!important;padding:12px 16px!important}
+.council-document-list a{font-weight:650}
+
+/* About and other reading pages. */
+.press-credit{border-left:0!important;border-radius:var(--radius-card);background:var(--theme-soft)!important}
+.about-panel,.family-story{border-radius:var(--radius-card)}
+.review-note{border-radius:var(--radius-card)!important}
+
+/* ---------- Forms ---------- */
+.feedback-field label,.sharing-options legend,.kind-cards legend{color:var(--ink)}
+.feedback-field :is(input,select,textarea),#citation-search-controls input,.filters :is(input,select){border:1.5px solid var(--theme-border)!important;border-radius:var(--radius-button)!important;background:var(--white)!important;color:var(--ink)!important;font-family:var(--font-text)!important}
+.feedback-field :is(input,textarea):focus{outline:3px solid var(--theme-focus)!important;outline-offset:2px!important;border-color:var(--ink)!important}
+.choice-card,.kind-card{border-radius:var(--radius-button)!important;background:var(--white)!important;border-color:var(--line)!important}
+.choice-card:has(input:checked),.kind-card:has(input:checked){border-color:var(--ink)!important;box-shadow:inset 0 0 0 1px var(--ink)!important;background:var(--theme-soft)!important}
+:is(.choice-card,.kind-card,.feedback-permission) input{accent-color:var(--kew-green)}
+.kind-card .kind-icon{background:var(--theme-soft)!important}
+.kind-card:has(input:checked) .kind-icon{background:var(--sun)!important}
+.starter{border-radius:999px!important;background:var(--white)!important;color:var(--ink)!important;border:1.5px solid var(--theme-border)!important;font-family:var(--font-text)!important}
+.starter:hover{background:var(--theme-soft)!important}
+.feedback-submit,.step-next{min-height:56px!important;font-size:19px!important}
+.invite-hero,.feedback-intro{border:0!important}
+.simple-page main :is(.invite-title,.feedback-intro h1,.video-upload h1,.privacy-page>h1,.sent-page>h1){font-size:clamp(2.75rem,6.4vw,5rem)!important;line-height:.86!important;color:var(--ink)!important;letter-spacing:0!important}
+
+/* Community letters and shared ideas. */
+.letter-card,.suggestion-card{border-radius:var(--radius-card)!important;border-color:var(--line)!important;background:var(--white)!important}
+.letter-card .public-author,.suggestion-card .public-author{font-family:var(--font-display);font-stretch:80%;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+
+/* Next-steps cards after sending. */
+.next-card,.share-card{border-radius:var(--radius-card)!important;border-color:var(--line)!important}
+.step-num{background:var(--ink)!important;color:var(--paper)!important;font-family:var(--font-display);font-stretch:75%;font-weight:800}
+
+/* ---------- Research pages ---------- */
+:is(.chart-card,.small-chart,.school-snapshot,.source-card,.action-card,.process-panel,.research-card,.lesson-card){border-radius:var(--radius-card)!important}
+.source-card{border-color:var(--line)!important}
+.status.reviewed{background:var(--theme-soft)!important}
+
+/* ---------- Narrow screens ---------- */
+@media(max-width:1000px){
+  body[data-home-landing] .campaign-film{grid-template-columns:minmax(0,1fr)}
+  body[data-home-landing] .campaign-film>*{grid-column:1!important;grid-row:auto!important}
+}
+@media(max-width:700px){
+  body[data-home-landing] .site-header .header-inner{padding-block:14px}
+  body[data-home-landing] .site-header .brand{font-size:19px}
+  body[data-home-landing] .site-header .brand svg{width:34px;height:34px}
+  body[data-home-landing] .hero-grid{display:block;padding:22px var(--gutter) calc(var(--horizon) + 28px)}
+  body[data-home-landing] .eyebrow{font-size:12px!important;letter-spacing:.1em!important}
+  body[data-home-landing] h1{font-size:clamp(2.75rem,13.2vw,3.6rem);max-width:none}
+  body[data-home-landing] .intro{font-size:16px;margin-top:16px}
+  body[data-home-landing] .actions{margin-top:16px}
+  body[data-home-landing] .action{min-height:64px;font-size:20px;line-height:1;padding:10px 16px}
+  body[data-home-landing] .home-secondary-actions .action{font-size:19px;padding:10px 8px}
+  body[data-home-landing] .action-note{font-size:12px;margin:8px 0 14px}
+  body[data-home-landing] .school-photo{margin-top:30px;padding-top:0}
+  body[data-home-landing] .school-photo img{aspect-ratio:1.5;border-radius:160px 160px var(--radius-card) var(--radius-card)}
+  body[data-home-landing] .school-photo .photo-sticker{margin-top:-44px;font-size:22px}
+  body[data-home-landing] .patch-badge{display:none}
+  /* Phones: a compact band, so the first action keeps its pre-redesign arrival position. */
+  .simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero){padding:20px 0 24px;margin-bottom:8px}
+  .simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero) h1{font-size:clamp(2.5rem,12vw,3.2rem);max-width:none;margin-bottom:12px}
+  .simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero) p{font-size:17px}
+  .simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero) .simple-actions{margin-top:16px}
+  .campaign-section{padding-top:16px}
+  .simple-intro .patch-badge{display:none}
+  .simple-page main h1{font-size:clamp(2.5rem,12vw,3.4rem)}
+  .simple-page main :is(.invite-title,.feedback-intro h1,.video-upload h1,.privacy-page>h1,.sent-page>h1){font-size:clamp(2.5rem,12vw,3.4rem)!important}
+  .contribution-icon{width:48px!important;height:48px!important;padding:9px!important;margin:4px}
+  .involvement-page .contribution-heading h2{font-size:clamp(1.7rem,7.6vw,2.1rem)}
+  .involvement-page .contribution-card{padding:18px 16px}
+  .school-contributions{padding:16px 14px}
+  .involvement-page .school-contributions .contribution-card{padding:16px 14px}
+  .simple-detail>summary{font-size:17px!important;padding:14px 16px!important}
+}
+@media(max-width:350px){
+  body[data-home-landing] .hero-grid{padding-top:16px}
+  body[data-home-landing] .eyebrow{margin-bottom:12px}
+  body[data-home-landing] h1{font-size:2.6rem}
+  body[data-home-landing] .intro{font-size:16px;margin-top:14px}
+  body[data-home-landing] .actions{margin-top:16px}
+  body[data-home-landing] .action{min-height:64px;font-size:18px}
+  body[data-home-landing] .home-secondary-actions .action{font-size:17px;padding:10px 6px}
+  .simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero){padding:16px 0 20px}
+  .simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero) h1{font-size:2.4rem;margin-bottom:10px}
+  .simple-page main>.simple-intro:not(.feedback-intro):not(.invite-hero) p{font-size:16px}
+  .simple-page main h2{font-size:1.75rem}
+  .campaign-section{padding-top:16px}
+  .campaign-section p{font-size:17px}
+}
+
+@media(prefers-reduced-motion:reduce){.patch-badge,.photo-sticker,.contribution-icon{transform:none!important}.simple-intro .patch-badge{transform:translateY(-50%)!important}}
+@media print{
+  body[data-home-landing] .hero-grid{--horizon:0px;padding-block:0 12px!important}
+  .decision-table thead{background:#fff!important}
+  :is(.site-header .brand,.site-header .brand span,body[data-home-landing] h1,.hero-grid .secondary,#petition-total,#share-fallback>summary,#share-trigger,.photo-credit,.photo-credit a,.letter-action a,footer,footer a,footer :is(h2,strong,p,summary,span)){color:#122315!important}
+  :is(h1,h2) em,.eyebrow,.petition-progress h2,.site-header .brand .campaign-subtitle,.site-header .brand .campaign-subtitle strong,body[data-home-landing] .footer-details summary span{color:#17652f!important}
+  .hero-grid .secondary{border-color:#122315!important}
+  .decision-table thead th{color:#122315!important}
+  body[data-home-landing] .hero-grid::after,.patch-badge,.simple-page footer::before{display:none!important}
+  :is(h1,h2,h3){color:#000!important}
+  body[data-home-landing] .hero-grid,.simple-page main>.simple-intro,.involvement-page .letter-action{background:#fff!important;box-shadow:none!important;clip-path:none!important;color:#000!important}
+  .photo-sticker{background:none!important;transform:none!important}
+}

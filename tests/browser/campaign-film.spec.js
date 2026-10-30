@@ -166,6 +166,19 @@ for(const [start,end]of[[390,844],[1440,390]])test(`Campaign film: resizing ${st
  expect([...new Set(requested)]).toEqual([expected]);
 });
 
+test('Campaign film: keyboard focus on Play stays visible inside the rounded player',async({page})=>{
+ // The player clips its overflow; an outset ring would be cut off (riverside redesign UX review).
+ for(const colorScheme of ['light','dark']){
+  await page.emulateMedia({colorScheme});
+  await page.goto('/index.html');
+  const play=page.locator('#film-play');
+  await play.scrollIntoViewIfNeeded();
+  await play.focus();
+  await expect(play).toBeFocused();
+  await expect(play).toHaveCSS('outline-style','solid');
+  expect(await play.evaluate(el=>parseFloat(getComputedStyle(el).outlineOffset))).toBeLessThan(0);
+ }
+});
 test('Campaign film: Retry after resizing selects the current viewport cut',async({page})=>{
  let first=true;await page.route(mediaRoute,r=>{if(first){first=false;return r.fulfill({contentType:'video/mp4',body:'Invalid first response'});}return r.continue();});
  await page.setViewportSize({width:390,height:844});await page.goto('/index.html#campaign-film');await page.locator('#film-play').click();await expect(page.locator('#film-status')).toContainText('Playback could not start');

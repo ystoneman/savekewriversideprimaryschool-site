@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — riverside poster redesign
+
+- Restyle every page with the owner-approved riverside poster system adapted from the Kikin style on Refero Styles: forest masthead and bands, cream canvas, meadow-green primary actions with a forest edge, Archivo extra-condensed headings and Instrument Sans text, a Parent-led campaign · Independent badge, a sticker photo caption and a Kew riverside illustration. Add DESIGN.md and point AGENTS.md at it.
+- Self-host both fonts under the SIL Open Font License and allow them with `font-src 'self'` in the security policy. Recolour the favicon to the new campaign mark and set the browser theme colour to forest.
+- Content, links, anchors, Menu entries, action order, permissions and no-script behaviour are unchanged. Protected first-screen actions keep or improve their arrival positions. Fonts and the illustration are preloaded so Back returns to the same reading position.
+- Independent campaign and UX reviews' findings were corrected and rechecked. Tests now serve the new public files, pin the new palette, read heading wording rather than CSS case, and cover the Get involved petition at 320 × 568, the Dates deadline at 1440 × 900, the Play focus ring and printed status text. Hosted checks and live deployment remain separate release gates.
+
 ## Unreleased — campaign YouTube channel
 
 - Add the new campaign YouTube channel beside TikTok and X in all 23 standard footers, with its icon, visible label and distinct accessible name. Preserve the separate Parent Voices recruitment link.

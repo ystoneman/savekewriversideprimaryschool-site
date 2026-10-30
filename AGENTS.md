@@ -27,6 +27,10 @@ Return only actionable findings with: affected journey ID; severity (blocking re
 
 Record the relevant roles, review stage and resolution briefly in the task summary or change description. Update the journey register only when the intended priority or protected route changes; put rationale in `UX-DESIGN-DECISIONS.md` and delivery evidence in `CHANGELOG.md`. Skills and instructions are maintenance files, excluded from the Pages artifact through the existing allowlist.
 
+## Visual design
+
+Read [DESIGN.md](DESIGN.md) before changing how pages look. `design.css` implements it and loads after every other stylesheet; keep its palette, type, radii and accessibility rules, and record deliberate changes in DESIGN.md. The journey register's first-screen budgets take priority over decoration.
+
 ## Website changes and regression coverage
 
 - For homepage changes, run `npm run test:home-smoke` early, before submitting the release candidate, to catch small-phone/no-script, Safari deadline, sharing and menu regressions. This focused check supplements the complete hosted suite. Parallel local browser runs must use different `KEW_TEST_PORT` values and either separate checkouts or distinct `KEW_TEST_OUTPUT_DIR` and `KEW_TEST_REPORT_DIR` values; a different port alone does not isolate traces and reports.

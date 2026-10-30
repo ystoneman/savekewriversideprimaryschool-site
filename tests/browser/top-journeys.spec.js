@@ -39,6 +39,13 @@ for (const [width, height] of [[320, 568], [375, 667], [390, 844]]) {
   });
 }
 
+// J1: the opener band must leave the Dates deadline on the first desktop screen.
+test('Top journeys: 1440×900 Dates arrival shows the response deadline section', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/dates.html');
+  await expect(page.locator('#deadline')).toBeInViewport({ ratio: 1 });
+});
+
 // People reach Get involved from the homepage, the wide-screen header and the Menu
 // (13 October 2026 slim-site decision: it replaced the archived Parent action plan,
 // which has no live entry). While the consultation is open its first action is the

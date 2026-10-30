@@ -25,9 +25,10 @@ const types = {
   '.ico': 'image/x-icon',
 };
 const localAssets = new Set(readdirSync(root).filter(name => types[path.extname(name)]));
-for (const name of ['school-discovery-480.jpg', 'school-discovery-960.jpg', 'school-project-480.jpg', 'school-project-960.jpg', 'york-house-rally.jpg', 'campaign-film-20261014.jpg', 'campaign-film-4x5-20261014.jpg']) {
+for (const name of ['school-discovery-480.jpg', 'school-discovery-960.jpg', 'school-project-480.jpg', 'school-project-960.jpg', 'york-house-rally.jpg', 'campaign-film-20261014.jpg', 'campaign-film-4x5-20261014.jpg', 'riverside-landscape.svg']) {
   localAssets.add('images/' + name);
 }
+for (const name of readdirSync(path.join(root, 'fonts')).filter(name => name.endsWith('.woff2'))) localAssets.add('fonts/' + name);
 const emptyBoards = {
   'letters.json': { version: 1, letters: [] },
   'suggestions.json': { version: 1, suggestions: [] },
@@ -52,7 +53,7 @@ async function virtualProduction(context, options = {}) {
     expect(url.pathname.startsWith(servedPrefix)).toBe(true);
     const relative = decodeURIComponent(url.pathname.slice(servedPrefix.length));
     const name = relative || 'index.html';
-    expect(name, 'Only root assets or the named photo directory; no traversal').toMatch(/^(?:images\/)?[a-zA-Z0-9][a-zA-Z0-9._-]*$/);
+    expect(name, 'Only root assets, the named photo directory or self-hosted fonts; no traversal').toMatch(/^(?:images\/|fonts\/)?[a-zA-Z0-9][a-zA-Z0-9._-]*$/);
     expect(localAssets.has(name), 'Only an existing local static asset can be served: ' + name).toBe(true);
     if (name === 'analytics-config.json') {
       configReads.push(request.url());
@@ -738,6 +739,10 @@ test('Real visible sections distinguish reaching, ten seconds of viewing and act
   await page.goto(site + 'lessons.html');
   await freezeAfterLoad(page);
   await allowAnalytics(page);
+  // The visual guide sits inside the closed Research graphics disclosure. Open it,
+  // as a reader would, so the section measured is actually visible rather than
+  // hidden content whose layout depends on the page's scroll extent.
+  await page.locator('#research-graphics').evaluate(details => { details.open = true; });
   await page.locator('#visual-guide').evaluate(element => element.scrollIntoView({ block: 'start', behavior: 'instant' }));
   await page.clock.runFor(9000);
   await expect.poll(() => events(sent, 'Section reached')).toContainEqual({ section: 'visual-guide' });

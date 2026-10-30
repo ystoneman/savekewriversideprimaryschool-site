@@ -14,7 +14,8 @@ test('Research: proposal offers a compact route to the optional catalogue and re
   await expect(section.locator('img')).toHaveCount(0);
   await activate(section.getByRole('link', { name: 'Explore lessons from other schools' }), hasTouch);
   await expect(page).toHaveURL(/lessons.html$/);
-  expect((await page.locator('h1').innerText()).replace(/\s+/g,' ').trim()).toBe('What can other schools teach us?');
+  // textContent: the wording, independent of the display face's uppercase rendering.
+  expect((await page.locator('h1').textContent()).replace(/\s+/g,' ').trim()).toBe('What can other schools teach us?');
   await expect(page.locator('.lesson-exhibit')).toHaveCount(8);
   await expect(page.locator('.lesson-exhibit[open]')).toHaveCount(0);
   const download = page.waitForEvent('download');
@@ -210,7 +211,7 @@ test('Research: keyboard disclosures and full citation register remain accessibl
   await page.keyboard.press('Space');
   await expect(page.locator('#exhibit-4')).not.toHaveAttribute('open','');
   await page.goto('/lessons-sources.html');
-  expect((await page.locator('h1').innerText()).replace(/\s+/g,' ').trim()).toBe('Follow every claim back to its source.');
+  expect((await page.locator('h1').textContent()).replace(/\s+/g,' ').trim()).toBe('Follow every claim back to its source.');
   await expect(page.locator('.lesson-source')).toHaveCount(45);
   await expect(page.locator('.lesson-claim')).toHaveCount(49);
   for (const s of data.sources) await expect(page.locator(`#${s.id} .lesson-full-url`)).toHaveAttribute('href',s.url);
