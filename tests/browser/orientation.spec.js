@@ -151,6 +151,27 @@ test('Orientation: reloaded Back restores reading after a late native fragment j
   await expectScrollSettled(page, 'Back after a late native fragment jump');
 });
 
+test('Orientation: reloaded Back to a fragment page returns before the next frame after a queued fragment scroll', async ({ page }) => {
+  await page.goto('/proposal.html#parent-plan');
+  const departureY = await page.evaluate(() => { scrollTo({ top: scrollY + 400, behavior: 'instant' }); return scrollY; });
+  const beforeFrame = await page.evaluate(async y => {
+    history.replaceState({ ...history.state, kewReadingPosition: { url: location.href, x: 0, y } }, '');
+    const getEntries = performance.getEntriesByType;
+    performance.getEntriesByType = type => type === 'navigation' ? [{ type: 'back_forward' }] : getEntries.call(performance, type);
+    try {
+      // Hosted WebKit queues a scroll to the fragment while loading, and it
+      // runs as a task after pageshow, before the next frame. Replay that order.
+      setTimeout(() => document.getElementById('parent-plan').scrollIntoView({ block: 'start', behavior: 'instant' }));
+      window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: false }));
+      return await new Promise(resolve => setTimeout(() => resolve(scrollY)));
+    } finally { performance.getEntriesByType = getEntries; }
+  }, departureY);
+  expect(Math.abs(beforeFrame - departureY), 'Reading position before the next frame').toBeLessThan(5);
+  await expectScrollSettled(page, 'Back after a queued fragment scroll');
+  expect(Math.abs(await page.evaluate(() => scrollY) - departureY)).toBeLessThan(5);
+  await expect.poll(() => page.evaluate(() => history.state.kewReadingPosition)).toBeUndefined();
+});
+
 test('Orientation: pending Back recovery yields to a new destination, manual recovery or user input', async ({ page }) => {
   await page.goto('/videos.html');
   await page.locator('#upload-help summary').click();

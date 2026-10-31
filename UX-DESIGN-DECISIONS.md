@@ -1,5 +1,17 @@
 # UX design decisions
 
+## Riverside poster redesign — 30 October 2026
+
+J1–J9: the owner asked for a site-wide facelift adapting the Kikin style from Refero Styles, respecting any hard school branding while keeping the campaign visibly independent of the school. The owner approved a rendered mockup of Home and Get involved before rollout. [DESIGN.md](DESIGN.md) records the system; `design.css` implements it and loads after every other stylesheet.
+
+Use forest bands (masthead, homepage hero, campaign-page openers, footer) over a cream canvas, one meadow-green action colour with a 2px forest edge so primary buttons keep 3:1 against cream, Archivo extra-condensed uppercase headings, Instrument Sans text, self-hosted fonts (`font-src 'self'`), a campaign badge reading Parent-led campaign · Independent around a megaphone (above the homepage photo, never on it), the photo caption as a sun-yellow sticker, and a flat Kew riverside illustration below the homepage hero and above inner-page footers. Content, routes, anchors, Menu entries, action order, permissions and no-script behaviour are unchanged.
+
+No published school brand guidelines were found. The design echoes the school's green and riverside subjects but deliberately avoids the crest, the school's fonts and official-looking wording. Recruitment items (parent video, Open Day QR) keep their separate labels and get a river-blue badge ring and tinted panel rather than campaign styling; `/visit/` stays unstyled.
+
+Opener bands appear only on Dates, Get involved, Campaign updates, About and Questions. Task pages with forms or upload handoffs keep the cream canvas and a smaller heading. Bands, section rhythm and 17px body text are sized so protected actions keep or improve their arrival positions: at 320 × 568 the Get involved petition ends at 451px (current site 489px) and the consultation-week Respond button at 492px (541px); the Dates deadline and first documents stay on the first desktop screen. Decorative badges hide on phones before any action moves. Get involved grows by about 200px at 390px, mostly the short footer horizon, after the first rollout added 929px.
+
+Independent campaign and UX planning reviews rendered the in-progress implementation. They found the shrunken CAMPAIGN subtitle, a crest-like badge over the school-credited photo, oversized opener bands, a clipped Play focus ring, light printed text, extra Get involved length, enlarged-text overflow and long uppercase disclosure labels. All were corrected and rechecked by the same reviewers. Disclosure summaries now use the reading face in sentence case. The fonts and the illustration are preloaded so Back returns readers to the same position.
+
 ## Campaign YouTube footer — 22 October 2026
 
 J2/J6: add the owner-requested campaign YouTube icon and channel link within the existing campaign social row. Use visible YouTube text and the accessible name “YouTube campaign channel”; retain wrapping, 44px targets and direct no-script access. J8/J9’s Parent Voices recruitment link stays separate. No new navigation item, embed or analytics is needed. Independent rendered review verifies 320/390/1440px, no-script and doubled footer text, focus, intercepted handoff and Back. Release checks are recorded in TESTING.md and the pull request.

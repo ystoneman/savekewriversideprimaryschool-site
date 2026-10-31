@@ -5,8 +5,15 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '2026101401'
+VERSION = '2026103001'
 ORIENTATION_VERSION = '2026102101'
+# Riverside poster design layer (DESIGN.md). It loads after every other stylesheet.
+DESIGN_VERSION = '2026103001'
+DESIGN_LINK = '<link rel="stylesheet" href="design.css?v='+DESIGN_VERSION+'">'
+# Fetch the two Latin faces and the riverside horizon with the page, so the first
+# paint after Back already has them and readers return to the same position.
+DESIGN_PRELOADS = ''.join('<link rel="preload" href="fonts/'+name+'.woff2" as="font" type="font/woff2" crossorigin>' for name in ('archivo-latin', 'instrument-sans-latin'))
+DESIGN_PRELOADS += '<link rel="preload" href="images/riverside-landscape.svg" as="image" type="image/svg+xml">'
 PREVIEW_VERSION = '2026100901'  # Shared images are unchanged by this curation.
 SITE_NAME = 'Save Kew Riverside Primary School Campaign'
 SITE_URL = 'https://savekewriversideprimaryschool.org/'
@@ -221,6 +228,9 @@ def render_home_navigation(document):
     Its Menu lists exactly the same entries as every other page (13 October 2026)."""
     document = render_identity('index.html', document)
     document = re.sub(r'navigation\.js\?v=\d+', 'navigation.js?v='+VERSION, document)
+    document = re.sub(r'<link rel="stylesheet" href="design\.css(?:\?v=\d+)?">', '', document)
+    document = re.sub(r'<link rel="preload" href="(?:fonts|images)/[^"]+"[^>]*>', '', document)
+    document = document.replace('</head>', DESIGN_PRELOADS+DESIGN_LINK+'</head>', 1)
     groups = []
     for index, (heading, entries) in enumerate(MENU_GROUPS, 1):
         links = ''.join('<a href="'+html.escape(href, quote=True)+'"'+(' aria-current="page"' if href == 'index.html' else '')+'>'+html.escape(label)+'</a>' for href,label,kind in entries)
@@ -274,6 +284,8 @@ def render_navigation(name, document):
     document = document.replace('</main>', toolbar+'</main>', 1)
     document = re.sub(r'<!-- orientation:start -->.*?<!-- orientation:end -->', '', document, flags=re.S)
     document = re.sub(r'<link rel="stylesheet" href="orientation\.css(?:\?v=\d+)?">', '', document)
+    document = re.sub(r'<link rel="stylesheet" href="design\.css(?:\?v=\d+)?">', '', document)
+    document = re.sub(r'<link rel="preload" href="(?:fonts|images)/[^"]+"[^>]*>', '', document)
     document = re.sub(r'navigation\.js\?v=\d+', 'navigation.js?v='+VERSION, document)
     # Deferred scripts must follow every stylesheet they measure. Navigation sets
     # the final fragment offsets before page-specific disclosure/reveal scripts.
@@ -289,7 +301,7 @@ def render_navigation(name, document):
     theme_script = theme.group() if theme else ''
     head = re.sub(theme_pattern, '', head)
     head = re.sub(r'(?m)^ +$', '', head)
-    document = head+'<link rel="stylesheet" href="orientation.css?v='+ORIENTATION_VERSION+'">'+theme_script+''.join(deferred)+separator+body
+    document = head+'<link rel="stylesheet" href="orientation.css?v='+ORIENTATION_VERSION+'">'+DESIGN_PRELOADS+DESIGN_LINK+theme_script+''.join(deferred)+separator+body
     match = re.search(r'<header class="site-header">.*?</header>', document, re.S)
     header = match.group()
     header = re.sub(r'<details class="mobile-menu">.*?</details>', '', header, flags=re.S)

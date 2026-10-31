@@ -773,6 +773,17 @@ test.describe('Current actions first', () => {
     }
   });
 
+  test('the petition action is fully visible on a 320 × 568 arrival in both appearances', async ({ page }) => {
+    // The riverside redesign's opener band must not push the leading action below the fold.
+    await page.clock.setFixedTime(new Date('2026-10-19T12:00:00Z'));
+    await page.setViewportSize({ width: 320, height: 568 });
+    for (const colorScheme of ['light', 'dark']) {
+      await page.emulateMedia({ colorScheme });
+      await page.goto('/get-involved.html');
+      await expect(page.locator('#involved-petition-action')).toBeInViewport({ ratio: 1 });
+    }
+  });
+
   for (const [at, expired] of [['2027-01-13T23:59:59Z', false], ['2027-01-14T00:00:00Z', true]]) {
     test(`petition invitation follows its independent London closing date at ${at}`, async ({ page }) => {
       await page.clock.setFixedTime(new Date(at));

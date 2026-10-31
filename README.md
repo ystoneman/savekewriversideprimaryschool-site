@@ -55,6 +55,9 @@ This collection is not exhaustive. Original documents remain with their publishe
 | understand.html / case-evidence-data.json / case-evidence.csv | Generated explanation and reviewed aggregate case figures with a visitor CSV export |
 | proposal.html / proposal.css | Dated proposal, conditional timetable, institutional roles, factual profiles, questions and decision record; no JavaScript required |
 | corrections.html / corrections.js | Private corrections and objections, always kind=privacy, no publication option |
+| design.css / DESIGN.md | Riverside poster design layer loaded after every other stylesheet, and the design system it implements (tokens, type, components, rules) |
+| fonts/ | Self-hosted Archivo and Instrument Sans (WOFF2, Latin and Latin Extended) with their SIL Open Font Licences |
+| images/riverside-landscape.svg | Decorative Kew riverside illustration for the homepage hero and inner-page footers |
 | styles.css / insights.css | Responsive screen/print styles, practical FAQ and school-specific pupil chart |
 | app.js | Search, filters, shareable filter URLs and anchor handling |
 | navigation.js / participation.css | Shared participation navigation, letter shortcuts and optional mobile menu dismissal |

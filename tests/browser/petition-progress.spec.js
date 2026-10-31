@@ -9,8 +9,8 @@ async function production(page, context, value, options={}) {
   const reads=[];
   await context.route(origin+'/**', async route=>{
     const url=new URL(route.request().url());const name=url.pathname==='/'?'index.html':url.pathname.slice(1);
-    expect(name).toMatch(/^(?:images\/)?[a-z0-9][a-z0-9._-]*$/i);
-    const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.jpg':'image/jpeg','.svg':'image/svg+xml','.png':'image/png'}[path.extname(name)];
+    expect(name).toMatch(/^(?:images\/|fonts\/)?[a-z0-9][a-z0-9._-]*$/i);
+    const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.jpg':'image/jpeg','.svg':'image/svg+xml','.png':'image/png','.woff2':'font/woff2'}[path.extname(name)];
     if(name==='analytics-config.json')return route.fulfill({json:{enabled:false,counterEnabled:false}});
     await route.fulfill({contentType:mime,body:readFileSync(path.join(__dirname,'../..',name))});
   });

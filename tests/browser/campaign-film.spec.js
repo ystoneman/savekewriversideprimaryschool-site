@@ -142,7 +142,10 @@ for(const width of [320,390,700,701,1440])test(`Campaign film: ${width}px choose
  await page.setViewportSize({width,height:844});await page.goto('/index.html#campaign-film');
  const expected=selectedMedia(page);const ratio=width<=700?4/5:16/9;
  await expect(page.locator('.film-download:visible')).toHaveCount(0);
- const poster=page.locator('#film-play img');await poster.evaluate(img=>img.decode());
+ // WebKit rejects decode() when a lazy poster's deferred load starts after the call.
+ const poster=page.locator('#film-play img');
+ await expect.poll(()=>poster.evaluate(img=>img.complete&&img.naturalWidth>0),{message:'The lazy-loaded poster has loaded before decoding'}).toBe(true);
+ await poster.evaluate(img=>img.decode());
  expect(await poster.evaluate(img=>img.naturalWidth/img.naturalHeight)).toBeCloseTo(ratio,2);
  expect(requested).toEqual([]);
  await page.locator('#film-play').click();const video=page.locator('#campaign-film-video');
@@ -166,6 +169,19 @@ for(const [start,end]of[[390,844],[1440,390]])test(`Campaign film: resizing ${st
  expect([...new Set(requested)]).toEqual([expected]);
 });
 
+test('Campaign film: keyboard focus on Play stays visible inside the rounded player',async({page})=>{
+ // The player clips its overflow; an outset ring would be cut off (riverside redesign UX review).
+ for(const colorScheme of ['light','dark']){
+  await page.emulateMedia({colorScheme});
+  await page.goto('/index.html');
+  const play=page.locator('#film-play');
+  await play.scrollIntoViewIfNeeded();
+  await play.focus();
+  await expect(play).toBeFocused();
+  await expect(play).toHaveCSS('outline-style','solid');
+  expect(await play.evaluate(el=>parseFloat(getComputedStyle(el).outlineOffset))).toBeLessThan(0);
+ }
+});
 test('Campaign film: Retry after resizing selects the current viewport cut',async({page})=>{
  let first=true;await page.route(mediaRoute,r=>{if(first){first=false;return r.fulfill({contentType:'video/mp4',body:'Invalid first response'});}return r.continue();});
  await page.setViewportSize({width:390,height:844});await page.goto('/index.html#campaign-film');await page.locator('#film-play').click();await expect(page.locator('#film-status')).toContainText('Playback could not start');

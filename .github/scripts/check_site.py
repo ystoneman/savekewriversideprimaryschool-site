@@ -35,6 +35,8 @@ voice.css voice.js contribute.css sent.html sent.js private-form.js respond-remi
 og-home.png og-letters.png og-ideas.png og-videos.png
 og-fundraising-trustees-v1.png og-fundraising-admin-v1.png
 dates.html get-involved.html updates.html questions.html campaign.css campaign.js images/york-house-rally.jpg
+design.css images/riverside-landscape.svg fonts/OFL-Archivo.txt fonts/OFL-Instrument-Sans.txt
+fonts/archivo-latin.woff2 fonts/archivo-latin-ext.woff2 fonts/instrument-sans-latin.woff2 fonts/instrument-sans-latin-ext.woff2
 '''.split())
 MAINTENANCE_FILES = frozenset('''
 tests/browser/mobile-header.spec.js tests/browser/mobile-feedback.spec.js tests/browser/mobile-letters.spec.js tests/browser/mobile-reading.spec.js tests/browser/mobile-contact-support.spec.js
@@ -44,6 +46,7 @@ tests/browser/home-landing.spec.js tests/unit/home-landing.test.cjs
 tests/browser/campaign-film.spec.js tests/browser/petition-progress.spec.js
 tests/review-evidence/campaign-film-320.png tests/review-evidence/campaign-film-390.png tests/review-evidence/campaign-film-1440.png
 tests/review-evidence/campaign-socials-mobile.png tests/review-evidence/campaign-socials-desktop.png
+tests/review-evidence/riverside-home-1440.png tests/review-evidence/riverside-home-390.png tests/review-evidence/riverside-get-involved-1440.png tests/review-evidence/riverside-get-involved-390.png
 tests/browser/simple-guides.spec.js tests/browser/simple-research.spec.js tests/browser/simple-participation.spec.js tests/browser/simplification.spec.js
 SEO-OPERATIONS.md .github/scripts/build_seo.py .github/scripts/test_seo.py tests/browser/seo.spec.js
 SEO-IMPLEMENTATION-PLAN.md
@@ -70,13 +73,13 @@ tests/browser/videos.spec.js tests/browser/top-journeys.spec.js tests/browser/ho
 .github/scripts/check_site.py .github/scripts/public_data.py
 .github/scripts/build_video_letters.py .github/scripts/test_video_letters.py tests/browser/video-letters.spec.js
 .github/scripts/test_security.py .github/scripts/test_site_structure.py
-AGENTS.md CLAUDE.md TESTING.md CHANGELOG.md UX-DESIGN-DECISIONS.md package.json package-lock.json playwright.config.js
+AGENTS.md CLAUDE.md DESIGN.md TESTING.md CHANGELOG.md UX-DESIGN-DECISIONS.md package.json package-lock.json playwright.config.js
 tests/browser/fixtures.js tests/browser/server.js tests/browser/mobile.spec.js
 tests/browser/desktop.spec.js tests/browser/no-javascript.spec.js
 tests/browser/contributions.spec.js tests/browser/evidence.spec.js tests/browser/boards.spec.js
 tests/browser/visitor-journeys.spec.js tests/browser/understand.spec.js tests/browser/participation.spec.js .github/scripts/build_understand.py .github/scripts/test_understand.py
 '''.split())
-CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://gateway.umami.is/api/send https://kew-riverside-statistics.analytics-backend.workers.dev/count; base-uri 'none'; object-src 'none'; frame-src 'none'; form-action 'self' https://formspree.io; upgrade-insecure-requests"
+CSP = "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self' https://gateway.umami.is/api/send https://kew-riverside-statistics.analytics-backend.workers.dev/count; base-uri 'none'; object-src 'none'; frame-src 'none'; form-action 'self' https://formspree.io; upgrade-insecure-requests"
 LETTERS_CSP = CSP.replace("frame-src 'none'", 'frame-src https://www.youtube-nocookie.com')
 HOME_CSP = CSP.replace("img-src 'self';", "img-src 'self'; media-src 'self';").replace("workers.dev/count;", "workers.dev/count https://kew-riverside-statistics.analytics-backend.workers.dev/petition;")
 SECRET_PATTERNS = [
@@ -167,7 +170,7 @@ class Page(HTMLParser):
         if tag in {'link', 'img'}:
             resource = a.get('href') if tag == 'link' else a.get('src')
             # Canonical/document metadata links are not loaded resources.
-            if tag == 'img' or a.get('rel') in {'stylesheet', 'icon'}:
+            if tag == 'img' or a.get('rel') in {'stylesheet', 'icon', 'preload'}:
                 if tag == 'link' and a.get('rel') == 'stylesheet':
                     stylesheet = urlsplit(resource or '')
                     require(not stylesheet.scheme and not stylesheet.netloc and not stylesheet.fragment
