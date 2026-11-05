@@ -159,7 +159,7 @@ test('Top journeys: after the deadline Dates shows a dated note before the counc
   await expect(page.locator(`main a[href="${official}"]:visible`)).toHaveCount(0);
   const closed = page.locator('#deadline [data-stage="closed"]');
   await expect(closed).toBeVisible();
-  await expect(closed).toContainText('The published response deadline, 16 October 2026, has passed. No final decision has been made.');
+  await expect(closed).toContainText('The published response deadline, 16 October 2026, has passed. The 12 November committee will consider whether to proceed to statutory consultation.');
   await expect(page.locator('#council-documents .council-document-list a').first()).toBeVisible();
 });
 
