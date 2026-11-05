@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — November events and legal fund
+
+- Add a voluntary GoFundMe handoff for the parent-led legal fund on Get involved, preserving the petition, letter and parent-video order and separating it from school/PTA fundraising. No payment form or external embed is added.
+- Correct the 12 November campaign rally to 6:30pm. Link the published committee agenda/report, distinguish the next consultation stage from final determination, and add dated petition, legal-fund and 28/30 October press updates.
+- Refresh the homepage’s dated petition fallback to 296 online: the council showed 519 total including 223 paper at 12:47 GMT on 5 November. Keep the online campaign target distinct from the committee referral threshold, which has been passed. The existing aggregate collector rejects the changed paper-inclusive source paragraph, so the clearly dated fallback remains available; no collector deployment is included.
+- Update current status and no-script deadline fallbacks; retain the original leaflet timetable with its attribution and explain its date wording alongside the newer report.
+- Independent campaign, evidence and UX planning reviews informed placement and source wording. Independent actual-diff campaign/evidence reviews and mobile/desktop/no-script UX review passed. Native iPhone 17 / iOS 26.5 Safari rendering was inspected; touch, keyboard and external-link Back behavior passed in browser emulation. Python 157/157, Node 44/44, navigation freshness and 148-file public validation pass. Exact-revision browser checks and deployment verification remain release gates.
+
 ## Unreleased — riverside poster redesign
 
 - Restyle every page with the owner-approved riverside poster system adapted from the Kikin style on Refero Styles: forest masthead and bands, cream canvas, meadow-green primary actions with a forest edge, Archivo extra-condensed headings and Instrument Sans text, a Parent-led campaign · Independent badge, a sticker photo caption and a Kew riverside illustration. Add DESIGN.md and point AGENTS.md at it.

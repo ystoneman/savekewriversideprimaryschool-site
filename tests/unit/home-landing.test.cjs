@@ -25,7 +25,7 @@ test('London 17 October retires both response link and current-stage claim',()=>
 });
 test('future dates never revive an expired response',()=>{const s=state('2027-09-01T12:00:00Z');assert.match(s.action.href,/www.richmond.gov.uk/);assert.match(s.note.textContent,/has passed/)});
 test('without JavaScript the fallback stays dated and links current council information',()=>{
- assert.match(html,/<p class="intro">As of 12 October 2026, closure was proposed/);assert.match(html,/Check the council’s latest position/);assert.match(html,/id="main-action" href="https:\/\/www.richmond.gov.uk/);assert.doesNotMatch(html.match(/<a[^>]*id="main-action"[^>]*>/)[0],/docs.google.com/);
+ assert.match(html,/<p class="intro">Papers checked 5 November propose closure/);assert.match(html,/dates.html/);assert.match(html,/id="main-action" hidden href="https:\/\/www.richmond.gov.uk/);assert.doesNotMatch(html.match(/<a[^>]*id="main-action"[^>]*>/)[0],/docs.google.com/);
 });
 for (const event of ['visibilitychange','pageshow','click','auxclick','contextmenu','keydown','pointerdown']) {
  test('already-open page retires form through '+event,()=>{

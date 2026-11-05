@@ -215,16 +215,16 @@ test.describe('Response deadline (London dates)', () => {
 
   test.describe('without JavaScript', () => {
     test.use({ javaScriptEnabled: false });
-    test('current Get involved fallback shows the closed stage; Dates retains its existing fallback', async ({ page }) => {
+    test('current Get involved and Dates fallbacks show the closed stage', async ({ page }) => {
       // A post-deadline clock proves the static copy, not the date script, decides here.
       await page.clock.setFixedTime(new Date('2026-10-20T12:00:00Z'));
       for (const file of ['dates.html', 'get-involved.html']) {
         await page.goto('/' + file);
         await expect(page.locator('.current-response-note'), 'No page script ran').toHaveCount(0);
-        const currentFallback = file === 'get-involved.html';
+        const currentFallback = true;
         await expect(page.locator('main [data-stage="open"]'), `${file} respond block`).toBeVisible({ visible: !currentFallback });
         await expect(page.locator('main [data-stage="closed"]'), `${file} closed block`).toBeVisible({ visible: currentFallback });
-        if (currentFallback) expect(await page.locator('main > section').last().getAttribute('id')).toBe('respond');
+        if (file === 'get-involved.html') expect(await page.locator('main > section').last().getAttribute('id')).toBe('respond');
       }
     });
   });
@@ -244,7 +244,8 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
     expect(dates[index] <= dates[index - 1], `${dates[index]} follows ${dates[index - 1]} (newest first)`).toBe(true);
   }
   const bbc = page.locator('#update-bbc');
-  await expect(entries.first()).toHaveAttribute('id', 'update-consultation-deadline');
+  await expect(entries.first()).toHaveAttribute('id', 'update-committee-papers');
+  await expect(page.locator('#update-committee-papers time')).toHaveAttribute('datetime', '2026-11-05');
   await expect(page.locator('#update-consultation-deadline time')).toHaveAttribute('datetime', '2026-10-16');
   await expect(page.locator('#update-recovery-plan time')).toHaveAttribute('datetime', '2026-10-16');
   const interviews = page.locator('#update-press-16-october');
@@ -265,7 +266,7 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
   const text = await page.locator('main').innerText();
   expect(text).not.toContain('~');
   expect(text.toLowerCase()).not.toContain('to be verified');
-  const petitionEntry = entries.filter({ has: page.getByRole('heading', { name: /petition/i }) });
+  const petitionEntry = page.locator('#update-petition');
   await expect(petitionEntry).toHaveCount(1);
   await expect(petitionEntry.locator('a[href="get-involved.html#petition"]')).toBeVisible();
   const rally=page.locator('main ol.update-list > #update-york-house-rally');
@@ -280,10 +281,34 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
 
 for (const scripts of [true,false]) test.describe(`Updates discovery with scripts ${scripts}`,()=>{
  test.use({javaScriptEnabled:scripts});
+ test('Legal fund opens the dedicated external appeal and Back preserves other ways to help',async({page})=>{
+  const fundraiser='https://www.gofundme.com/f/save-kew-riverside-primary-school-legal-fund';
+  const requests=[];
+  await page.route('https://www.gofundme.com/**',route=>{
+   requests.push(route.request().url());
+   return route.fulfill({contentType:'text/html',body:'<h1>Fictional fundraiser destination</h1>'});
+  });
+  await page.goto('/get-involved.html#legal-fund');
+  const fund=page.locator('#legal-fund');
+  await expect(fund.getByRole('heading')).toBeInViewport();
+  await expect(fund).toContainText('parent-led');
+  await expect(fund).toContainText('separate from school or PTA fundraising');
+  expect(requests).toHaveLength(0);
+  const link=fund.getByRole('link',{name:'Donate on GoFundMe'});
+  await expect(link).toHaveAttribute('href',fundraiser);
+  await link.click();
+  await expect(page).toHaveURL(fundraiser);
+  await expect(page.getByRole('heading')).toHaveText('Fictional fundraiser destination');
+  await page.goBack();
+  await expect(page).toHaveURL(/get-involved\.html#legal-fund$/);
+  await expect(link).toBeInViewport();
+  await expect(page.locator('#share-your-story + #parent-video')).toHaveCount(1);
+  await expect(page.locator('#help a[href="feedback.html"]')).toBeVisible();
+ });
  test('Shortcuts reach the proposal, media, rally photo and planned next-event details',async({page})=>{
   await page.goto('/updates.html');
   const nav=page.getByRole('navigation',{name:'Find campaign updates'});
-  for(const [label,id]of[['Recovery proposal','update-recovery-plan'],['Media updates','update-press-16-october'],['Rally photo','update-york-house-rally'],['12 November rally','next-rally']]){
+  for(const [label,id]of[['Recovery proposal','update-recovery-plan'],['Media updates','update-press-30-october'],['Rally photo','update-york-house-rally'],['12 November rally','next-rally'],['Committee papers','update-committee-papers'],['Legal fund','update-legal-fund']]){
    await nav.getByRole('link',{name:label,exact:true}).click();
    await expect(page).toHaveURL(new RegExp('#'+id+'$'));
    await expect(page.locator('#'+id+' h2')).toBeInViewport();
@@ -292,10 +317,10 @@ for (const scripts of [true,false]) test.describe(`Updates discovery with script
   }
   await expect(page.locator('#update-recovery-plan')).toContainText('Achieving for Children');
   await expect(page.locator('#update-recovery-plan')).toContainText('The campaign believes');
-  await expect(page.locator('#next-rally')).toContainText('Thursday 12 November 2026, 6pm');
-  await expect(page.locator('#next-rally')).toContainText('until around 6:45pm');
+  await expect(page.locator('#next-rally')).toContainText('Thursday 12 November 2026, 6:30pm');
+  await expect(page.locator('#next-rally')).toContainText('Children are welcome');
   await expect(page.locator('#next-rally')).toContainText('access arrangements are not yet confirmed');
-  await expect(page.locator('#next-rally time')).toHaveAttribute('datetime','2026-11-12T18:00:00+00:00');
+  await expect(page.locator('#next-rally time')).toHaveAttribute('datetime','2026-11-12T18:30:00+00:00');
   await expect(page.locator('#next-rally a')).toHaveAttribute('href','https://cabnet.richmond.gov.uk/ieListDocuments.aspx?CId=800&MId=500000748&Ver=4');
   await expect(page.locator('#update-news a')).toHaveCount(4);
  });
@@ -611,7 +636,7 @@ test.describe('Visual contribution cards', () => {
     await page.clock.setFixedTime(new Date('2026-10-19T12:00:00Z'));
     await page.goto('/get-involved.html#share-your-story');
     expect(await page.locator('main > section').evaluateAll(sections => sections.map(section => section.id))).toEqual([
-      'petition', 'representatives', 'share-your-story', 'parent-video', 'spread-the-word', 'school-contributions', 'help', 'respond',
+      'petition', 'representatives', 'share-your-story', 'parent-video', 'spread-the-word', 'legal-fund', 'school-contributions', 'help', 'respond',
     ]);
     await expect(page.locator('#share-your-story + #parent-video')).toHaveCount(1);
     await expect(page.locator('#school-contributions + #help + #respond')).toHaveCount(1);
@@ -730,7 +755,7 @@ test.describe('Visual contribution cards', () => {
     test('letters, recruitment video and old downloads work as ordinary links', async ({ page }) => {
       await page.goto('/get-involved.html#share-your-story');
       expect(await page.locator('main > section').evaluateAll(sections => sections.map(section => section.id))).toEqual([
-        'petition', 'representatives', 'share-your-story', 'parent-video', 'spread-the-word', 'school-contributions', 'help', 'respond',
+        'petition', 'representatives', 'share-your-story', 'parent-video', 'spread-the-word', 'legal-fund', 'school-contributions', 'help', 'respond',
       ]);
       await page.locator('#share-your-story a.primary').click();
       await expect(page.locator('#message')).toBeVisible();
@@ -825,15 +850,15 @@ test.describe('Current actions first', () => {
     await expect(link).toBeFocused();
   });
 
-  test('old consultation links arrive at the visible heading and return from its timetable', async ({ page }) => {
+  test('old consultation links arrive at the visible heading and return from current committee papers', async ({ page }) => {
     await page.clock.setFixedTime(new Date('2026-10-19T12:00:00Z'));
     await page.goto('/get-involved.html#respond');
     await expectScrollSettled(page, 'closed consultation arrival');
     const heading = page.locator('#respond-closed-title');
     await expect(heading).toBeInViewport({ ratio: 1 });
     await expect(page.locator('#respond')).toHaveAccessibleName('The consultation response deadline has passed');
-    await page.locator('#respond a[href="dates.html#timetable"]').click();
-    await expect(page.locator('#timetable')).toBeInViewport();
+    await page.locator('#respond a[href="dates.html#next-committee"]').click();
+    await expect(page.locator('#committee-title')).toBeInViewport();
     await page.goBack();
     await expect(heading).toBeInViewport({ ratio: 1 });
   });
