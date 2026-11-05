@@ -1,5 +1,12 @@
 # Testing the website
 
+## November events and legal fund — 5 November 2026
+
+- Extend the existing campaign-page checks for the external legal-fund handoff and Back, both with and without scripts; no real donation or form submission is made. Keep Letters/Parent video adjacent and Offer help last. Update dated timeline, closed-stage fallback and rally assertions to the verified new content.
+- Refresh petition fallback expectations and verify that accepted fresh aggregate results hide the older total-minus-paper calculation, while outages and invalid responses retain the dated snapshot.
+- Independent rendered UX inspection passed at 320/390px WebKit, 1440px Chromium, no-script and enlarged text. The homepage Get involved action remains fully visible at 320 × 568. Intercepted handoff and Back retain scroll position; keyboard focus is visible. Native iPhone 17 / iOS 26.5 Safari rendering was inspected; gestures used browser emulation because native gesture automation lacked its Java runtime.
+- Python 157/157, Node 44/44, navigation freshness and 148-file public validation pass. The initial Python run correctly rejected a nonstandard local test-output directory; artifacts were moved outside the checkout and the guard passed unchanged. The first hosted run found two additional exact-content expectations still pinned to the old Dates note and Get involved section list; both were updated to require the new wording/order and passed 8/8 checks across all four scripted engines. Full hosted browser checks on the final revision remain a release gate.
+
 ## Riverside poster redesign — 30 October 2026
 
 - Early homepage smoke on the first rollout failed 3 of 10: two production fixtures (`analytics.spec.js`, `petition-progress.spec.js`) could not serve the new `fonts/` files and illustration, and the illustration element broke the film-follows-hero order. The fixtures now serve those public files, `server.js` serves `.woff2`, and the illustration became the hero's own background; smoke then passed 10/10.

@@ -22,10 +22,11 @@ async function production(page, context, value, options={}) {
   await page.clock.setFixedTime(new Date('2026-10-18T14:50:00Z'));
   await page.goto(origin+'/');return reads;
 }
-for(const [count,percent,remaining,milestone] of [[0,'0%','1,000 more','500 online signatures.'],[193,'19.3%','807 more','500 online signatures.'],[500,'50%','500 more','500 online signatures — reached.'],[1000,'100%','Campaign goal reached.','500 online signatures — reached.'],[1200,'120%','Campaign goal reached.','500 online signatures — reached.']])test(`Petition tracker: ${count} online signatures keeps campaign targets and math accurate`,async({page,context})=>{
+for(const [count,percent,remaining,milestone] of [[0,'0%','1,000 more','500 signatures.'],[193,'19.3%','807 more','500 signatures.'],[500,'50%','500 more','500 signatures — reached.'],[1000,'100%','Campaign goal reached.','500 signatures — reached.'],[1200,'120%','Campaign goal reached.','500 signatures — reached.']])test(`Petition tracker: ${count} online signatures keeps campaign targets and math accurate`,async({page,context})=>{
  const reads=await production(page,context,{onlineSignatures:count,checkedAt,source});
  await expect(page.locator('#petition-total')).toHaveText(count.toLocaleString('en-GB'));
  await expect(page.locator('#petition-percent')).toHaveText(percent);
+ await expect(page.locator('#petition-calculation')).toBeHidden();
  await expect(page.locator('#petition-remaining')).toContainText(remaining);
  await expect(page.locator('#petition-milestone')).toContainText(milestone);
  await expect(page.locator('#petition-freshness')).toHaveText('Council count snapshot checked');
@@ -37,15 +38,17 @@ for(const [count,percent,remaining,milestone] of [[0,'0%','1,000 more','500 onli
 });
 for(const [label,value,status] of [['outage',{unavailable:true},503],['stale',{onlineSignatures:999,checkedAt:'2026-10-16T14:00:00Z',source},200],['future',{onlineSignatures:999,checkedAt:'2027-10-18T14:00:00Z',source},200],['wrong source',{onlineSignatures:999,checkedAt,source:'https://other.invalid'},200],['private fields',{onlineSignatures:999,checkedAt,source,names:['fictional']},200],['invalid count',{onlineSignatures:-1,checkedAt,source},200]])test(`Petition tracker: ${label} preserves the dated source snapshot`,async({page,context})=>{
  await production(page,context,value,{status});
- await expect(page.locator('#petition-total')).toHaveText('193');
+ await expect(page.locator('#petition-total')).toHaveText('296');
  await expect(page.locator('#petition-freshness')).toHaveText('Council count snapshot checked');
- await expect(page.locator('#petition-checked')).toHaveText('18 October 2026, 15:48 BST');
+ await expect(page.locator('#petition-checked')).toHaveText('5 November 2026, 12:47 GMT');
+ await expect(page.locator('#petition-calculation')).toBeVisible();
+ await expect(page.locator('#petition-calculation')).toContainText('519 total minus 223 on paper');
  await expect(page.locator('#petition-progress a')).toHaveAttribute('href',source);
 });
 test.describe('Petition tracker without JavaScript',()=>{
  test.use({javaScriptEnabled:false});
  test('retains the dated aggregate and official source',async({page})=>{
- await page.goto('/');await expect(page.locator('#petition-total')).toHaveText('193');
+ await page.goto('/');await expect(page.locator('#petition-total')).toHaveText('296');
  await expect(page.locator('#petition-freshness')).toHaveText('Council count snapshot checked');
  });
 });
@@ -55,7 +58,7 @@ test('Petition tracker: London expiry hides targets on an open page and blocks a
  await expect(page.locator('#petition-progress')).toBeVisible();
  await page.clock.setFixedTime(new Date('2027-01-14T00:00:00Z'));await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));
  await expect(page.locator('#petition-progress')).toBeHidden();release();
- await expect(page.locator('#petition-total')).toHaveText('193');await expect(page.locator('#petition-action')).toHaveText('View the petition');
+ await expect(page.locator('#petition-total')).toHaveText('296');await expect(page.locator('#petition-action')).toHaveText('View the petition');
 });
 for(const type of ['pointerdown','keydown'])test(`Petition tracker: a delayed response after ${type} leaves the pressed layout still`,async({page,context})=>{
  let release;const wait=new Promise(resolve=>release=resolve);
@@ -63,7 +66,7 @@ for(const type of ['pointerdown','keydown'])test(`Petition tracker: a delayed re
  const before=await page.locator('#share-trigger').boundingBox();
  await page.locator('#share-trigger').dispatchEvent(type);release();
  await page.waitForResponse(endpoint);
- await expect(page.locator('#petition-total')).toHaveText('193');
+ await expect(page.locator('#petition-total')).toHaveText('296');
  expect(await page.locator('#share-trigger').boundingBox()).toEqual(before);
 });
 for(const width of [320,390,1440])test(`Petition tracker: ${width}px keeps actions ahead of a readable native meter`,async({page})=>{

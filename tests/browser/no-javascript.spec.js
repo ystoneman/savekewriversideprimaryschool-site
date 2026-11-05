@@ -595,7 +595,9 @@ test('No JavaScript: the named Get involved action is visible on arrival', {tag:
   const involved = page.locator('.home-plan');
   await expect(involved).toBeVisible();
   await expect(involved).toHaveAccessibleName('Get involved');
-  await expect(page.locator('#main-action')).toBeInViewport({ratio:1});
+  await expect(page.locator('#main-action')).toBeHidden();
+  await expect(page.locator('#petition-action')).toBeInViewport({ratio:1});
+  await expect(involved).toBeInViewport({ratio:1});
   // Since 13 October 2026 (slim-site decision) this action opens Get involved instead of the archived parent plan.
   await involved.tap();
   await expect(page).toHaveURL(/get-involved\.html$/);
@@ -757,10 +759,10 @@ test('No JavaScript: the Parent action plan opens with its own response button i
   await expect(respond).toBeInViewport({ ratio: 1 });
 });
 
-test('No JavaScript: the homepage has a date-safe council link, Help and manual Share', async ({ page }) => {
+test('No JavaScript: the homepage has a dated current stage, petition, Help and manual Share', async ({ page }) => {
  await page.goto('/index.html');await expect(page.locator('.home-plan')).toBeVisible();
  const respond=page.locator('#main-action');await expect(respond).toHaveAttribute('href',/richmond.gov.uk.*kew_riverside_consultation/);
- await expect(respond).toHaveAccessibleName(/Check the council consultation/);await expect(page.locator('.intro')).toContainText('As of 12 October 2026');await expect(page.locator('.intro')).toContainText('Check the council’s latest position.');
+ await expect(respond).toBeHidden();await expect(page.locator('#petition-action')).toBeVisible();await expect(page.locator('.intro')).toContainText('Papers checked 5 November');await expect(page.locator('.intro')).toContainText('a final decision is planned for April 2027.');
  await page.locator('#share-fallback > summary').tap();await expect(page.getByLabel('Campaign link')).toHaveValue('https://savekewriversideprimaryschool.org/');
  await expect(page.locator('#share-trigger')).toBeHidden();
 });

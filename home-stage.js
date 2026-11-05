@@ -58,7 +58,7 @@
       count.textContent = countdownText(Date.UTC(2026, 9, 16), calendarDay);
       note.replaceChildren(count, document.createTextNode(' · Respond by 16 October 2026.'));
     } else if (stage === 'expired') {
-      intro.textContent = 'Richmond Council proposes closing the school from 1 September 2027. If it proceeds in November 2026, it plans a final decision in April 2027.';
+      intro.textContent = today < '2026-11-05' ? 'Richmond Council proposes closing the school from 1 September 2027. If it proceeds in November 2026, it plans a final decision in April 2027.' : 'Papers checked 5 November propose closure at the end of the 2026/27 school year. The next-stage vote is 12 November; a final decision is planned for April 2027.';
       note.textContent = 'The published 16 October deadline has passed. Check the council’s latest information before acting.';
     } else {
       intro.textContent = 'On 12 October 2026, Richmond Council was consulting on proposed closure from 1 September 2027. Check the council’s page for the current position.';
