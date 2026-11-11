@@ -317,10 +317,10 @@ for (const scripts of [true,false]) test.describe(`Updates discovery with script
   }
   await expect(page.locator('#update-recovery-plan')).toContainText('Achieving for Children');
   await expect(page.locator('#update-recovery-plan')).toContainText('The campaign believes');
-  await expect(page.locator('#next-rally')).toContainText('Thursday 12 November 2026, 6:30pm');
+  await expect(page.locator('#next-rally')).toContainText('Thursday 12 November 2026, 6pm');
   await expect(page.locator('#next-rally')).toContainText('Children are welcome');
   await expect(page.locator('#next-rally')).toContainText('access arrangements are not yet confirmed');
-  await expect(page.locator('#next-rally time')).toHaveAttribute('datetime','2026-11-12T18:30:00+00:00');
+  await expect(page.locator('#next-rally time')).toHaveAttribute('datetime','2026-11-12T18:00:00+00:00');
   await expect(page.locator('#next-rally a')).toHaveAttribute('href','https://cabnet.richmond.gov.uk/ieListDocuments.aspx?CId=800&MId=500000748&Ver=4');
   await expect(page.locator('#update-news a')).toHaveCount(4);
  });
