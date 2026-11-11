@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — 12 November rally time correction
+
+- Correct the 12 November rally start to 6pm, as confirmed by the owner, in both the displayed invitation and machine-readable time. Date the rally note and Campaign updates page 11 November 2026.
+- Lead-agent evidence review: this is a confirmed factual correction; the committee meeting remains listed separately at 7pm. The existing gathering-point and access qualification is retained.
+- Update the existing rally browser expectations. All eight focused browser cases pass across iPhone/desktop WebKit and Android/desktop Chromium, with scripts enabled and disabled. All 157 Python checks, 44 Node checks, navigation freshness and 148-file public validation pass. Complete hosted checks and deployment verification remain release gates.
+
 ## Unreleased — November events and legal fund
 
 - Add a voluntary GoFundMe handoff for the parent-led legal fund on Get involved, preserving the petition, letter and parent-video order and separating it from school/PTA fundraising. No payment form or external embed is added.
