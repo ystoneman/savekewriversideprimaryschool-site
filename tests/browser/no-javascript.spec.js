@@ -20,7 +20,7 @@ test('No JavaScript: a shared written-letter link reaches the full fictional let
   await expect(card.locator('h3')).toBeInViewport();
 });
 
-for (const [name, url] of [['TikTok', 'https://www.tiktok.com/@savekrps'], ['X', 'https://x.com/SaveKRPS'], ['YouTube campaign channel', 'https://www.youtube.com/@SaveKewRiverside']]) {
+for (const [name, url] of [['TikTok', 'https://www.tiktok.com/@savekrps'], ['X', 'https://x.com/SaveKRPS'], ['YouTube campaign channel', 'https://www.youtube.com/@SaveKewRiverside'], ['Instagram', 'https://www.instagram.com/savekrps/']]) {
   test(`No JavaScript: campaign socials ${name} opens directly and supports Back`, async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
     await page.goto('/index.html');
@@ -762,7 +762,7 @@ test('No JavaScript: the Parent action plan opens with its own response button i
 test('No JavaScript: the homepage has a dated current stage, petition, Help and manual Share', async ({ page }) => {
  await page.goto('/index.html');await expect(page.locator('.home-plan')).toBeVisible();
  const respond=page.locator('#main-action');await expect(respond).toHaveAttribute('href',/richmond.gov.uk.*kew_riverside_consultation/);
- await expect(respond).toBeHidden();await expect(page.locator('#petition-action')).toBeVisible();await expect(page.locator('.intro')).toContainText('Papers checked 5 November');await expect(page.locator('.intro')).toContainText('a final decision is planned for April 2027.');
+ await expect(respond).toBeHidden();await expect(page.locator('#petition-action')).toBeVisible();await expect(page.locator('.intro')).toContainText('On 12 November a council committee approved');await expect(page.locator('.intro')).toContainText('The final decision is planned for April 2027.');await expect(page.locator('.petition-total-record')).toContainText('529 signatures in total, including 223 on paper');
  await page.locator('#share-fallback > summary').tap();await expect(page.getByLabel('Campaign link')).toHaveValue('https://savekewriversideprimaryschool.org/');
  await expect(page.locator('#share-trigger')).toBeHidden();
 });

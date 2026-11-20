@@ -159,7 +159,8 @@ test('Top journeys: after the deadline Dates shows a dated note before the counc
   await expect(page.locator(`main a[href="${official}"]:visible`)).toHaveCount(0);
   const closed = page.locator('#deadline [data-stage="closed"]');
   await expect(closed).toBeVisible();
-  await expect(closed).toContainText('The published response deadline, 16 October 2026, has passed. The 12 November committee will consider whether to proceed to statutory consultation.');
+  await expect(closed).toContainText('The published response deadline, 16 October 2026, has passed. On 12 November the committee approved publishing statutory notices, which will open a new period of at least four weeks for representations.');
+  await expect(closed).not.toContainText('will consider');
   await expect(page.locator('#council-documents .council-document-list a').first()).toBeVisible();
 });
 
@@ -184,13 +185,13 @@ test('Top journeys: the council’s Kew Riverside FAQ is one Menu choice from th
 });
 
 // The footer links are direct external handoffs, visible without opening More pages.
-const campaignSocials = [['TikTok', 'https://www.tiktok.com/@savekrps'], ['X', 'https://x.com/SaveKRPS'], ['YouTube campaign channel', 'https://www.youtube.com/@SaveKewRiverside']];
+const campaignSocials = [['TikTok', 'https://www.tiktok.com/@savekrps'], ['X', 'https://x.com/SaveKRPS'], ['YouTube campaign channel', 'https://www.youtube.com/@SaveKewRiverside'], ['Instagram', 'https://www.instagram.com/savekrps/']];
 test('Campaign socials: every standard footer exposes the confirmed profiles separately from school discovery', async ({ page }) => {
   for (const file of pages) {
     await page.goto('/' + file);
     const socials = page.getByRole('region', { name: 'Amplify the campaign on our socials' });
     await expect(socials).toHaveCount(1);
-    await expect(socials.locator('a')).toHaveCount(3);
+    await expect(socials.locator('a')).toHaveCount(campaignSocials.length);
     for (const [name, url] of campaignSocials) {
       const link = socials.getByRole('link', { name, exact: true });
       await expect(link).toHaveAttribute('href', url);

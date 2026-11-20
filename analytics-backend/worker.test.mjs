@@ -26,12 +26,51 @@ function request(body, extra = {}) {
 }
 const valid = { counters: [{ metric: 'page', label: 'faq.html' }, { metric: 'source', label: 'external' }] };
 const petitionHTML = count => `<h1>Keep Kew Riverside Primary School open.</h1><p>This petition runs from 13/10/2026 to 13/01/2027.</p><p>${count} people have signed this petition.</p><p>Fictional signer data must not survive.</p>`;
+const paperPetitionHTML = (total, paper) => petitionHTML(total).replace('people have signed this petition.</p>', `people have signed this petition. This includes a paper petition containing ${paper} signatures.</p>`);
 
 test('Petition parser requires exact identity, run dates and one valid standalone aggregate', () => {
   for (const count of [0,193,500,1000,1200,1000000]) assert.equal(parsePetition(petitionHTML(count.toLocaleString('en-GB'))), count);
   for (const html of [petitionHTML('-1'), petitionHTML('1,00'), petitionHTML('1.5'), petitionHTML('1000001'),
     petitionHTML('193').replace('Kew Riverside','Another School'), petitionHTML('193').replace('13/01/2027','14/01/2027'),
     petitionHTML('193') + '<p>500 people have signed this petition.</p>']) assert.equal(parsePetition(html),null);
+});
+test('Petition parser subtracts explicitly included paper signatures from the total', () => {
+  for (const [total,paper,online] of [['593','217',376], ['1,234','1,000',234], ['0','0',0], ['50','50',0], ['1,000,000','0',1000000]]) {
+    assert.equal(parsePetition(paperPetitionHTML(total,paper)),online);
+  }
+  assert.equal(parsePetition(paperPetitionHTML('593','217').replace('This includes','\n This includes')),376);
+});
+test('Petition parser rejects malformed, impossible or ambiguous paper-inclusive counts', () => {
+  for (const html of [paperPetitionHTML('50','51'), paperPetitionHTML('1,000,001','1'),
+    paperPetitionHTML('593','-1'), paperPetitionHTML('593','2.5'), paperPetitionHTML('593','2,17'),
+    paperPetitionHTML('593','0217'), paperPetitionHTML('593',''), paperPetitionHTML('5,93','217'),
+    paperPetitionHTML('593','217').replace('This includes','This excludes'),
+    paperPetitionHTML('593','217') + '<p>100 people have signed this petition.</p>',
+    petitionHTML('193') + '<p>5,93 people have signed this petition. This includes a paper petition containing 217 signatures.</p>',
+    paperPetitionHTML('593','217').replace('Kew Riverside','Another School'),
+    paperPetitionHTML('593','217').replace('13/01/2027','14/01/2027')]) assert.equal(parsePetition(html),null);
+});
+test('Paper-inclusive GET caches and returns only the derived online aggregate', async () => {
+  let stored;
+  const response = await petitionResponse(new Request('https://counter.example/petition'), {
+    fetchPage:async()=>new Response(paperPetitionHTML('593','217'),{headers:{'Content-Type':'text/html'}}),
+    cache:{match:async()=>undefined,put:async(_key,value)=>{stored=value;}},
+    now:()=>new Date('2026-11-20T18:00:00Z'),
+  });
+  assert.equal(response.status,200);
+  const expected = {onlineSignatures:376,checkedAt:'2026-11-20T18:00:00.000Z',source:PETITION_SOURCE};
+  assert.deepEqual(await response.json(),expected);
+  assert.deepEqual(await stored.json(),expected);
+});
+test('Impossible paper counts fail unavailable without caching an aggregate', async () => {
+  let cached=false;
+  const response = await petitionResponse(new Request('https://counter.example/petition'), {
+    fetchPage:async()=>new Response(paperPetitionHTML('50','51'),{headers:{'Content-Type':'text/html'}}),
+    cache:{match:async()=>undefined,put:async()=>{cached=true;}},
+  });
+  assert.equal(response.status,503);
+  assert.deepEqual(await response.json(),{unavailable:true});
+  assert.equal(cached,false);
 });
 test('Petition GET fetches one fixed source, caching only its sanitized count and original check time', async () => {
   const stored = new Map(); let reads=0;
