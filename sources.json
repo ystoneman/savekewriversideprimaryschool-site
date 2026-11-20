@@ -2,7 +2,7 @@
   "title": "Kew Riverside Primary School — Parent-led evidence and action, maintained by Yann Stoneman",
   "researchChecked": "2026-10-08",
   "scope": "Curated public-record index; not exhaustive. Original documents remain with their publishers unless a clearly labelled disclosure copy is hosted here. Record-level dates identify each review.",
-  "currentClosureStatus": "Pre-statutory consultation on closure effective 1 September 2027. Council-linked form states response deadline 16 October 2026. Later committee and statutory stages are planned and conditional; no final closure decision verified. Consultation page and response deadline checked 8 October 2026; other process records retain their own review dates.",
+  "currentClosureStatus": "Statutory stage approved 12 November 2026: the committee approved publishing statutory notices proposing closure with effect from 31 August 2027. Notices and representation dates not published when checked 20 November 2026. Final recommendations planned for April 2027; no final closure decision has been made.",
   "coverageDefinitions": {
     "Reviewed": "The public document or webpage was retrieved and reviewed for the stated summary; this is not validation of all its claims.",
     "Index only": "A reviewed official index lists the item; its individual document was not reviewed.",
@@ -599,17 +599,17 @@
     },
     {
       "id": "committee-november-2026",
-      "date": "",
+      "date": "2026-11-12",
       "year": "2026",
-      "title": "Education Committee: 12 November 2026 meeting page",
+      "title": "Education Committee: 12 November 2026 decision on statutory notices",
       "publisher": "London Borough of Richmond upon Thames",
-      "type": "Directory",
+      "type": "Committee record",
       "topic": "Decision process",
       "status": "Reviewed",
       "url": "https://cabnet.richmond.gov.uk/ieListDocuments.aspx?CId=800&MId=500000748&Ver=4",
-      "summary": "Meeting listed for 12 November 2026. As checked on 21 September, the agenda had not been published. The leaflet plans a November committee stage, but this calendar entry alone does not verify a Kew-specific item or a decision.",
-      "locator": "Future meeting page, checked 21 September 2026; not minutes or evidence that any decision has occurred.",
-      "accessChecked": "2026-09-21"
+      "summary": "Agenda, reports and printed decisions published. Item 6: the committee approved publishing statutory notices proposing to close Kew Riverside Primary School with effect from 31 August 2027, with a further report and final recommendations planned for April 2027. Item 4: the petition was considered. The printed decisions do not record individual votes.",
+      "locator": "Meeting page with item 6 report, appendices and printed decisions. Decision published 13 November 2026; not subject to call-in. Checked 20 November 2026.",
+      "accessChecked": "2026-11-20"
     },
     {
       "id": "organisation-overview-2026",

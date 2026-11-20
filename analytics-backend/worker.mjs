@@ -19,10 +19,17 @@ const petitionReply = (status, value) => new Response(JSON.stringify(value), { s
 export function parsePetition(html) {
   if (!/<h1>\s*Keep Kew Riverside Primary School open\.?\s*<\/h1>/i.test(html) ||
       !/This petition runs from 13\/10\/2026 to 13\/01\/2027\./.test(html)) return null;
-  const matches = [...html.matchAll(/<p>\s*(0|[1-9]\d{0,6}|[1-9]\d{0,2}(?:,\d{3}){1,2})\s+people have signed this petition\.\s*<\/p>/gi)];
-  if (matches.length !== 1) return null;
-  const count = Number(matches[0][1].replaceAll(',', ''));
-  return Number.isSafeInteger(count) && count >= 0 && count <= 1000000 ? count : null;
+  const integer = '(0|[1-9]\\d{0,6}|[1-9]\\d{0,2}(?:,\\d{3}){1,2})';
+  const aggregate = new RegExp(`<p>\\s*${integer}\\s+people have signed this petition\\.(?:\\s+This includes a paper petition containing\\s+${integer}\\s+signatures\\.)?\\s*<\\/p>`, 'gi');
+  const matches = [...html.matchAll(aggregate)];
+  // Reject ambiguous pages even if only one of their counts has valid syntax.
+  if (matches.length !== 1 || [...html.matchAll(/people have signed this petition\./gi)].length !== 1) return null;
+  const total = Number(matches[0][1].replaceAll(',', ''));
+  const paper = matches[0][2] === undefined ? 0 : Number(matches[0][2].replaceAll(',', ''));
+  if (!Number.isSafeInteger(total) || total < 0 || total > 1000000 ||
+      !Number.isSafeInteger(paper) || paper < 0 || paper > total) return null;
+  // The API and progress goal count online signatures, never the paper-inclusive total.
+  return total - paper;
 }
 
 export async function petitionResponse(request, { fetchPage = fetch, cache = globalThis.caches?.default, now = () => new Date() } = {}) {

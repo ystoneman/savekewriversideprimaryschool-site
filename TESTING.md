@@ -1,5 +1,24 @@
 # Testing the website
 
+## 12 November decision and campaign updates — 20 November 2026
+
+Local checks by the implementing agent (Claude) on branch `codex/whatsapp-refresh-20261120`, Node 25.9.0 on its PATH, port 4382, artifacts outside the checkout:
+
+- Python 157/157 (`python3 -m unittest discover -s .github/scripts -p 'test_*.py'`); `check_site.py` validated 148 public files; navigation, sources, Understand, lessons and SEO generators current; Node unit 44/44 (homepage deadline and collector, before the separate worker change); JavaScript syntax; `git diff --check` clean apart from `sources.csv`'s existing CRLF line endings.
+- Homepage smoke 10/10 (iPhone WebKit and no-script).
+- Focused specs (campaign-site, petition-progress, home-landing, top-journeys, no-javascript, campaign) across all five projects: 856 passed, 4 failed on the first run. All four were the Dates closed-note expectation pinned to the old "will consider" wording; it now requires the new note and rejects the old phrase. Top-journeys rerun: 132/132.
+- Adjacent specs touching the changed pages or footer (campaign-film, analytics, clarity, evidence, homepage, mobile-header, participation, mobile-reading, seo, orientation, simplification, simple-guides, understand, visitor-journeys, theme): 1,529 passed, 15 intended skips, 0 failed.
+- New journeys in `campaign-site.spec.js`: the recovery entry's direct anchor shows the 12 November qualifier beside the watch link, which opens an intercepted fictional page and returns via Back; Get involved's closed stage leads to Dates `#next-committee` and back; the Media updates shortcut reaches the 18 November entry and its intercepted article; the homepage's dated 529 total is not labelled online. A successful online refresh in `petition-progress.spec.js` must leave the dated total visible and unchanged.
+
+Coordinator verification after the source freeze:
+
+- Python 157/157, all five generator freshness checks, JavaScript syntax and 148-file public staging passed. Node 24.22.3 from the managed runtime passed 48/48 unit checks (15 collector, 33 homepage), with no skips. The first attempt at this additional runtime check used the parent directory and found no test files; it is not counted as a pass. CSV retains its existing CRLF format; whitespace passed with Git's `cr-at-eol` setting.
+- Independent campaign/evidence review of the actual diff, including the parser's aggregate/privacy semantics, found no actionable finding. Independent rendered UX review passed 20/20 focused cases with no failures or skips. Home, Get involved, Dates and Updates reflowed at 320px light, 390px dark and 1440px light, with true no-script and doubled-text checks showing no horizontal overflow. Fresh-notice first-screen actions retain their baseline positions; Instagram targets are at least 44px, remain in the campaign row and support intercepted handoff/Back. Accepted 306-online responses retain the dated 529 total. All 148 frozen public-file hashes exactly match the independently reviewed renders.
+- The compatible collector fix was deployed separately to the existing Worker (version `d64f52e1-f71e-4de2-95f5-e2656b04d838`). Read-only live verification returned HTTP 200 and `onlineSignatures: 306`; missing/foreign origin and GET-on-analytics guards returned the expected 403/405. No analytics increment or schema change was made. Existing credentials were refreshed with exactly their previous five scopes; configuration, cron and disabled observability were retained.
+- Native Safari could not be checked through computer use: both the Simulator bundle and the Simulator app at the selected Xcode installation were unavailable. Booted simulators belonging to other work were left alone. Browser emulation is not a native or physical-phone check.
+
+Complete hosted five-project checks and website deployment verification remain release gates. No real form or petition was submitted; external browser handoffs were intercepted.
+
 ## November events and legal fund — 5 November 2026
 
 - Extend the existing campaign-page checks for the external legal-fund handoff and Back, both with and without scripts; no real donation or form submission is made. Keep Letters/Parent video adjacent and Offer help last. Update dated timeline, closed-stage fallback and rally assertions to the verified new content.

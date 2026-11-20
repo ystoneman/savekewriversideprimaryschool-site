@@ -244,7 +244,8 @@ test('Campaign updates are dated exactly, newest first, and the petition entry l
     expect(dates[index] <= dates[index - 1], `${dates[index]} follows ${dates[index - 1]} (newest first)`).toBe(true);
   }
   const bbc = page.locator('#update-bbc');
-  await expect(entries.first()).toHaveAttribute('id', 'update-committee-papers');
+  await expect(entries.first()).toHaveAttribute('id', 'update-national-petition');
+  await expect(page.locator('#update-committee-decision time')).toHaveAttribute('datetime', '2026-11-12');
   await expect(page.locator('#update-committee-papers time')).toHaveAttribute('datetime', '2026-11-05');
   await expect(page.locator('#update-consultation-deadline time')).toHaveAttribute('datetime', '2026-10-16');
   await expect(page.locator('#update-recovery-plan time')).toHaveAttribute('datetime', '2026-10-16');
@@ -305,10 +306,10 @@ for (const scripts of [true,false]) test.describe(`Updates discovery with script
   await expect(page.locator('#share-your-story + #parent-video')).toHaveCount(1);
   await expect(page.locator('#help a[href="feedback.html"]')).toBeVisible();
  });
- test('Shortcuts reach the proposal, media, rally photo and planned next-event details',async({page})=>{
+ test('Shortcuts reach the decision, rally, recovery film, media and October photo',async({page})=>{
   await page.goto('/updates.html');
   const nav=page.getByRole('navigation',{name:'Find campaign updates'});
-  for(const [label,id]of[['Recovery proposal','update-recovery-plan'],['Media updates','update-press-30-october'],['Rally photo','update-york-house-rally'],['12 November rally','next-rally'],['Committee papers','update-committee-papers'],['Legal fund','update-legal-fund']]){
+  for(const [label,id]of[['Committee decision','update-committee-decision'],['12 November rally','next-rally'],['Recovery plan & film','update-recovery-plan'],['Media updates','update-press-18-november'],['October rally photo','update-york-house-rally'],['Legal fund','update-legal-fund']]){
    await nav.getByRole('link',{name:label,exact:true}).click();
    await expect(page).toHaveURL(new RegExp('#'+id+'$'));
    await expect(page.locator('#'+id+' h2')).toBeInViewport();
@@ -317,11 +318,20 @@ for (const scripts of [true,false]) test.describe(`Updates discovery with script
   }
   await expect(page.locator('#update-recovery-plan')).toContainText('Achieving for Children');
   await expect(page.locator('#update-recovery-plan')).toContainText('The campaign believes');
-  await expect(page.locator('#next-rally')).toContainText('Thursday 12 November 2026, 6pm');
-  await expect(page.locator('#next-rally')).toContainText('Children are welcome');
-  await expect(page.locator('#next-rally')).toContainText('access arrangements are not yet confirmed');
-  await expect(page.locator('#next-rally time')).toHaveAttribute('datetime','2026-11-12T18:00:00+00:00');
-  await expect(page.locator('#next-rally a')).toHaveAttribute('href','https://cabnet.richmond.gov.uk/ieListDocuments.aspx?CId=800&MId=500000748&Ver=4');
+  // The 12 November rally is now a dated past entry; its shared anchor stays but the travel invitation is retired.
+  await expect(page.locator('#next-rally h2')).toHaveText('Rally at York House');
+  await expect(page.locator('#next-rally time')).toHaveAttribute('datetime','2026-11-12');
+  await expect(page.locator('#next-rally')).not.toContainText('before travelling');
+  await expect(page.locator('#next-rally')).not.toContainText('not yet confirmed');
+  await expect(page.locator('#update-committee-decision')).toContainText('approved publishing formal notices proposing to close Kew Riverside Primary School on 31 August 2027');
+  await expect(page.locator('#update-committee-decision')).toContainText('91.7% of 338 responses');
+  await expect(page.locator('#update-committee-decision')).toContainText('529 signatures in total, including 223 on paper');
+  await expect(page.locator('#update-committee-decision')).toContainText('The campaign’s position');
+  await expect(page.locator('#update-committee-decision a[href="https://cabnet.richmond.gov.uk/ieDecisionDetails.aspx?AIId=500006564"]')).toHaveCount(1);
+  await expect(page.locator('#update-press-18-november a')).toHaveAttribute('href','https://www.mylondon.news/news/south-london-news/devastating-plans-close-london-primary-34924134');
+  await expect(page.locator('#update-national-petition a')).toHaveAttribute('href','https://petition.parliament.uk/petitions/787773');
+  await expect(page.locator('#update-national-petition')).toContainText('not open for signatures yet');
+  await expect(page.locator('#update-committee-papers time')).toHaveAttribute('datetime','2026-11-05');
   await expect(page.locator('#update-news a')).toHaveCount(4);
  });
  test('Direct interview and existing BBC links retain readable destinations',async({page})=>{
@@ -862,4 +872,82 @@ test.describe('Current actions first', () => {
     await page.goBack();
     await expect(heading).toBeInViewport({ ratio: 1 });
   });
+});
+
+
+// 20 November 2026 refresh: the 12 November decision, the next statutory stage,
+// the dated recovery film and new press coverage. External destinations are
+// intercepted with fictional pages; nothing reaches YouTube, MyLondon or the council.
+const decision = 'https://cabnet.richmond.gov.uk/ieDecisionDetails.aspx?AIId=500006564';
+const recoveryFilm = 'https://youtu.be/Dt-jJs8Km3A';
+const myLondon = 'https://www.mylondon.news/news/south-london-news/devastating-plans-close-london-primary-34924134';
+
+async function fictionalDestination(page, url) {
+  await page.route(url, route => route.fulfill({ contentType: 'text/html', body: '<h1>Fictional destination</h1>' }));
+}
+
+test('Recovery film: a direct link to the recovery entry shows the dated qualifier beside the watch link, which opens and returns', async ({ page }) => {
+  await fictionalDestination(page, recoveryFilm);
+  await page.goto('/updates.html#update-recovery-plan');
+  const entry = page.locator('#update-recovery-plan');
+  await expect(entry.locator('h2')).toBeInViewport();
+  const paragraph = entry.locator('p', { has: page.locator(`a[href="${recoveryFilm}"]`) });
+  await expect(paragraph).toContainText('It was made before the committee approved the statutory stage on 12 November.');
+  const link = paragraph.getByRole('link', { name: 'Watch the recovery film on YouTube' });
+  await link.scrollIntoViewIfNeeded();
+  await link.click();
+  await expect(page).toHaveURL(recoveryFilm);
+  await page.goBack();
+  await expect(page).toHaveURL(/updates\.html#update-recovery-plan$/);
+  await expect(link).toBeVisible();
+  // The petition film keeps its own identity on the homepage; the recovery film is not substituted.
+  await expect(page.locator('#campaign-film')).toHaveCount(0);
+});
+
+test('Decision route: Get involved’s closed stage leads to the 12 November decision and next steps, and Back returns', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-20T12:00:00Z'));
+  await page.goto('/get-involved.html#respond');
+  const closed = page.locator('#respond [data-stage="closed"]');
+  await expect(closed).toContainText('On 12 November a council committee approved publishing statutory notices proposing closure.');
+  await expect(closed).toContainText('their dates are not yet published');
+  await expect(closed).not.toContainText('asks whether');
+  const link = closed.getByRole('link', { name: 'the decision and next steps' });
+  await link.scrollIntoViewIfNeeded();
+  await link.click();
+  await expect(page).toHaveURL(/dates\.html#next-committee$/);
+  await expect(page.locator('#committee-title')).toHaveText('12 November decision: statutory notices approved');
+  await expect(page.locator('#committee-title')).toBeInViewport();
+  const section = page.locator('#next-committee');
+  await expect(section).toContainText('at least four weeks');
+  await expect(section).toContainText('The council had not published them when we checked on 20 November 2026');
+  await expect(section.locator(`a[href="${decision}"]`)).toHaveCount(1);
+  // The council's original leaflet timetable stays verbatim, with a dated caveat.
+  await expect(page.locator('#timetable')).toContainText('Pre-statutory consultation (current)');
+  await expect(page.locator('#timetable')).toContainText('the committee approved the statutory stage on 12 November');
+  await page.goBack();
+  await expect(page).toHaveURL(/get-involved\.html#respond$/);
+});
+
+test('Media updates: the shortcut reaches the 18 November article entry, which opens the article and returns', async ({ page }) => {
+  await fictionalDestination(page, myLondon);
+  await page.goto('/updates.html');
+  await page.getByRole('navigation', { name: 'Find campaign updates' }).getByRole('link', { name: 'Media updates', exact: true }).click();
+  await expect(page).toHaveURL(/#update-press-18-november$/);
+  const entry = page.locator('#update-press-18-november');
+  await expect(entry.locator('time')).toHaveAttribute('datetime', '2026-11-18');
+  await entry.getByRole('link', { name: 'Read the MyLondon article' }).click();
+  await expect(page).toHaveURL(myLondon);
+  await page.goBack();
+  await expect(page).toHaveURL(/#update-press-18-november$/);
+  await expect(entry.locator('h2')).toBeVisible();
+});
+
+test('Homepage: the dated council total sits beside the online tracker without being labelled online', async ({ page }) => {
+  await page.goto('/index.html');
+  const record = page.locator('#petition-progress .petition-total-record');
+  await expect(record).toHaveText('Council petition page, 20 November 2026, 17:51 GMT: 529 signatures in total, including 223 on paper.');
+  await expect(record).not.toContainText('online');
+  await expect(page.locator('#petition-total')).toHaveText('306');
+  await expect(page.locator('#petition-calculation')).toContainText('529 total minus 223 on paper');
+  await expect(page.locator('.intro')).toHaveText(/On 12 November a council committee approved publishing formal notices proposing closure on 31 August 2027\./);
 });
