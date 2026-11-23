@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — legal fund wording
+
+- Record the campaign’s 11 November Letter Before Action in the legal fund update and use time-neutral wording beside the donation link.
+
 ## Unreleased — group photo in the 12 November rally update
 
 - Replace the interview still in the dated York House rally entry with the full, uncropped group photograph. Serve two local image sizes and keep the original event date, the direct link, the homepage illustration and the October photo.
