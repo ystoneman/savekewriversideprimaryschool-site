@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — combined petition total leads, Parliament petition status (23 November)
+
+- Homepage petition card: the dated combined council total is now the card's display numeral ("529 signatures in total, including 223 on paper", council petition page checked 13:12 GMT, 23 November 2026). Previously the large numeral was the online-only count (`#petition-total`), which the production online refresh overwrote. The online count now sits in a secondary line with its own meaning and date ("Online signatures only, in that snapshot: 306 (529 total minus 223 on paper)"); an accepted refresh rewrites only that line ("…council page checked <time>: N (paper signatures not included)") and never recalculates or relabels the combined total, because the paper count changes irregularly. The online percentage, `<progress>` meter, remainder and 1,000 online-goal emphasis are removed. The 500-signature committee threshold line is retained.
+- Add a dated line in the same card: the separate UK Parliament petition about independent review of school closure proposals is awaiting checks and is not open for public signatures yet (status checked 23 November 2026), linking its official moderation-status page. No signing action or "soon" promise. The council signing route and its 13 January 2027 expiry guards are unchanged; the whole card still retires on London 14 January 2027.
+- Styling: `design.css` moves the display numeral from `#petition-total` to `#petition-combined` (screen and print), adds a rule for the two secondary lines and drops the unused progress-meter rules; `DESIGN_VERSION` 2026112301 regenerated on every page. `petition-progress.css`/`.js` cache versions 2026112301.
+- No new homepage band, page, Menu item, hero image or media. The Ram film, its transcript and date are untouched. Recruitment flows untouched.
+- Media (second pass): the homepage hero photo is now a reviewed still of an interview at the 12 November rally outside York House (`images/rally-interview-20261112-480.jpg`/`-720.jpg`, 480×393 and 720×590, adults only, derived from a supplied rally video; the source video stays private). Same figure, tagline and placement; the incorrect school photo credit is replaced by "Rally at York House, Twickenham, 12 November 2026. Still from a supplied rally video." No photographer or publisher is named. The same 720 still is added to the existing Updates `#next-rally` entry with a dated caption. The 6 October York House photo, the Ram film and its transcript are unchanged. The two files are added to `PUBLIC_FILES`.
+- Parliament line shortened to "A separate UK Parliament petition is awaiting checks": its moderation page does not state the topic. DESIGN.md's petition component description now matches the combined-total card.
+- Checks actually run are in TESTING.md. Lead-agent implementation of a brief informed by three independent planning reviews (evidence, campaign, UX); no actual-diff specialist review has been done yet. Not committed or deployed.
+
 ## Unreleased — 12 November decision, petition total and campaign updates
 
 - Replace "next-stage vote is 12 November" with the decision in both the static homepage status and `home-stage.js` (cache version `2026112001`): the committee approved publishing statutory notices proposing closure on 31 August 2027; the final decision is planned for April 2027. Historical date branches remain.
@@ -60,6 +70,8 @@
 
 
 ## Unreleased
+
+- Independent campaign, evidence and rendered UX reviews of the actual petition/media implementation are complete, with findings resolved. Release checks and publication are tracked separately.
 
 ### Campaign social profiles — 20 October 2026
 

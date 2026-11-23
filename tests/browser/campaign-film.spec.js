@@ -25,7 +25,7 @@ test('Campaign video: petition below the player and optional transcript preserve
  expect(await page.locator('#campaign-film').evaluate(el=>el.previousElementSibling.classList.contains('hero-grid'))).toBe(true);
  await expect(page.locator('main a[href="'+petition+'"]')).toHaveCount(3);
  await expect(page.locator('#petition-action, #film-petition-action')).toHaveCount(2);
- await expect(page.locator('#petition-progress a')).toHaveAttribute('href',petition);
+ await expect(page.locator('#petition-progress .petition-source a')).toHaveAttribute('href',petition);
  await expect(page.locator('#petition-note')).toContainText('13 January 2027');
  await expect(page.locator('#petition-note')).toContainText('live, work or study');
  await expect(page.locator('#petition-note')).toContainText('Richmond Account');
@@ -101,7 +101,7 @@ test.describe('Campaign film without JavaScript',()=>{
   await expect(page.locator('#petition-note')).toContainText('13 January 2027');
   await expect(page.locator('main a[href="'+petition+'"]')).toHaveCount(3);
  await expect(page.locator('#petition-action, #film-petition-action')).toHaveCount(2);
- await expect(page.locator('#petition-progress a')).toHaveAttribute('href',petition);
+ await expect(page.locator('#petition-progress .petition-source a')).toHaveAttribute('href',petition);
   await expect(page.locator('#film-petition-action')).toHaveText('View or sign the petition');
   await page.locator('#film-share-fallback > summary').click();
   await expect(page.locator('#film-share-url')).toHaveValue('https://savekewriversideprimaryschool.org/#campaign-film');

@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 VERSION = '2026103001'
 ORIENTATION_VERSION = '2026102101'
 # Riverside poster design layer (DESIGN.md). It loads after every other stylesheet.
-DESIGN_VERSION = '2026103001'
+DESIGN_VERSION = '2026112301'
 DESIGN_LINK = '<link rel="stylesheet" href="design.css?v='+DESIGN_VERSION+'">'
 # Fetch the two Latin faces and the riverside horizon with the page, so the first
 # paint after Back already has them and readers return to the same position.
