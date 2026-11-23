@@ -1,5 +1,12 @@
 # Testing the website
 
+## Homepage rally illustration — 23 November 2026
+
+- Baseline homepage smoke passed 10/10. The final affected browser run passed 45/45 across Chromium, WebKit and script-disabled iPhone WebKit. A mobile WebKit check caught a timing race when the unchanged Updates photo lazy-loaded. It now waits for the existing decode and dimensions assertion and passed on rerun.
+- Independent UX review inspected both responsive assets and renders at 320, 390, 900 and 1440px. Multiple placards remain visible and faces are indistinct. At 320 × 568 both primary actions stay fully on screen with and without scripts. All five rendered checks loaded the local image without horizontal overflow.
+- All 157 Python checks and 48 Node unit checks passed. All five site generators are current, and public staging validated 152 files. Hosted checks and verification after deployment are recorded on the pull request.
+
+
 ## Combined petition total and Parliament status — 23 November 2026
 
 Local checks by the implementing agent (Claude) on branch `codex/november-23-petition-media` (base 47ae34cf), Node 25.9.0 (Node 24 not installed), port 4393, artifacts outside the checkout; `node_modules` is a gitignored symlink to another worktree's Playwright 1.63.0:

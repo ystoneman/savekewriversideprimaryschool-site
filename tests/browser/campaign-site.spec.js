@@ -977,18 +977,18 @@ test('Homepage: the Parliament petition is described as awaiting checks and its 
   await expect(page.locator('#petition-action')).toBeVisible();
 });
 
-test('Homepage and Updates: the reviewed 12 November rally still replaces the school photo without disturbing the October photo', async ({ page }) => {
+test('Homepage and Updates: the rally illustration loads and dated rally photos stay in place', async ({ page }) => {
   const alt = 'A campaign supporter in a woolly hat is interviewed with a handheld microphone outside York House at night, as another supporter looks on.';
   await page.goto('/index.html');
   const hero = page.locator('.hero-school-photo img');
-  await expect(hero).toHaveAttribute('src', 'images/rally-interview-20261112-720.jpg');
-  await expect(hero).toHaveAttribute('srcset', 'images/rally-interview-20261112-480.jpg 480w, images/rally-interview-20261112-720.jpg 720w');
-  await expect(hero).toHaveAttribute('width', '720');
-  await expect(hero).toHaveAttribute('height', '590');
-  await expect(hero).toHaveAttribute('alt', alt);
-  expect(await hero.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+  await expect(hero).toHaveAttribute('src', 'images/york-house-rally-illustration-960.jpg');
+  await expect(hero).toHaveAttribute('srcset', 'images/york-house-rally-illustration-480.jpg 480w, images/york-house-rally-illustration-960.jpg 960w');
+  await expect(hero).toHaveAttribute('width', '960');
+  await expect(hero).toHaveAttribute('height', '640');
+  await expect(hero).toHaveAttribute('alt', 'Illustration of a crowd holding Save Our School placards outside York House at dusk.');
+  await expect.poll(() => hero.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
   await expect(page.locator('.hero-school-photo .photo-sticker')).toHaveText('A small school. A big part of our lives.');
-  await expect(page.locator('.hero-school-photo .photo-credit')).toHaveText('Rally at York House, Twickenham, 12 November 2026. Still from a supplied rally video.');
+  await expect(page.locator('.hero-school-photo .photo-credit')).toHaveText('Illustration based on footage from the 12 November 2026 rally at York House.');
   await expect(page.locator('.hero-school-photo')).not.toContainText('Photo: Kew Riverside Primary School');
   await expect(page.locator('img[src*="school-discovery"]')).toHaveCount(0);
   await page.goto('/updates.html');
@@ -998,7 +998,7 @@ test('Homepage and Updates: the reviewed 12 November rally still replaces the sc
   await expect(still).toHaveAttribute('src', 'images/rally-interview-20261112-720.jpg');
   await expect(still).toHaveAttribute('alt', alt);
   await still.scrollIntoViewIfNeeded();
-  expect(await still.evaluate(img => img.complete && img.naturalWidth === 720 && img.naturalHeight === 590)).toBe(true);
+  await expect.poll(() => still.evaluate(img => img.complete && img.naturalWidth === 720 && img.naturalHeight === 590)).toBe(true);
   await expect(rally.locator('figcaption')).toHaveText('An interview at the rally outside York House, 12 November 2026. Still from a supplied rally video.');
   const october = page.locator('figure.update-photo:has(img[src="images/york-house-rally.jpg"])');
   await expect(october).toHaveCount(1);

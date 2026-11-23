@@ -169,14 +169,14 @@ test('Shared video QR: the exact upload path remains directly usable with an int
   await expect(page.locator('main a[href="letters.html#letter-form"]').last()).toBeVisible();
   await expectScrollSettled(page, 'Back to video upload');
 });
-test('Homepage: the rally still loads locally and follows actions on phones', async ({ page }) => {
+test('Homepage: the rally illustration loads locally and follows actions on phones', async ({ page }) => {
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: width === 1440 ? 1000 : 844 });
     await page.goto('/index.html');
     const photo = page.locator('.hero-school-photo img');
     await expect(photo).toBeVisible();
-    await expect(photo).toHaveAttribute('alt', 'A campaign supporter in a woolly hat is interviewed with a handheld microphone outside York House at night, as another supporter looks on.');
-    await expect(photo).toHaveAttribute('src', 'images/rally-interview-20261112-720.jpg');
+    await expect(photo).toHaveAttribute('alt', 'Illustration of a crowd holding Save Our School placards outside York House at dusk.');
+    await expect(photo).toHaveAttribute('src', 'images/york-house-rally-illustration-960.jpg');
     await expect.poll(() => photo.evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
     expect(await photo.evaluate(el => new URL(el.currentSrc).origin === location.origin)).toBe(true);
     if (width <= 700) {
