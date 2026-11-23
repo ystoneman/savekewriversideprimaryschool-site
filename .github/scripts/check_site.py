@@ -16,7 +16,7 @@ sitemap.xml robots.txt home-stage.js home-actions.js home-landing.css footer-lin
 campaign-film.js campaign-film.css media/kew-petition-film-ram-20261014.mp4 images/campaign-film-20261014.jpg
 media/kew-petition-film-ram-4x5-20261014.mp4 images/campaign-film-4x5-20261014.jpg
 simplify.js simplify.css
-images/school-discovery-480.jpg images/school-discovery-960.jpg images/school-project-480.jpg images/school-project-960.jpg images/rally-interview-20261112-480.jpg images/rally-interview-20261112-720.jpg
+images/school-discovery-480.jpg images/school-discovery-960.jpg images/school-project-480.jpg images/school-project-960.jpg images/york-house-rally-20261112-800.jpg images/york-house-rally-20261112-1600.jpg
 images/york-house-rally-illustration-480.jpg images/york-house-rally-illustration-960.jpg
 rally.html rally.css rally-6-october.ics
 fundraising-trustees.html fundraising-admin.html fundraising-briefs.css
