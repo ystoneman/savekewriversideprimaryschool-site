@@ -15,6 +15,7 @@ Local checks by the implementing agent (Claude) on branch `codex/november-23-pet
 - Coordinator rerun: 157/157 Python checks and 48/48 unit checks passed with managed Node 24.22.3; all five generators, 26 JavaScript syntax checks, exact 150-file staging and whitespace checks passed.
 - Native Safari limitation: both the Simulator name and selected Xcode Simulator app path were unavailable through computer use on 23 November. The three booted devices belong to other projects and were left untouched. Playwright WebKit checks are emulation, not native Safari.
 - Additional coordinator checks under Node 24.22.3: 40/40 targeted petition/media regressions passed on desktop WebKit and Android Chromium, using port 4398 with isolated reports. The first sandboxed launch failed before any test because localhost binding was denied; the approved isolated rerun passed.
+- First hosted PR run 45188406187 exposed an obsolete assertion in `homepage.spec.js` that still required the replaced ladybird image. The test now requires the reviewed rally alt text and exact local source while retaining loading, origin, mobile placement, 320/390/1440 coverage and overflow checks. Independent UX review found no weakening. The corrected case passed 4/4 locally on iPhone/desktop WebKit and Android/desktop Chromium under Node 24.22.3; the complete hosted suite must pass on the new revision.
 - Pending at this source checkpoint: complete exact-revision hosted coverage and deployment/live verification.
 
 ## 12 November decision and campaign updates — 20 November 2026
