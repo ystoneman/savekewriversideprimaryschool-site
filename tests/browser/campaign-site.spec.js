@@ -942,12 +942,66 @@ test('Media updates: the shortcut reaches the 18 November article entry, which o
   await expect(entry.locator('h2')).toBeVisible();
 });
 
-test('Homepage: the dated council total sits beside the online tracker without being labelled online', async ({ page }) => {
+test('Homepage: the dated combined council total leads the card and is never labelled online', async ({ page }) => {
   await page.goto('/index.html');
   const record = page.locator('#petition-progress .petition-total-record');
-  await expect(record).toHaveText('Council petition page, 20 November 2026, 17:51 GMT: 529 signatures in total, including 223 on paper.');
+  await expect(page.locator('#petition-progress-title')).toHaveText('Council petition signatures');
+  await expect(record).toHaveText('529 signatures in total, including 223 on paper. Council petition page, 23 November 2026, 13:12 GMT.');
+  await expect(record.locator('time')).toHaveAttribute('datetime', '2026-11-23T13:12:00Z');
   await expect(record).not.toContainText('online');
-  await expect(page.locator('#petition-total')).toHaveText('306');
-  await expect(page.locator('#petition-calculation')).toContainText('529 total minus 223 on paper');
+  await expect(page.locator('#petition-combined')).toHaveText('529');
+  await expect(page.locator('#petition-online')).toHaveText('Online signatures only, in that snapshot: 306 (529 total minus 223 on paper).');
+  await expect(page.locator('#petition-progress progress, #petition-percent, #petition-remaining')).toHaveCount(0);
+  // The combined figure is the card's display numeral; the online count is plain secondary text.
+  const sizes = await page.evaluate(() => ['petition-combined', 'petition-total'].map(id => parseFloat(getComputedStyle(document.getElementById(id)).fontSize)));
+  expect(sizes[0]).toBeGreaterThan(sizes[1] * 2);
   await expect(page.locator('.intro')).toHaveText(/On 12 November a council committee approved publishing formal notices proposing closure on 31 August 2027\./);
+});
+
+test('Homepage: the Parliament petition is described as awaiting checks and its status link returns to the card', async ({ page, context }) => {
+  const status = 'https://petition.parliament.uk/petitions/787773/moderation-info';
+  const opened = [];
+  await context.route('https://petition.parliament.uk/**', route => { opened.push(route.request().url()); return route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Fictional status</title><p>Fictional Parliament status page</p>' }); });
+  await page.goto('/index.html');
+  const national = page.locator('#petition-national');
+  await expect(national).toContainText('awaiting checks');
+  await expect(national).toContainText('not open for public signatures yet');
+  await expect(national).not.toContainText(/soon|sign it|independent review/i);
+  await expect(page.locator('#petition-action')).toHaveAttribute('href', 'https://www2.richmond.gov.uk/Account/ePetitionDetails.aspx?ID=249');
+  await national.getByRole('link', { name: 'Check the Parliament petition status' }).click();
+  await expect(page).toHaveURL(status);
+  expect(opened).toEqual([status]);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/index\.html$/);
+  await expect(page.locator('#petition-combined')).toHaveText('529');
+  await expect(page.locator('#petition-action')).toBeVisible();
+});
+
+test('Homepage and Updates: the reviewed 12 November rally still replaces the school photo without disturbing the October photo', async ({ page }) => {
+  const alt = 'A campaign supporter in a woolly hat is interviewed with a handheld microphone outside York House at night, as another supporter looks on.';
+  await page.goto('/index.html');
+  const hero = page.locator('.hero-school-photo img');
+  await expect(hero).toHaveAttribute('src', 'images/rally-interview-20261112-720.jpg');
+  await expect(hero).toHaveAttribute('srcset', 'images/rally-interview-20261112-480.jpg 480w, images/rally-interview-20261112-720.jpg 720w');
+  await expect(hero).toHaveAttribute('width', '720');
+  await expect(hero).toHaveAttribute('height', '590');
+  await expect(hero).toHaveAttribute('alt', alt);
+  expect(await hero.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+  await expect(page.locator('.hero-school-photo .photo-sticker')).toHaveText('A small school. A big part of our lives.');
+  await expect(page.locator('.hero-school-photo .photo-credit')).toHaveText('Rally at York House, Twickenham, 12 November 2026. Still from a supplied rally video.');
+  await expect(page.locator('.hero-school-photo')).not.toContainText('Photo: Kew Riverside Primary School');
+  await expect(page.locator('img[src*="school-discovery"]')).toHaveCount(0);
+  await page.goto('/updates.html');
+  const rally = page.locator('#next-rally');
+  await expect(rally.locator('time')).toHaveAttribute('datetime', '2026-11-12');
+  const still = rally.locator('figure.update-photo img');
+  await expect(still).toHaveAttribute('src', 'images/rally-interview-20261112-720.jpg');
+  await expect(still).toHaveAttribute('alt', alt);
+  await still.scrollIntoViewIfNeeded();
+  expect(await still.evaluate(img => img.complete && img.naturalWidth === 720 && img.naturalHeight === 590)).toBe(true);
+  await expect(rally.locator('figcaption')).toHaveText('An interview at the rally outside York House, 12 November 2026. Still from a supplied rally video.');
+  const october = page.locator('figure.update-photo:has(img[src="images/york-house-rally.jpg"])');
+  await expect(october).toHaveCount(1);
+  await expect(october.locator('figcaption')).toHaveText('Campaign members speaking with council members outside York House, 6 October 2026.');
+  await expect(page.locator('img[src*="rally-interview"]')).toHaveCount(1);
 });

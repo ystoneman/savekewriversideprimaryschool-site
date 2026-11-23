@@ -202,11 +202,8 @@ body[data-home-landing] .action-note{font-size:14px;line-height:1.5;color:var(--
 body[data-home-landing] .action-note .countdown{color:var(--forest);background:var(--sun);text-decoration:none;padding:1px 6px;border-radius:4px}
 .petition-progress{border:1px solid var(--forest-line)!important;border-radius:var(--radius-card)!important;padding:18px 20px!important;background:var(--forest-2);font-size:14px!important}
 .petition-progress h2{font:600 13px/1.4 var(--font-text)!important;text-transform:uppercase;letter-spacing:.16em!important;color:var(--meadow)!important;margin-bottom:8px!important}
-.petition-progress #petition-total{font:850 44px/.9 var(--font-display);font-stretch:62%;color:var(--cream);margin-right:4px;vertical-align:-4px}
-.petition-progress progress{height:16px!important;border:1.5px solid var(--cream)!important;border-radius:8px!important;background:var(--forest)!important}
-.petition-progress progress::-webkit-progress-bar{background:var(--forest)!important}
-.petition-progress progress::-webkit-progress-value{background:var(--meadow)!important}
-.petition-progress progress::-moz-progress-bar{background:var(--meadow)!important}
+.petition-progress #petition-combined{font:850 44px/.9 var(--font-display);font-stretch:62%;color:var(--cream);margin-right:4px;vertical-align:-4px}
+.petition-progress :is(.petition-online,.petition-national){font-size:13px;margin:10px 0 0;padding-top:10px;border-top:1px solid var(--forest-line)}
 #share-fallback>summary,#share-trigger{color:var(--cream)}
 body[data-home-landing] .share-panel input{background:var(--forest-2);color:var(--cream);border-color:#8a9a85}
 body[data-home-landing] .share-tools button{background:var(--cream);color:var(--forest);border-color:var(--cream)}
@@ -409,7 +406,7 @@ body[data-home-landing] .disclosure-content h2{font:850 40px/.9 var(--font-displ
 @media print{
   body[data-home-landing] .hero-grid{--horizon:0px;padding-block:0 12px!important}
   .decision-table thead{background:#fff!important}
-  :is(.site-header .brand,.site-header .brand span,body[data-home-landing] h1,.hero-grid .secondary,#petition-total,#share-fallback>summary,#share-trigger,.photo-credit,.photo-credit a,.letter-action a,footer,footer a,footer :is(h2,strong,p,summary,span)){color:#122315!important}
+  :is(.site-header .brand,.site-header .brand span,body[data-home-landing] h1,.hero-grid .secondary,#petition-combined,#share-fallback>summary,#share-trigger,.photo-credit,.photo-credit a,.letter-action a,footer,footer a,footer :is(h2,strong,p,summary,span)){color:#122315!important}
   :is(h1,h2) em,.eyebrow,.petition-progress h2,.site-header .brand .campaign-subtitle,.site-header .brand .campaign-subtitle strong,body[data-home-landing] .footer-details summary span{color:#17652f!important}
   .hero-grid .secondary{border-color:#122315!important}
   .decision-table thead th{color:#122315!important}

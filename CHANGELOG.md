@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — petition signatures and rally imagery (23 November)
+
+- Make the separately dated combined council total the homepage card’s display numeral: 529 signatures, including 223 on paper, checked 13:12 GMT on 23 November 2026. Keep online-only refreshes in a smaller, separately dated line that cannot overwrite or recalculate the combined snapshot. Remove the online percentage, progress meter, remainder and 1,000-signature goal emphasis; retain the committee’s 500-signature threshold explanation.
+- State that the separate UK Parliament petition is awaiting checks and is not open for public signatures yet, with a dated official status link. Keep the council signing route and 13/14 January expiry guards.
+- Replace the homepage’s ladybird photo with a reviewed adult-interview still from the 12 November York House rally, using responsive 480/720 images and accurate alt text, dimensions, event date and supplied-video provenance. Add the same still inside the existing dated rally update. Keep the October rally photo, Ram film, transcript and recruitment routes intact.
+- Update the existing card styling and design cache version 2026112301 throughout the generated pages. Add only the two reviewed JPEGs to the public allowlist; source media and processing material remain private.
+- Independent campaign, evidence and rendered UX reviews of the actual implementation are complete with findings resolved. Local privacy/security, generator, unit and affected browser checks are recorded in TESTING.md. Exact-revision hosted checks and verified deployment remain release gates.
+
 ## Unreleased — 12 November decision, petition total and campaign updates
 
 - Replace "next-stage vote is 12 November" with the decision in both the static homepage status and `home-stage.js` (cache version `2026112001`): the committee approved publishing statutory notices proposing closure on 31 August 2027; the final decision is planned for April 2027. Historical date branches remain.
@@ -60,6 +68,7 @@
 
 
 ## Unreleased
+
 
 ### Campaign social profiles — 20 October 2026
 

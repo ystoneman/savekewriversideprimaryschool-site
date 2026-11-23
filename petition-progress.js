@@ -31,18 +31,16 @@
       if (!value || Object.keys(value).sort().join() !== 'checkedAt,onlineSignatures,source' ||
           !Number.isSafeInteger(value.onlineSignatures) || value.onlineSignatures < 0 || value.onlineSignatures > 1000000 ||
           value.source !== source || !Number.isFinite(checked) || checked > Date.now() + 60000 || Date.now() - checked > 86400000 || retire() || interacted) return;
-      const count = value.onlineSignatures;
-      document.getElementById('petition-calculation').hidden = true;
-      document.getElementById('petition-total').textContent = number.format(count);
-      document.getElementById('petition-percent').textContent = number.format(count / 10) + '%';
-      document.getElementById('petition-remaining').textContent = count >= 1000 ? 'Campaign goal reached.' : number.format(1000 - count) + ' more online signatures to reach the campaign goal.';
-      document.getElementById('petition-milestone').textContent = 'Online campaign milestone: 500 signatures' + (count >= 500 ? ' — reached.' : '.') + ' The petition has already passed the committee’s 500-signature threshold with paper signatures included.';
-      const meter = document.getElementById('petition-meter');
-      meter.value = Math.min(count, 1000);
-      meter.setAttribute('aria-valuetext', number.format(count) + ' online signatures; campaign goal 1,000.');
-      const time = document.getElementById('petition-checked');
+      // Online-only detail with its own date. The dated combined total
+      // (#petition-combined) is a separate council snapshot and is never
+      // rewritten or recalculated here: paper signatures arrive irregularly.
+      const time = document.createElement('time');
+      time.id = 'petition-checked';
       time.dateTime = value.checkedAt;
       time.textContent = date.format(new Date(checked)).replace(' at ', ', ');
+      document.getElementById('petition-freshness').replaceChildren('Online signatures only, council page checked ', time);
+      document.getElementById('petition-total').textContent = number.format(value.onlineSignatures);
+      document.getElementById('petition-calculation').textContent = ' (paper signatures not included)';
     }).catch(() => { /* Preserve the explicitly dated council snapshot. */ })
     .finally(() => clearTimeout(timeout));
 })();
