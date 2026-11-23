@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — homepage rally illustration
+
+- Replace the homepage interview still with a wide illustration based on footage of the 12 November York House rally. It shows the crowd and placards with faces drawn indistinctly, and the caption identifies it as an illustration. Keep the existing hero layout, petition actions and dated rally update.
+
 ## Unreleased — petition signatures and rally imagery (23 November)
 
 - Make the separately dated combined council total the homepage card’s display numeral: 529 signatures, including 223 on paper, checked 13:12 GMT on 23 November 2026. Keep online-only refreshes in a smaller, separately dated line that cannot overwrite or recalculate the combined snapshot. Remove the online percentage, progress meter, remainder and 1,000-signature goal emphasis; retain the committee’s 500-signature threshold explanation.

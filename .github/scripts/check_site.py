@@ -17,6 +17,7 @@ campaign-film.js campaign-film.css media/kew-petition-film-ram-20261014.mp4 imag
 media/kew-petition-film-ram-4x5-20261014.mp4 images/campaign-film-4x5-20261014.jpg
 simplify.js simplify.css
 images/school-discovery-480.jpg images/school-discovery-960.jpg images/school-project-480.jpg images/school-project-960.jpg images/rally-interview-20261112-480.jpg images/rally-interview-20261112-720.jpg
+images/york-house-rally-illustration-480.jpg images/york-house-rally-illustration-960.jpg
 rally.html rally.css rally-6-october.ics
 fundraising-trustees.html fundraising-admin.html fundraising-briefs.css
 visit/index.html qr/kew-riverside-website-qr.png qr/kew-riverside-website-qr.svg qr/kew-riverside-visit-qr.png qr/kew-riverside-visit-qr.svg qr/savekewriverside-home-qr.png qr/savekewriverside-home-qr.svg qr/savekewriverside-visit-qr.png qr/savekewriverside-visit-qr.svg
