@@ -978,7 +978,6 @@ test('Homepage: the Parliament petition is described as awaiting checks and its 
 });
 
 test('Homepage and Updates: the rally illustration loads and dated rally photos stay in place', async ({ page }) => {
-  const alt = 'A campaign supporter in a woolly hat is interviewed with a handheld microphone outside York House at night, as another supporter looks on.';
   await page.goto('/index.html');
   const hero = page.locator('.hero-school-photo img');
   await expect(hero).toHaveAttribute('src', 'images/york-house-rally-illustration-960.jpg');
@@ -994,14 +993,18 @@ test('Homepage and Updates: the rally illustration loads and dated rally photos 
   await page.goto('/updates.html');
   const rally = page.locator('#next-rally');
   await expect(rally.locator('time')).toHaveAttribute('datetime', '2026-11-12');
-  const still = rally.locator('figure.update-photo img');
-  await expect(still).toHaveAttribute('src', 'images/rally-interview-20261112-720.jpg');
-  await expect(still).toHaveAttribute('alt', alt);
-  await still.scrollIntoViewIfNeeded();
-  await expect.poll(() => still.evaluate(img => img.complete && img.naturalWidth === 720 && img.naturalHeight === 590)).toBe(true);
-  await expect(rally.locator('figcaption')).toHaveText('An interview at the rally outside York House, 12 November 2026. Still from a supplied rally video.');
+  const groupPhoto = rally.locator('figure.update-photo img');
+  await expect(groupPhoto).toHaveAttribute('src', 'images/york-house-rally-20261112-1600.jpg');
+  await expect(groupPhoto).toHaveAttribute('srcset', 'images/york-house-rally-20261112-800.jpg 800w, images/york-house-rally-20261112-1600.jpg 1600w');
+  await expect(groupPhoto).toHaveAttribute('alt', 'Campaigners hold placards together outside York House at night.');
+  await expect(groupPhoto).toHaveAttribute('width', '1600');
+  await expect(groupPhoto).toHaveAttribute('height', '1200');
+  await groupPhoto.scrollIntoViewIfNeeded();
+  await expect.poll(() => groupPhoto.evaluate(img => img.complete && img.naturalWidth > 0 && Math.abs(img.naturalWidth - img.naturalHeight * 4 / 3) <= 2)).toBe(true);
+  expect(await groupPhoto.evaluate(img => new URL(img.currentSrc).origin)).toBe(new URL(page.url()).origin);
+  await expect(rally.locator('figcaption')).toHaveText('Campaigners outside York House, Twickenham, on 12 November 2026. Campaign photo.');
   const october = page.locator('figure.update-photo:has(img[src="images/york-house-rally.jpg"])');
   await expect(october).toHaveCount(1);
   await expect(october.locator('figcaption')).toHaveText('Campaign members speaking with council members outside York House, 6 October 2026.');
-  await expect(page.locator('img[src*="rally-interview"]')).toHaveCount(1);
+  await expect(page.locator('img[src*="rally-interview"]')).toHaveCount(0);
 });

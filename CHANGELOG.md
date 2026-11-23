@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — group photo in the 12 November rally update
+
+- Replace the interview still in the dated York House rally entry with the full, uncropped group photograph. Serve two local image sizes and keep the original event date, the direct link, the homepage illustration and the October photo.
+- Remove the unused interview stills from the site bundle.
+
 ## Unreleased — homepage rally illustration
 
 - Replace the homepage interview still with a wide illustration based on footage of the 12 November York House rally. It shows the crowd and placards with faces drawn indistinctly, and the caption identifies it as an illustration. Keep the existing hero layout, petition actions and dated rally update.

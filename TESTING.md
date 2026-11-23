@@ -1,5 +1,11 @@
 # Testing the website
 
+## Group photo in the 12 November rally update — 23 November 2026
+
+- Twenty affected browser checks passed across phone and desktop Chromium and WebKit. The photo check allows the rounding browsers apply to a responsive image's intrinsic dimensions while retaining its load, aspect-ratio, local-origin, date and asset assertions.
+- Rendered the full uncropped frame at 320, 390 and 1440px, with both JPEG sizes loaded and no horizontal overflow. Checked Home → Campaign updates → 12 November rally, direct anchor arrivals and 390px with JavaScript disabled. Independent review checked the image framing, dated caption, unchanged October figure and homepage illustration.
+- Kept the exact full-resolution source and stripped metadata from the smaller derivative. The final candidate stages 152 public files. All 157 Python and 48 Node checks passed and all five site generators are current.
+
 ## Homepage rally illustration — 23 November 2026
 
 - Baseline homepage smoke passed 10/10. The final affected browser run passed 45/45 across Chromium, WebKit and script-disabled iPhone WebKit. A mobile WebKit check caught a timing race when the unchanged Updates photo lazy-loaded. It now waits for the existing decode and dimensions assertion and passed on rerun.
